@@ -99,15 +99,11 @@ export async function writeTemplateIfNecessary(year: number, day: number): Promi
   }
 
   if (!(await fs.pathExists(yearFolder))) {
-    const yearsIndexFile = resolve(yearsFolder, `index.ts`)
-    await addYearExport(yearsIndexFile, year)
     await fs.mkdir(yearFolder)
   }
 
   const dayFolder = resolve(yearFolder, `${formatDay(day)}/`)
   if (!(await fs.pathExists(dayFolder))) {
-    const daysIndexFile = resolve(yearFolder, `index.ts`)
-    await addDayExport(daysIndexFile, day)
     await fs.mkdir(dayFolder)
   }
 
