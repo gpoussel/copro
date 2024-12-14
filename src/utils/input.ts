@@ -12,6 +12,10 @@ export function blocks(input: string) {
   return normalize(input).split("\n\n")
 }
 
+export function readNumbers(input: string) {
+  return normalize(input).split(" ").map(Number)
+}
+
 export function regexLines(input: string, regex: RegExp) {
   return normalize(input)
     .split("\n")
