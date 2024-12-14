@@ -1,4 +1,4 @@
-import { Direction, DIRECTIONS } from "./grid.js"
+import { Direction, Heading } from "./grid.js"
 
 export class Vector2 {
   constructor(
@@ -36,20 +36,25 @@ export class Vector2 {
     return this.x === other.x && this.y === other.y
   }
 
-  public move(direction: Direction): Vector2 {
-    if (direction === "up") {
-      return this.add(new Vector2(0, -1))
+  public move(direction: Heading, n = 1): Vector2 {
+    switch (direction) {
+      case "up":
+        return this.add(new Vector2(0, -n))
+      case "down":
+        return this.add(new Vector2(0, n))
+      case "left":
+        return this.add(new Vector2(-n, 0))
+      case "right":
+        return this.add(new Vector2(n, 0))
+      case "up-right":
+        return this.add(new Vector2(n, -n))
+      case "down-right":
+        return this.add(new Vector2(n, n))
+      case "down-left":
+        return this.add(new Vector2(-n, n))
+      case "up-left":
+        return this.add(new Vector2(-n, -n))
     }
-    if (direction === "down") {
-      return this.add(new Vector2(0, 1))
-    }
-    if (direction === "left") {
-      return this.add(new Vector2(-1, 0))
-    }
-    if (direction === "right") {
-      return this.add(new Vector2(1, 0))
-    }
-    throw new Error(`Unknown direction: ${direction}`)
   }
 
   public plusShapeNeighbors(): Vector2[] {

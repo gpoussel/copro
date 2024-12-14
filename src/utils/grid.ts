@@ -3,9 +3,8 @@ export function build<K>(grid: K[][], printer?: (item: K) => string) {
   return grid.map(row => row.map(print).join("")).join("\n")
 }
 
-export type Direction = "up" | "down" | "left" | "right"
-
-export const DIRECTIONS = ["up", "right", "down", "left"] as const
+export type Direction = "up" | "right" | "down" | "left"
+export const DIRECTIONS: Direction[] = ["up", "right", "down", "left"] as const
 export const VISITED = "~"
 export const DIRECTION_CHARS = {
   up: "^",
@@ -13,9 +12,13 @@ export const DIRECTION_CHARS = {
   left: "<",
   right: ">",
 } as const
+
 export function fromDirectionChar(char: string) {
   return Object.entries(DIRECTION_CHARS).find(([, value]) => value === char)?.[0] as Direction
 }
+
+export type Heading = Direction | "up-right" | "down-right" | "down-left" | "up-left"
+export const HEADING_DIRECTIONS: Heading[] = [...DIRECTIONS, "up-right", "down-right", "down-left", "up-left"] as const
 
 export function iterate<K, V>(
   grid: K[][],
