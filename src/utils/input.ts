@@ -2,6 +2,10 @@ function normalize(input: string) {
   return input.trim()
 }
 
+export function firstLine(input: string) {
+  return normalize(input).split("\n")[0]
+}
+
 export function readGrid(input: string) {
   return normalize(input)
     .split("\n")
