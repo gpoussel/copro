@@ -36,10 +36,10 @@ function parseArguments(args: string[]): { year: number; day: number; part: 1 | 
     return { ...getCurrentDay(), part: undefined }
   }
   if (args.length === 1) {
-    return { ...getCurrentDay(), part: parsePart(args[0]) }
+    return { ...getCurrentDay(), day: parseInt(args[0], 10), part: undefined }
   }
   if (args.length === 2) {
-    return { ...getCurrentDay(), day: parseInt(args[0], 10), part: parsePart(args[1]) }
+    return { year: parseInt(args[0], 10), day: parseInt(args[1], 10), part: undefined }
   }
   if (args.length === 3) {
     return { year: parseInt(args[0], 10), day: parseInt(args[1], 10), part: parsePart(args[2]) }
