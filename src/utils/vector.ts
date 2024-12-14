@@ -22,6 +22,10 @@ export class Vector2 {
     return new Vector2(this.x + other.x, this.y + other.y)
   }
 
+  public subtract(other: Vector2): Vector2 {
+    return new Vector2(this.x - other.x, this.y - other.y)
+  }
+
   public modulo(other: Vector2): Vector2 {
     const targetX = this.x % other.x
     const targetY = this.y % other.y

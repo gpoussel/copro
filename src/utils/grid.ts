@@ -29,10 +29,24 @@ export function at<K>(grid: K[][], position: { x: number; y: number }) {
   return grid[position.y]?.[position.x]
 }
 
+export function set<K>(grid: K[][], position: { x: number; y: number }, value: K) {
+  if (inBounds(grid, position)) {
+    grid[position.y][position.x] = value
+  }
+}
+
+export function countBy(grid: string[][], predicate: (item: string) => boolean) {
+  return grid.flat().filter(predicate).length
+}
+
 export function inBounds<K>(grid: K[][], position: { x: number; y: number }) {
   return position.y >= 0 && position.y < grid.length && position.x >= 0 && position.x < grid[position.y].length
 }
 
 export function clone<K>(grid: K[][]) {
   return grid.map(row => [...row])
+}
+
+export function uniqueElements<K>(grid: K[][]) {
+  return [...new Set<K>(iterate(grid, item => item))]
 }
