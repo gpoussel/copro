@@ -89,19 +89,29 @@ async function run(args: string[]) {
       if (!partSolution) {
         console.error(chalk.red(`Part ${currentPart} not found`))
       } else {
+        function computeSolution(input: string) {
+          const formattedInput = input.replace(/\r/g, "")
+          try {
+            return partSolution.run(formattedInput)
+          } catch (err) {
+            console.error(chalk.red(`  ${chalk.bold("X")} Error while running part ${currentPart}`))
+            console.error(err)
+            return undefined
+          }
+        }
         let gotAFailure = false
         for (let testIndex = 0; testIndex < partSolution.tests.length; testIndex++) {
           const test = partSolution.tests[testIndex]
-          const response = partSolution.run(test.input)
+          const response = computeSolution(test.input)
           if (test.expected === undefined) {
             console.error(`  ${chalk.bold("?")} Test #${testIndex + 1} run`)
-            console.error(`    Input: ${chalk.bold(test.input)}`)
+            console.error(`    Input: ${chalk.bold(test.input.split("\n").length)} lines`)
             console.error(`    Got: ${chalk.bold(response)}`)
           } else if (response === test.expected) {
             console.log(`  ${chalk.bold(chalk.greenBright("✓"))} Test #${testIndex + 1} passed`)
           } else {
             console.error(`  ${chalk.bold(chalk.redBright("X"))} Test #${testIndex + 1} failed`)
-            console.error(`    Input: ${chalk.bold(test.input)}`)
+            console.error(`    Input: ${chalk.bold(test.input.split("\n").length)} lines`)
             console.error(`    Expected: ${chalk.bold(test.expected)}`)
             console.error(`    Got: ${chalk.bold(response)}`)
             gotAFailure = true
@@ -109,8 +119,8 @@ async function run(args: string[]) {
         }
 
         if (await fs.exists(inputFile)) {
-          const input = (await fs.readFile(inputFile, "utf-8")).replace(/\r/g, "")
-          const response = partSolution.run(input)
+          const input = await fs.readFile(inputFile, "utf-8")
+          const response = computeSolution(input)
           if (response === undefined) {
             console.error(chalk.red(`  ${chalk.bold("X")} No response for part ${currentPart}`))
           } else {
