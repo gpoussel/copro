@@ -1,13 +1,19 @@
+function normalize(input: string) {
+  return input.trim()
+}
+
 export function readGrid(input: string) {
-  return input.split("\n").map(line => line.split(""))
+  return normalize(input)
+    .split("\n")
+    .map(line => line.split(""))
 }
 
 export function blocks(input: string) {
-  return input.split("\n\n")
+  return normalize(input).split("\n\n")
 }
 
 export function regexLines(input: string, regex: RegExp) {
-  return input
+  return normalize(input)
     .split("\n")
     .filter(line => line.length > 0)
     .map(line => {
