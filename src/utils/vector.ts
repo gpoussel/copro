@@ -76,7 +76,12 @@ export const VECTOR2_COMPARATOR_XY = (a: Vector2, b: Vector2) => {
 }
 
 export class Vector2Set {
-  constructor(private _vectors: Vector2[] = []) {}
+  private _vectors: Vector2[] = []
+  constructor(vectors?: Vector2[]) {
+    if (vectors) {
+      vectors.forEach(vector => this.add(vector))
+    }
+  }
 
   public get vectors() {
     return this._vectors

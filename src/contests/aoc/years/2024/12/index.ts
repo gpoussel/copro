@@ -10,8 +10,7 @@ function parseInput(input: string) {
 }
 
 function visit(input: string[][], x: number, y: number) {
-  const queue = new Vector2Set()
-  queue.add(new Vector2(x, y))
+  const queue = new Vector2Set([new Vector2(x, y)])
   const visited = new Vector2Set()
   const element = input[y][x]
   while (queue.length > 0) {
