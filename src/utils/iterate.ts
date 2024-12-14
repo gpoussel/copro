@@ -21,3 +21,7 @@ export function countBy<T, K>(arr: T[], key: (item: T) => K): Map<K, number> {
   }
   return map
 }
+
+export function arrayEquals<T>(a: T[], b: T[]): boolean {
+  return a.length === b.length && a.every((v, i) => v === b[i])
+}

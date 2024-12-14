@@ -3,13 +3,15 @@ function normalize(input: string) {
 }
 
 export function firstLine(input: string) {
-  return normalize(input).split("\n")[0]
+  return lines(input)[0]
 }
 
 export function readGrid(input: string) {
-  return normalize(input)
-    .split("\n")
-    .map(line => line.split(""))
+  return lines(input).map(line => line.split(""))
+}
+
+export function lines(input: string) {
+  return normalize(input).split("\n")
 }
 
 export function blocks(input: string) {
