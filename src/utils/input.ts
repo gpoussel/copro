@@ -19,7 +19,7 @@ export function blocks(input: string) {
 }
 
 export function readNumbers(input: string) {
-  return normalize(input).split(" ").map(Number)
+  return normalize(input).split(/ +/).map(Number)
 }
 
 export function regexLines(input: string, regex: RegExp) {
