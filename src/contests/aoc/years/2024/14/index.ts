@@ -1,22 +1,31 @@
+import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import utils from "../../../../../utils/index.js"
 
 // 🎄 Advent of Code 2024 - Day 14
 
 function part1(input: string) {
-  return "test"
+  return
 }
 
 function part2(input: string) {
-  return "output"
+  return
 }
+
+const EXAMPLE = ``
 
 export default {
   part1: {
     run: part1,
-    tests: [],
+    tests: [{
+      input: EXAMPLE,
+      expected: undefined,
+    }],
   },
   part2: {
     run: part2,
-    tests: [],
+    tests: [{
+      input: EXAMPLE,
+      expected: undefined,
+    }],
   },
-}
+} as AdventOfCodeContest

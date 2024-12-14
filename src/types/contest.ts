@@ -4,10 +4,10 @@ export interface Contest {
 }
 
 export interface AdventOfCodePart {
-  run: (args: string[]) => string
+  run: (args: string) => string
   tests: {
     input: string
-    expected: string
+    expected: string | undefined
   }[]
 }
 

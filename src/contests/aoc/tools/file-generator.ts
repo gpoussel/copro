@@ -43,6 +43,7 @@ async function addDayExport(file: string, day: number) {
 
 async function generateSolutionFile(file: string, year: number, day: number) {
   const lines = [
+    `import { AdventOfCodeContest } from "../../../../../types/contest.js"`,
     `import utils from "../../../../../utils/index.js"`,
     "",
     `// 🎄 Advent of Code ${year} - Day ${day}`,
@@ -55,16 +56,24 @@ async function generateSolutionFile(file: string, year: number, day: number) {
     "  return",
     "}",
     "",
+    "const EXAMPLE = ``",
+    "",
     "export default {",
     "  part1: {",
     "    run: part1,",
-    "    tests: [],",
+    "    tests: [{",
+    "      input: EXAMPLE,",
+    "      expected: undefined,",
+    "    }],",
     "  },",
     "  part2: {",
     "    run: part2,",
-    "    tests: [],",
+    "    tests: [{",
+    "      input: EXAMPLE,",
+    "      expected: undefined,",
+    "    }],",
     "  },",
-    "}",
+    "} as AdventOfCodeContest",
     "",
   ]
 

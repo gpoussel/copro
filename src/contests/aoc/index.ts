@@ -3,6 +3,7 @@ import chalk from "chalk"
 import { Contest } from "../../types/contest.js"
 import { writeTemplateIfNecessary } from "./tools/file-generator.js"
 import { fileURLToPath } from "node:url"
+import fs from "fs-extra"
 
 function getCurrentDay(): { year: number; day: number } {
   const adventOfCodeTime = new Date().toLocaleString("fr-FR", {
@@ -60,10 +61,12 @@ function getPathToImport(dayFolder: string) {
 async function run(args: string[]) {
   const { year, day, part } = parseArguments(args)
   console.log(`📆 Year ${chalk.cyan(year)} - Day ${chalk.cyan(day)}`)
+  console.log(`🌍 https://adventofcode.com/${year}/day/${day}`)
 
   const { dayFolder } = await writeTemplateIfNecessary(year, day)
 
   const aocOptionsCommand = ["--day", day.toString(), "--year", year.toString()]
+  const inputFile = resolve(dayFolder, "input")
   printCommand([
     "aoc",
     "download",
@@ -71,14 +74,14 @@ async function run(args: string[]) {
     "--overwrite",
     "--input-only",
     "--input-file",
-    `"${resolve(dayFolder, "input")}"`,
+    `"${inputFile}"`,
   ])
 
   console.log()
   console.log()
   for (const currentPart of [1, 2]) {
     if (part === undefined || part === currentPart) {
-      console.log(`⚙️ Part ${chalk.cyan(currentPart)}`)
+      console.log(`⚙️ ${chalk.cyan("Part " + currentPart)}`)
 
       const pathToImport = getPathToImport(dayFolder)
       const daySolution = await import(pathToImport)
@@ -86,12 +89,36 @@ async function run(args: string[]) {
       if (!partSolution) {
         console.error(chalk.red(`Part ${currentPart} not found`))
       } else {
-        const response = partSolution.run("")
-        if (response === undefined) {
-          console.error(chalk.red(`  ${chalk.bold("X")} No response for part ${currentPart}`))
+        let gotAFailure = false
+        for (let testIndex = 0; testIndex < partSolution.tests.length; testIndex++) {
+          const test = partSolution.tests[testIndex]
+          const response = partSolution.run(test.input)
+          if (test.expected === undefined) {
+            console.error(`  ${chalk.bold("?")} Test #${testIndex + 1} run`)
+            console.error(`    Input: ${chalk.bold(test.input)}`)
+            console.error(`    Got: ${chalk.bold(response)}`)
+          } else if (response === test.expected) {
+            console.log(`  ${chalk.bold(chalk.greenBright("✓"))} Test #${testIndex + 1} passed`)
+          } else {
+            console.error(`  ${chalk.bold(chalk.redBright("X"))} Test #${testIndex + 1} failed`)
+            console.error(`    Input: ${chalk.bold(test.input)}`)
+            console.error(`    Expected: ${chalk.bold(test.expected)}`)
+            console.error(`    Got: ${chalk.bold(response)}`)
+            gotAFailure = true
+          }
+        }
+
+        if (await fs.exists(inputFile)) {
+          const input = (await fs.readFile(inputFile, "utf-8")).replace(/\r/g, "")
+          const response = partSolution.run(input)
+          if (response === undefined) {
+            console.error(chalk.red(`  ${chalk.bold("X")} No response for part ${currentPart}`))
+          } else {
+            console.log(`  ${gotAFailure ? "❗" : "🟢"} Solution: ${chalk.bold(chalk.yellowBright(response))}`)
+            printCommand(["aoc", "submit", currentPart, ...aocOptionsCommand, "submit", response], "  ")
+          }
         } else {
-          console.log(`  ⚪ Solution: ${chalk.bold(chalk.yellowBright(response))}`)
-          printCommand(["aoc", "submit", currentPart, ...aocOptionsCommand, "submit", response], "  ")
+          console.error(chalk.red(`  ${chalk.bold("X")} No input file found`))
         }
       }
     }
