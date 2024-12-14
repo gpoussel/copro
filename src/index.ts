@@ -1,5 +1,5 @@
 import chalk from "chalk"
-import contests from "./contests"
+import contests from "./contests/index.js"
 
 function printFirstArgumentError(contestIdentifier?: string) {
   console.error(chalk.red("You have to specify a valid contest as first argument"))
@@ -24,7 +24,7 @@ async function run(args: string[]) {
   }
 
   const contest = contests[contestIdentifier as keyof typeof contests]
-  console.log(`🚀 Contest: ${chalk.cyan(contest.name)}`)
+  console.log(`💡 Contest: ${chalk.cyan(contest.name)}`)
 
   try {
     await contest.run(args.slice(1))
