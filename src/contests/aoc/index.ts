@@ -125,7 +125,7 @@ async function run(args: string[]) {
             console.error(chalk.red(`  ${chalk.bold("X")} No response for part ${currentPart}`))
           } else {
             console.log(`  ${gotAFailure ? "❗" : "🟢"} Solution: ${chalk.bold(chalk.yellowBright(response))}`)
-            printCommand(["aoc", "submit", currentPart, ...aocOptionsCommand, "submit", response], "  ")
+            printCommand(["aoc", "submit", currentPart, ...aocOptionsCommand, response], "  ")
           }
         } else {
           console.error(chalk.red(`  ${chalk.bold("X")} No input file found`))
