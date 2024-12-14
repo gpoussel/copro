@@ -5,8 +5,17 @@ export function build<K>(grid: K[][], printer?: (item: K) => string) {
 
 export type Direction = "up" | "down" | "left" | "right"
 
-export const DIRECTIONS = ["up", "down", "left", "right"] as const
-export const VISITED = "~" as const
+export const DIRECTIONS = ["up", "right", "down", "left"] as const
+export const VISITED = "~"
+export const DIRECTION_CHARS = {
+  up: "^",
+  down: "v",
+  left: "<",
+  right: ">",
+} as const
+export function fromDirectionChar(char: string) {
+  return Object.entries(DIRECTION_CHARS).find(([, value]) => value === char)?.[0] as Direction
+}
 
 export function iterate<K, V>(
   grid: K[][],
@@ -23,6 +32,16 @@ export function iterate<K, V>(
     }
   }
   return result
+}
+
+export function find<K>(grid: K[][], predicate: (item: K) => boolean) {
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
+      if (predicate(grid[y][x])) {
+        return { x, y }
+      }
+    }
+  }
 }
 
 export function at<K>(grid: K[][], position: { x: number; y: number }) {
