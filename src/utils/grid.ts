@@ -80,7 +80,12 @@ export function inBounds<K>(grid: K[][], position: { x: number; y: number }) {
   return position.y >= 0 && position.y < grid.length && position.x >= 0 && position.x < grid[position.y].length
 }
 
-export function clone<K>(grid: K[][]) {
+export function clone<K>(grid: K[][]): K[][]
+export function clone<K, V>(grid: K[][], mapper: (item: K) => V): V[][]
+export function clone<K, V>(grid: K[][], mapper?: (item: K) => V): K[][] | V[][] {
+  if (mapper) {
+    return grid.map(row => row.map(mapper))
+  }
   return grid.map(row => [...row])
 }
 

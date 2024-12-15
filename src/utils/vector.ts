@@ -1,4 +1,4 @@
-import { Direction, Heading } from "./grid.js"
+import { Heading, HEADING_DIRECTIONS } from "./grid.js"
 
 export class Vector2 {
   constructor(
@@ -55,6 +55,10 @@ export class Vector2 {
       case "up-left":
         return this.add(new Vector2(-n, -n))
     }
+  }
+
+  public neighbors(): Vector2[] {
+    return HEADING_DIRECTIONS.map(direction => this.move(direction))
   }
 
   public plusShapeNeighbors(): Vector2[] {
