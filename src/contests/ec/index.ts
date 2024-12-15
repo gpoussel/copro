@@ -49,6 +49,6 @@ async function run(args: string[]) {
 }
 
 export default {
-  name: "Advent of Code",
+  name: "Everybody Codes",
   run,
 } as Contest
