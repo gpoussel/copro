@@ -33,21 +33,21 @@ export default {
   part1: {
     run: part1,
     tests: [{
-      input: "",
+      input: \`\`,
       expected: undefined,
     }],
   },
   part2: {
     run: part2,
     tests: [{
-      input: "",
+      input: \`\`,
       expected: undefined,
     }],
   },
   part3: {
     run: part3,
     tests: [{
-      input: "",
+      input: \`\`,
       expected: undefined,
     }],
   },

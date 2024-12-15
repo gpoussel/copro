@@ -51,6 +51,21 @@ export function at<K>(grid: K[][], position: { x: number; y: number }) {
   return grid[position.y]?.[position.x]
 }
 
+const positiveModulo = (n: number, m: number) => ((n % m) + m) % m
+
+export function modulo<K>(grid: K[][], position: { x: number; y: number }) {
+  const y = positiveModulo(position.y, grid.length)
+  const x = positiveModulo(position.x, grid[y].length)
+  return { x, y }
+}
+
+export function moduloHorizontal<K>(grid: K[][], position: { x: number; y: number }) {
+  if (position.y < 0 || position.y >= grid.length) {
+    return position
+  }
+  return { x: positiveModulo(position.x, grid[position.y].length), y: position.y }
+}
+
 export function set<K>(grid: K[][], position: { x: number; y: number }, value: K) {
   if (inBounds(grid, position)) {
     grid[position.y][position.x] = value

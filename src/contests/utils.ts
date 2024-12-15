@@ -60,6 +60,11 @@ export function executeTests(tests: MultiLevelQuestPart["tests"], solver: MultiL
   let gotAFailure = false
   for (let testIndex = 0; testIndex < tests.length; testIndex++) {
     const test = tests[testIndex]
+    if (test.input.length === 0) {
+      console.error(chalk.red(`  ${chalk.bold("X")} Empty input`))
+      gotAFailure = true
+      continue
+    }
     const response = callSolverFromString(test.input, solver)
     if (test.expected === undefined) {
       console.error(`  ${chalk.bold("?")} Test #${testIndex + 1} run`)
