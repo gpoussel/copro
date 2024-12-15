@@ -48,7 +48,7 @@ function part2(inputString: string) {
         return parseInt(shoutedString) * (round + 1)
       }
     }
-    utils.log.logEvery(round, 1000)
+    utils.log.logEvery(round, 100000)
     round++
   }
 }
@@ -70,7 +70,7 @@ function part3(inputString: string) {
     }
     visitedKeys.add(key)
 
-    utils.log.logEvery(round, 1000)
+    utils.log.logEvery(round, 10000)
     round++
   }
   return [...shoutedNumbers].reduce((acc, shoutedNumber) =>
