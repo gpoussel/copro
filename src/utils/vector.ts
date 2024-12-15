@@ -26,6 +26,10 @@ export class Vector2 {
     return new Vector2(this.x - other.x, this.y - other.y)
   }
 
+  public between(topLeft: Vector2, bottomRight: Vector2): boolean {
+    return this.x >= topLeft.x && this.x < bottomRight.x && this.y >= topLeft.y && this.y < bottomRight.y
+  }
+
   public modulo(other: Vector2): Vector2 {
     const targetX = this.x % other.x
     const targetY = this.y % other.y

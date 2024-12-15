@@ -37,6 +37,10 @@ export function iterate<K, V>(
   return result
 }
 
+export function map<K, V>(grid: K[][], callback: (item: K, x: number, y: number) => V) {
+  return grid.map((row, y) => row.map((item, x) => callback(item, x, y)))
+}
+
 export function find<K>(grid: K[][], predicate: (item: K) => boolean) {
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
@@ -45,6 +49,10 @@ export function find<K>(grid: K[][], predicate: (item: K) => boolean) {
       }
     }
   }
+}
+
+export function findPositions<K>(grid: K[][], predicate: (item: K) => boolean) {
+  return iterate(grid, (_, x, y) => ({ x, y }), predicate)
 }
 
 export function at<K>(grid: K[][], position: { x: number; y: number }) {

@@ -36,20 +36,12 @@ export function swap<K>(array: K[], index1: number, index2: number) {
   array[index2] = temp
 }
 
-/**
- *
- * @param array Array to permute
- */
 export function permutations<T>(array: T[]): T[][] {
-  // Using Heap's algorithm, we generate all permutations of the array
-  // Even if the input array contains duplicates, the output will not contain duplicates
-
   const result: T[][] = []
   const sortedCombination = array.slice().sort()
   result.push(sortedCombination.slice())
 
   while (true) {
-    //    Find the largest index k such that a[k] < a[k + 1]. If no such index exists, the permutation is the last permutation.
     let k = -1
     for (let i = 0; i < array.length - 1; i++) {
       if (array[i] < array[i + 1]) {
@@ -59,7 +51,6 @@ export function permutations<T>(array: T[]): T[][] {
     if (k === -1) {
       break
     }
-    //    Find the largest index l greater than k such that a[k] < a[l].
     let l = -1
     for (let i = k + 1; i < array.length; i++) {
       if (array[k] < array[i]) {
@@ -69,13 +60,26 @@ export function permutations<T>(array: T[]): T[][] {
     if (l === -1) {
       break
     }
-    //    Swap the value of a[k] with that of a[l].
     swap(array, k, l)
-    //    Reverse the sequence from a[k + 1] up to and including the final element a[n].
     const reversed = array.splice(k + 1).reverse()
     array.push(...reversed)
     result.push(array.slice())
   }
 
   return result
+}
+
+export function intersectionBy<T, V>(a: T[], b: T[], mapper: (k: T) => V): T[] {
+  const other = b.map(mapper)
+  return a.filter(value => other.includes(mapper(value)))
+}
+
+export function differenceBy<T, V>(a: T[], b: T[], mapper: (k: T) => V): T[] {
+  const other = b.map(mapper)
+  return a.filter(value => !other.includes(mapper(value)))
+}
+
+export function range(start: number, end: number, inc = 1) {
+  const iterationCount = Math.floor((end - start) / inc)
+  return Array.from({ length: iterationCount }, (_, i) => start + i * inc)
 }

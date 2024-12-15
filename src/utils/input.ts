@@ -10,6 +10,17 @@ export function readGrid(input: string) {
   return lines(input).map(line => line.split(""))
 }
 
+export function readGridOfGrid(input: string) {
+  const linesOfGrid = blocks(input)
+  return linesOfGrid.flatMap(lineOfGrid => {
+    const rows = lines(lineOfGrid)
+    const splittedRows = rows.map(row => row.split(" "))
+    return Array.from({ length: splittedRows[0].length }, (_, i) => {
+      return splittedRows.map(row => row[i].split(""))
+    })
+  })
+}
+
 export function lines(input: string) {
   return normalize(input).split("\n")
 }
