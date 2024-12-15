@@ -92,3 +92,7 @@ export function clone<K, V>(grid: K[][], mapper?: (item: K) => V): K[][] | V[][]
 export function uniqueElements<K>(grid: K[][]) {
   return [...new Set<K>(iterate(grid, item => item))]
 }
+
+export function columns<K>(grid: K[][]) {
+  return Array.from({ length: grid[0].length }, () => 0).map((_, i) => grid.map(row => row[i]))
+}
