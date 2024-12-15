@@ -1,14 +1,14 @@
 import { writeYearDayTemplateIfNecessary } from "../../utils.js"
 
-export async function writeTemplateIfNecessary(year: number, day: number): Promise<{ dayFolder: string }> {
+export async function writeTemplateIfNecessary(year: number, quest: number): Promise<{ dayFolder: string }> {
   return await writeYearDayTemplateIfNecessary(
     import.meta.url,
     year,
-    day,
-    () => `import { AdventOfCodeContest } from "../../../../../types/contest.js"
+    quest,
+    () => `import { EverybodyCodesContest } from "../../../../../types/contest.js"
 import utils from "../../../../../utils/index.js"
 
-// 🎄 Advent of Code ${year} - Day ${day}
+// 🎲 Everybody Codes ${year} - Quest ${quest}
 
 function parseInput(input: string) {
   return
@@ -20,6 +20,11 @@ function part1(inputString: string) {
 }
 
 function part2(inputString: string) {
+  const input = parseInput(inputString)
+  return
+}
+
+function part3(inputString: string) {
   const input = parseInput(inputString)
   return
 }
@@ -41,7 +46,14 @@ export default {
       expected: undefined,
     }],
   },
-} as AdventOfCodeContest
+  part3: {
+    run: part3,
+    tests: [{
+      input: EXAMPLE,
+      expected: undefined,
+    }],
+  },
+} as EverybodyCodesContest
 `
   )
 }

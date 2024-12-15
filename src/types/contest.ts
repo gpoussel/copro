@@ -3,7 +3,7 @@ export interface Contest {
   run: (args: string[]) => Promise<void>
 }
 
-export interface AdventOfCodePart {
+export interface MultiLevelQuestPart {
   run: (args: string) => string | number | undefined
   tests: {
     input: string
@@ -12,6 +12,12 @@ export interface AdventOfCodePart {
 }
 
 export interface AdventOfCodeContest {
-  part1: AdventOfCodePart
-  part2: AdventOfCodePart
+  part1: MultiLevelQuestPart
+  part2: MultiLevelQuestPart
+}
+
+export interface EverybodyCodesContest {
+  part1: MultiLevelQuestPart
+  part2: MultiLevelQuestPart
+  part3: MultiLevelQuestPart
 }
