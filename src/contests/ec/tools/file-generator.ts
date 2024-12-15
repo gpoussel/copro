@@ -29,27 +29,25 @@ function part3(inputString: string) {
   return
 }
 
-const EXAMPLE = \`\`
-
 export default {
   part1: {
     run: part1,
     tests: [{
-      input: EXAMPLE,
+      input: "",
       expected: undefined,
     }],
   },
   part2: {
     run: part2,
     tests: [{
-      input: EXAMPLE,
+      input: "",
       expected: undefined,
     }],
   },
   part3: {
     run: part3,
     tests: [{
-      input: EXAMPLE,
+      input: "",
       expected: undefined,
     }],
   },

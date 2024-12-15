@@ -2,7 +2,7 @@ import { resolve } from "node:path"
 import chalk from "chalk"
 import { Contest, MultiLevelQuestPart } from "../../types/contest.js"
 import { writeTemplateIfNecessary } from "./tools/file-generator.js"
-import { executeOnFile, executeTests, getIndexFile } from "../utils.js"
+import { executeOnFile, executeTests, formatDay, getIndexFile } from "../utils.js"
 
 function parseArguments(args: string[]) {
   if (args.length === 2) {
@@ -21,8 +21,6 @@ async function run(args: string[]) {
 
   const { dayFolder } = await writeTemplateIfNecessary(year, quest)
 
-  const inputFile = resolve(dayFolder, "input")
-
   console.log()
   console.log()
   for (const currentPart of [1, 2, 3]) {
@@ -37,6 +35,7 @@ async function run(args: string[]) {
       } else {
         const { gotAFailure } = executeTests(partSolution.tests, partSolution.run)
         if (!gotAFailure) {
+          const inputFile = resolve(dayFolder, `everybody_codes_e${year}_q${formatDay(quest)}_p${currentPart}.txt`)
           await executeOnFile(inputFile, partSolution.run)
         }
       }
