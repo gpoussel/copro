@@ -1,4 +1,5 @@
 import * as algebra from "./algebra.js"
+import * as algo from "./algo.js"
 import * as graph from "./graph.js"
 import * as grid from "./grid.js"
 import * as input from "./input.js"
@@ -9,6 +10,7 @@ import * as vector from "./vector.js"
 
 export default {
   algebra,
+  algo,
   graph,
   grid,
   input,
