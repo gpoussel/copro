@@ -17,6 +17,14 @@ export function fromDirectionChar(char: string) {
   return Object.entries(DIRECTION_CHARS).find(([, value]) => value === char)?.[0] as Direction
 }
 
+export function nextDirClockwise(dir: Direction) {
+  return DIRECTIONS[(DIRECTIONS.indexOf(dir) + 1) % DIRECTIONS.length]
+}
+
+export function nextDirCounterClockwise(dir: Direction) {
+  return DIRECTIONS[(DIRECTIONS.indexOf(dir) + 3) % DIRECTIONS.length]
+}
+
 export type Heading = Direction | "up-right" | "down-right" | "down-left" | "up-left"
 export const HEADING_DIRECTIONS: Heading[] = [...DIRECTIONS, "up-right", "down-right", "down-left", "up-left"] as const
 

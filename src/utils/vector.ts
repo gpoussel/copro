@@ -6,6 +6,10 @@ export class Vector2 {
     private _y: number
   ) {}
 
+  static fromCoordinates({ x, y }: { x: number; y: number }): Vector2 {
+    return new Vector2(x, y)
+  }
+
   public get x() {
     return this._x
   }
@@ -75,6 +79,10 @@ export class Vector2 {
 
   public horizontalNeighbors(): Vector2[] {
     return [this.move("left"), this.move("right")]
+  }
+
+  public str() {
+    return `${this.x},${this.y}`
   }
 }
 
