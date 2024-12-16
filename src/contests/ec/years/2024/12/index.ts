@@ -95,8 +95,86 @@ function part2(inputString: string) {
 }
 
 function part3(inputString: string) {
-  const input = parseInput(inputString)
-  return
+  const meteorPositions = utils.input
+    .regexLines(inputString, /(\d+) (\d+)/)
+    .map(match => new Vector2(+match[1], +match[2]))
+  const maxX = meteorPositions.reduce((max, position) => Math.max(max, position.x), 0)
+  interface TimeAndCost {
+    time: number
+    cost: number
+  }
+  const dp = new Map<string, TimeAndCost[]>()
+  function setIfBetter(position: Vector2, cost: number, time: number) {
+    const k = position.str()
+    if (!dp.has(k)) {
+      dp.set(k, [{ time, cost }])
+    } else {
+      const values = dp.get(k)!
+      let i = 0
+      while (i < values.length && values[i].time < time) {
+        i++
+      }
+      if (i === values.length) {
+        values.push({ time, cost })
+      } else if (values[i].time === time) {
+        values[i].cost = Math.min(values[i].cost, cost)
+      } else if (values[i].cost >= cost) {
+        let j = i
+        while (j < values.length && values[j].cost >= cost) {
+          j++
+        }
+        values.splice(i, j, { time, cost })
+      }
+    }
+  }
+  for (let cannonIndex = 0; cannonIndex < 3; ++cannonIndex) {
+    // Cannon 'A' is at 0 0, 'B' is at 0 1, 'C' is at 0 2
+    const cannonPosition = new Vector2(0, cannonIndex)
+
+    for (let power = 1; power <= maxX / 2; ++power) {
+      let currentPosition = cannonPosition
+      for (let time = 1; time <= maxX / 2; ++time) {
+        if (time <= power) {
+          currentPosition = currentPosition.move("down-right")
+        } else if (time <= 2 * power) {
+          currentPosition = currentPosition.move("right")
+        } else {
+          currentPosition = currentPosition.move("up-right")
+        }
+        if (currentPosition.y < 0) {
+          break
+        }
+        const score = (cannonIndex + 1) * power
+        setIfBetter(currentPosition, score, time)
+      }
+      utils.log.logEvery(power, 1000)
+    }
+  }
+
+  let sumOfCost = 0
+  for (const meteorPosition of meteorPositions) {
+    let time = 0
+    let destroyed = false
+    while (!destroyed) {
+      const currentPosition = meteorPosition.move("up-left", time)
+
+      if (dp.has(currentPosition.str())) {
+        const values = dp.get(currentPosition.str())!
+        let i = -1
+        while (i + 1 < values.length && values[i + 1].time <= time) {
+          i++
+        }
+        if (i >= 0) {
+          const firstCostAtTime = values[i]
+          sumOfCost += firstCostAtTime.cost
+          destroyed = true
+        }
+      }
+      time++
+    }
+  }
+
+  return sumOfCost
 }
 
 export default {
@@ -132,8 +210,16 @@ export default {
     run: part3,
     tests: [
       {
-        input: ``,
-        expected: undefined,
+        input: `
+5 5`,
+        expected: 2,
+      },
+      {
+        input: `
+6 5
+6 7
+10 5`,
+        expected: 11,
       },
     ],
   },
