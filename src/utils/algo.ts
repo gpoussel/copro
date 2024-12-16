@@ -1,13 +1,7 @@
 import { Vector2 } from "./vector.js"
 import { PriorityQueue } from "./structures/priority-queue.js"
 import { at, Direction, nextDirClockwise, nextDirCounterClockwise } from "./grid.js"
-
-export interface DijkstraNode {
-  position: Vector2
-  dir: Direction
-  score: number
-  path: Vector2[]
-}
+import { logEvery } from "./log.js"
 
 export interface DijkstraPath {
   positions: Vector2[]
@@ -30,7 +24,12 @@ export function dijkstraWithDirectionsOnGrid<K>(
     moveCost: number
   }
 ) {
-  let iterations = 0
+  interface DijkstraNode {
+    position: Vector2
+    dir: Direction
+    score: number
+    path: Vector2[]
+  }
   let bestScore = Infinity
   const priorizer = (node: DijkstraNode) => node.score
   const priorityQueue = new PriorityQueue<DijkstraNode>(priorizer, PriorityQueue.MIN_HEAP_COMPARATOR)
@@ -67,9 +66,51 @@ export function dijkstraWithDirectionsOnGrid<K>(
 
     priorityQueue.add({ position, dir: nextDirClockwise(dir), score: score + options.turnCost, path: [...path] })
     priorityQueue.add({ position, dir: nextDirCounterClockwise(dir), score: score + options.turnCost, path: [...path] })
-    iterations++
   }
 
   const bestPaths = paths.filter(path => path.score === bestScore)
   return { bestScore, paths, bestPaths }
+}
+
+export function dijkstraOnGraph<K>(
+  starts: K[],
+  ends: K[],
+  options: {
+    key: (node: K) => string
+    equals: (a: K, b: K) => boolean
+    moves: (node: K, path: K[]) => { to: K; cost: number }[]
+  }
+) {
+  interface DijkstraNode {
+    score: number
+    node: K
+    path: K[]
+  }
+  let bestScore = Infinity
+  const priorizer = (node: DijkstraNode) => node.score
+  const priorityQueue = new PriorityQueue<DijkstraNode>(priorizer, PriorityQueue.MIN_HEAP_COMPARATOR)
+  starts.forEach(start => priorityQueue.add({ score: 0, node: start, path: [start] }))
+  const visited = new Map<string, number>()
+
+  while (!priorityQueue.isEmpty()) {
+    const { node, score, path } = priorityQueue.poll()
+    const key = options.key(node)
+
+    if (visited.has(key) && visited.get(key)! < score) continue
+    visited.set(key, score)
+
+    if (ends.some(end => options.equals(node, end))) {
+      if (score < bestScore) {
+        bestScore = score
+      }
+      continue
+    }
+
+    for (const { to, cost } of options.moves(node, path)) {
+      priorityQueue.add({ node: to, score: score + cost, path: [...path, to] })
+    }
+    logEvery(priorityQueue.size(), 5000)
+  }
+
+  return { bestScore }
 }
