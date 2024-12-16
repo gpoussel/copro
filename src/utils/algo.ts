@@ -114,3 +114,39 @@ export function dijkstraOnGraph<K>(
 
   return { bestScore }
 }
+
+export function breadthFirstSearch<K>(
+  start: K,
+  ends: K[],
+  options: {
+    key: (node: K) => string
+    adjacents: (node: K) => K[]
+    equals: (a: K, b: K) => boolean
+  }
+) {
+  interface BreadthFirstSearchNode {
+    node: K
+    distance: number
+  }
+  const nodes = new Array<BreadthFirstSearchNode>()
+  nodes.push({ node: start, distance: 0 })
+
+  const visited = new Set<string>()
+  visited.add(options.key(start))
+
+  const distances = new Map<string, number>()
+  while (nodes.length > 0) {
+    const { node, distance } = nodes.shift()!
+    const key = options.key(node)
+    if (ends.some(end => options.equals(node, end))) {
+      distances.set(key, distance)
+    }
+    for (const n of options.adjacents(node)) {
+      const neighborKey = options.key(n)
+      if (visited.has(neighborKey)) continue
+      visited.add(neighborKey)
+      nodes.push({ node: n, distance: distance + 1 })
+    }
+  }
+  return distances
+}

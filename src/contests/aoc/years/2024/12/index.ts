@@ -1,7 +1,7 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import { Direction } from "../../../../../utils/grid.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, VECTOR2_COMPARATOR_XY, VECTOR2_COMPARATOR_YX, Vector2Set } from "../../../../../utils/vector.js"
+import { Vector2, VECTOR2_COMPARATOR_XY, VECTOR2_COMPARATOR_YX, VectorSet } from "../../../../../utils/vector.js"
 
 // 🎄 Advent of Code 2024 - Day 12
 
@@ -10,8 +10,8 @@ function parseInput(input: string) {
 }
 
 function visit(input: string[][], x: number, y: number) {
-  const queue = new Vector2Set([new Vector2(x, y)])
-  const visited = new Vector2Set()
+  const queue = new VectorSet<Vector2>([new Vector2(x, y)])
+  const visited = new VectorSet<Vector2>()
   const element = input[y][x]
   while (queue.length > 0) {
     const current = queue.shift()!

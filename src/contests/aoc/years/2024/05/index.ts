@@ -1,27 +1,27 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, Vector2Set } from "../../../../../utils/vector.js"
+import { Vector2, VectorSet } from "../../../../../utils/vector.js"
 
 // 🎄 Advent of Code 2024 - Day 5
 
 function parseInput(input: string) {
   const blocks = utils.input.blocks(input)
   return {
-    rules: new Vector2Set(
+    rules: new VectorSet<Vector2>(
       utils.input.regexLines(blocks[0], /(\d+)\|(\d+)/).map(([, a, b]) => new Vector2(parseInt(a, 10), parseInt(b, 10)))
     ),
     updates: utils.input.lines(blocks[1]).map(line => line.split(",").map(n => parseInt(n, 10))),
   }
 }
 
-function sortUpdate(update: number[], rules: Vector2Set) {
+function sortUpdate(update: number[], rules: VectorSet<Vector2>) {
   return update.slice().sort((a, b) => {
     const vector = new Vector2(a, b)
     return rules.contains(vector) ? -1 : 1
   })
 }
 
-function isSorted(update: number[], rules: Vector2Set) {
+function isSorted(update: number[], rules: VectorSet<Vector2>) {
   const sortedPages = sortUpdate(update, rules)
   return utils.iterate.arrayEquals(sortedPages, update)
 }

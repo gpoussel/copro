@@ -1,7 +1,6 @@
 import { EverybodyCodesContest } from "../../../../../types/contest.js"
-import { Direction } from "../../../../../utils/grid.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, Vector2Set } from "../../../../../utils/vector.js"
+import { Vector2, VectorSet } from "../../../../../utils/vector.js"
 
 // 🎲 Everybody Codes 2024 - Quest 10
 
@@ -16,7 +15,7 @@ function solve(grid: string[][], start: Vector2) {
   const rowStart = start.y
   const columnStart = start.x
 
-  const block = new Vector2Set()
+  const block = new VectorSet<Vector2>()
   for (const row of utils.iterate.range(2, 6)) {
     for (const col of utils.iterate.range(2, 6)) {
       block.add(new Vector2(col + columnStart, row + rowStart))
@@ -111,7 +110,7 @@ function part2(inputString: string) {
 
 function part3(inputString: string) {
   const input = parseInput(inputString)
-  const starts = new Vector2Set()
+  const starts = new VectorSet<Vector2>()
   for (const row of utils.iterate.range(0, input.length - 2, 6)) {
     for (const col of utils.iterate.range(0, input[0].length - 2, 6)) {
       starts.add(new Vector2(col, row))

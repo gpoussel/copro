@@ -1,6 +1,10 @@
-import { Heading, HEADING_DIRECTIONS } from "./grid.js"
+import { Direction3D, Heading, HEADING_DIRECTIONS } from "./grid.js"
 
-export class Vector2 {
+export interface Equals<T> {
+  equals(other: T): boolean
+}
+
+export class Vector2 implements Equals<Vector2> {
   constructor(
     private _x: number,
     private _y: number
@@ -86,6 +90,55 @@ export class Vector2 {
   }
 }
 
+export class Vector3 implements Equals<Vector3> {
+  constructor(
+    private _x: number,
+    private _y: number,
+    private _z: number
+  ) {}
+
+  public get x() {
+    return this._x
+  }
+
+  public get y() {
+    return this._y
+  }
+
+  public get z() {
+    return this._z
+  }
+
+  public add(other: Vector3): Vector3 {
+    return new Vector3(this.x + other.x, this.y + other.y, this.z + other.z)
+  }
+
+  public move(direction: Direction3D, n = 1): Vector3 {
+    switch (direction) {
+      case "up":
+        return this.add(new Vector3(0, -n, 0))
+      case "down":
+        return this.add(new Vector3(0, n, 0))
+      case "left":
+        return this.add(new Vector3(-n, 0, 0))
+      case "right":
+        return this.add(new Vector3(n, 0, 0))
+      case "forward":
+        return this.add(new Vector3(0, 0, n))
+      case "backward":
+        return this.add(new Vector3(0, 0, -n))
+    }
+  }
+
+  public equals(other: Vector3): boolean {
+    return this.x === other.x && this.y === other.y && this.z === other.z
+  }
+
+  public str() {
+    return `${this.x},${this.y},${this.z}`
+  }
+}
+
 export const VECTOR2_COMPARATOR_YX = (a: Vector2, b: Vector2) => {
   if (a.y === b.y) {
     return a.x - b.x
@@ -100,9 +153,9 @@ export const VECTOR2_COMPARATOR_XY = (a: Vector2, b: Vector2) => {
   return a.x - b.x
 }
 
-export class Vector2Set {
-  private _vectors: Vector2[] = []
-  constructor(vectors?: Vector2[]) {
+export class VectorSet<V extends Equals<V>> {
+  private _vectors: V[] = []
+  constructor(vectors?: V[]) {
     if (vectors) {
       vectors.forEach(vector => this.add(vector))
     }
@@ -116,33 +169,33 @@ export class Vector2Set {
     return this.vectors.length
   }
 
-  public shift(): Vector2 | undefined {
+  public shift(): V | undefined {
     return this.vectors.shift()
   }
 
-  public add(vector: Vector2) {
+  public add(vector: V) {
     if (!this.contains(vector)) {
       this.vectors.push(vector)
     }
   }
 
-  public reduce<T>(callback: (acc: T, vector: Vector2) => T, initialValue: T): T {
+  public reduce<T>(callback: (acc: T, vector: V) => T, initialValue: T): T {
     return this.vectors.reduce(callback, initialValue)
   }
 
-  public map<T>(callback: (vector: Vector2) => T): T[] {
+  public map<T>(callback: (vector: V) => T): T[] {
     return this.vectors.map(callback)
   }
 
-  public contains(vector: Vector2): boolean {
+  public contains(vector: V): boolean {
     return this.vectors.some(v => v.equals(vector))
   }
 
-  public doesNotContain(vector: Vector2): boolean {
+  public doesNotContain(vector: V): boolean {
     return !this.contains(vector)
   }
 
-  public forEach(callback: (vector: Vector2) => void) {
+  public forEach(callback: (vector: V) => void) {
     this.vectors.forEach(callback)
   }
 }

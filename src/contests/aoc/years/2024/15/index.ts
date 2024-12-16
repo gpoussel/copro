@@ -1,7 +1,7 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import { Direction } from "../../../../../utils/grid.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, Vector2Set } from "../../../../../utils/vector.js"
+import { Vector2, VectorSet } from "../../../../../utils/vector.js"
 
 // 🎄 Advent of Code 2024 - Day 15
 
@@ -137,14 +137,14 @@ function moveRobotInLargeGrid(state: { grid: string[][]; robotPosition: Vector2 
         return
       }
     } else if (direction === "up" || direction === "down") {
-      let boxPositions = new Vector2Set()
+      let boxPositions = new VectorSet<Vector2>()
       const charAtNextPosition = utils.grid.at(state.grid, nextPosition)
       if (charAtNextPosition === LARGE_BOX_LEFT) {
         boxPositions.add(nextPosition)
       } else if (charAtNextPosition === LARGE_BOX_RIGHT) {
         boxPositions.add(nextPosition.move("left"))
       }
-      const boxesToMove = new Vector2Set()
+      const boxesToMove = new VectorSet<Vector2>()
       let canMove = true
       while (canMove && boxPositions.length > 0) {
         const moveChecks = boxPositions.map(position => canMoveLargeBox(state.grid, position, direction))
@@ -152,7 +152,7 @@ function moveRobotInLargeGrid(state: { grid: string[][]; robotPosition: Vector2 
           canMove = false
         } else {
           boxPositions.forEach(pos => boxesToMove.add(pos))
-          boxPositions = new Vector2Set(moveChecks.flatMap(check => check.nextPositions))
+          boxPositions = new VectorSet<Vector2>(moveChecks.flatMap(check => check.nextPositions))
         }
       }
       if (canMove) {

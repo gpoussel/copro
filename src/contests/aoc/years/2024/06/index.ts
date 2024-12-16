@@ -1,7 +1,7 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import { VISITED } from "../../../../../utils/grid.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, Vector2Set } from "../../../../../utils/vector.js"
+import { Vector2, VectorSet } from "../../../../../utils/vector.js"
 
 // 🎄 Advent of Code 2024 - Day 6
 
@@ -25,7 +25,7 @@ function visit(
   grid: string[][],
   originalGuardPosition: Vector2,
   checkForCycles = false
-): { loop: boolean; steps: number; obstaclesThatCreateCycles: Vector2Set } {
+): { loop: boolean; steps: number; obstaclesThatCreateCycles: VectorSet<Vector2> } {
   const visits = Array.from({ length: grid.length }, () =>
     Array.from({ length: grid[0].length }, () => ({
       left: false,
@@ -39,7 +39,7 @@ function visit(
   let guardDirection = utils.grid.fromDirectionChar(utils.grid.at(grid, guardPosition))
   let canMove = true
   let steps = 0
-  const obstaclesThatCreateCycles = new Vector2Set()
+  const obstaclesThatCreateCycles = new VectorSet<Vector2>()
   let loop = false
 
   while (canMove) {

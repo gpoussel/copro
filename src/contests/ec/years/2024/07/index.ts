@@ -1,7 +1,7 @@
 import { EverybodyCodesContest } from "../../../../../types/contest.js"
 import { Direction } from "../../../../../utils/grid.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, Vector2Set } from "../../../../../utils/vector.js"
+import { Vector2, VectorSet } from "../../../../../utils/vector.js"
 
 // 🎲 Everybody Codes 2024 - Quest 7
 
@@ -18,7 +18,7 @@ function parseInput(input: string) {
 function computeTrack(trackGrid: string) {
   const grid = utils.input.readGrid(trackGrid)
   let currentPosition = new Vector2(0, 0)
-  const visited = new Vector2Set()
+  const visited = new VectorSet<Vector2>()
   const pathBuffer = []
   let foundMove = true
   while (pathBuffer.length < 0 || (pathBuffer[pathBuffer.length - 1] !== "S" && foundMove)) {

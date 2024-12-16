@@ -1,6 +1,6 @@
 import { EverybodyCodesContest } from "../../../../../types/contest.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, Vector2Set } from "../../../../../utils/vector.js"
+import { Vector2, VectorSet } from "../../../../../utils/vector.js"
 
 // 🎲 Everybody Codes 2024 - Quest 12
 
@@ -16,10 +16,10 @@ function parseInput(input: string) {
 function findReachablePositions(input: ReturnType<typeof parseInput>) {
   const bestScore = new Map<string, [Vector2, number]>()
   for (let i = 0; i < 3; ++i) {
-    const reachableTargets = new Map<number, Vector2Set>()
+    const reachableTargets = new Map<number, VectorSet<Vector2>>()
     const cannonPosition = new Vector2(input.cannonColumn, input.height - 2 - i)
     for (let power = 1; power <= input.width; ++power) {
-      const reachableAtPower = new Vector2Set()
+      const reachableAtPower = new VectorSet<Vector2>()
       let currentPosition = cannonPosition
       let levelOutOfBounds = false
       for (let j = 0; !levelOutOfBounds && j < power; ++j) {

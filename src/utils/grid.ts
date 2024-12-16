@@ -28,6 +28,9 @@ export function nextDirCounterClockwise(dir: Direction) {
 export type Heading = Direction | "up-right" | "down-right" | "down-left" | "up-left"
 export const HEADING_DIRECTIONS: Heading[] = [...DIRECTIONS, "up-right", "down-right", "down-left", "up-left"] as const
 
+export type Direction3D = "up" | "right" | "down" | "left" | "forward" | "backward"
+export const DIRECTIONS_3D: Direction3D[] = ["up", "right", "down", "left", "forward", "backward"] as const
+
 export function iterate<K, V>(
   grid: K[][],
   callback: (item: K, x: number, y: number) => V,

@@ -1,7 +1,7 @@
 import { EverybodyCodesContest } from "../../../../../types/contest.js"
 import { DIRECTIONS } from "../../../../../utils/grid.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, Vector2Set } from "../../../../../utils/vector.js"
+import { Vector2, VectorSet } from "../../../../../utils/vector.js"
 
 // 🎲 Everybody Codes 2024 - Quest 2
 
@@ -50,12 +50,12 @@ function part3(inputString: string) {
   const input = parseInput(inputString)
   const grid = utils.input.readGrid(input.sentences.join("\n"))
   const words = input.words
-  const usedPositions = new Vector2Set()
+  const usedPositions = new VectorSet<Vector2>()
   utils.grid.iterate(grid, (cell, x, y) => {
     for (const word of words) {
       for (const direction of DIRECTIONS) {
         let foundWord = true
-        const visitedPositions = new Vector2Set()
+        const visitedPositions = new VectorSet<Vector2>()
         for (let i = 0; i < word.length; ++i) {
           const letterPosInGrid = utils.grid.moduloHorizontal(grid, new Vector2(x, y).move(direction, i))
           visitedPositions.add(new Vector2(letterPosInGrid.x, letterPosInGrid.y))

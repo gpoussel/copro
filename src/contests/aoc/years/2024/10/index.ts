@@ -1,7 +1,6 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
-import { iterate } from "../../../../../utils/grid.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, Vector2Set } from "../../../../../utils/vector.js"
+import { Vector2, VectorSet } from "../../../../../utils/vector.js"
 
 // 🎄 Advent of Code 2024 - Day 10
 
@@ -30,7 +29,7 @@ function iterateHiking(grid: string[][]) {
         )
         currentDigit++
       }
-      const uniqueLocations = new Vector2Set(paths.map(path => path.nodes[path.nodes.length - 1]))
+      const uniqueLocations = new VectorSet<Vector2>(paths.map(path => path.nodes[path.nodes.length - 1]))
       const uniquePaths = new Set(paths.map(path => path.nodes.map(pos => `${pos.x},${pos.y}`).join("-")))
       return {
         trailhead: uniqueLocations.length,

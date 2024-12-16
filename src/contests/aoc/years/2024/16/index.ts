@@ -1,6 +1,6 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, Vector2Set } from "../../../../../utils/vector.js"
+import { Vector2, VectorSet } from "../../../../../utils/vector.js"
 
 // 🎄 Advent of Code 2024 - Day 16
 
@@ -37,7 +37,7 @@ function part2(inputString: string) {
     moveCost: MOVE_COST,
     turnCost: TURN_COST,
   })
-  const uniqueVisitedPositions = new Vector2Set()
+  const uniqueVisitedPositions = new VectorSet<Vector2>()
   bestPaths.forEach(({ positions }) => positions.forEach(position => uniqueVisitedPositions.add(position)))
   return uniqueVisitedPositions.length
 }
