@@ -83,3 +83,7 @@ export function range(start: number, end: number, inc = 1) {
   const iterationCount = Math.floor((end - start) / inc)
   return Array.from({ length: iterationCount }, (_, i) => start + i * inc)
 }
+
+export function union<T>(a: T[], b: T[]): T[] {
+  return Array.from(new Set([...a, ...b]))
+}
