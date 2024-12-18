@@ -115,3 +115,9 @@ export function uniqueElements<K>(grid: K[][]) {
 export function columns<K>(grid: K[][]) {
   return Array.from({ length: grid[0].length }, () => 0).map((_, i) => grid.map(row => row[i]))
 }
+
+export function swap<K>(grid: K[][], pos1: { x: number; y: number }, pos2: { x: number; y: number }) {
+  const temp = at(grid, pos1)
+  set(grid, pos1, at(grid, pos2))
+  set(grid, pos2, temp)
+}
