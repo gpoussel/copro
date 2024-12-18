@@ -48,6 +48,10 @@ export class Vector2 implements Equals<Vector2> {
     return this.x === other.x && this.y === other.y
   }
 
+  public manhattanDistance(other: Vector2): number {
+    return Math.abs(this.x - other.x) + Math.abs(this.y - other.y)
+  }
+
   public move(direction: Heading, n = 1): Vector2 {
     switch (direction) {
       case "up":

@@ -1,3 +1,5 @@
+import { PriorityQueue } from "./structures/priority-queue.js"
+
 export class DirectedGraph<K> {
   private nodes = new Map<K, Set<K>>()
 
@@ -82,4 +84,95 @@ export class DirectedGraph<K> {
     lines.push("}")
     return lines.join("\n")
   }
+}
+
+export function minimumSpanningTree<T>(
+  edges: { from: T; to: T; weight: number }[],
+  opts: {
+    equals(a: T, b: T): boolean
+    str(a: T): string
+  }
+) {
+  const priorityQueue = new PriorityQueue<(typeof edges)[0]>(a => a.weight, PriorityQueue.MIN_HEAP_COMPARATOR)
+  for (const edge of edges) {
+    priorityQueue.add(edge)
+  }
+  const parents = new Map<string, string>()
+  const ranks = new Map<string, number>()
+  for (const { from, to } of edges) {
+    parents.set(opts.str(from), opts.str(from))
+    parents.set(opts.str(to), opts.str(to))
+  }
+  function findParent(nodeStr: string): string {
+    if (parents.get(nodeStr) === nodeStr) {
+      return nodeStr
+    }
+    const grandParent = findParent(parents.get(nodeStr)!)
+    parents.set(nodeStr, grandParent)
+    return grandParent
+  }
+  function unionSet(from: T, to: T) {
+    const fromParent = findParent(opts.str(from))
+    const toParent = findParent(opts.str(to))
+    const fromRank = ranks.get(fromParent) || 0
+    const toRank = ranks.get(toParent) || 0
+    if (fromRank < toRank) {
+      parents.set(fromParent, toParent)
+    } else if (fromRank > toRank) {
+      parents.set(toParent, fromParent)
+    } else {
+      parents.set(toParent, fromParent)
+      ranks.set(fromParent, fromRank + 1)
+    }
+  }
+
+  const mstEdges = []
+  while (!priorityQueue.isEmpty()) {
+    const nextEdge = priorityQueue.poll()
+    const parentFrom = findParent(opts.str(nextEdge.from))
+    const parentTo = findParent(opts.str(nextEdge.to))
+
+    if (parentFrom !== parentTo) {
+      unionSet(nextEdge.from, nextEdge.to)
+      mstEdges.push(nextEdge)
+    }
+  }
+  const distance = mstEdges.reduce((acc, edge) => acc + edge.weight, 0)
+  return { distance }
+}
+
+export function prim<T>(
+  startNode: T,
+  opts: {
+    equals(a: T, b: T): boolean
+    str(a: T): string
+    adjacent(node: T): { node: T; distance: number }[]
+  }
+): {
+  total: number
+  visited: T[]
+} {
+  const priorityQueue = new PriorityQueue<{ distance: number; node: T }>(
+    a => a.distance,
+    PriorityQueue.MIN_HEAP_COMPARATOR
+  )
+  priorityQueue.add({ distance: 0, node: startNode })
+  const visitedMap = new Map<string, T>()
+  let total = 0
+  while (!priorityQueue.isEmpty()) {
+    const { distance, node } = priorityQueue.poll()
+    const nodeKey = opts.str(node)
+    if (visitedMap.has(nodeKey)) {
+      continue
+    }
+    total += distance
+    visitedMap.set(opts.str(node), node)
+    for (const { node: n, distance: d } of opts.adjacent(node)) {
+      if (visitedMap.has(opts.str(n))) {
+        continue
+      }
+      priorityQueue.add({ distance: d, node: n })
+    }
+  }
+  return { total, visited: [...visitedMap.values()] }
 }
