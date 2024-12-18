@@ -1,3 +1,5 @@
+import { positiveModulo } from "./math.js"
+
 export function build<K>(grid: K[][], printer?: (item: K) => string) {
   const print = printer || ((item: K) => `${item}`)
   return grid.map(row => row.map(print).join("")).join("\n")
@@ -69,8 +71,6 @@ export function findPositions<K>(grid: K[][], predicate: (item: K) => boolean) {
 export function at<K>(grid: K[][], position: { x: number; y: number }) {
   return grid[position.y]?.[position.x]
 }
-
-const positiveModulo = (n: number, m: number) => ((n % m) + m) % m
 
 export function modulo<K>(grid: K[][], position: { x: number; y: number }) {
   const y = positiveModulo(position.y, grid.length)
