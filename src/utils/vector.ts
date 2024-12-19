@@ -1,4 +1,4 @@
-import { Direction3D, Heading, HEADING_DIRECTIONS } from "./grid.js"
+import { Direction, Direction3D, Heading, HEADING_DIRECTIONS } from "./grid.js"
 
 export interface Equals<T> {
   equals(other: T): boolean
@@ -71,6 +71,18 @@ export class Vector2 implements Equals<Vector2> {
       case "up-left":
         return this.add(new Vector2(-n, -n))
     }
+  }
+
+  public directionTo(other: Vector2): Direction {
+    if (this.equals(other)) {
+      throw new Error()
+    }
+    if (this.x === other.x) {
+      return this.y < other.y ? "down" : "up"
+    } else if (this.y === other.y) {
+      return this.x < other.x ? "right" : "left"
+    }
+    throw new Error()
   }
 
   public neighbors(): Vector2[] {
