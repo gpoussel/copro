@@ -95,3 +95,16 @@ export function max(numbers: number[]) {
   }
   return numbers.reduce((acc, n) => (n > acc ? n : acc), numbers[0])
 }
+
+export function combinations(count: number, sum: number): number[][] {
+  if (count === 1) {
+    return [[sum]]
+  }
+  const results: number[][] = []
+  for (let i = 0; i <= sum; i++) {
+    for (const rest of combinations(count - 1, sum - i)) {
+      results.push([i, ...rest])
+    }
+  }
+  return results
+}
