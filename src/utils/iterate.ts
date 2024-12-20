@@ -36,15 +36,16 @@ export function swap<K>(array: K[], index1: number, index2: number) {
   array[index2] = temp
 }
 
-export function permutations<T>(array: T[]): T[][] {
+export function permutations<T>(array: T[], cmpFn?: (a: T, B: T) => number): T[][] {
   const result: T[][] = []
-  const sortedCombination = array.slice().sort()
+  const compare = cmpFn || ((a: T, b: T) => (a > b ? 1 : a < b ? -1 : 0))
+  const sortedCombination = array.slice().sort((a, b) => compare(a, b))
   result.push(sortedCombination.slice())
 
   while (true) {
     let k = -1
     for (let i = 0; i < array.length - 1; i++) {
-      if (array[i] < array[i + 1]) {
+      if (compare(array[i], array[i + 1]) < 0) {
         k = i
       }
     }
@@ -53,7 +54,7 @@ export function permutations<T>(array: T[]): T[][] {
     }
     let l = -1
     for (let i = k + 1; i < array.length; i++) {
-      if (array[k] < array[i]) {
+      if (compare(array[k], array[i]) < 0) {
         l = i
       }
     }
