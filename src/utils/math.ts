@@ -66,3 +66,8 @@ function isDivisible(divisor: number, numbers: number[]): boolean {
 export function positiveModulo(n: number, m: number) {
   return ((n % m) + m) % m
 }
+
+export function countSetBits(n: number): number {
+  if (n == 0) return 0
+  return (n & 1) + countSetBits(n >> 1)
+}
