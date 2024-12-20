@@ -88,3 +88,10 @@ export function range(start: number, end: number, inc = 1) {
 export function union<T>(a: T[], b: T[]): T[] {
   return Array.from(new Set([...a, ...b]))
 }
+
+export function max(numbers: number[]) {
+  if (numbers.length === 0) {
+    return Infinity
+  }
+  return numbers.reduce((acc, n) => (n > acc ? n : acc), numbers[0])
+}
