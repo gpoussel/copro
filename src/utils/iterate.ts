@@ -115,3 +115,16 @@ export function combinations(count: number, sum: number): number[][] {
   }
   return results
 }
+
+export function invertMap<K, V>(map: Map<K, V[]>): Map<V, K[]> {
+  const result = new Map<V, K[]>()
+  for (const [k, v] of map.entries()) {
+    for (const value of v) {
+      if (!result.has(value)) {
+        result.set(value, [])
+      }
+      result.get(value)!.push(k)
+    }
+  }
+  return result
+}
