@@ -33,9 +33,11 @@ function findEfficientCheats(grid: string[][], minGain: number, maxCheatLength: 
   const startPosition = Vector2.fromCoordinates(utils.grid.find(grid, c => c === "S")!)
   const endPosition = Vector2.fromCoordinates(utils.grid.find(grid, c => c === "E")!)
 
-  const { bestScore, bestPaths } = dijkstraOnGrid(grid, {
+  const { bestPaths } = dijkstraOnGrid(grid, {
     starts: [startPosition],
-    ends: [endPosition],
+    ends(node) {
+      return node.equals(endPosition)
+    },
     isMoveValid: (from, to) => [".", "E"].includes(to),
     moveCost: 1,
   })

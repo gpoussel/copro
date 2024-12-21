@@ -1,5 +1,5 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
-import { breadthFirstSearch, dijkstraOnGrid } from "../../../../../utils/algo.js"
+import { breadthFirstSearch } from "../../../../../utils/algo.js"
 import utils from "../../../../../utils/index.js"
 import { Vector2, VectorSet } from "../../../../../utils/vector.js"
 

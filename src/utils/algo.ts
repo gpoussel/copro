@@ -16,7 +16,7 @@ export function dijkstraOnGrid<K>(
   grid: K[][],
   options: {
     starts: Vector2[]
-    ends: Vector2[]
+    ends: (position: Vector2, path: Vector2[]) => boolean
     isMoveValid: (from: K, to: K) => boolean
     moveCost: number
   }
@@ -40,7 +40,7 @@ export function dijkstraOnGrid<K>(
     if (visited.has(key) && visited.get(key)! < score) continue
     visited.set(key, score)
 
-    if (options.ends.some(end => position.equals(end))) {
+    if (options.ends(position, path)) {
       if (score < bestScore) {
         bestScore = score
       }
@@ -64,7 +64,7 @@ export function dijkstraOnGrid<K>(
   }
 
   const bestPaths = paths.filter(path => path.score === bestScore)
-  return { bestScore, paths, bestPaths }
+  return { bestScore, paths, bestPaths, visitedNodes: visited.size }
 }
 
 export function dijkstraWithDirectionsOnGrid<K>(
