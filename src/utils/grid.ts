@@ -95,7 +95,7 @@ export function set<K>(grid: K[][], position: { x: number; y: number }, value: K
   }
 }
 
-export function countBy(grid: string[][], predicate: (item: string) => boolean) {
+export function countBy<K>(grid: K[][], predicate: (item: K) => boolean) {
   return grid.flat().filter(predicate).length
 }
 
