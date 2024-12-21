@@ -1,3 +1,5 @@
+import { clearBits, nextClearBit, nextSetBit, setBit, setBits } from "./bitset.js"
+
 export function mapBy<T, K>(arr: T[], key: (item: T) => K): Map<K, T[]> {
   const map = new Map<K, T[]>()
   for (const item of arr) {
@@ -66,8 +68,26 @@ export function permutations<T>(array: T[], cmpFn?: (a: T, B: T) => number): T[]
     array.push(...reversed)
     result.push(array.slice())
   }
-
   return result
+}
+
+export function* combinations<T>(values: Iterable<T>, size: number) {
+  const byIndex = new Map(Array.from(values, (v, k) => [k, v]))
+  for (
+    let bits = 2 ** size - 1, firstSetBit = 0, bitToFlip = -1;
+    bitToFlip !== byIndex.size;
+    firstSetBit = nextSetBit(bits, 0),
+      bitToFlip = nextClearBit(bits, firstSetBit),
+      bits = setBits(bits, 0, bitToFlip - firstSetBit - 1),
+      bits = clearBits(bits, bitToFlip - firstSetBit - 1, bitToFlip),
+      bits = setBit(bits, bitToFlip)
+  ) {
+    const combination: T[] = []
+    for (let index = nextSetBit(bits); index !== -1; index = nextSetBit(bits, index + 1)) {
+      combination.push(byIndex.get(index)!)
+    }
+    yield combination
+  }
 }
 
 export function intersectionBy<T, V>(a: T[], b: T[], mapper: (k: T) => V): T[] {
@@ -103,13 +123,13 @@ export function max(numbers: number[]) {
   return numbers.reduce((acc, n) => (n > acc ? n : acc), numbers[0])
 }
 
-export function combinations(count: number, sum: number): number[][] {
+export function combinationsFromRangeToSum(count: number, sum: number): number[][] {
   if (count === 1) {
     return [[sum]]
   }
   const results: number[][] = []
   for (let i = 0; i <= sum; i++) {
-    for (const rest of combinations(count - 1, sum - i)) {
+    for (const rest of combinationsFromRangeToSum(count - 1, sum - i)) {
       results.push([i, ...rest])
     }
   }

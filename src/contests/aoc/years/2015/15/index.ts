@@ -32,14 +32,14 @@ function computeScore(input: ReturnType<typeof parseInput>, combination: number[
 function part1(inputString: string) {
   const input = parseInput(inputString)
 
-  const combinations = utils.iterate.combinations(input.length, 100)
+  const combinations = utils.iterate.combinationsFromRangeToSum(input.length, 100)
   const scores = combinations.map(combination => computeScore(input, combination))
   return utils.iterate.max(scores)
 }
 
 function part2(inputString: string) {
   const input = parseInput(inputString)
-  const combinations = utils.iterate.combinations(input.length, 100)
+  const combinations = utils.iterate.combinationsFromRangeToSum(input.length, 100)
   const scores = combinations
     .filter(combination => {
       const calories = combination.reduce((acc, value, index) => acc + value * input[index].calories, 0)
