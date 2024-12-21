@@ -14,6 +14,11 @@ export class Vector2 implements Equals<Vector2> {
     return new Vector2(x, y)
   }
 
+  static fromKey(key: string): Vector2 {
+    const [x, y] = key.split(",").map(Number)
+    return new Vector2(x, y)
+  }
+
   public get x() {
     return this._x
   }

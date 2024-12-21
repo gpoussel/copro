@@ -27,6 +27,10 @@ export function nextDirCounterClockwise(dir: Direction) {
   return DIRECTIONS[(DIRECTIONS.indexOf(dir) + 3) % DIRECTIONS.length]
 }
 
+export function nextDir(dir: Direction, clockwise: boolean) {
+  return clockwise ? nextDirClockwise(dir) : nextDirCounterClockwise(dir)
+}
+
 export type Heading = Direction | "up-right" | "down-right" | "down-left" | "up-left"
 export const HEADING_DIRECTIONS: Heading[] = [...DIRECTIONS, "up-right", "down-right", "down-left", "up-left"] as const
 
