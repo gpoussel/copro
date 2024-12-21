@@ -16,7 +16,7 @@ export function count<T>(arr: T[], key: T): number {
   return arr.reduce((acc, item) => acc + (item === key ? 1 : 0), 0)
 }
 
-export function countBy<T, K>(arr: T[], key: (item: T) => K): Map<K, number> {
+export function countBy<T, K>(arr: Iterable<T>, key: (item: T) => K): Map<K, number> {
   const map = new Map<K, number>()
   for (const item of arr) {
     const k = key(item)
