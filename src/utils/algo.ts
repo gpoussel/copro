@@ -175,8 +175,8 @@ export function breadthFirstSearch<K>(
   options: {
     key: (node: K) => string
     adjacents: (node: K) => K[]
-    equals: (a: K, b: K) => boolean
     ends: (node: K) => boolean
+    visitEnd?: (node: K, path: K[]) => boolean
   }
 ) {
   interface BreadthFirstSearchNode {
@@ -190,10 +190,23 @@ export function breadthFirstSearch<K>(
   const visited = new Set<string>()
   visited.add(options.key(start))
 
+  let smallestDistance = Infinity
+  let bestPath = new Array<K>()
+  const endPaths = []
+
   while (nodes.length > 0) {
     const { node, distance, path } = nodes.shift()!
     if (options.ends(node)) {
-      return { distance, path }
+      if (distance < smallestDistance) {
+        smallestDistance = distance
+        bestPath = path
+      }
+      endPaths.push(path)
+      if (!options.visitEnd || options.visitEnd(node, path)) {
+        break
+      } else {
+        continue
+      }
     }
     for (const n of options.adjacents(node)) {
       const neighborKey = options.key(n)
@@ -203,5 +216,9 @@ export function breadthFirstSearch<K>(
     }
     logEvery(nodes.length, 5000)
   }
-  return undefined
+  return {
+    distance: smallestDistance,
+    path: bestPath,
+    paths: endPaths,
+  }
 }

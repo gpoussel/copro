@@ -54,13 +54,6 @@ function solve(input: ReturnType<typeof parseInput>, endPosition: Vector2, herbs
         }
         return adjacentNodes
       },
-      equals(a, b) {
-        return (
-          a.position.equals(b.position) &&
-          a.herbs.length === b.herbs.length &&
-          a.herbs.every((h, i) => h === b.herbs[i])
-        )
-      },
       key(node) {
         return `${node.position.str()} ${node.herbs.join("")}`
       },

@@ -71,15 +71,19 @@ function part3(inputString: string) {
   const trunkPositions = visited.vectors.filter(v => v.x === 0)
   const overallDistances = new Map<string, number>()
   for (const leaf of leaves.vectors) {
-    const distances = utils.algo.breadthFirstSearch(leaf, trunkPositions, {
+    const { paths } = utils.algo.breadthFirstSearch(leaf, {
       key: v => v.str(),
       adjacents(node) {
         return DIRECTIONS_3D.map(dir => node.move(dir)).filter(p => visited.contains(p))
       },
-      equals: (a, b) => a.equals(b),
+      ends(node) {
+        return trunkPositions.some(p => p.equals(node))
+      },
     })
-    for (const [key, distance] of distances) {
-      overallDistances.set(key, (overallDistances.get(key) ?? 0) + distance)
+    for (const path of paths) {
+      const end = path[path.length - 1]
+      const distance = path.length - 1
+      overallDistances.set(end.str(), (overallDistances.get(end.str()) ?? 0) + distance)
     }
   }
   return Math.min(...overallDistances.values())

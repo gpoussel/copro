@@ -31,9 +31,6 @@ function getMinDistance(walls: Vector2[], start: Vector2, end: Vector2, gridSize
     ends(node) {
       return node.equals(end)
     },
-    equals(a, b) {
-      return a.equals(b)
-    },
   })
   return bfsResult?.distance
 }
