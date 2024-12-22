@@ -200,6 +200,13 @@ export class VectorSet<V extends Equals<V>> {
     }
   }
 
+  public remove(vector: V) {
+    const index = this.vectors.findIndex(v => v.equals(vector))
+    if (index !== -1) {
+      this.vectors.splice(index, 1)
+    }
+  }
+
   public reduce<T>(callback: (acc: T, vector: V) => T, initialValue: T): T {
     return this.vectors.reduce(callback, initialValue)
   }

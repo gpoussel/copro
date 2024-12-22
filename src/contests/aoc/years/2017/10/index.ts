@@ -22,15 +22,8 @@ function tieKnots(lengths: number[], nth: number) {
   return numbers
 }
 
-function part1(inputString: string) {
-  const lengths = utils.input.firstLine(inputString).split(",").map(Number)
-  const numbers = tieKnots(lengths, 1)
-  return numbers[0] * numbers[1]
-}
-
-function part2(inputString: string) {
-  const input = utils.input
-    .firstLine(inputString)
+export function hashKnots(str: string) {
+  const input = str
     .split("")
     .map(char => char.charCodeAt(0))
     .concat([17, 31, 73, 47, 23])
@@ -38,6 +31,17 @@ function part2(inputString: string) {
   const blocks = utils.iterate.range(0, 16).map(i => numbers.slice(i * 16, i * 16 + 16))
   const denseHash = blocks.map(block => block.reduce((a, b) => a ^ b, 0))
   return denseHash.map(n => n.toString(16).padStart(2, "0")).join("")
+}
+
+function part1(inputString: string) {
+  const lengths = utils.input.firstLine(inputString).split(",").map(Number)
+  const numbers = tieKnots(lengths, 1)
+  return numbers[0] * numbers[1]
+}
+
+function part2(inputString: string) {
+  const input = utils.input.firstLine(inputString)
+  return hashKnots(input)
 }
 
 export default {
