@@ -19,6 +19,8 @@ export function dijkstraOnGrid<K>(
     ends: (position: Vector2, path: Vector2[]) => boolean
     isMoveValid: (from: K, to: K) => boolean
     moveCost: number
+    stopOnFirst?: boolean
+    stopIfScameScore?: boolean
   }
 ) {
   interface DijkstraNode {
@@ -37,7 +39,11 @@ export function dijkstraOnGrid<K>(
     const { position, score, path } = priorityQueue.poll()
     const key = position.str()
 
-    if (visited.has(key) && visited.get(key)! < score) continue
+    if (visited.has(key)) {
+      const previousScore = visited.get(key)!
+      if (previousScore < score) continue
+      if (options.stopIfScameScore && previousScore === score) continue
+    }
     visited.set(key, score)
 
     if (options.ends(position, path)) {
@@ -48,6 +54,9 @@ export function dijkstraOnGrid<K>(
         positions: path,
         score,
       })
+      if (options.stopOnFirst) {
+        break
+      }
       continue
     }
     for (const dir of ["up", "down", "left", "right"] as Direction[]) {
@@ -177,6 +186,7 @@ export function breadthFirstSearch<K>(
     adjacents: (node: K) => K[]
     ends: (node: K) => boolean
     visitEnd?: (node: K, path: K[]) => boolean
+    distance?: (from: K, to: K) => number
   }
 ) {
   interface BreadthFirstSearchNode {
@@ -212,7 +222,8 @@ export function breadthFirstSearch<K>(
       const neighborKey = options.key(n)
       if (visited.has(neighborKey)) continue
       visited.add(neighborKey)
-      nodes.push({ node: n, distance: distance + 1, path: [...path, n] })
+      const addedDistance = options.distance ? options.distance(node, n) : 1
+      nodes.push({ node: n, distance: distance + addedDistance, path: [...path, n] })
     }
     logEvery(nodes.length, 5000)
   }
