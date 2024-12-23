@@ -1,7 +1,7 @@
 @echo off
 setlocal enableDelayedExpansion
 
-set "year=2017"
+set "year=2018"
 REM Loop through days 1 to 25
 for /l %%d in (1,1,25) do (
     set "day=%%d"
