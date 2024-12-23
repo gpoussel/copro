@@ -125,3 +125,37 @@ export function swap<K>(grid: K[][], pos1: { x: number; y: number }, pos2: { x: 
   set(grid, pos1, at(grid, pos2))
   set(grid, pos2, temp)
 }
+
+export function create<T>(width: number, height: number, value: T): T[][] {
+  return Array.from({ length: height }, () => Array.from({ length: width }, () => value))
+}
+
+export function rotateRight<K>(grid: K[][]) {
+  return map(grid, (_, x, y) => grid[grid.length - 1 - x][y])
+}
+
+export function rotateLeft<K>(grid: K[][]) {
+  return map(grid, (_, x, y) => grid[x][grid.length - 1 - y])
+}
+
+export function flipHorizontal<K>(grid: K[][]) {
+  return map(grid, (_, x, y) => grid[y][grid[y].length - 1 - x])
+}
+
+export function flipVertical<K>(grid: K[][]) {
+  return map(grid, (_, x, y) => grid[grid.length - 1 - y][x])
+}
+
+export function equals<K>(grid1: K[][], grid2: K[][]) {
+  const e1 = grid1.flatMap(row => row)
+  const e2 = grid2.flatMap(row => row)
+  if (e1.length !== e2.length) {
+    return false
+  }
+  for (let i = 0; i < e1.length; i++) {
+    if (e1[i] !== e2[i]) {
+      return false
+    }
+  }
+  return true
+}
