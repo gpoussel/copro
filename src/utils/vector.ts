@@ -151,6 +151,10 @@ export class Vector3 implements Equals<Vector3> {
     }
   }
 
+  public manhattanDistance(other: Vector3): number {
+    return Math.abs(this.x - other.x) + Math.abs(this.y - other.y) + Math.abs(this.z - other.z)
+  }
+
   public equals(other: Vector3): boolean {
     return this.x === other.x && this.y === other.y && this.z === other.z
   }
