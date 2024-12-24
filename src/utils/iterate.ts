@@ -123,6 +123,10 @@ export function max(numbers: number[]) {
   return numbers.reduce((acc, n) => (n > acc ? n : acc), numbers[0])
 }
 
+export function maxBy<T>(values: T[], key: (item: T) => number): T | undefined {
+  return values.reduce((acc, value) => (key(value) > key(acc) ? value : acc), values[0])
+}
+
 export function combinationsFromRangeToSum(count: number, sum: number): number[][] {
   if (count === 1) {
     return [[sum]]
