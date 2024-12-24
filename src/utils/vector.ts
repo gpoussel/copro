@@ -106,6 +106,16 @@ export class Vector2 implements Equals<Vector2> {
     return [this.move("left"), this.move("right")]
   }
 
+  public range(x: number, y: number): Vector2[] {
+    const vectors: Vector2[] = []
+    for (let i = 0; i < x; ++i) {
+      for (let j = 0; j < y; ++j) {
+        vectors.push(this.add(new Vector2(i, j)))
+      }
+    }
+    return vectors
+  }
+
   public str() {
     return `${this.x},${this.y}`
   }
