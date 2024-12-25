@@ -152,3 +152,7 @@ export function invertMap<K, V>(map: Map<K, V[]>): Map<V, K[]> {
   }
   return result
 }
+
+export function chunk<T>(arr: T[], size: number): T[][] {
+  return [...Array(Math.ceil(arr.length / size))].map((_, i) => arr.slice(size * i, size + size * i))
+}

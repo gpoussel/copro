@@ -241,3 +241,25 @@ export class VectorSet<V extends Equals<V>> {
     this.vectors.forEach(callback)
   }
 }
+
+export function getBoudingBox2(vectors: Vector2[]) {
+  const box = vectors.reduce(
+    (acc, vector) => ({
+      topLeft: new Vector2(Math.min(acc.topLeft.x, vector.x), Math.min(acc.topLeft.y, vector.y)),
+      bottomRight: new Vector2(Math.max(acc.bottomRight.x, vector.x), Math.max(acc.bottomRight.y, vector.y)),
+    }),
+    {
+      topLeft: new Vector2(Infinity, Infinity),
+      bottomRight: new Vector2(-Infinity, -Infinity),
+    }
+  )
+  const width = box.bottomRight.x - box.topLeft.x + 1
+  const height = box.bottomRight.y - box.topLeft.y + 1
+  const area = width * height
+  return {
+    ...box,
+    width,
+    height,
+    area,
+  }
+}
