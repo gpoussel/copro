@@ -53,6 +53,10 @@ function printCommand(command: string[], prefix: string = "") {
 
 async function run(args: string[]) {
   const { year, day, part } = parseArguments(args)
+  if (day < 0 || day > 25) {
+    console.error(chalk.red(`Invalid day "${day}" (shall be between 1 and 25)`))
+    return
+  }
   console.log(`📆 Year ${chalk.cyan(year)} - Day ${chalk.cyan(day)}`)
   console.log(`🌍 https://adventofcode.com/${year}/day/${day}`)
 
@@ -72,7 +76,7 @@ async function run(args: string[]) {
 
   console.log()
   console.log()
-  for (const currentPart of [1, 2]) {
+  for (const currentPart of day === 25 ? [1] : [1, 2]) {
     if (part === undefined || part === currentPart) {
       console.log(`⚙️ ${chalk.cyan("Part " + currentPart)}`)
 
