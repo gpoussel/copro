@@ -16,4 +16,4 @@ FROM
 JOIN wish_lists ON children.child_id = wish_lists.child_id
 JOIN toy_catalogue ON wish_lists.wishes ->> 'first_choice' = toy_catalogue.toy_name
 ORDER BY children.name ASC
-LIMIT 5
+LIMIT 5;

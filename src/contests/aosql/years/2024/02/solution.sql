@@ -10,4 +10,4 @@ FROM (
 ) letters
 WHERE (letters.value >= 'a' AND letters.value <= 'z')
    OR (letters.value >= 'A' AND letters.value <= 'Z')
-   OR letters.value IN (' ', '!', '"', '''', '(', ')', ',', '-', '.', ':', ';', '?')
+   OR letters.value IN (' ', '!', '"', '''', '(', ')', ',', '-', '.', ':', ';', '?');

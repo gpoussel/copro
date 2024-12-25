@@ -42,4 +42,4 @@ SELECT
 FROM toy_added_tags_count
 JOIN (SELECT toy_id FROM toy_added_tags_count LIMIT 1) AS most_added_tags ON toy_added_tags_count.toy_id = most_added_tags.toy_id
 LEFT JOIN toy_removed_tags_count ON toy_added_tags_count.toy_id = toy_removed_tags_count.toy_id
-LEFT JOIN toy_unchanged_tags_count ON toy_added_tags_count.toy_id = toy_unchanged_tags_count.toy_id
+LEFT JOIN toy_unchanged_tags_count ON toy_added_tags_count.toy_id = toy_unchanged_tags_count.toy_id;
