@@ -26,7 +26,7 @@ export function lines(input: string) {
 }
 
 export function blocks(input: string) {
-  return normalize(input).split("\n\n")
+  return normalize(input).split(/\n\n+/)
 }
 
 export function readNumbers(input: string) {
