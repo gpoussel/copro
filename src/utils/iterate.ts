@@ -116,6 +116,12 @@ export function min(numbers: number[]) {
   return numbers.reduce((acc, n) => (n < acc ? n : acc), numbers[0])
 }
 
+export function minBy<T>(array: T[], compare: (left: T, right: T) => number): T {
+  return array.reduce((min, element) => {
+    return compare(min, element) <= 0 ? min : element
+  })
+}
+
 export function max(numbers: number[]) {
   if (numbers.length === 0) {
     return Infinity
@@ -171,4 +177,21 @@ export function includes<K>(haystack: K[], needle: K[]): boolean {
     }
   }
   return false
+}
+
+export function binarySearch<T>(array: T[], key: T, compare: (left: T, right: T) => number): number {
+  let low = 0
+  let high = array.length - 1
+  while (low <= high) {
+    const mid = (low + high) >>> 1
+    const cmp = compare(array[mid], key)
+    if (cmp < 0) {
+      low = mid + 1
+    } else if (cmp > 0) {
+      high = mid - 1
+    } else {
+      return mid
+    }
+  }
+  return -(low + 1)
 }
