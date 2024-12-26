@@ -119,6 +119,13 @@ export class Vector2 implements Equals<Vector2> {
   public str() {
     return `${this.x},${this.y}`
   }
+
+  public compare(other: Vector2): number {
+    if (this.y === other.y) {
+      return this.x - other.x
+    }
+    return this.y - other.y
+  }
 }
 
 export class Vector3 implements Equals<Vector3> {
