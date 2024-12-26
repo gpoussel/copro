@@ -156,3 +156,19 @@ export function invertMap<K, V>(map: Map<K, V[]>): Map<V, K[]> {
 export function chunk<T>(arr: T[], size: number): T[][] {
   return [...Array(Math.ceil(arr.length / size))].map((_, i) => arr.slice(size * i, size + size * i))
 }
+
+export function endsWith<K>(haystack: K[], needle: K[]): boolean {
+  if (needle.length > haystack.length) {
+    return false
+  }
+  return arrayEquals(haystack.slice(haystack.length - needle.length), needle)
+}
+
+export function includes<K>(haystack: K[], needle: K[]): boolean {
+  for (let i = 0; i <= haystack.length - needle.length; i++) {
+    if (arrayEquals(haystack.slice(i, i + needle.length), needle)) {
+      return true
+    }
+  }
+  return false
+}

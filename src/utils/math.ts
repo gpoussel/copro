@@ -71,3 +71,7 @@ export function countSetBits(n: number): number {
   if (n == 0) return 0
   return (n & 1) + countSetBits(n >> 1)
 }
+
+export function digits(n: number): number[] {
+  return n.toString().split("").map(Number)
+}
