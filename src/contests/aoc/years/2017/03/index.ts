@@ -6,7 +6,7 @@ import { Vector2 } from "../../../../../utils/vector.js"
 // 🎄 Advent of Code 2017 - Day 3
 
 function parseInput(input: string) {
-  return +utils.input.firstLine(input)
+  return utils.input.number(input)
 }
 
 function part1(inputString: string) {

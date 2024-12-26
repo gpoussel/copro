@@ -5,7 +5,7 @@ import { Vector2 } from "../../../../../utils/vector.js"
 // 🎄 Advent of Code 2018 - Day 11
 
 function parseInput(input: string) {
-  return +utils.input.firstLine(input)
+  return utils.input.number(input)
 }
 
 function createPowerGrid(serialNumber: number) {

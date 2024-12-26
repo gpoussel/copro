@@ -45,3 +45,7 @@ export function regexLines(input: string, regex: RegExp) {
       return match
     })
 }
+
+export function number(input: string): number {
+  return +normalize(input)
+}
