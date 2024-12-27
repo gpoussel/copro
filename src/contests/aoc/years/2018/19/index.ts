@@ -5,14 +5,14 @@ import { OPERATIONS, OperationName } from "../16/index.js"
 
 // 🎄 Advent of Code 2018 - Day 19
 
-interface Instruction {
+export interface Instruction {
   op: OperationName
   a: number
   b: number
   c: number
 }
 
-function parseInput(input: string) {
+export function parseInput(input: string) {
   const lines = utils.input.lines(input)
   const ip = +lines.shift()!.split(" ")[1]
   const instructions = lines.map(line => {
@@ -27,7 +27,7 @@ function execute(_ip: number, _instructions: Instruction[], firstRegisterInitial
   return sumOfDivisors(number)
 }
 
-function reverseEngineer(ip: number, instructions: Instruction[]) {
+export function reverseEngineer(ip: number, instructions: Instruction[]) {
   const registers = [1, 0, 0, 0, 0, 0]
   function r(n: number) {
     if (n === ip) {
@@ -71,10 +71,20 @@ function reverseEngineer(ip: number, instructions: Instruction[]) {
       }
     }
     if (op === "banr") {
-      console.log(`${lineNumber} ${r(c)} = ${r(a)} & ${r(b)}`)
+      if (a === c) {
+        console.log(`${lineNumber} ${r(c)} &= ${r(b)}`)
+      } else if (b === c) {
+        console.log(`${lineNumber} ${r(c)} &= ${r(a)}`)
+      } else {
+        console.log(`${lineNumber} ${r(c)} = ${r(a)} & ${r(b)}`)
+      }
     }
     if (op === "bani") {
-      console.log(`${lineNumber} ${r(c)} = ${r(a)} & ${b}`)
+      if (a === c) {
+        console.log(`${lineNumber} ${r(c)} &= ${b}`)
+      } else {
+        console.log(`${lineNumber} ${r(c)} = ${r(a)} & ${b}`)
+      }
     }
     if (op === "borr") {
       console.log(`${lineNumber} ${r(c)} = ${r(a)} | ${r(b)}`)
