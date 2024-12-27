@@ -185,6 +185,53 @@ export class Vector3 implements Equals<Vector3> {
   }
 }
 
+export class Vector4 implements Equals<Vector4> {
+  constructor(
+    private _x: number,
+    private _y: number,
+    private _z: number,
+    private _t: number
+  ) {}
+
+  public get x() {
+    return this._x
+  }
+
+  public get y() {
+    return this._y
+  }
+
+  public get z() {
+    return this._z
+  }
+
+  public get t() {
+    return this._t
+  }
+
+  public add(other: Vector4): Vector4 {
+    return new Vector4(this.x + other.x, this.y + other.y, this.z + other.z, this.t + other.t)
+  }
+
+  public subtract(other: Vector4): Vector4 {
+    return new Vector4(this.x - other.x, this.y - other.y, this.z - other.z, this.t - other.t)
+  }
+
+  public manhattanDistance(other: Vector4): number {
+    return (
+      Math.abs(this.x - other.x) + Math.abs(this.y - other.y) + Math.abs(this.z - other.z) + Math.abs(this.t - other.t)
+    )
+  }
+
+  public equals(other: Vector4): boolean {
+    return this.x === other.x && this.y === other.y && this.z === other.z && this.t === other.t
+  }
+
+  public str() {
+    return `${this.x},${this.y},${this.z},${this.t}`
+  }
+}
+
 export const VECTOR2_COMPARATOR_YX = (a: Vector2, b: Vector2) => {
   if (a.y === b.y) {
     return a.x - b.x

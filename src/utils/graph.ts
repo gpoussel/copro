@@ -1,3 +1,4 @@
+import { removeIf } from "./iterate.js"
 import { PriorityQueue } from "./structures/priority-queue.js"
 
 export class DirectedGraph<K> {
@@ -175,4 +176,29 @@ export function prim<T>(
     }
   }
   return { total, visited: [...visitedMap.values()] }
+}
+
+export function disjointSets<K>(
+  elements: K[],
+  options: {
+    areUnionable: (a: K, b: K) => boolean
+  }
+) {
+  let remainingElements = [...elements]
+  const groups: K[][] = []
+  while (remainingElements.length > 0) {
+    const reference = remainingElements[0]
+    const group = [reference]
+    remainingElements = remainingElements.slice(1)
+    let i = 0
+    while (i < group.length) {
+      const point = group[i]
+      const neighbors = remainingElements.filter(p => options.areUnionable(point, p))
+      group.push(...neighbors)
+      removeIf(remainingElements, p => neighbors.includes(p))
+      i++
+    }
+    groups.push(group)
+  }
+  return groups
 }
