@@ -205,3 +205,11 @@ export function binarySearch<T>(array: T[], key: T, compare: (left: T, right: T)
   }
   return -(low + 1)
 }
+
+export function removeIf<T>(array: T[], predicate: (item: T) => boolean) {
+  for (let i = array.length - 1; i >= 0; i--) {
+    if (predicate(array[i])) {
+      array.splice(i, 1)
+    }
+  }
+}
