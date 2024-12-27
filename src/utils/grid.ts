@@ -20,6 +20,10 @@ export function fromDirectionChar(char: string) {
   return Object.entries(DIRECTION_CHARS).find(([, value]) => value === char)?.[0] as Direction
 }
 
+export function fromCompassChar(char: "N" | "E" | "S" | "W") {
+  return DIRECTIONS["NESW".indexOf(char)] as Direction
+}
+
 export function nextDirClockwise(dir: Direction) {
   return DIRECTIONS[(DIRECTIONS.indexOf(dir) + 1) % DIRECTIONS.length]
 }
