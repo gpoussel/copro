@@ -1,4 +1,5 @@
 import { positiveModulo } from "./math.js"
+import fs from "fs"
 
 export function build<K>(grid: K[][], printer?: (item: K) => string) {
   const print = printer || ((item: K) => `${item}`)
@@ -158,4 +159,8 @@ export function equals<K>(grid1: K[][], grid2: K[][]) {
     }
   }
   return true
+}
+
+export function saveToFile<K>(grid: K[][], path: string, printer: (item: K) => string = item => `${item}`) {
+  fs.writeFileSync(path, build(grid, printer))
 }

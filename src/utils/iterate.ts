@@ -133,6 +133,16 @@ export function maxBy<T>(values: T[], key: (item: T) => number): T | undefined {
   return values.reduce((acc, value) => (key(value) > key(acc) ? value : acc), values[0])
 }
 
+export function minMax(numbers: number[]) {
+  const [min, max] = numbers.reduce(
+    (acc, n) => {
+      return [Math.min(acc[0], n), Math.max(acc[1], n)]
+    },
+    [Infinity, -Infinity]
+  )
+  return { min, max }
+}
+
 export function combinationsFromRangeToSum(count: number, sum: number): number[][] {
   if (count === 1) {
     return [[sum]]
