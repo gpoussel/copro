@@ -75,3 +75,29 @@ export function countSetBits(n: number): number {
 export function digits(n: number): number[] {
   return n.toString().split("").map(Number)
 }
+
+export function sumOfDivisors(num: number): number {
+  let total = 1
+
+  for (let i = 2; i * i <= num; i++) {
+    if (num % i === 0) {
+      let e = 0
+      do {
+        e++
+        num /= i
+      } while (num % i === 0)
+
+      let sum = 0
+      let pow = 1
+      do {
+        sum += pow
+        pow *= i
+      } while (e-- > 0)
+      total *= sum
+    }
+  }
+  if (num > 1) {
+    total *= 1 + num
+  }
+  return total
+}

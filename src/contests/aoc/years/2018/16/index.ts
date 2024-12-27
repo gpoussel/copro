@@ -61,8 +61,8 @@ const allOperations = {
   },
 }
 
-type OperationName = keyof typeof allOperations
-const OPERATIONS = allOperations as Record<OperationName, Operation>
+export type OperationName = keyof typeof allOperations
+export const OPERATIONS = allOperations as Record<OperationName, Operation>
 
 function parseInput(input: string) {
   const blocks = utils.input.blocks(input)
