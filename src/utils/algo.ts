@@ -153,7 +153,11 @@ export function dijkstraOnGraph<K>(
   let bestScore = Infinity
   const priorizer = (node: DijkstraNode) => node.score
   const priorityQueue = new PriorityQueue<DijkstraNode>(priorizer, PriorityQueue.MIN_HEAP_COMPARATOR)
-  starts.forEach(start => priorityQueue.add({ score: 0, node: start, path: [start] }))
+  const inserted = new Map<string, number>()
+  starts.forEach(start => {
+    priorityQueue.add({ score: 0, node: start, path: [start] })
+    inserted.set(options.key(start), 0)
+  })
   const visited = new Map<string, number>()
 
   while (!priorityQueue.isEmpty()) {
@@ -171,7 +175,11 @@ export function dijkstraOnGraph<K>(
     }
 
     for (const { to, cost } of options.moves(node, path)) {
-      priorityQueue.add({ node: to, score: score + cost, path: [...path, to] })
+      const toKey = options.key(to)
+      const toScore = score + cost
+      if (inserted.has(toKey) && inserted.get(toKey)! <= toScore) continue
+      priorityQueue.add({ node: to, score: toScore, path: [...path, to] })
+      inserted.set(toKey, toScore)
     }
     logEvery(priorityQueue.size(), 5000)
   }
