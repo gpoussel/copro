@@ -91,8 +91,8 @@ export class Vector2 implements Equals<Vector2> {
     throw new Error()
   }
 
-  public neighbors(distance = 1): Vector2[] {
-    return HEADING_DIRECTIONS.map(direction => this.move(direction, distance))
+  public neighbors(): Vector2[] {
+    return HEADING_DIRECTIONS.map(direction => this.move(direction))
   }
 
   public plusShapeNeighbors(): Vector2[] {

@@ -1,5 +1,6 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import utils from "../../../../../utils/index.js"
+import { recognizeWord } from "../../../../../utils/ocr.js"
 import { getBoudingBox2, Vector2 } from "../../../../../utils/vector.js"
 
 // 🎄 Advent of Code 2018 - Day 10
@@ -14,16 +15,6 @@ function parseInput(input: string) {
       velocity,
     }
   })
-}
-
-const KNOWN_LETTERS = {
-  "######..#.......#.......#.......#####...#.......#.......#.......#.......######..": "E",
-  "#....#..#...#...#..#....#.#.....##......##......#.#.....#..#....#...#...#....#..": "K",
-  "#.......#.......#.......#.......#.......#.......#.......#.......#.......######..": "L",
-  "#....#..##...#..##...#..#.#..#..#.#..#..#..#.#..#..#.#..#...##..#...##..#....#..": "N",
-  "#####...#....#..#....#..#....#..#####...#.......#.......#.......#.......#.......": "P",
-  "#####...#....#..#....#..#....#..#####...#..#....#...#...#...#...#....#..#....#..": "R",
-  "#....#..#....#...#..#....#..#.....##......##.....#..#....#..#...#....#..#....#..": "X",
 }
 
 function solve(input: ReturnType<typeof parseInput>) {
@@ -47,17 +38,8 @@ function solve(input: ReturnType<typeof parseInput>) {
           const letterIndex = Math.floor(x / 8)
           letters[letterIndex][y * 8 + (x % 8)] = "#"
         })
-        const word = []
-        for (const letter of letters) {
-          const key = letter.join("") as keyof typeof KNOWN_LETTERS
-          if (KNOWN_LETTERS[key]) {
-            word.push(KNOWN_LETTERS[key])
-          } else {
-            utils.iterate.chunk(letter, 8).forEach(chunk => console.log(chunk.join("")))
-            throw new Error(`Unknown letter: "${key}"`)
-          }
-        }
-        return { time, word: word.join("") }
+        const word = recognizeWord(letters.map(l => utils.iterate.chunk(l, 8).map(c => c.join(""))))
+        return { time, word }
       } else {
         throw new Error(`Unexpected bounding box: ${width}x${height}`)
       }

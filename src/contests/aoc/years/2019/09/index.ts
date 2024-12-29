@@ -17,7 +17,7 @@ const STP = "99" // Stop
 const POSITION_MODE = "0"
 const RELATIVE_MODE = "2"
 
-class Computer {
+export class Computer {
   originalTape: number[]
   tape: number[]
   pointer: number = 0

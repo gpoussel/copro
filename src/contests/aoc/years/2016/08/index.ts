@@ -44,24 +44,6 @@ function getScreenContent(inputString: string) {
   return grid
 }
 
-const LETTERS: Record<string, string> = {
-  ".##..#..#.#..#.####.#..#.#..#.": "A",
-  "###..#..#.###..#..#.#..#.###..": "B",
-  ".##..#..#.#....#....#..#..##..": "C",
-  "####.#....###..#....#....####.": "E",
-  "####.#....###..#....#....#....": "F",
-  ".##..#..#.#....#.##.#..#..###.": "G",
-  "#..#.#..#.####.#..#.#..#.#..#.": "H",
-  "..##....#....#....#.#..#..##..": "J",
-  "#....#....#....#....#....####.": "L",
-  ".##..#..#.#..#.#..#.#..#..##..": "O",
-  "###..#..#.#..#.###..#....#....": "P",
-  ".###.#....#.....##.....#.###..": "S",
-  "#..#.#..#.#..#.#..#.#..#..##..": "U",
-  "#...##...#.#.#...#....#....#..": "Y",
-  "####....#...#...#...#....####.": "Z",
-}
-
 function part1(inputString: string) {
   return utils.grid.countBy(getScreenContent(inputString), c => c)
 }
@@ -69,7 +51,7 @@ function part1(inputString: string) {
 function part2(inputString: string) {
   const screenContent = utils.grid.map(getScreenContent(inputString), c => (c ? "#" : "."))
   const letters = Array.from({ length: 10 }, (_, i) => screenContent.map(row => row.slice(i * 5, i * 5 + 5).join("")))
-  return letters.map(letter => LETTERS[letter.join("")]).join("")
+  return utils.ocr.recognizeWord(letters)
 }
 
 export default {
