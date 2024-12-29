@@ -1,5 +1,6 @@
 import { positiveModulo } from "./math.js"
 import fs from "fs"
+import { Vector2 } from "./vector.js"
 
 export function build<K>(grid: K[][], printer?: (item: K) => string) {
   const print = printer || ((item: K) => `${item}`)
@@ -74,7 +75,7 @@ export function find<K>(grid: K[][], predicate: (item: K) => boolean) {
 }
 
 export function findPositions<K>(grid: K[][], predicate: (item: K) => boolean) {
-  return iterate(grid, (_, x, y) => ({ x, y }), predicate)
+  return iterate(grid, (_, x, y) => new Vector2(x, y), predicate)
 }
 
 export function at<K>(grid: K[][], position: { x: number; y: number }) {

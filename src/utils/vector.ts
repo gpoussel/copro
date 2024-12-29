@@ -1,4 +1,5 @@
 import { Direction, Direction3D, Heading, HEADING_DIRECTIONS } from "./grid.js"
+import { gcd } from "./math.js"
 
 export interface Equals<T> {
   equals(other: T): boolean
@@ -90,8 +91,8 @@ export class Vector2 implements Equals<Vector2> {
     throw new Error()
   }
 
-  public neighbors(): Vector2[] {
-    return HEADING_DIRECTIONS.map(direction => this.move(direction))
+  public neighbors(distance = 1): Vector2[] {
+    return HEADING_DIRECTIONS.map(direction => this.move(direction, distance))
   }
 
   public plusShapeNeighbors(): Vector2[] {
@@ -125,6 +126,11 @@ export class Vector2 implements Equals<Vector2> {
       return this.x - other.x
     }
     return this.y - other.y
+  }
+
+  public angle(other: Vector2): number {
+    const angle = Math.atan2(other.x - this.x, this.y - other.y)
+    return angle < 0 ? angle + 2 * Math.PI : angle
   }
 }
 
