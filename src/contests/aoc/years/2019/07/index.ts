@@ -16,7 +16,6 @@ const STP = "99" // Stop
 const POSITION_MODE = "0"
 
 class Computer {
-  originalTape: number[]
   tape: number[]
   pointer: number = 0
   inputs: number[]
@@ -24,8 +23,7 @@ class Computer {
   OPS: Record<string, any>
   halted: boolean = false
 
-  constructor(tape: number[], inputs: number | number[], cloneTape = false) {
-    this.originalTape = cloneTape ? tape.slice(0) : tape
+  constructor(tape: number[], inputs: number | number[]) {
     this.tape = tape.slice(0)
     this.inputs = Array.isArray(inputs) ? inputs.slice(0) : [inputs]
     this.outputs = []

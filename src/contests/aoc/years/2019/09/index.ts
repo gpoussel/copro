@@ -18,7 +18,6 @@ const POSITION_MODE = "0"
 const RELATIVE_MODE = "2"
 
 export class Computer {
-  originalTape: number[]
   tape: number[]
   pointer: number = 0
   relativeBase: number = 0
@@ -27,8 +26,7 @@ export class Computer {
   OPS: Record<string, any>
   halted: boolean = false
 
-  constructor(tape: number[], inputs: number | number[], cloneTape = false) {
-    this.originalTape = cloneTape ? tape.slice(0) : tape
+  constructor(tape: number[], inputs: number | number[]) {
     this.tape = tape.slice(0)
     this.inputs = Array.isArray(inputs) ? inputs.slice(0) : [inputs]
     this.outputs = []
@@ -131,6 +129,12 @@ export class Computer {
     }
 
     return this.outputs
+  }
+
+  runUntilHalt() {
+    while (!this.halted) {
+      this.run()
+    }
   }
 
   parseOp() {
