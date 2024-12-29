@@ -193,6 +193,14 @@ export class Computer {
   output(v: number) {
     this.outputs.push(v)
   }
+
+  clone(): Computer {
+    const clone = new Computer(this.tape.slice(), this.inputs.slice())
+    clone.pointer = this.pointer
+    clone.relativeBase = this.relativeBase
+    clone.outputs = this.outputs.slice(0)
+    return clone
+  }
 }
 
 function parseInput(input: string) {

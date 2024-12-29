@@ -138,7 +138,7 @@ export function dijkstraWithDirectionsOnGrid<K>(
 
 export function dijkstraOnGraph<K>(
   starts: K[],
-  ends: K[],
+  ends: K[] | ((node: K, path: K[]) => boolean),
   options: {
     key: (node: K) => string
     equals: (a: K, b: K) => boolean
@@ -153,6 +153,7 @@ export function dijkstraOnGraph<K>(
   let bestScore = Infinity
   const priorizer = (node: DijkstraNode) => node.score
   const priorityQueue = new PriorityQueue<DijkstraNode>(priorizer, PriorityQueue.MIN_HEAP_COMPARATOR)
+  const endPredicate = typeof ends === "function" ? ends : (node: K) => ends.some(end => options.equals(node, end))
   const inserted = new Map<string, number>()
   starts.forEach(start => {
     priorityQueue.add({ score: 0, node: start, path: [start] })
@@ -167,7 +168,7 @@ export function dijkstraOnGraph<K>(
     if (visited.has(key) && visited.get(key)! < score) continue
     visited.set(key, score)
 
-    if (ends.some(end => options.equals(node, end))) {
+    if (endPredicate(node, path)) {
       if (score < bestScore) {
         bestScore = score
       }
