@@ -7,3 +7,7 @@ export function countSubstring(haystack: string, needle: string): number {
   }
   return count
 }
+
+export function isUpperCaseLetter(char: string): boolean {
+  return char >= "A" && char <= "Z"
+}
