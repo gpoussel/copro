@@ -1,5 +1,3 @@
-import { ProjectEulerProblem } from "../../../types/contest.js"
-
 // 🧮 Project Euler - Problem 2
 
 function fibonacci(max: number) {

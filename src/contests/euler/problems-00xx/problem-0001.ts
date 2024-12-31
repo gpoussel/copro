@@ -1,5 +1,3 @@
-import { ProjectEulerProblem } from "../../../types/contest.js"
-
 // 🧮 Project Euler - Problem 1
 
 function getAllMultiples(mult: number, max: number) {

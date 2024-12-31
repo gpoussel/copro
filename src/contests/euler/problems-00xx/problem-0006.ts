@@ -1,5 +1,3 @@
-import { ProjectEulerProblem } from "../../../types/contest.js"
-
 // 🧮 Project Euler - Problem 6
 
 function sumOfSquares(n: number): number {

@@ -1,4 +1,3 @@
-import { ProjectEulerProblem } from "../../../types/contest.js"
 import { sieveOfEratosthene } from "../../../utils/math.js"
 
 // 🧮 Project Euler - Problem 7

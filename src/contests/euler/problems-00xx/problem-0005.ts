@@ -1,4 +1,3 @@
-import { ProjectEulerProblem } from "../../../types/contest.js"
 import { lcm } from "../../../utils/math.js"
 
 // 🧮 Project Euler - Problem 5

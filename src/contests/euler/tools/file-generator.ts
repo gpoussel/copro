@@ -18,9 +18,7 @@ export async function writeTemplateIfNecessary(problem: number): Promise<{ folde
   if (!(await fs.pathExists(solutionFile))) {
     await fs.writeFile(
       solutionFile,
-      `import { ProjectEulerProblem } from "../../../types/contest.js"
-      
-// 🧮 Project Euler - Problem ${problem}
+      `// 🧮 Project Euler - Problem ${problem}
 
 export function solve() {
   return
