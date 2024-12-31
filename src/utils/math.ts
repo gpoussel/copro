@@ -1,3 +1,5 @@
+import { binarySearch } from "./iterate.js"
+
 const LIMIT = 1100401
 export const PRIMES = sieveOfEratosthene()
 
@@ -9,6 +11,18 @@ function isGreatestCommonDivisorDone(divisor: number, ns: number[]): boolean {
   }
 
   return false
+}
+
+export function isPrime(n: number) {
+  if (n <= 1) {
+    return false
+  }
+  for (let factor = 2; factor * factor <= n; factor++) {
+    if (n % factor === 0) {
+      return false
+    }
+  }
+  return true
 }
 
 export function sieveOfEratosthene(max: number = LIMIT): number[] {
