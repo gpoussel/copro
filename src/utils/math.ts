@@ -76,6 +76,26 @@ export function digits(n: number): number[] {
   return n.toString().split("").map(Number)
 }
 
+export function divisors(n: number) {
+  const result = []
+  let i = 1
+  let max = n
+
+  while (i < max) {
+    if (n % i === 0) {
+      result.push(i)
+
+      let k = n / i
+      if (i !== k) {
+        result.push(k)
+      }
+      max = k
+    }
+    i++
+  }
+  return result
+}
+
 export function sumOfDivisors(num: number): number {
   let total = 1
 
