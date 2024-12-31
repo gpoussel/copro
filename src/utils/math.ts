@@ -122,6 +122,13 @@ export function sumOfDivisors(num: number): number {
   return total
 }
 
+export function sumOfDigits(n: number | bigint): number {
+  return n
+    .toString()
+    .split("")
+    .reduce((acc, d) => acc + +d, 0)
+}
+
 function forceBigint(n: number | bigint): bigint {
   return typeof n === "number" ? BigInt(n) : n
 }

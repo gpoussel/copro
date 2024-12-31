@@ -1,8 +1,7 @@
 // 🧮 Project Euler - Problem 16
 
+import { sumOfDigits } from "../../../utils/math.js"
+
 export function solve() {
-  return (2n ** 1000n)
-    .toString()
-    .split("")
-    .reduce((acc, cur) => acc + +cur, 0)
+  return sumOfDigits(2n ** 1000n)
 }
