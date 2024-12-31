@@ -21,3 +21,7 @@ export interface EverybodyCodesContest {
   part2: MultiLevelQuestPart
   part3: MultiLevelQuestPart
 }
+
+export interface ProjectEulerProblem {
+  solve: () => number | string | undefined
+}

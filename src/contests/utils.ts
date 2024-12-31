@@ -9,9 +9,13 @@ export function formatDay(day: number) {
 }
 
 export function getIndexFile(folder: string, url: string) {
+  return getFile(folder, url, "index.js")
+}
+
+export function getFile(folder: string, url: string, fileName: string) {
   const currentFolder = dirname(fileURLToPath(url))
-  const indexFile = resolve(folder, "index.js")
-  return "./" + relative(currentFolder, indexFile).replace(/\\/g, "/")
+  const file = resolve(folder, fileName)
+  return "./" + relative(currentFolder, file).replace(/\\/g, "/")
 }
 
 export async function writeYearDayTemplateIfNecessary(
