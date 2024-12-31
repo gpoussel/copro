@@ -117,17 +117,28 @@ export class Computer {
 
   run() {
     let op = this.parseOp()
-
     while (!this.halted) {
       this.runOp(op)
-
       if (op.name === OUT || this.halted) {
         break
       }
-
       op = this.parseOp()
     }
+    return this.outputs
+  }
 
+  runUntilInputEmpty() {
+    let op = this.parseOp()
+    while (!this.halted) {
+      if (op.name === INP && this.inputs.length === 0) {
+        break
+      }
+      this.runOp(op)
+      if (this.halted) {
+        break
+      }
+      op = this.parseOp()
+    }
     return this.outputs
   }
 
