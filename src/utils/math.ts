@@ -101,3 +101,98 @@ export function sumOfDivisors(num: number): number {
   }
   return total
 }
+
+function forceBigint(n: number | bigint): bigint {
+  return typeof n === "number" ? BigInt(n) : n
+}
+
+function toZn(a: number | bigint, n: number | bigint) {
+  const number = forceBigint(a)
+  const modulo = forceBigint(n)
+
+  if (modulo <= 0n) {
+    throw new RangeError("modulo must be positive")
+  }
+
+  const aZn = number % modulo
+  return aZn < 0n ? aZn + modulo : aZn
+}
+
+function eGcd(aParam: number | bigint, bParam: number | bigint): { g: bigint; x: bigint; y: bigint } {
+  let a = forceBigint(aParam)
+  let b = forceBigint(bParam)
+
+  if (a <= 0n || b <= 0n) {
+    throw new RangeError("a and b MUST be positive")
+  }
+
+  let x = 0n
+  let y = 1n
+  let u = 1n
+  let v = 0n
+
+  while (a !== 0n) {
+    const q = b / a
+    const r = b % a
+    const m = x - u * q
+    const n = y - v * q
+    b = a
+    a = r
+    x = u
+    y = v
+    u = m
+    v = n
+  }
+  return {
+    g: b,
+    x,
+    y,
+  }
+}
+
+export function modInv(a: number | bigint, n: number | bigint) {
+  const egcd = eGcd(toZn(a, n), n)
+  if (egcd.g !== 1n) {
+    throw new RangeError(`${a.toString()} does not have inverse modulo ${n.toString()}`) // modular inverse does not exist
+  } else {
+    return toZn(egcd.x, n)
+  }
+}
+
+export function modAdd(addends: Array<number | bigint>, n: number | bigint): bigint {
+  const modulo = forceBigint(n)
+  const sum = addends.map(a => forceBigint(a) % modulo)
+  return toZn(
+    sum.reduce((acc, a) => acc + a, 0n),
+    modulo
+  )
+}
+
+export function modPow(b: number | bigint, e: number | bigint, n: number | bigint): bigint {
+  let base = forceBigint(b)
+  let exponent = forceBigint(e)
+  const modulo = forceBigint(n)
+
+  if (modulo === 1n) {
+    return 0n
+  }
+  if (modulo <= 0n) {
+    throw new RangeError("modulo must be positive")
+  }
+
+  base = toZn(base, modulo)
+
+  if (exponent < 0n) {
+    return modInv(modPow(base, -exponent, modulo), modulo)
+  }
+
+  let result = 1n
+  while (exponent > 0n) {
+    if (exponent % 2n === 1n) {
+      result = toZn(result * base, modulo)
+    }
+    exponent /= 2n
+    base = toZn(base * base, modulo)
+  }
+  return result
+}
