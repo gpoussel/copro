@@ -252,3 +252,51 @@ export function modPow(b: number | bigint, e: number | bigint, n: number | bigin
   }
   return result
 }
+
+export function triangleNumbers(n: number): Set<number> {
+  const triangleNumbers = new Set<number>()
+  for (let i = 1; i <= n; i++) {
+    triangleNumbers.add((i * (i + 1)) / 2)
+  }
+  return triangleNumbers
+}
+
+export function squareNumbers(n: number): Set<number> {
+  const squareNumbers = new Set<number>()
+  for (let i = 1; i <= n; i++) {
+    squareNumbers.add(i * i)
+  }
+  return squareNumbers
+}
+
+export function pentagonalNumbers(n: number): Set<number> {
+  const pentagonalNumbers = new Set<number>()
+  for (let i = 1; i <= n; i++) {
+    pentagonalNumbers.add((i * (3 * i - 1)) / 2)
+  }
+  return pentagonalNumbers
+}
+
+export function hexagonalNumbers(n: number): Set<number> {
+  const hexagonalNumbers = new Set<number>()
+  for (let i = 1; i <= n; i++) {
+    hexagonalNumbers.add(i * (2 * i - 1))
+  }
+  return hexagonalNumbers
+}
+
+export function heptagonalNumbers(n: number): Set<number> {
+  const heptagonalNumbers = new Set<number>()
+  for (let i = 1; i <= n; i++) {
+    heptagonalNumbers.add((i * (5 * i - 3)) / 2)
+  }
+  return heptagonalNumbers
+}
+
+export function octagonalNumbers(n: number): Set<number> {
+  const octagonalNumbers = new Set<number>()
+  for (let i = 1; i <= n; i++) {
+    octagonalNumbers.add(i * (3 * i - 2))
+  }
+  return octagonalNumbers
+}
