@@ -45,6 +45,23 @@ export function sieveOfEratosthene(max: number = LIMIT): number[] {
   return primes
 }
 
+export function factorization(n: number): number[] {
+  const factors = []
+  for (const d of PRIMES) {
+    if (d * d > n) {
+      break
+    }
+    while (n % d === 0) {
+      factors.push(d)
+      n /= d
+    }
+  }
+  if (n > 1) {
+    factors.push(n)
+  }
+  return factors
+}
+
 export function lcm(...numbers: number[]): number {
   return numbers.reduce((i, s) => {
     return (s * i) / gcd(i, s)
