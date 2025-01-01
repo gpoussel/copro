@@ -151,6 +151,7 @@ export function dijkstraOnGraph<K>(
     path: K[]
   }
   let bestScore = Infinity
+  let bestPath: K[] = []
   const priorizer = (node: DijkstraNode) => node.score
   const priorityQueue = new PriorityQueue<DijkstraNode>(priorizer, PriorityQueue.MIN_HEAP_COMPARATOR)
   const endPredicate = typeof ends === "function" ? ends : (node: K) => ends.some(end => options.equals(node, end))
@@ -170,6 +171,7 @@ export function dijkstraOnGraph<K>(
 
     if (endPredicate(node, path)) {
       if (score < bestScore) {
+        bestPath = path
         bestScore = score
       }
       continue
@@ -185,7 +187,7 @@ export function dijkstraOnGraph<K>(
     logEvery(priorityQueue.size(), 5000)
   }
 
-  return { bestScore }
+  return { bestScore, bestPath }
 }
 
 export function breadthFirstSearch<K>(
