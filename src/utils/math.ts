@@ -1,5 +1,3 @@
-import { binarySearch } from "./iterate.js"
-
 const LIMIT = 1100401
 export const PRIMES = sieveOfEratosthene()
 
