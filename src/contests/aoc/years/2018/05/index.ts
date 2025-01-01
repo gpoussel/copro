@@ -1,5 +1,6 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import utils from "../../../../../utils/index.js"
+import { LOWERCASE_LETTERS } from "../../../../../utils/string.js"
 
 // 🎄 Advent of Code 2018 - Day 5
 
@@ -8,8 +9,7 @@ function parseInput(input: string) {
 }
 
 const REGEX_REPLACE = new RegExp(
-  "abcdefghijklmnopqrstuvwxyz"
-    .split("")
+  LOWERCASE_LETTERS.split("")
     .flatMap(letter => [letter.toUpperCase() + letter, letter + letter.toUpperCase()])
     .join("|"),
   "g"

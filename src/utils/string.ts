@@ -1,3 +1,6 @@
+export const LOWERCASE_LETTERS = "abcdefghijklmnopqrstuvwxyz"
+export const UPPERCASE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 export function countSubstring(haystack: string, needle: string): number {
   let count = 0
   let index = 0
