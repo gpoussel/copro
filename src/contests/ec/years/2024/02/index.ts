@@ -1,6 +1,7 @@
 import { EverybodyCodesContest } from "../../../../../types/contest.js"
 import { DIRECTIONS } from "../../../../../utils/grid.js"
 import utils from "../../../../../utils/index.js"
+import { reverse } from "../../../../../utils/string.js"
 import { Vector2, VectorSet } from "../../../../../utils/vector.js"
 
 // 🎲 Everybody Codes 2024 - Quest 2
@@ -30,7 +31,7 @@ function part2(inputString: string) {
       const usedPositions = new Set<number>()
       for (let i = 0; i < sentence.length; ++i) {
         for (const word of input.words) {
-          const reversedWord = word.split("").reverse().join("")
+          const reversedWord = reverse(word)
           if (
             sentence.substring(i, i + word.length) === word ||
             sentence.substring(i, i + word.length) === reversedWord

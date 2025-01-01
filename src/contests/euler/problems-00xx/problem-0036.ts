@@ -1,8 +1,6 @@
-// 🧮 Project Euler - Problem 36
+import { isPalindrome } from "../../../utils/string.js"
 
-function isPalindrome(str: string) {
-  return str === str.split("").reverse().join("")
-}
+// 🧮 Project Euler - Problem 36
 
 export function solve() {
   let sum = 0

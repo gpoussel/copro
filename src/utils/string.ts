@@ -11,3 +11,11 @@ export function countSubstring(haystack: string, needle: string): number {
 export function isUpperCaseLetter(char: string): boolean {
   return char >= "A" && char <= "Z"
 }
+
+export function isPalindrome(s: string): boolean {
+  return s === reverse(s)
+}
+
+export function reverse(s: string): string {
+  return s.split("").reverse().join("")
+}
