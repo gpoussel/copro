@@ -288,3 +288,18 @@ export function heptagonalNumbers(n: number): Set<number> {
 export function octagonalNumbers(n: number): Set<number> {
   return generateNumbers(n, i => i * (3 * i - 2))
 }
+
+export function phi(limit: number): number[] {
+  const phi = Array(limit).fill(0)
+  for (let i = 0; i < limit; ++i) {
+    phi[i] = i % 2 === 1 ? i : i / 2
+  }
+  for (let i = 3; i < limit; i += 2) {
+    if (phi[i] == i) {
+      for (let j = i; j < limit; j += i) {
+        phi[j] -= phi[j] / i
+      }
+    }
+  }
+  return phi
+}
