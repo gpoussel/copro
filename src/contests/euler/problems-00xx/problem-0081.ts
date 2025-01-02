@@ -24,7 +24,7 @@ export function solve() {
         .filter(target => target.x < matrix.length && target.y < matrix[0].length)
         .map(target => ({
           to: target,
-          cost: matrix[target.x][target.y],
+          cost: matrix[target.y][target.x],
         }))
     },
   })
