@@ -36,6 +36,9 @@ async function run(args: string[]) {
     } else if (err && typeof err === "object" && "message" in err) {
       console.error(chalk.red(err.message))
     }
+    if (err && typeof err === "object" && "stack" in err) {
+      console.error(chalk.red(err.stack))
+    }
   }
 }
 
