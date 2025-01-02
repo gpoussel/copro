@@ -5,10 +5,10 @@ import { dijkstraOnGraph } from "../../../utils/algo.js"
 import { Vector2 } from "../../../utils/vector.js"
 import { inBounds } from "../../../utils/grid.js"
 
-// 🧮 Project Euler - Problem 81
+// 🧮 Project Euler - Problem 83
 
 export function solve() {
-  const filePath = resolve(dirname(fileURLToPath(import.meta.url)), "0081_matrix.txt")
+  const filePath = resolve(dirname(fileURLToPath(import.meta.url)), "0083_matrix.txt")
   const matrix = readFileSync(filePath, "utf-8")
     .trim()
     .split("\n")
@@ -21,7 +21,7 @@ export function solve() {
       return node.str()
     },
     moves(node) {
-      return [node.move("right"), node.move("down")]
+      return [node.move("right"), node.move("down"), node.move("up"), node.move("left")]
         .filter(target => inBounds(matrix, target))
         .map(target => ({
           to: target,
