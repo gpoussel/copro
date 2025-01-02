@@ -1,8 +1,7 @@
 import utils from "../../../utils/index.js"
+import { DIGIT_FACTORIALS } from "../../../utils/math.js"
 
 // 🧮 Project Euler - Problem 34
-
-const DIGIT_FACTORIALS = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]
 
 export function solve() {
   let sum = 0

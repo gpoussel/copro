@@ -1,5 +1,6 @@
 const LIMIT = 1100401
 export const PRIMES = sieveOfEratosthene()
+export const DIGIT_FACTORIALS = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]
 
 function isGreatestCommonDivisorDone(divisor: number, ns: number[]): boolean {
   for (const n of ns) {
