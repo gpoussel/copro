@@ -304,3 +304,19 @@ export function phi(limit: number): number[] {
   }
   return phi
 }
+
+export function isqrt(n: bigint): bigint {
+  let x0 = 0n
+  let x1 = 0n
+  let valueLength = n.toString().length
+  if (valueLength % 2 === 0) {
+    x1 = 10n ** BigInt(valueLength / 2)
+  } else {
+    x1 = 4n * 10n ** BigInt(Math.floor(valueLength / 2))
+  }
+  do {
+    x0 = x1
+    x1 = (x0 + n / x0) >> 1n
+  } while (x0 !== x1 && x0 !== x1 - 1n)
+  return x0
+}
