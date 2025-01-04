@@ -1,0 +1,3 @@
+[submodule "src/contests/euler/problems"]
+	path = src/contests/euler/problems
+	url = https://github.com/gpoussel/copro-euler-100.git
