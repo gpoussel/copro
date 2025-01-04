@@ -64,6 +64,23 @@ export function factorization(n: number): number[] {
   return factors
 }
 
+export function factorsMap(n: number, primes = PRIMES): Map<number, number> {
+  const factors = new Map<number, number>()
+  for (const d of primes) {
+    if (d * d > n) {
+      break
+    }
+    while (n % d === 0) {
+      factors.set(d, (factors.get(d) || 0) + 1)
+      n /= d
+    }
+  }
+  if (n > 1) {
+    factors.set(n, 1)
+  }
+  return factors
+}
+
 export function lcm(...numbers: number[]): number {
   return numbers.reduce((i, s) => {
     return (s * i) / gcd(i, s)
