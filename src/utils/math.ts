@@ -338,3 +338,13 @@ export function isqrt(n: bigint): bigint {
   } while (x0 !== x1 && x0 !== x1 - 1n)
   return x0
 }
+
+export function chineseRemainderTheorem(remainiders: bigint[], modulos: bigint[]): bigint {
+  const prod = modulos.reduce((acc, val) => acc * val, 1n)
+  let sum = 0n
+  for (let i = 0; i < remainiders.length; i++) {
+    const p = prod / modulos[i]
+    sum += remainiders[i] * modInv(p, modulos[i]) * p
+  }
+  return sum % prod
+}
