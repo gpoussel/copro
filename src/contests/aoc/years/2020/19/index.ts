@@ -20,43 +20,68 @@ function parseInput(input: string) {
   }
 }
 
+function analyzeRulesAndMessages(rules: ReturnType<typeof parseRule>[], messages: string[]) {
+  const ruleMap = new Map(rules.map(rule => [rule.name, rule.value]))
+
+  function matchRule(message: string, pos: number, ruleNum: number): number[] {
+    const rule = ruleMap.get(ruleNum)!
+
+    // Terminal rule (character)
+    if (typeof rule === "string") {
+      return pos < message.length && message[pos] === rule ? [pos + 1] : []
+    }
+
+    // Non-terminal rule (list of alternatives)
+    const results: number[] = []
+    for (const alternative of rule as number[][]) {
+      const positions = matchSequence(message, pos, alternative)
+      results.push(...positions)
+    }
+    return results
+  }
+
+  function matchSequence(message: string, pos: number, sequence: number[]): number[] {
+    if (sequence.length === 0) return [pos]
+
+    const [first, ...rest] = sequence
+    const positions: number[] = []
+
+    for (const newPos of matchRule(message, pos, first)) {
+      positions.push(...matchSequence(message, newPos, rest))
+    }
+
+    return positions
+  }
+
+  function isValid(message: string): boolean {
+    return matchRule(message, 0, 0).includes(message.length)
+  }
+
+  return messages.filter(isValid).length
+}
+
 function part1(inputString: string) {
   const { rules, messages } = parseInput(inputString)
-  const ruleMap = new Map(rules.map(rule => [rule.name, rule.value]))
-  const stack: (string | number)[][] = [[0]]
-  const values = new Set<string>()
-  while (stack.length > 0) {
-    const current = stack.pop()!
-    if (current?.every(element => typeof element === "string")) {
-      values.add(current.join(""))
-      continue
-    }
-    let next = [[]] as (string | number)[][]
-    for (let i = 0; i < current.length; i++) {
-      const value = current[i]
-      if (typeof value === "string") {
-        next.forEach(option => option.push(value))
-        continue
-      }
-      const rule = ruleMap.get(value)!
-      if (typeof rule === "string") {
-        next.forEach(option => option.push(rule))
-        continue
-      }
-      const options = rule as (string | number)[][]
-      next = next.flatMap(n => options.map(option => [...n, ...option]))
-    }
-    next.forEach(value => stack.push(value))
-  }
-  return messages.filter(message => values.has(message)).length
+  return analyzeRulesAndMessages(rules, messages)
 }
 
 function part2(inputString: string) {
-  const input = parseInput(inputString)
-  return
+  const { rules, messages } = parseInput(inputString)
+  // Modify rules 8 and 11 for part 2
+  for (const rule of rules) {
+    if (rule.name === 8) {
+      rule.value = [[42], [42, 8]]
+    } else if (rule.name === 11) {
+      rule.value = [
+        [42, 31],
+        [42, 11, 31],
+      ]
+    }
+  }
+  return analyzeRulesAndMessages(rules, messages)
 }
 
-const EXAMPLE = `
+const EXAMPLE1 = `
 0: 4 1 5
 1: 2 3 | 3 2
 2: 4 4 | 5 5
@@ -70,13 +95,66 @@ abbbab
 aaabbb
 aaaabbb`
 
+const EXAMPLE2 = `
+42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: "a"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: "b"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+bbabbbbaabaabba
+babbbbaabbbbbabbbbbbaabaaabaaa
+aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+bbbbbbbaaaabbbbaaabbabaaa
+bbbababbbbaaaaaaaabbababaaababaabab
+ababaaaaaabaaab
+ababaaaaabbbaba
+baabbaaaabbaaaababbaababb
+abbbbabbbbaaaababbbbbbaaaababb
+aaaaabbaabaaaaababaa
+aaaabbaaaabbaaa
+aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+babaaabbbaaabaababbaabababaaab
+aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba`
+
 export default {
   part1: {
     run: part1,
     tests: [
       {
-        input: EXAMPLE,
+        input: EXAMPLE1,
         expected: 2,
+      },
+      {
+        input: EXAMPLE2,
+        expected: 3,
       },
     ],
   },
@@ -84,8 +162,8 @@ export default {
     run: part2,
     tests: [
       {
-        input: EXAMPLE,
-        expected: undefined,
+        input: EXAMPLE2,
+        expected: 12,
       },
     ],
   },
