@@ -53,8 +53,9 @@ function printCommand(command: string[], prefix: string = "") {
 
 async function run(args: string[]) {
   const { year, day, part } = parseArguments(args)
-  if (day < 0 || day > 25) {
-    console.error(chalk.red(`Invalid day "${day}" (shall be between 1 and 25)`))
+  const maxDay = year >= 2025 ? 12 : 25
+  if (day < 0 || day > maxDay) {
+    console.error(chalk.red(`Invalid day "${day}" (shall be between 1 and ${maxDay})`))
     return
   }
   console.log(`📆 Year ${chalk.cyan(year)} - Day ${chalk.cyan(day)}`)
@@ -76,7 +77,8 @@ async function run(args: string[]) {
 
   console.log()
   console.log()
-  for (const currentPart of day === 25 ? [1] : [1, 2]) {
+  const isChristmasDay = day === 25
+  for (const currentPart of isChristmasDay ? [1] : [1, 2]) {
     if (part === undefined || part === currentPart) {
       console.log(`⚙️ ${chalk.cyan("Part " + currentPart)}`)
 

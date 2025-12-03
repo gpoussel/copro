@@ -2,8 +2,14 @@
 setlocal enableDelayedExpansion
 
 set "year=2019"
-REM Loop through days 1 to 25
-for /l %%d in (1,1,25) do (
+REM Set max days based on year (12 for 2025+, 25 for earlier years)
+if !year! geq 2025 (
+    set "maxDay=12"
+) else (
+    set "maxDay=25"
+)
+REM Loop through days 1 to maxDay
+for /l %%d in (1,1,!maxDay!) do (
     set "day=%%d"
     REM Pad day with leading zero
     set "pday=0!day!"
