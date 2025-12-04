@@ -143,6 +143,16 @@ export function minMax(numbers: number[]) {
   return { min, max }
 }
 
+export function median(numbers: number[]) {
+  const sorted = numbers.slice().sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  if (sorted.length % 2 === 0) {
+    return (sorted[mid - 1] + sorted[mid]) / 2
+  } else {
+    return sorted[mid]
+  }
+}
+
 export function combinationsFromRangeToSum(count: number, sum: number): number[][] {
   if (count === 1) {
     return [[sum]]
