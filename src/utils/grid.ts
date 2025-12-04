@@ -169,3 +169,45 @@ export function equals<K>(grid1: K[][], grid2: K[][]) {
 export function saveToFile<K>(grid: K[][], path: string, printer: (item: K) => string = item => `${item}`) {
   fs.writeFileSync(path, build(grid, printer))
 }
+
+export function floodFill<K>(
+  grid: K[][],
+  start: { x: number; y: number },
+  fillValue: K,
+  options?: {
+    validNeighbor?: (currentValue: K, neighborValue: K) => boolean
+  }
+) {
+  const targetValue = at(grid, start)
+  if (targetValue === undefined || targetValue === fillValue) {
+    return { filledCount: 0 }
+  }
+  const stack = [start]
+  let filledCount = 0
+  while (stack.length > 0) {
+    const pos = stack.pop()!
+    const currentValue = at(grid, pos)
+    if (currentValue === undefined || currentValue === fillValue) {
+      continue
+    }
+    set(grid, pos, fillValue)
+    filledCount++
+    const neighbors = [
+      { x: pos.x, y: pos.y - 1 },
+      { x: pos.x + 1, y: pos.y },
+      { x: pos.x, y: pos.y + 1 },
+      { x: pos.x - 1, y: pos.y },
+    ]
+    for (const neighbor of neighbors) {
+      const neighborValue = at(grid, neighbor)
+      if (neighborValue === undefined) {
+        continue
+      }
+      if (options?.validNeighbor && !options.validNeighbor(currentValue, neighborValue)) {
+        continue
+      }
+      stack.push(neighbor)
+    }
+  }
+  return { filledCount }
+}
