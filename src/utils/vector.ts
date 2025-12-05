@@ -157,6 +157,10 @@ export class Vector3 implements Equals<Vector3> {
     return new Vector3(this.x + other.x, this.y + other.y, this.z + other.z)
   }
 
+  public minus(other: Vector3): Vector3 {
+    return new Vector3(this.x - other.x, this.y - other.y, this.z - other.z)
+  }
+
   public subtract(other: Vector3): Vector3 {
     return new Vector3(this.x - other.x, this.y - other.y, this.z - other.z)
   }
