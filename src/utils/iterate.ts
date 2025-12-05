@@ -233,3 +233,11 @@ export function findIndexes<T>(array: T[], predicate: (item: T) => boolean): num
   }
   return indexes
 }
+
+export function slidingWindows<T>(array: T[], size: number) {
+  return array.slice(0, -size + 1).map((_, i) => array.slice(i, i + size))
+}
+
+export function cartesianProduct<T>(...args: T[][]): T[][] {
+  return args.reduce((a: T[][], b) => a.map(x => b.map(y => x.concat(y))).reduce((a, b) => a.concat(b), []), [[]])
+}
