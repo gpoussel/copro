@@ -2,6 +2,7 @@ import { Vector2 } from "./vector.js"
 import { PriorityQueue } from "./structures/priority-queue.js"
 import { at, Direction, inBounds, nextDirClockwise, nextDirCounterClockwise } from "./grid.js"
 import { logEvery } from "./log.js"
+import { log } from "console"
 
 export interface DijkstraPath {
   positions: Vector2[]
@@ -243,4 +244,46 @@ export function breadthFirstSearch<K>(
     path: bestPath,
     paths: endPaths,
   }
+}
+
+/**
+ * Simple BFS that only tracks distance, not paths. Memory efficient.
+ */
+export function simpleBfs<K>(
+  starts: K[],
+  options: {
+    key: (node: K) => string
+    adjacents: (node: K) => K[]
+    ends: (node: K) => boolean
+  }
+): number {
+  const visited = new Set<string>()
+  const queue: { node: K; distance: number }[] = []
+
+  for (const start of starts) {
+    const key = options.key(start)
+    if (!visited.has(key)) {
+      visited.add(key)
+      queue.push({ node: start, distance: 0 })
+    }
+  }
+
+  while (queue.length > 0) {
+    const { node, distance } = queue.shift()!
+
+    if (options.ends(node)) {
+      return distance
+    }
+
+    for (const neighbor of options.adjacents(node)) {
+      const key = options.key(neighbor)
+      if (!visited.has(key)) {
+        visited.add(key)
+        queue.push({ node: neighbor, distance: distance + 1 })
+      }
+    }
+    logEvery(queue.length, 5000)
+  }
+
+  return Infinity
 }
