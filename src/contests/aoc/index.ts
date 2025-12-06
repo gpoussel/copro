@@ -90,9 +90,17 @@ async function run(args: string[]) {
       } else {
         const { gotAFailure } = executeTests(partSolution.tests, partSolution.run)
         if (!gotAFailure) {
-          await executeOnFile(inputFile, partSolution.run, response =>
-            printCommand(["aoc", "submit", currentPart.toString(), ...aocOptionsCommand, response.toString()], "  ")
-          )
+          await executeOnFile(inputFile, partSolution.run, response => {
+            if (response.toString().includes("--") || response.toString().includes("=")) {
+              console.log(
+                chalk.yellowBright(
+                  "  (Answer contains special characters, make sure to submit directly on the website!)"
+                )
+              )
+            } else {
+              printCommand(["aoc", "submit", currentPart.toString(), ...aocOptionsCommand, response.toString()], "  ")
+            }
+          })
         }
       }
     }
