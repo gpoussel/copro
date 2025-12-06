@@ -1,5 +1,4 @@
 import { Direction, Direction3D, Heading, HEADING_DIRECTIONS } from "./grid.js"
-import { gcd } from "./math.js"
 
 export interface Equals<T> {
   equals(other: T): boolean
