@@ -1,7 +1,7 @@
 @echo off
 setlocal enableDelayedExpansion
 
-set "year=2022"
+set "year=2023"
 REM Set max days based on year (12 for 2025+, 25 for earlier years)
 if !year! geq 2025 (
     set "maxDay=12"
