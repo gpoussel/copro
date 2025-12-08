@@ -57,6 +57,10 @@ export class Vector2 implements Equals<Vector2> {
     return Math.abs(this.x - other.x) + Math.abs(this.y - other.y)
   }
 
+  public euclideanDistance(other: Vector2): number {
+    return Math.sqrt(Math.pow(this.x - other.x, 2) + Math.pow(this.y - other.y, 2))
+  }
+
   public move(direction: Heading, n = 1): Vector2 {
     switch (direction) {
       case "up":
@@ -183,6 +187,10 @@ export class Vector3 implements Equals<Vector3> {
 
   public manhattanDistance(other: Vector3): number {
     return Math.abs(this.x - other.x) + Math.abs(this.y - other.y) + Math.abs(this.z - other.z)
+  }
+
+  public euclideanDistance(other: Vector3): number {
+    return Math.sqrt(Math.pow(this.x - other.x, 2) + Math.pow(this.y - other.y, 2) + Math.pow(this.z - other.z, 2))
   }
 
   public equals(other: Vector3): boolean {
