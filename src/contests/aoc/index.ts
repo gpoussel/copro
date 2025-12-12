@@ -77,8 +77,8 @@ async function run(args: string[]) {
 
   console.log()
   console.log()
-  const isChristmasDay = day === 25
-  for (const currentPart of isChristmasDay ? [1] : [1, 2]) {
+  const isLastDay = year < 2025 ? day === 25 : day === 12
+  for (const currentPart of isLastDay ? [1] : [1, 2]) {
     if (part === undefined || part === currentPart) {
       console.log(`⚙️ ${chalk.cyan("Part " + currentPart)}`)
 

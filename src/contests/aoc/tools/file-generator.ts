@@ -3,12 +3,12 @@ import { writeYearDayTemplateIfNecessary } from "../../utils.js"
 export async function writeTemplateIfNecessary(year: number, day: number): Promise<{ dayFolder: string }> {
   const partContent = `const input = parseInput(inputString)
   return`
-  const christmasPartContent = `return "Merry Christmas!"`
+  const lastDayContent = `return "Well done! 🎉"`
   const testContent = `{
       input: EXAMPLE,
       expected: undefined,
     }`
-  const christmasDay = day === 25
+  const lastDay = year < 2025 ? day === 25 : day === 12
 
   return await writeYearDayTemplateIfNecessary(
     import.meta.url,
@@ -28,7 +28,7 @@ function part1(inputString: string) {
 }
 
 function part2(inputString: string) {
-  ${christmasDay ? christmasPartContent : partContent}
+  ${lastDay ? lastDayContent : partContent}
 }
 
 const EXAMPLE = \`\`
@@ -40,7 +40,7 @@ export default {
   },
   part2: {
     run: part2,
-    tests: [${christmasDay ? "" : testContent}],
+    tests: [${lastDay ? "" : testContent}],
   },
 } as AdventOfCodeContest
 `
