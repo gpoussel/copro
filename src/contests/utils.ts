@@ -49,6 +49,37 @@ export async function writeYearDayTemplateIfNecessary(
   return { dayFolder }
 }
 
+export async function writeStoryQuestTemplateIfNecessary(
+  url: string,
+  story: string,
+  quest: number,
+  generator: () => string
+): Promise<{ dayFolder: string }> {
+  const currentPath = fileURLToPath(url)
+  const storiesFolder = resolve(currentPath, `../../stories/`)
+  const storyFolder = resolve(storiesFolder, `${story}/`)
+  if (!(await fs.pathExists(storiesFolder))) {
+    await fs.mkdir(storiesFolder)
+  }
+
+  if (!(await fs.pathExists(storyFolder))) {
+    await fs.mkdir(storyFolder)
+  }
+
+  const dayFolder = resolve(storyFolder, `${formatDay(quest)}/`)
+  if (!(await fs.pathExists(dayFolder))) {
+    await fs.mkdir(dayFolder)
+  }
+
+  const solutionFile = resolve(dayFolder, `index.ts`)
+  if (!(await fs.pathExists(solutionFile))) {
+    const fileContent = generator()
+    await fs.writeFile(solutionFile, fileContent)
+  }
+
+  return { dayFolder }
+}
+
 export function callSolverFromString(input: string, solver: MultiLevelQuestPart["run"]) {
   const formattedInput = input.replace(/\r/g, "")
   try {
