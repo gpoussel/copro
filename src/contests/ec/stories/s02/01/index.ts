@@ -11,6 +11,40 @@ function parseInput(input: string) {
   }
 }
 
+function simulate(
+  diagram: string[][],
+  machineWidth: number,
+  machineHeight: number,
+  tokenSequence: string,
+  tossSlot: number,
+): number {
+  let currentCol = (tossSlot - 1) * 2
+  let behaviorIndex = 0
+
+  for (let currentRow = 0; currentRow < machineHeight; currentRow++) {
+    if (diagram[currentRow][currentCol] === "*") {
+      const direction = tokenSequence[behaviorIndex]
+      behaviorIndex++
+      if (direction === "R") {
+        if (currentCol + 1 >= machineWidth) {
+          currentCol--
+        } else {
+          currentCol++
+        }
+      } else {
+        // 'L'
+        if (currentCol - 1 < 0) {
+          currentCol++
+        } else {
+          currentCol--
+        }
+      }
+    }
+  }
+  const finalSlot = Math.floor(currentCol / 2) + 1
+  return Math.max(0, finalSlot * 2 - tossSlot)
+}
+
 function part1(inputString: string) {
   const input = parseInput(inputString)
 
@@ -24,39 +58,7 @@ function part1(inputString: string) {
 
   for (let i = 0; i < tokens.length; i++) {
     const tossSlot = i + 1
-    const tokenSequence = tokens[i]
-
-    let currentCol = (tossSlot - 1) * 2
-    let behaviorIndex = 0
-
-    for (let currentRow = 0; currentRow < machineHeight; currentRow++) {
-      if (diagram[currentRow][currentCol] === "*") {
-        const direction = tokenSequence[behaviorIndex]
-        behaviorIndex++
-
-        if (direction === "R") {
-          if (currentCol + 1 >= machineWidth) {
-            currentCol-- // Bounce left from right wall
-          } else {
-            currentCol++
-          }
-        } else {
-          // direction === "L"
-          if (currentCol - 1 < 0) {
-            currentCol++ // Bounce right from left wall
-          } else {
-            currentCol--
-          }
-        }
-      }
-    }
-
-    const finalSlot = Math.floor(currentCol / 2) + 1
-    const coinsWon = finalSlot * 2 - tossSlot
-
-    if (coinsWon > 0) {
-      totalCoinsWon += coinsWon
-    }
+    totalCoinsWon += simulate(diagram, machineWidth, machineHeight, tokens[i], tossSlot)
   }
 
   return totalCoinsWon
@@ -80,36 +82,8 @@ function part2(inputString: string) {
 
   for (const tokenSequence of tokens) {
     let maxCoinsForThisToken = 0
-
     for (let tossSlot = 1; tossSlot <= numSlots; tossSlot++) {
-      let currentCol = (tossSlot - 1) * 2
-      let behaviorIndex = 0
-
-      for (let currentRow = 0; currentRow < machineHeight; currentRow++) {
-        if (diagram[currentRow][currentCol] === "*") {
-          const direction = tokenSequence[behaviorIndex]
-          behaviorIndex++
-
-          if (direction === "R") {
-            if (currentCol + 1 >= machineWidth) {
-              currentCol-- // Bounce left from right wall
-            } else {
-              currentCol++
-            }
-          } else {
-            // direction === "L"
-            if (currentCol - 1 < 0) {
-              currentCol++ // Bounce right from left wall
-            } else {
-              currentCol--
-            }
-          }
-        }
-      }
-
-      const finalSlot = Math.floor(currentCol / 2) + 1
-      const coinsWon = Math.max(0, finalSlot * 2 - tossSlot)
-
+      const coinsWon = simulate(diagram, machineWidth, machineHeight, tokenSequence, tossSlot)
       if (coinsWon > maxCoinsForThisToken) {
         maxCoinsForThisToken = coinsWon
       }
@@ -141,32 +115,7 @@ function part3(inputString: string) {
 
   for (let i = 0; i < numTokens; i++) {
     for (let j = 0; j < numSlots; j++) {
-      const tossSlot = j + 1
-      let currentCol = (tossSlot - 1) * 2
-      let behaviorIndex = 0
-
-      for (let currentRow = 0; currentRow < machineHeight; currentRow++) {
-        if (diagram[currentRow][currentCol] === "*") {
-          const direction = tokens[i][behaviorIndex]
-          behaviorIndex++
-          if (direction === "R") {
-            if (currentCol + 1 >= machineWidth) {
-              currentCol--
-            } else {
-              currentCol++
-            }
-          } else {
-            // 'L'
-            if (currentCol - 1 < 0) {
-              currentCol++
-            } else {
-              currentCol--
-            }
-          }
-        }
-      }
-      const finalSlot = Math.floor(currentCol / 2) + 1
-      scores[i][j] = Math.max(0, finalSlot * 2 - tossSlot)
+      scores[i][j] = simulate(diagram, machineWidth, machineHeight, tokens[i], j + 1)
     }
   }
 
