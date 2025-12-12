@@ -193,7 +193,7 @@ function toZn(a: number | bigint, n: number | bigint) {
   return aZn < 0n ? aZn + modulo : aZn
 }
 
-function eGcd(aParam: number | bigint, bParam: number | bigint): { g: bigint; x: bigint; y: bigint } {
+export function eGcd(aParam: number | bigint, bParam: number | bigint): { g: bigint; x: bigint; y: bigint } {
   let a = forceBigint(aParam)
   let b = forceBigint(bParam)
 
