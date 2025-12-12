@@ -46,7 +46,7 @@ async function run(args: string[]) {
   } else {
     level = parsedArgs.story
     const storyNumber = parseInt(parsedArgs.story.substring(1))
-    filePrefix = level
+    filePrefix = `e${storyNumber}`
     console.log(`📖 Story ${chalk.cyan(storyNumber)} - Quest ${chalk.cyan(quest)}`)
     console.log(`🌍 https://everybody.codes/story/${storyNumber}/quests/${quest}`)
   }
