@@ -7,14 +7,21 @@ behavior in edge cases.
 
 > ⚠️ **CodinGame type-checks your TypeScript.** Generic "JS golf" tricks that rely
 > on the loose JavaScript runtime are *rejected by the compiler* even though they
-> would run. The two big ones, called out inline below:
+> would run. The recurring ones, called out inline below:
 > - **No `print`** — output is `console.log` (`print` is a JS-only global → TS2304).
 > - **No tagged-template arguments** — ``split`,` ``, ``join`+` ``, ``repeat`3` ``
 >   fail with TS2769; use `split(",")`, `join("+")`, `repeat(3)`.
 > - **Declare your variables** (`var`) — undeclared assignment is TS2304.
+> - **Coerce with *unary* operators only.** `+s`, `~~s`, `+(cond)`, `~x` all compile
+>   (unary `+`/`~` accept any operand). But a *binary* arithmetic operator needs a
+>   number on each side: `s-0`, `s*1`, `s&1`, `(a>b)-(c>d)`, `(a>b)*1` are all
+>   TS2362/2363. Convert first (`+s`), then do math — `+s-1`, not `s-1`.
 >
-> When in doubt, run `scripts/verify.mjs`: it type-checks *and* runs the code, so it
-> tells you immediately whether a trick survives the compiler.
+> The tips below were checked against CodinGame's compiler settings (`tsc --target
+> esnext --lib esnext`, non-strict — implicit `any` is allowed, so untyped arrow
+> params and `obj[stringKey]` lookups are fine). When in doubt, run
+> `scripts/verify.mjs`: it type-checks *and* runs the code, so it tells you
+> immediately whether a trick survives the compiler.
 
 ## Table of contents
 1. Input / output
@@ -50,14 +57,19 @@ behavior in edge cases.
 ## 2. Numbers & coercion
 
 - `+s` instead of `parseInt(s)` / `Number(s)`.
-- `x|0` or `~~x` for `Math.floor(x)` (positive numbers); `x|0` also truncates.
+- `~~s` converts a string to a truncated int in one go (`~~"4.9"` → 4); use it when
+  you'd otherwise write `+s|0`. (`~~` is unary, so it compiles on strings — unlike
+  `s-0`/`s*1`.)
+- `x|0` or `~~x` for `Math.floor(x)` (positive numbers); both also truncate.
 - `a/b|0` for integer division.
 - `x**2` for `Math.pow(x,2)`; `x**.5` for `Math.sqrt(x)`.
 - `2e3` for `2000`; exponential literals beat trailing zeros.
 - `!+s` is true when `s` is `"0"` or empty/NaN-ish — cheap zero test.
-- `a<b?a:b` (7 bytes) beats `Math.min(a,b)` (13). Same for max with `>`.
-- `M=Math` once, then `M.hypot`, `M.abs`, etc., if you use several Math methods.
-- `+(cond)` turns a boolean into 0/1.
+- `a<b?a:b` (7 bytes) beats `Math.min(a,b)` (13). Same for max with `>`. For a whole
+  array, `Math.min(...a)` / `Math.max(...a)` (spread) is shortest.
+- `var M=Math` once, then `M.hypot`, `M.abs`, etc., if you use several Math methods.
+- `+(cond)` turns a boolean into 0/1 (unary `+` on a boolean compiles fine);
+  `+!0`→1, `+!1`→0.
 
 ## 3. Variables & functions
 
@@ -65,12 +77,16 @@ behavior in edge cases.
 - **Declare with `var`** — undeclared `x=5` is a compile error (TS2304). `var` is the
   shortest declarator and one keyword covers a comma list: `var a,b,c=1,[X,Y]=...`.
   You still don't need `:type` annotations; inference is free.
-- Arrow functions: `f=x=>x*2` (declare `f`). No `function`, no `return` for single
-  expressions.
+- Arrow functions: `var f=x=>x*2`. No `function`, no `return` for single expressions.
+  Untyped params are fine (implicit `any` is allowed): `var f=(a,b)=>a+b`.
+- **Default params as free local init** — declare/seed accumulators in the parameter
+  list instead of the body: `var f=(n,i=0,s=0)=>{...}`. Saves the separate `var i=0,s=0`.
+- **Recurse with a named arrow** — `var f=n=>n<2?n:f(n-1)+f(n-2)` beats a named
+  `function` and lets you recurse in a single expression.
 - Comma operator to chain statements without braces: `if(c)a++,b--`.
 - Stuff initialization into call arguments: `b=readline(a=0)` runs `a=0` for free
   inside the arg list.
-- Store a repeated method name as a string and index: `c='charCodeAt',s[c](0)`.
+- Store a repeated method name as a string and index: `c="charCodeAt",s[c](0)`.
 
 ## 4. Loops
 
@@ -87,7 +103,10 @@ behavior in edge cases.
 - Short-circuit instead of `if`: `c&&f()` runs `f()` when `c` truthy; `c||f()` when falsy.
 - Default values: `x=read()||d`.
 - Chain side effects: `c?(a++,b--):0`.
-- Replace nested ternaries with a lookup: `[v0,v1,v2][i]` or `({a:1,b:2})[k]`.
+- `!0` / `!1` for `true` / `false` (2 bytes vs 4/5).
+- Assign inside the condition you test: `(b=read())?use(b):0` reads and tests in one.
+- Replace nested ternaries with a lookup: `[v0,v1,v2][i]` or `({a:1,b:2})[k]`
+  (object-literal-indexed-by-string compiles — implicit `any` is on).
 
 ## 6. Strings
 
@@ -97,6 +116,8 @@ behavior in edge cases.
 - `[...s]` to split a string into characters (beats `s.split("")`).
 - `s[i]` for a single char; `s.at(-1)` or `s[s.length-1]` for the last.
 - Compare chars directly: `s[3]=="A"`.
+- `s.repeat(n)` to build runs; `s.padStart(n,"0")` / `s.padEnd(n)` for fixed-width
+  output (e.g. zero-padding numbers) — all shorter than manual loops.
 - `"A".charCodeAt()` → 65; index with no arg defaults to 0. `String.fromCharCode(n)` reverses it.
 - Case test: compare the char code — `s.charCodeAt()>96` is true for lowercase
   letters. (The JS `"c"<{}` relational trick does **not** type-check: TS rejects `<`
@@ -105,11 +126,18 @@ behavior in edge cases.
 ## 7. Arrays
 
 - `[...Array(n)]` makes an n-length array you can `.map` over (`Array(n)` alone has holes).
+- Build an index range: `[...Array(n)].map((_,i)=>i)` or `Array.from({length:n},(_,i)=>i)`.
+  The `Array.from` form also takes a mapper, so `Array.from({length:n},(_,i)=>f(i))`
+  builds a computed array in one call.
 - `Array(n).fill(0)` when you need filled values.
 - `a.join("")` joins with no separator; `a.join("+")` builds `"x+y+z"`. (Use call
   syntax, not the ``join`+` `` tagged form — it doesn't type-check.)
 - `eval(a.join("+"))` sums an array of numeric strings in very few bytes.
-- Membership: `~a.indexOf(x)` is truthy when present (avoids `>=0`); or `a.includes(x)`.
+- `a.reduce((p,c)=>p+c)` to fold; `a.sort((x,y)=>x-y)` for numeric sort (the default
+  sort is lexicographic — `[10,9].sort()` → `[10,9]`).
+- Membership: `~a.indexOf(x)` is truthy when present (avoids `>=0`); `!~a.indexOf(x)`
+  tests absence; or `a.includes(x)`.
+- Swap without a temp: `[a,b]=[b,a]`.
 - Destructure with holes to skip elements: `[a,,c]=arr`.
 - Spread to clone/concat: `[...a,...b]`.
 
