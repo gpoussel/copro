@@ -82,9 +82,16 @@ if (tscBin) {
 // ---- 2. Runtime: shim the CodinGame globals and run the solution -------------
 const input = inPath ? readFileSync(inPath, 'utf8') : ''
 const lines = input.replace(/\r/g, '').split('\n')
+// Drop one trailing empty line from the conventional final newline — CodinGame
+// feeds exactly the real lines, with no phantom blank line at the end.
+if (lines.length && lines[lines.length - 1] === '') lines.pop()
 
 // Node strips types without checking them, so the solution's free identifiers
 // resolve against globalThis at runtime — matching how CodinGame runs it.
+// The user code is wrapped in try/finally so that an infinite `for(;;)` game loop
+// (the CodinGame norm) still flushes its output: when input runs out, readline()
+// returns undefined, the next parse throws, we note it, and the finally flushes
+// everything captured so far. `for(;readline();)`-style loops just end cleanly.
 const harness =
   `globalThis.__l=${JSON.stringify(lines)};globalThis.__i=0;` +
   `globalThis.readline=()=>globalThis.__l[globalThis.__i++];` +
@@ -92,8 +99,8 @@ const harness =
   `globalThis.print=(...a)=>globalThis.__o.push(a.map(String).join(' '));` +
   `globalThis.printErr=(...a)=>process.stderr.write(a.map(String).join(' ')+'\\n');` +
   `console.log=globalThis.print;console.error=globalThis.printErr;\n` +
-  code +
-  `\n;process.stdout.write(globalThis.__o.join('\\n'));`
+  `try{\n${code}\n}catch(e){process.stderr.write('NOTE: execution stopped (expected at end of input for game loops): '+(e&&e.message||e)+'\\n')}` +
+  `finally{process.stdout.write(globalThis.__o.join('\\n'))}`
 
 const runFile = join(tmpdir(), `cg-golf-${process.pid}.ts`)
 writeFileSync(runFile, harness)
