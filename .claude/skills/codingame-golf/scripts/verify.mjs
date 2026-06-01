@@ -89,12 +89,14 @@ if (lines.length && lines[lines.length - 1] === '') lines.pop()
 // Node strips types without checking them, so the solution's free identifiers
 // resolve against globalThis at runtime — matching how CodinGame runs it.
 // The user code is wrapped in try/finally so that an infinite `for(;;)` game loop
-// (the CodinGame norm) still flushes its output: when input runs out, readline()
-// returns undefined, the next parse throws, we note it, and the finally flushes
-// everything captured so far. `for(;readline();)`-style loops just end cleanly.
+// (the CodinGame norm) still flushes its output. readline() THROWS once the input
+// is exhausted: that unwinds the game loop (even `for(;;){...+readline()...}`, where
+// reading past EOF would otherwise yield NaN forever and hang), the catch notes it,
+// and the finally flushes everything captured so far. Reading exactly the available
+// lines never triggers it; `for(;readline();)` loops unwind the same clean way.
 const harness =
   `globalThis.__l=${JSON.stringify(lines)};globalThis.__i=0;` +
-  `globalThis.readline=()=>globalThis.__l[globalThis.__i++];` +
+  `globalThis.readline=()=>{if(globalThis.__i>=globalThis.__l.length)throw"EOF";return globalThis.__l[globalThis.__i++]};` +
   `globalThis.__o=[];` +
   `globalThis.print=(...a)=>globalThis.__o.push(a.map(String).join(' '));` +
   `globalThis.printErr=(...a)=>process.stderr.write(a.map(String).join(' ')+'\\n');` +
