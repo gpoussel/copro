@@ -1,2 +1,2 @@
-var r=readline,[X,Y,x,y]=r().split(" ").map(Number)
+var r=readline,[X,Y,x,y]=r().split(" ").map(x=>+x)
 for(;r();)console.log((y>Y?(y--,"N"):y<Y?(y++,"S"):"")+(x>X?(x--,"W"):x<X?(x++,"E"):""))

@@ -149,7 +149,10 @@ behavior in edge cases.
 - Compare chars directly: `s[3]=="A"`.
 - `s.repeat(n)` to build runs; `s.padStart(n,"0")` / `s.padEnd(n)` for fixed-width
   output (e.g. zero-padding numbers) — all shorter than manual loops.
-- `"A".charCodeAt()` → 65; index with no arg defaults to 0. `String.fromCharCode(n)` reverses it.
+- `"A".charCodeAt(0)` → 65; `String.fromCharCode(n)` reverses it. ⚠️ **Pass the `0`** —
+  although the runtime defaults the index to 0, CodinGame's `tsc` lib types
+  `charCodeAt(index: number)` with a *required* argument, so a bare `charCodeAt()` is
+  rejected with TS2554 (`Expected 1 arguments, but got 0`). Same for `codePointAt(0)`.
 - `parseInt(c,36)-10` maps letters to `A/a→0` ... `Z/z→25` compactly. It is good
   when lowercase can appear. If the puzzle also requires a fallback for spaces or
   punctuation (e.g. ASCII-art `?` at index 26), keep the guard:
@@ -162,10 +165,10 @@ behavior in edge cases.
   spaces/punctuation also falls through to `-L`. Verified at 122 B on ASCII Art (the
   shorter ~104 B "TypeScript" records assume a looser stub: `print` declared and/or
   `readline` accepting args — neither survives `tsc` here, see §9 / the TS2554 note).
-- `c.charCodeAt()-65` maps `A→0` compactly when input is guaranteed uppercase
+- `c.charCodeAt(0)-65` maps `A→0` compactly when input is guaranteed uppercase
   `A-Z` only. It does not handle lowercase or punctuation unless the statement lets
   you ignore those cases.
-- Case test: compare the char code — `s.charCodeAt()>96` is true for lowercase
+- Case test: compare the char code — `s.charCodeAt(0)>96` is true for lowercase
   letters. (The JS `"c"<{}` relational trick does **not** type-check: TS rejects `<`
   between `string` and `{}` with TS2365.)
 
