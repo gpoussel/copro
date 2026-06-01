@@ -48,8 +48,16 @@ behavior in edge cases.
   Destructure: `var[a,b,c]=readline().split(" ")`.
 - Loop over N lines: `for(n=+readline();n--;)...` consumes the count then iterates
   (declare `n`).
-- Read all remaining lines into an array when N is known:
-  `[...Array(n)].map(_=>readline())`.
+- Read N lines into an array: `[...Array(n)].map(readline)`. Passing `readline`
+  directly (not `_=>readline()`) works — `map` calls it with `(value,index,array)`,
+  `readline` ignores the extras, and a `()=>string` is assignable where a 3-param
+  callback is expected. Same trick for any unary builtin: `.map(Number)`, `.map(eval)`.
+  (If you need the numeric values, `.map(_=>+readline())`; but for single-char/digit
+  inputs the raw strings often compare correctly as-is — see the loop-as-game note.)
+- **Game-loop puzzles** run an infinite `for(;;)` and read a fixed block of input
+  each turn (e.g. 8 lines), printing one answer per turn. That `for(;;)` is correct —
+  CodinGame ends the process for you. The verifier handles it: it stops the loop when
+  the sample input runs out.
 - Output many lines at once: build an array and `console.log(a.join("\n"))` — one
   call is cheaper than many.
 - `console.log(1,"x",78)` prints `1 x 78` (space-separated), handy to avoid joins.
