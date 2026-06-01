@@ -64,6 +64,14 @@ rejected. The two failures this causes constantly:
    method expects. They run as JS but **don't type-check**. Use normal call syntax:
    `s.split(",")`, `a.join("+")`.
 
+3. **Calling a zero-arg global with an argument** → `error TS2554: Expected 0
+   arguments, but got 1`. `readline` is declared `readline():string`, so folds that
+   pass work through a readline arg — `readline(a=0)` (run an assignment for free) or
+   `readline(readline())` (nest reads to consume several lines in one expression) —
+   are rejected. They run in JS but don't compile, so read each line with a bare
+   `readline()`. Passing `readline` *as a callback* (`.map(readline)`) is fine: that's
+   parameter assignability, not an over-arity direct call.
+
 The rule of thumb: a byte-saving trick only counts if it both **runs correctly**
 AND **type-checks**. The verification step below checks both, so lean on it rather
 than guessing what the compiler will accept.

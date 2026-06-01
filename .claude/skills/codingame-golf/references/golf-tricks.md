@@ -18,6 +18,12 @@ behavior in edge cases.
 >   (unary `+`/`~` accept any operand). But a *binary* arithmetic operator needs a
 >   number on each side: `s-0`, `s*1`, `s&1`, `(a>b)-(c>d)`, `(a>b)*1` are all
 >   TS2362/2363. Convert first (`+s`), then do math — `+s-1`, not `s-1`.
+> - **`readline()` takes no arguments** (`declare function readline():string`), so a
+>   direct call with an argument is TS2554 (`Expected 0 arguments, but got 1`). Folds
+>   that stuff work into a readline arg (`readline(a=0)`) or nest reads to consume
+>   several lines at once (`readline(readline())`) do **not** compile — read each line
+>   with a bare `readline()`. (Passing `readline` as a *callback*, `.map(readline)`, is
+>   fine; see §1.)
 >
 > The tips below were checked against CodinGame's compiler settings (`tsc --target
 > esnext --lib esnext`, non-strict — implicit `any` is allowed, so untyped arrow
@@ -97,8 +103,10 @@ behavior in edge cases.
 - **Recurse with a named arrow** — `var f=n=>n<2?n:f(n-1)+f(n-2)` beats a named
   `function` and lets you recurse in a single expression.
 - Comma operator to chain statements without braces: `if(c)a++,b--`.
-- Stuff initialization into call arguments: `b=readline(a=0)` runs `a=0` for free
-  inside the arg list.
+- Stuff initialization into the call arguments of a function that *accepts* that
+  argument: `f(a=0)` runs `a=0` for free inside the arg list. ⚠️ **Not `readline`** —
+  it is declared zero-arg, so `readline(a=0)` is TS2554. Seed such init in a `for`
+  header or `var` list instead.
 - Store a repeated method name as a string and index: `c="charCodeAt",s[c](0)`.
 
 ## 4. Loops
@@ -146,6 +154,14 @@ behavior in edge cases.
   when lowercase can appear. If the puzzle also requires a fallback for spaces or
   punctuation (e.g. ASCII-art `?` at index 26), keep the guard:
   `((i=parseInt(c,36))>9?i-10:26)`. Dropping it is shorter but not equivalent.
+- **Negative `substr` start = "last field" fallback.** `s.substr(-L,L)` returns the
+  final `L`-wide slice. When the default maps to the *last* element (the ASCII-art
+  `?` glyph sits at the end of each row), route non-letters there instead of spelling
+  out `26*L`: `s.substr((i=parseInt(c,36)-10)>=0?i*L:-L,L)`. Baking the `-10` into the
+  assignment keeps the hot branch `i*L`, and `>=0` (not `<0`) ensures `NaN` from
+  spaces/punctuation also falls through to `-L`. Verified at 122 B on ASCII Art (the
+  shorter ~104 B "TypeScript" records assume a looser stub: `print` declared and/or
+  `readline` accepting args — neither survives `tsc` here, see §9 / the TS2554 note).
 - `c.charCodeAt()-65` maps `A→0` compactly when input is guaranteed uppercase
   `A-Z` only. It does not handle lowercase or punctuation unless the statement lets
   you ignore those cases.
