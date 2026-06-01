@@ -1,0 +1,1 @@
+console.log(readline().replace(/./g,c=>(c.charCodeAt(0)+128).toString(2).slice(1)).replace(/0+|1+/g,m=>(m<"1"?"00":"0")+" "+m.replace(/1/g,"0")+" ").trim())
