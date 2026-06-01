@@ -1,6 +1,8 @@
 import chalk from "chalk"
 import { Contest } from "../../types/contest.js"
 import { writeTemplateIfNecessary } from "./tools/file-generator.js"
+import { runProgress } from "./api/progress.js"
+import { runGolfScore } from "./api/golf.js"
 
 const CATEGORIES = ["golf", "puzzle", "opti"] as const
 type Category = (typeof CATEGORIES)[number]
@@ -32,6 +34,18 @@ function parseArguments(args: string[]): { category: Category; slug: string } {
 }
 
 async function run(args: string[]) {
+  // CodinGame site commands (require the rememberMe cookie). These keywords are
+  // not categories, so they never collide with the file-generation command.
+  const command = args[0]
+  if (command === "progress") {
+    await runProgress()
+    return
+  }
+  if (command === "score") {
+    await runGolfScore(args.slice(1))
+    return
+  }
+
   const { category, slug } = parseArguments(args)
   console.log(`🎮 Category ${chalk.cyan(category)} - Puzzle ${chalk.cyan(slug)}`)
 
