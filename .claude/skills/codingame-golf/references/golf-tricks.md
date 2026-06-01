@@ -12,6 +12,8 @@ behavior in edge cases.
 > - **No tagged-template arguments** — ``split`,` ``, ``join`+` ``, ``repeat`3` ``
 >   fail with TS2769; use `split(",")`, `join("+")`, `repeat(3)`.
 > - **Declare your variables** (`var`) — undeclared assignment is TS2304.
+> - **No invalid `for...of` headers** — `for(a=0,b of s)` is rejected (TS2487);
+>   the left side of `of` must be a variable/property access, not a comma expression.
 > - **Coerce with *unary* operators only.** `+s`, `~~s`, `+(cond)`, `~x` all compile
 >   (unary `+`/`~` accept any operand). But a *binary* arithmetic operator needs a
 >   number on each side: `s-0`, `s*1`, `s&1`, `(a>b)-(c>d)`, `(a>b)*1` are all
@@ -85,6 +87,9 @@ behavior in edge cases.
 - **Declare with `var`** — undeclared `x=5` is a compile error (TS2304). `var` is the
   shortest declarator and one keyword covers a comma list: `var a,b,c=1,[X,Y]=...`.
   You still don't need `:type` annotations; inference is free.
+- JS-only global assignment can look unbeatable (`R=readline,...`) but TypeScript
+  rejects it. Count the required `var` before trusting another competitor's byte
+  count; many "TypeScript" golf snippets are actually JS snippets that won't compile.
 - Arrow functions: `var f=x=>x*2`. No `function`, no `return` for single expressions.
   Untyped params are fine (implicit `any` is allowed): `var f=(a,b)=>a+b`.
 - **Default params as free local init** — declare/seed accumulators in the parameter
@@ -102,7 +107,17 @@ behavior in edge cases.
 - Countdown loops are shortest: `for(i=n;i--;)` runs `i` from `n-1` to `0`.
 - Fold the body into the increment via the comma operator:
   `for(i=0;i<n;s+=i++);` — empty body, work done in the `for` header.
+- Put the initial `var` declaration in the `for` header when it saves a separator:
+  `for(var R=readline,L=+R(),H=+R(),T=R(),r,i;H--;)...` can beat a top-level
+  `var ...\nfor(...)...` by one byte.
+- Move one-line work into the `for` increment slot when the body can be just the
+  read/setup step. Example for per-line rendering:
+  `for(var R=readline,L=+R(),H=+R(),T=R(),r,i;H--;console.log(...))r=R()`.
+  This saved 2 bytes in an ASCII-art mapping puzzle because it removed the body
+  comma before `console.log`.
 - `for(x of a)` to iterate values; `for(i in a)` for indices (note: `i` is a string).
+- In TypeScript, `for(r=R(),o='',c of T)` is invalid (TS2487). Use a normal body
+  init, or avoid `for...of` if the declaration/setup overhead erases the gain.
 - `a.map`, `a.reduce`, `a.filter` often beat manual loops when you already have an array.
 
 ## 5. Conditionals & boolean logic
@@ -127,6 +142,13 @@ behavior in edge cases.
 - `s.repeat(n)` to build runs; `s.padStart(n,"0")` / `s.padEnd(n)` for fixed-width
   output (e.g. zero-padding numbers) — all shorter than manual loops.
 - `"A".charCodeAt()` → 65; index with no arg defaults to 0. `String.fromCharCode(n)` reverses it.
+- `parseInt(c,36)-10` maps letters to `A/a→0` ... `Z/z→25` compactly. It is good
+  when lowercase can appear. If the puzzle also requires a fallback for spaces or
+  punctuation (e.g. ASCII-art `?` at index 26), keep the guard:
+  `((i=parseInt(c,36))>9?i-10:26)`. Dropping it is shorter but not equivalent.
+- `c.charCodeAt()-65` maps `A→0` compactly when input is guaranteed uppercase
+  `A-Z` only. It does not handle lowercase or punctuation unless the statement lets
+  you ignore those cases.
 - Case test: compare the char code — `s.charCodeAt()>96` is true for lowercase
   letters. (The JS `"c"<{}` relational trick does **not** type-check: TS rejects `<`
   between `string` and `{}` with TS2365.)
