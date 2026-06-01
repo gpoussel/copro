@@ -1,0 +1,1 @@
+for(;;)console.log([...Array(8)].map(readline).reduce((p,c,i,a)=>a[p]<c?i:p,0))
