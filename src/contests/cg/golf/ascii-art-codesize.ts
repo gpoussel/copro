@@ -1,1 +1,1 @@
-for(var R=readline,L=+R(),H=+R(),T=R(),r,i;H--;console.log(T.replace(/./g,c=>r.substr(((i=parseInt(c,36))>9?i-10:26)*L,L))))r=R()
+for(var R=readline,L=+R(),H=R(),T=R(),i;H=R();)console.log(T.replace(/./g,c=>H.substr((i=parseInt(c,36)-10)>=0?i*L:-L,L)))
