@@ -5,17 +5,27 @@ import { writeTemplateIfNecessary } from "./tools/file-generator.js"
 const CATEGORIES = ["golf", "puzzle", "opti"] as const
 type Category = (typeof CATEGORIES)[number]
 
+function slugify(raw: string): string {
+  return raw
+    .toLowerCase()
+    .replace(/['’]/g, "") // drop apostrophes so "don't" becomes "dont"
+    .replace(/[^a-z0-9]+/g, "-") // any other non-alphanumeric run becomes a dash
+    .replace(/^-+|-+$/g, "") // trim leading/trailing dashes
+}
+
 function parseArguments(args: string[]): { category: Category; slug: string } {
   if (args.length !== 2) {
     throw new Error(`Invalid number of arguments, expected 2 (category, slug), got ${args.length}`)
   }
 
-  const [category, slug] = args
+  const [category, rawSlug] = args
   if (!CATEGORIES.includes(category as Category)) {
     throw new Error(`Invalid category "${category}", expected one of: ${CATEGORIES.join(", ")}`)
   }
-  if (!/^[a-z0-9-]+$/.test(slug)) {
-    throw new Error(`Invalid slug "${slug}", expected lowercase letters, digits and dashes`)
+
+  const slug = slugify(rawSlug)
+  if (slug.length === 0) {
+    throw new Error(`Invalid slug "${rawSlug}", it does not contain any usable character`)
   }
 
   return { category: category as Category, slug }
