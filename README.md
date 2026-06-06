@@ -28,4 +28,4 @@ Copy `.env.example` to `.env` for commands that need site credentials
 
 ## License
 
-ISC — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).
