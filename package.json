@@ -11,7 +11,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/deasync": "^0.1.5",
     "@types/fs-extra": "^11.0.4",
