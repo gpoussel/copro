@@ -5,13 +5,13 @@ all in one place.
 
 ## Contests
 
-| Key     | Site                                        |
-| ------- | ------------------------------------------- |
-| `aoc`   | [Advent of Code](https://adventofcode.com/) |
-| `aosql` | [Advent of SQL](https://adventofsql.com/)   |
-| `cg`    | [CodinGame](https://www.codingame.com/)     |
-| `ec`    | [Everybody Codes](https://everybody.codes/) |
-| `euler` | [Project Euler](https://projecteuler.net/)  |
+| Key     | Site                                        | Progress                          |
+| ------- | ------------------------------------------- | --------------------------------- |
+| `aoc`   | [Advent of Code](https://adventofcode.com/) | 262 puzzles (2015–2025, complete) |
+| `aosql` | [Advent of SQL](https://adventofsql.com/)   | 24 puzzles (2024)                 |
+| `cg`    | [CodinGame](https://www.codingame.com/)     | 21 golf solutions                 |
+| `ec`    | [Everybody Codes](https://everybody.codes/) | 46 quests (2024–2025)             |
+| `euler` | [Project Euler](https://projecteuler.net/)  | 12 problems                       |
 
 Each contest lives under `src/contests/<key>/`, with shared helpers
 (grids, graphs, math, data structures, …) in `src/utils/`.
