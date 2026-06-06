@@ -4,21 +4,11 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 154 (easy 126, medium 22, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 144 (easy 116, medium 22, hard 4, expert 2)._
 
-## Easy (126)
+## Easy (116)
 
-- [ ] [are-the-clumps-normal](https://www.codingame.com/training/easy/are-the-clumps-normal)
 - [ ] [ascii-art](https://www.codingame.com/training/easy/ascii-art)
-- [ ] [asteroids](https://www.codingame.com/training/easy/asteroids)
-- [ ] [auto-pickup](https://www.codingame.com/training/easy/auto-pickup)
-- [ ] [balanced-ternary-computer-encode](https://www.codingame.com/training/easy/balanced-ternary-computer-encode)
-- [ ] [bank-robbers](https://www.codingame.com/training/easy/bank-robbers)
-- [ ] [benfords-law](https://www.codingame.com/training/easy/benfords-law)
-- [ ] [binary-image](https://www.codingame.com/training/easy/binary-image)
-- [ ] [blowing-fuse](https://www.codingame.com/training/easy/blowing-fuse)
-- [ ] [body-weight-is-a-girls-secret](https://www.codingame.com/training/easy/body-weight-is-a-girls-secret)
-- [ ] [brackets-extreme-edition](https://www.codingame.com/training/easy/brackets-extreme-edition)
 - [ ] [brick-in-the-wall](https://www.codingame.com/training/easy/brick-in-the-wall)
 - [ ] [bulk-email-generator](https://www.codingame.com/training/easy/bulk-email-generator)
 - [ ] [caesar-is-the-chief](https://www.codingame.com/training/easy/caesar-is-the-chief)
