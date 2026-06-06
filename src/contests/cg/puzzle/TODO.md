@@ -4,20 +4,10 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 134 (easy 106, medium 22, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 124 (easy 96, medium 22, hard 4, expert 2)._
 
-## Easy (106)
+## Easy (96)
 
-- [ ] [credit-card-verifier-luhns-algorithm](https://www.codingame.com/training/easy/credit-card-verifier-luhns-algorithm)
-- [ ] [darts](https://www.codingame.com/training/easy/darts)
-- [ ] [dead-mens-shot](https://www.codingame.com/training/easy/dead-mens-shot)
-- [ ] [decode-the-message](https://www.codingame.com/training/easy/decode-the-message)
-- [ ] [defibrillators](https://www.codingame.com/training/easy/defibrillators)
-- [ ] [detective-geek](https://www.codingame.com/training/easy/detective-geek)
-- [ ] [detective-pikaptcha-ep1](https://www.codingame.com/training/easy/detective-pikaptcha-ep1)
-- [ ] [detective-pikaptcha-ep2](https://www.codingame.com/training/easy/detective-pikaptcha-ep2)
-- [ ] [die-handedness](https://www.codingame.com/training/easy/die-handedness)
-- [ ] [disordered-first-contact](https://www.codingame.com/training/easy/disordered-first-contact)
 - [ ] [dolbears-law](https://www.codingame.com/training/easy/dolbears-law)
 - [ ] [dungeons-and-maps](https://www.codingame.com/training/easy/dungeons-and-maps)
 - [ ] [encryptiondecryption-of-enigma-machine](https://www.codingame.com/training/easy/encryptiondecryption-of-enigma-machine)
