@@ -2,22 +2,12 @@
 
 Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo** (dossier `puzzle/`).
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
-À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; coche au fur et à mesure.
+À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 164 (easy 136, medium 22, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 154 (easy 126, medium 22, hard 4, expert 2)._
 
-## Easy (136)
+## Easy (126)
 
-- [ ] [1--ngr---basic-radar](https://www.codingame.com/training/easy/1--ngr---basic-radar)
-- [ ] [1000000000d-world](https://www.codingame.com/training/easy/1000000000d-world)
-- [ ] [111-rubiks-cube-movements](https://www.codingame.com/training/easy/111-rubiks-cube-movements)
-- [ ] [1d-bush-fire](https://www.codingame.com/training/easy/1d-bush-fire)
-- [ ] [1d-spreadsheet](https://www.codingame.com/training/easy/1d-spreadsheet)
-- [ ] [7-segment-scanner](https://www.codingame.com/training/easy/7-segment-scanner)
-- [ ] [a-bunny-and-carrots](https://www.codingame.com/training/easy/a-bunny-and-carrots)
-- [ ] [a-childs-play](https://www.codingame.com/training/easy/a-childs-play)
-- [ ] [a-mountain-of-a-mole-hill](https://www.codingame.com/training/easy/a-mountain-of-a-mole-hill)
-- [ ] [addem-up](https://www.codingame.com/training/easy/addem-up)
 - [ ] [are-the-clumps-normal](https://www.codingame.com/training/easy/are-the-clumps-normal)
 - [ ] [ascii-art](https://www.codingame.com/training/easy/ascii-art)
 - [ ] [asteroids](https://www.codingame.com/training/easy/asteroids)
