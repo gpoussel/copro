@@ -8,7 +8,7 @@ all in one place.
 | Key     | Site                                        |
 | ------- | ------------------------------------------- |
 | `aoc`   | [Advent of Code](https://adventofcode.com/) |
-| `aosql` | Advent of Code (SQL flavour)                |
+| `aosql` | [Advent of SQL](https://adventofsql.com/)   |
 | `cg`    | [CodinGame](https://www.codingame.com/)     |
 | `ec`    | [Everybody Codes](https://everybody.codes/) |
 | `euler` | [Project Euler](https://projecteuler.net/)  |
