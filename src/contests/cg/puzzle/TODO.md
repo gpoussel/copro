@@ -4,20 +4,10 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 144 (easy 116, medium 22, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 134 (easy 106, medium 22, hard 4, expert 2)._
 
-## Easy (116)
+## Easy (106)
 
-- [ ] [ascii-art](https://www.codingame.com/training/easy/ascii-art)
-- [ ] [brick-in-the-wall](https://www.codingame.com/training/easy/brick-in-the-wall)
-- [ ] [bulk-email-generator](https://www.codingame.com/training/easy/bulk-email-generator)
-- [ ] [caesar-is-the-chief](https://www.codingame.com/training/easy/caesar-is-the-chief)
-- [ ] [catching-up](https://www.codingame.com/training/easy/catching-up)
-- [ ] [container-terminal](https://www.codingame.com/training/easy/container-terminal)
-- [ ] [cosmic-love](https://www.codingame.com/training/easy/cosmic-love)
-- [ ] [count-as-i-count](https://www.codingame.com/training/easy/count-as-i-count)
-- [ ] [create-the-longest-sequence-of-1s](https://www.codingame.com/training/easy/create-the-longest-sequence-of-1s)
-- [ ] [create-turn-here-signs](https://www.codingame.com/training/easy/create-turn-here-signs)
 - [ ] [credit-card-verifier-luhns-algorithm](https://www.codingame.com/training/easy/credit-card-verifier-luhns-algorithm)
 - [ ] [darts](https://www.codingame.com/training/easy/darts)
 - [ ] [dead-mens-shot](https://www.codingame.com/training/easy/dead-mens-shot)
