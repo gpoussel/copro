@@ -7,7 +7,7 @@ all in one place.
 
 | Key     | Site                                        | Progress                          |
 | ------- | ------------------------------------------- | --------------------------------- |
-| `aoc`   | [Advent of Code](https://adventofcode.com/) | 262 puzzles (2015–2025, complete) |
+| `aoc`   | [Advent of Code](https://adventofcode.com/) | 524 stars (2015–2025, complete)   |
 | `aosql` | [Advent of SQL](https://adventofsql.com/)   | 24 puzzles (2024)                 |
 | `cg`    | [CodinGame](https://www.codingame.com/)     | 21 golf solutions                 |
 | `ec`    | [Everybody Codes](https://everybody.codes/) | 46 quests (2024–2025)             |
