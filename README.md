@@ -11,7 +11,7 @@ all in one place.
 | `aosql` | [Advent of SQL](https://adventofsql.com/)   | 24 puzzles (2024, complete)       |
 | `cg`    | [CodinGame](https://www.codingame.com/)     | 21 golf solutions                 |
 | `ec`    | [Everybody Codes](https://everybody.codes/) | 46 quests (2024–2025)             |
-| `euler` | [Project Euler](https://projecteuler.net/)  | 12 problems                       |
+| `euler` | [Project Euler](https://projecteuler.net/)  | 99 problems (1–99)                |
 
 Each contest lives under `src/contests/<key>/`, with shared helpers
 (grids, graphs, math, data structures, …) in `src/utils/`.
