@@ -38,6 +38,6 @@ pnpm start -- <contest> [args]
 
 ## Other notes
 
-- Project Euler problems live in a git submodule (`src/contests/euler/problems`, repo `copro-euler-100`) — run `git submodule update --init` to populate it.
+- Project Euler solutions are split by problem number (see `src/contests/euler/tools/file-generator.ts`): problems **1–99** live in this repo under `src/contests/euler/problems-00xx/`, while problems **≥ 100** live in a separate git submodule (`src/contests/euler/problems`, repo `copro-euler-100`) — run `git submodule update --init` to populate it. So when measuring this repo's Euler progress, count only `problems-00xx/`; the submodule is a different repo.
 - Secrets come from `.env` (copy `.env.example`): Postgres vars for `aosql`, `CG_REMEMBER_ME` (+ optional `CG_USER_ID`) for CodinGame.
 - `.claude/skills/codingame-golf/` is a skill for byte-minimizing CodinGame solutions, with a `verify.mjs` runner and `golf-tricks.md` reference.
