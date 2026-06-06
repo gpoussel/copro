@@ -32,7 +32,7 @@ function solve(input: ReturnType<typeof parseInput>) {
         const doors = hash
           .slice(0, 4)
           .split("")
-          .map(c => c.charCodeAt(0) >= 98)
+          .map((c: string) => c.charCodeAt(0) >= 98)
         const nodes = ["up", "down", "left", "right"]
           .filter((_, i) => doors[i])
           .map(direction => {

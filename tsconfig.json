@@ -9,8 +9,10 @@
     "strict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "types": ["node"],
     "typeRoots": ["./node_modules/@types"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "exclude": ["src/contests/cg/golf"]
 }
