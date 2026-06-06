@@ -22,7 +22,7 @@ pnpm start -- <contest> [args]
 - `pnpm start -- cg golf <puzzle-slug>` — scaffold a CodinGame solution file (categories: `golf`, `puzzle`, `opti`).
 - `pnpm start -- cg progress` / `cg golf-score` — CodinGame API commands (need `CG_REMEMBER_ME`).
 
-There is **no separate build, lint, or test command**. "Tests" are example cases embedded in each solution and executed by the contest runner when you run that day/problem. Formatting is Prettier (`.prettierrc`); run via your editor or `pnpm exec prettier`.
+`pnpm typecheck` runs `tsc --noEmit` over the whole `src` tree **except** `src/contests/cg/golf` (those are intentionally untyped, byte-minimized programs and are excluded in `tsconfig.json`). There is no build step — the app runs via `tsx` (transpile-only). "Tests" are example cases embedded in each solution and executed by the contest runner when you run that day/problem. Formatting is Prettier (`.prettierrc`); run via your editor or `pnpm exec prettier`.
 
 ## Architecture
 
