@@ -20,7 +20,6 @@ pnpm start -- <contest> [args]
 - `pnpm start -- aoc` / `pnpm start -- aoc 5` — defaults year/day from the current Advent-of-Code clock (America/New_York).
 - `pnpm start -- euler 100` — run Project Euler problem 100.
 - `pnpm start -- cg golf <puzzle-slug>` — scaffold a CodinGame solution file (categories: `golf`, `puzzle`, `opti`).
-- `pnpm start -- cg progress` / `cg golf-score` — CodinGame API commands (need `CG_REMEMBER_ME`).
 
 `pnpm typecheck` runs `tsc --noEmit` over the whole `src` tree **except** `src/contests/cg/golf` (those are intentionally untyped, byte-minimized programs and are excluded in `tsconfig.json`). There is no build step — the app runs via `tsx` (transpile-only). "Tests" are example cases embedded in each solution and executed by the contest runner when you run that day/problem. Formatting is Prettier (`.prettierrc`); run via your editor or `pnpm exec prettier`.
 
@@ -33,11 +32,11 @@ pnpm start -- <contest> [args]
   - Project Euler: `{ solve() }`.
 - **Runner flow** (AoC/EC, see `src/contests/aoc/index.ts`): parse args → `writeTemplateIfNecessary` scaffolds `years/<year>/<dd>/index.ts` if absent → dynamically `import()` that file → run embedded `tests` (`executeTests`), then run against the `input` file (`executeOnFile`). Shared helpers live in `src/contests/utils.ts`. Note: from year 2025 onward AoC is treated as a 12-day event, not 25.
 - **Dynamic imports** target compiled `.js` paths (`getIndexFile`/`getFile`) even though source is `.ts` — the project runs via `tsx` with `"type": "module"`, so imports use `.js` extensions throughout.
-- **CodinGame** (`src/contests/cg/`) is different: `golf/`, `puzzle/`, `opti/` hold flat per-puzzle `.ts` files (no test harness; files are `// @ts-nocheck` standalone readline()→print() programs). `api/` (`client.ts`, `progress.ts`, `golf.ts`) talks to the CodinGame backend, authenticated via the `rememberMe` cookie in `CG_REMEMBER_ME`.
+- **CodinGame** (`src/contests/cg/`) is different: `golf/`, `puzzle/`, `opti/` hold flat per-puzzle `.ts` files (no test harness; files are `// @ts-nocheck` standalone readline()→print() programs). The `cg` command only scaffolds these solution files; talking to the CodinGame backend (progress, leaderboards, etc.) is handled outside this repo by the CodinGame MCP tools.
 - **Shared algorithm library** in `src/utils/` (grid, graph, math, algebra, bitset, vector, OCR, and `structures/`: priority queue, order-statistic tree, ring buffer), re-exported through `src/utils/index.ts` as `utils`. Reach for these in solutions before writing new helpers.
 
 ## Other notes
 
 - Project Euler solutions are split by problem number (see `src/contests/euler/tools/file-generator.ts`): problems **1–99** live in this repo under `src/contests/euler/problems-00xx/`, while problems **≥ 100** live in a separate git submodule (`src/contests/euler/problems`, repo `copro-euler-100`) — run `git submodule update --init` to populate it. So when measuring this repo's Euler progress, count only `problems-00xx/`; the submodule is a different repo.
-- Secrets come from `.env` (copy `.env.example`): Postgres vars for `aosql`, `CG_REMEMBER_ME` (+ optional `CG_USER_ID`) for CodinGame.
+- Secrets come from `.env` (copy `.env.example`): Postgres vars for `aosql`.
 - `.claude/skills/codingame-golf/` is a skill for byte-minimizing CodinGame solutions, with a `verify.mjs` runner and `golf-tricks.md` reference.
