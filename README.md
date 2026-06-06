@@ -19,8 +19,8 @@ Each contest lives under `src/contests/<key>/`, with shared helpers
 ## Usage
 
 ```bash
-npm install
-npm start -- <contest> [args]      # e.g. npm start -- aoc 2015 1
+pnpm install
+pnpm start -- <contest> [args]      # e.g. pnpm start -- aoc 2015 1
 ```
 
 Copy `.env.example` to `.env` for commands that need site credentials

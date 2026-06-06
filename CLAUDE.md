@@ -9,20 +9,20 @@ A single TypeScript CLI holding competitive-programming solutions for several si
 ## Commands
 
 ```bash
-npm install
-npm start -- <contest> [args]
+pnpm install
+pnpm start -- <contest> [args]
 ```
 
 `<contest>` is one of `aoc`, `aosql`, `cg`, `ec`, `euler` (registered in `src/contests/index.ts`). Examples:
 
-- `npm start -- aoc 2015 1` — run both parts of AoC 2015 day 1 (creates the day folder + template if missing, runs tests, prints `aoc download`/`aoc submit` helper commands).
-- `npm start -- aoc 2015 1 2` — run only part 2.
-- `npm start -- aoc` / `npm start -- aoc 5` — defaults year/day from the current Advent-of-Code clock (America/New_York).
-- `npm start -- euler 100` — run Project Euler problem 100.
-- `npm start -- cg golf <puzzle-slug>` — scaffold a CodinGame solution file (categories: `golf`, `puzzle`, `opti`).
-- `npm start -- cg progress` / `cg golf-score` — CodinGame API commands (need `CG_REMEMBER_ME`).
+- `pnpm start -- aoc 2015 1` — run both parts of AoC 2015 day 1 (creates the day folder + template if missing, runs tests, prints `aoc download`/`aoc submit` helper commands).
+- `pnpm start -- aoc 2015 1 2` — run only part 2.
+- `pnpm start -- aoc` / `pnpm start -- aoc 5` — defaults year/day from the current Advent-of-Code clock (America/New_York).
+- `pnpm start -- euler 100` — run Project Euler problem 100.
+- `pnpm start -- cg golf <puzzle-slug>` — scaffold a CodinGame solution file (categories: `golf`, `puzzle`, `opti`).
+- `pnpm start -- cg progress` / `cg golf-score` — CodinGame API commands (need `CG_REMEMBER_ME`).
 
-There is **no separate build, lint, or test command**. "Tests" are example cases embedded in each solution and executed by the contest runner when you run that day/problem. Formatting is Prettier (`.prettierrc`); run via your editor or `npx prettier`.
+There is **no separate build, lint, or test command**. "Tests" are example cases embedded in each solution and executed by the contest runner when you run that day/problem. Formatting is Prettier (`.prettierrc`); run via your editor or `pnpm exec prettier`.
 
 ## Architecture
 
