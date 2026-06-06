@@ -68,6 +68,7 @@ interface PuzzleProgress {
 interface PuzzleRankingRow {
   pseudo?: string
   rank?: number
+  score?: number
   criteriaScore?: number
   programmingLanguage?: string
   codingamer?: { userId?: number; publicHandle?: string }
@@ -170,13 +171,13 @@ async function collectPuzzle(puzzle: PuzzleDetail, userId: number): Promise<Puzz
     ]),
   ])
 
-  // A valid code-golf submission always has a positive code size; rows with a
-  // 0 / missing criteriaScore are placeholders (no submission yet) and would
-  // otherwise wrongly win the Math.min for "first place".
+  // A valid code-golf leaderboard entry must be fully solved and have a
+  // positive code size. Incomplete rows can expose tiny criteriaScore values
+  // (for example 16 chars with score 0) and would otherwise wrongly win.
   const lengthsOf = (board: PuzzleLeaderboard) =>
     (board?.users ?? []).filter(
       (r): r is PuzzleRankingRow & { criteriaScore: number } =>
-        typeof r.criteriaScore === "number" && r.criteriaScore > 0
+        r.score === 100 && typeof r.criteriaScore === "number" && r.criteriaScore > 0
     )
 
   // First place by length: shortest submission across all languages.
