@@ -79,13 +79,21 @@ possible, minimise backtracking over already-visited cells). Caveat: we have
 stderr), so the only oracle is submitting; CG keeps your best, so experiments are
 rank-safe but cost a submission each.
 
-Untried efficiency ideas (unproven): reduce wasted turns walking back through
-visited cells to reach a far frontier (greedy-nearest already helps); a coverage
-walk that prefers frontiers opening the most new area; check whether clearing a
-maze advances to a fresh level (v2's `.`-targeting barely moved the score, so
-probably not multi-level or it wasn't the bottleneck). Published reference
-solutions (texus, Coni63) are essentially our approach and score in the same
-range — beating ~2500 likely needs a genuinely better coverage planner.
+**Efficiency experiment — no change.** Removing the redundant ghost-gate on the
+BFS step (the step is already safety-filtered by `possibleMoves`) and making the
+fallback always prefer a fresh neighbour scored **exactly 2568** again — byte-for-
+byte the same as v2. So these micro-tweaks don't alter the trajectory on the
+hidden maze. Combined with the flee regression, **2568 is the ceiling of this
+greedy-BFS-coverage approach**, and it matches the published reference solutions
+(texus, Coni63) — i.e. this is a good, representative score, not a low one.
+
+**Verdict:** keep v2 (2568). Beating it would need a *fundamentally* better
+coverage planner (leaders ≈ 7000 cells = ~5.5× ours, so either we waste most
+turns backtracking or we die early — we can't tell which without observability).
+That's a from-scratch rewrite tuned by repeated blind submissions (no eval/replay/
+stderr visibility), i.e. high cost / uncertain payoff. Not worth burning
+submissions on blindly. If revisited, first build a faithful referee — but the
+real ghost AI and exact scoring are unknown, which is the whole problem.
 
 ---
 
