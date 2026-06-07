@@ -64,9 +64,28 @@ models (stationary / random / perfect-chaser):
 - caveat: stationary ghosts leave ~6 pellets stuck by the ghost house (a sim
   artifact — real ghosts leave the house).
 
-Next ideas if pushing past 2532: smarter ghost prediction (use ghost *next*
-cells, not just current), eat power-pellets/hunt frightened ghosts if the game
-has them, and keep BFS cheap on big mazes (the hidden test size is unknown).
+**Submitted scores:** v1 (`?`-only) **2532**; v2 (`?`+`.`) **2568** (best, the
+committed version). Coni63's writeup reverse-engineers the score as ≈ **2 ×
+distinct cells visited** (2568/2 ≈ 1284 cells; #1 ≈ 14337 ≈ 7168 cells), i.e. a
+**coverage** objective on a large hidden maze.
+
+**Proactive-flee experiment — REGRESSED, do not repeat.** Fleeing whenever a
+ghost is within DANGER (wrap-aware) scored **DANGER=2 → 2516, DANGER=3 → 2176**,
+both below 2568. Conclusion: the bot is **coverage/turn-bound, not death-bound** —
+every turn spent fleeing is a turn not exploring a new cell. So survival tweaks
+hurt; the lever is **exploration efficiency** (visit a new cell as often as
+possible, minimise backtracking over already-visited cells). Caveat: we have
+**zero observability** (can't see the hidden eval, the visible-test replay, or
+stderr), so the only oracle is submitting; CG keeps your best, so experiments are
+rank-safe but cost a submission each.
+
+Untried efficiency ideas (unproven): reduce wasted turns walking back through
+visited cells to reach a far frontier (greedy-nearest already helps); a coverage
+walk that prefers frontiers opening the most new area; check whether clearing a
+maze advances to a fresh level (v2's `.`-targeting barely moved the score, so
+probably not multi-level or it wasn't the bottleneck). Published reference
+solutions (texus, Coni63) are essentially our approach and score in the same
+range — beating ~2500 likely needs a genuinely better coverage planner.
 
 ---
 
