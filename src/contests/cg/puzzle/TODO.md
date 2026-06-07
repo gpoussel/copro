@@ -4,21 +4,6 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 8 (easy 0, medium 2, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 0 (easy 0, medium 0, hard 0, expert 0)._
 
-## Medium (2)
-
-- [ ] [winamax-battle](https://www.codingame.com/training/medium/winamax-battle)
-- [ ] [zhiwei-sun-squares](https://www.codingame.com/training/medium/zhiwei-sun-squares)
-
-## Hard (4)
-
-- [ ] [obsolete-programming](https://www.codingame.com/training/hard/obsolete-programming)
-- [ ] [parse-sql-queries](https://www.codingame.com/training/hard/parse-sql-queries)
-- [ ] [the-greatest-number](https://www.codingame.com/training/hard/the-greatest-number)
-- [ ] [unflood-the-world](https://www.codingame.com/training/hard/unflood-the-world)
-
-## Expert (2)
-
-- [ ] [breach](https://www.codingame.com/training/expert/breach)
-- [ ] [the-resistance](https://www.codingame.com/training/expert/the-resistance)
+🎉 Tous les puzzles « puzzle » résolus sur CodinGame ont été ré-implémentés dans ce repo.
