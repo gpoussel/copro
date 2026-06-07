@@ -4,20 +4,10 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 64 (easy 36, medium 22, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 54 (easy 26, medium 22, hard 4, expert 2)._
 
-## Easy (36)
+## Easy (26)
 
-- [ ] [rotating-arrows](https://www.codingame.com/training/easy/rotating-arrows)
-- [ ] [rugby-score](https://www.codingame.com/training/easy/rugby-score)
-- [ ] [self-driving-car-testing](https://www.codingame.com/training/easy/self-driving-car-testing)
-- [ ] [shadow-casting](https://www.codingame.com/training/easy/shadow-casting)
-- [ ] [should-bakers-be-frugal](https://www.codingame.com/training/easy/should-bakers-be-frugal)
-- [ ] [simple-auto-scaling](https://www.codingame.com/training/easy/simple-auto-scaling)
-- [ ] [simple-awale](https://www.codingame.com/training/easy/simple-awale)
-- [ ] [simple-load-balancing](https://www.codingame.com/training/easy/simple-load-balancing)
-- [ ] [smooth](https://www.codingame.com/training/easy/smooth)
-- [ ] [someones-acting-sus----](https://www.codingame.com/training/easy/someones-acting-sus----)
 - [ ] [stall-tilt](https://www.codingame.com/training/easy/stall-tilt)
 - [ ] [substitution-encoding](https://www.codingame.com/training/easy/substitution-encoding)
 - [ ] [sudoku-validator](https://www.codingame.com/training/easy/sudoku-validator)
