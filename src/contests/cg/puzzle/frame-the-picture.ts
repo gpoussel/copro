@@ -1,21 +1,20 @@
-// @ts-nocheck
 // 🎮 CodinGame Puzzle - frame-the-picture
 // https://www.codingame.com/training/easy/frame-the-picture
 
-const framePattern: string = readline();
-const [h, w] = readline().split(' ').map(Number);
-const lines: string[] = [];
+const framePattern: string = readline()
+const [h, w] = readline().split(" ").map(Number)
+const lines: string[] = []
 for (let i = 0; i < h; i++) {
-    lines.push(readline());
+  lines.push(readline())
 }
 
-const patLen = framePattern.length;
+const patLen = framePattern.length
 
 // The frame adds `patLen` layers on each side, plus 1 space gap on each side.
 // Total width: w + 2 * patLen + 2 (for the space gaps)
 // Total height: h + 2 * patLen + 2 (for the space gaps)
-const totalWidth = w + 2 * patLen + 2;
-const totalHeight = h + 2 * patLen + 2;
+const totalWidth = w + 2 * patLen + 2
+const totalHeight = h + 2 * patLen + 2
 
 // For row index r (0-based) and col index c (0-based):
 // The "layer" from outside is min(r, totalHeight-1-r, c, totalWidth-1-c).
@@ -35,26 +34,26 @@ const totalHeight = h + 2 * patLen + 2;
 // If layer < patLen => framePattern[layer], else ' '
 
 for (let r = 0; r < totalHeight; r++) {
-    let row = '';
-    for (let c = 0; c < totalWidth; c++) {
-        const distTop = r;
-        const distBottom = totalHeight - 1 - r;
-        const distLeft = c;
-        const distRight = totalWidth - 1 - c;
-        const layer = Math.min(distTop, distBottom, distLeft, distRight);
-        if (layer < patLen) {
-            row += framePattern[layer];
-        } else {
-            // Inner area: either picture content or space padding
-            // Inner content starts at offset patLen+1 from each edge
-            const innerR = r - patLen - 1;
-            const innerC = c - patLen - 1;
-            if (innerR >= 0 && innerR < h && innerC >= 0 && innerC < w) {
-                row += lines[innerR][innerC] ?? ' ';
-            } else {
-                row += ' ';
-            }
-        }
+  let row = ""
+  for (let c = 0; c < totalWidth; c++) {
+    const distTop = r
+    const distBottom = totalHeight - 1 - r
+    const distLeft = c
+    const distRight = totalWidth - 1 - c
+    const layer = Math.min(distTop, distBottom, distLeft, distRight)
+    if (layer < patLen) {
+      row += framePattern[layer]
+    } else {
+      // Inner area: either picture content or space padding
+      // Inner content starts at offset patLen+1 from each edge
+      const innerR = r - patLen - 1
+      const innerC = c - patLen - 1
+      if (innerR >= 0 && innerR < h && innerC >= 0 && innerC < w) {
+        row += lines[innerR][innerC] ?? " "
+      } else {
+        row += " "
+      }
     }
-    console.log(row);
+  }
+  console.log(row)
 }

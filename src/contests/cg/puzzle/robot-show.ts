@@ -1,4 +1,3 @@
-// @ts-nocheck
 // 🎮 CodinGame Puzzle - robot-show
 // https://www.codingame.com/training/easy/robot-show
 
@@ -44,16 +43,16 @@
  * So the answer is: max over all bots of max(pos, L - pos)
  */
 
-const L = parseInt(readline());
-const N = parseInt(readline());
-const positions = readline().split(' ').map(Number);
+const L = parseInt(readline())
+const N = parseInt(readline())
+const positions = readline().split(" ").map(Number)
 
-let maxTime = 0;
+let maxTime = 0
 for (const p of positions) {
-    const bestTime = Math.max(p, L - p);
-    if (bestTime > maxTime) {
-        maxTime = bestTime;
-    }
+  const bestTime = Math.max(p, L - p)
+  if (bestTime > maxTime) {
+    maxTime = bestTime
+  }
 }
 
-console.log(Math.round(maxTime) + 0);
+console.log(Math.round(maxTime) + 0)

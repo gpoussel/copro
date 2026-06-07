@@ -1,47 +1,52 @@
-// @ts-nocheck
 // 🎮 CodinGame Puzzle - murder-in-the-village
 // https://www.codingame.com/training/easy/murder-in-the-village
 
-const N = parseInt(readline());
+const N = parseInt(readline())
 
 // Parse each statement
-const statements = [];
+interface Statement {
+  name: string
+  location: string
+  companions: string[]
+  alone: boolean
+}
+const statements: Statement[] = []
 for (let i = 0; i < N; i++) {
-  const line = readline();
+  const line = readline()
   // Format: "Name: I was in the Location with Name0 and Name1 ... and NameY."
   // OR:     "Name: I was in the Location, alone."
-  const colonIdx = line.indexOf(':');
-  const name = line.substring(0, colonIdx);
+  const colonIdx = line.indexOf(":")
+  const name = line.substring(0, colonIdx)
 
-  const rest = line.substring(colonIdx + 2); // skip ": "
+  const rest = line.substring(colonIdx + 2) // skip ": "
   // "I was in the Location with ..."
   // "I was in the Location, alone."
 
-  const inTheIdx = rest.indexOf('in the ');
-  const afterLocation = rest.substring(inTheIdx + 7); // after "in the "
+  const inTheIdx = rest.indexOf("in the ")
+  const afterLocation = rest.substring(inTheIdx + 7) // after "in the "
 
-  let location, companions;
-  if (afterLocation.includes(', alone.')) {
+  let location: string, companions: string[]
+  if (afterLocation.includes(", alone.")) {
     // alone case
-    location = afterLocation.substring(0, afterLocation.indexOf(', alone.'));
-    companions = [];
+    location = afterLocation.substring(0, afterLocation.indexOf(", alone."))
+    companions = []
   } else {
     // "Location with Name0 and Name1..."
-    const withIdx = afterLocation.indexOf(' with ');
-    location = afterLocation.substring(0, withIdx);
-    const companionsPart = afterLocation.substring(withIdx + 6); // skip " with "
+    const withIdx = afterLocation.indexOf(" with ")
+    location = afterLocation.substring(0, withIdx)
+    const companionsPart = afterLocation.substring(withIdx + 6) // skip " with "
     // Remove trailing period
-    const companionsStr = companionsPart.replace(/\.$/, '');
-    companions = companionsStr.split(' and ');
+    const companionsStr = companionsPart.replace(/\.$/, "")
+    companions = companionsStr.split(" and ")
   }
 
-  statements.push({ name, location, companions, alone: companions.length === 0 });
+  statements.push({ name, location, companions, alone: companions.length === 0 })
 }
 
 // Build a map for quick lookup
-const byName = {};
+const byName: Record<string, Statement> = {}
 for (const s of statements) {
-  byName[s.name] = s;
+  byName[s.name] = s
 }
 
 // Try each person as the potential killer
@@ -54,66 +59,66 @@ for (const s of statements) {
 //      - Named them back (mutual alibi)
 //      - The group is self-consistent (exactly the same set of people)
 
-function isConsistentWithoutKiller(killerName) {
-  const villagers = statements.filter(s => s.name !== killerName);
+function isConsistentWithoutKiller(killerName: string) {
+  const villagers = statements.filter(s => s.name !== killerName)
 
   // Group villagers by location
-  const locationGroups = {};
+  const locationGroups: Record<string, string[]> = {}
   for (const v of villagers) {
-    if (!locationGroups[v.location]) locationGroups[v.location] = [];
-    locationGroups[v.location].push(v.name);
+    if (!locationGroups[v.location]) locationGroups[v.location] = []
+    locationGroups[v.location].push(v.name)
   }
 
   for (const v of villagers) {
     // Check: all stated companions are villagers (not the killer)
     for (const comp of v.companions) {
-      if (comp === killerName) return false; // Villager says they saw the killer - contradiction
+      if (comp === killerName) return false // Villager says they saw the killer - contradiction
     }
 
     // Check: companions must also be in the same location group
-    const groupAtLocation = locationGroups[v.location] || [];
+    const groupAtLocation = locationGroups[v.location] || []
     // The group at v's location (excluding v themselves)
-    const othersAtLocation = groupAtLocation.filter(n => n !== v.name);
+    const othersAtLocation = groupAtLocation.filter((n: string) => n !== v.name)
 
     if (v.alone) {
       // v claims to be alone; no one else should be at the same location
-      if (othersAtLocation.length !== 0) return false;
+      if (othersAtLocation.length !== 0) return false
     } else {
       // v listed companions; check they match exactly who else is at that location
-      const statedCompSet = new Set(v.companions);
-      const actualOthersSet = new Set(othersAtLocation);
+      const statedCompSet = new Set(v.companions)
+      const actualOthersSet = new Set(othersAtLocation)
 
-      if (statedCompSet.size !== actualOthersSet.size) return false;
+      if (statedCompSet.size !== actualOthersSet.size) return false
       for (const c of statedCompSet) {
-        if (!actualOthersSet.has(c)) return false;
+        if (!actualOthersSet.has(c)) return false
       }
 
       // Also check each companion listed v back
       for (const comp of v.companions) {
-        const compStatement = byName[comp];
-        if (!compStatement) return false;
-        if (compStatement.location !== v.location) return false;
-        if (compStatement.alone) return false;
-        if (!compStatement.companions.includes(v.name)) return false;
+        const compStatement = byName[comp]
+        if (!compStatement) return false
+        if (compStatement.location !== v.location) return false
+        if (compStatement.alone) return false
+        if (!compStatement.companions.includes(v.name)) return false
       }
     }
   }
 
-  return true;
+  return true
 }
 
 // Try each person as killer
-let killer = null;
+let killer = null
 for (const s of statements) {
   if (isConsistentWithoutKiller(s.name)) {
-    killer = s.name;
-    break;
+    killer = s.name
+    break
   }
 }
 
 // If no single person as killer works, it was the detective (the player)
 if (killer === null) {
-  console.log('It was me!');
+  console.log("It was me!")
 } else {
-  console.log(`${killer} did it!`);
+  console.log(`${killer} did it!`)
 }

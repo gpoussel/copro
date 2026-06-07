@@ -1,14 +1,13 @@
-// @ts-nocheck
 // 🎮 CodinGame Puzzle - gravity-tumbler
 // https://www.codingame.com/training/medium/gravity-tumbler
 
-const [width, height] = readline().split(' ').map(Number);
-const count = parseInt(readline());
+const [width, height] = readline().split(" ").map(Number)
+const count = parseInt(readline())
 
 // Read the initial grid as an array of rows (strings)
-let grid: string[] = [];
+let grid: string[] = []
 for (let i = 0; i < height; i++) {
-  grid.push(readline());
+  grid.push(readline())
 }
 
 // Rotate the grid counterclockwise by 90 degrees.
@@ -18,47 +17,47 @@ for (let i = 0; i < height; i++) {
 // More precisely: for CCW, new[i][j] = old[j][W-1-i]
 // where new has W rows and H columns
 function rotateCCW(g: string[]): string[] {
-  const rows = g.length;
-  const cols = g[0].length;
+  const rows = g.length
+  const cols = g[0].length
   // result has `cols` rows and `rows` columns
-  const result: string[] = [];
+  const result: string[] = []
   for (let i = 0; i < cols; i++) {
-    let row = '';
+    let row = ""
     for (let j = 0; j < rows; j++) {
       // CCW: new[i][j] = old[j][cols-1-i]
-      row += g[j][cols - 1 - i];
+      row += g[j][cols - 1 - i]
     }
-    result.push(row);
+    result.push(row)
   }
-  return result;
+  return result
 }
 
 // Apply gravity: in each column, move all '#' to the bottom.
 function applyGravity(g: string[]): string[] {
-  const rows = g.length;
-  const cols = g[0].length;
+  const rows = g.length
+  const cols = g[0].length
   // Process each column
-  const result: string[][] = Array.from({ length: rows }, () => new Array(cols).fill('.'));
+  const result: string[][] = Array.from({ length: rows }, () => new Array(cols).fill("."))
   for (let c = 0; c < cols; c++) {
-    let hashCount = 0;
+    let hashCount = 0
     for (let r = 0; r < rows; r++) {
-      if (g[r][c] === '#') hashCount++;
+      if (g[r][c] === "#") hashCount++
     }
     // Place hashes at the bottom
     for (let r = rows - hashCount; r < rows; r++) {
-      result[r][c] = '#';
+      result[r][c] = "#"
     }
   }
-  return result.map(row => row.join(''));
+  return result.map(row => row.join(""))
 }
 
 // Perform `count` tumblings
 for (let i = 0; i < count; i++) {
-  grid = rotateCCW(grid);
-  grid = applyGravity(grid);
+  grid = rotateCCW(grid)
+  grid = applyGravity(grid)
 }
 
 // Output the result
 for (const row of grid) {
-  console.log(row);
+  console.log(row)
 }

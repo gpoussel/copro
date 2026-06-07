@@ -1,22 +1,21 @@
-// @ts-nocheck
 // 🎮 CodinGame Puzzle - magic-string
 // https://www.codingame.com/training/easy/magic-string
 
-const n = parseInt(readline());
-const names: string[] = [];
+const n = parseInt(readline())
+const names: string[] = []
 for (let i = 0; i < n; i++) {
-  names.push(readline());
+  names.push(readline())
 }
 
-names.sort();
+names.sort()
 
 // We need a string S such that exactly n/2 names are <= S and n/2 names are > S.
 // After sorting, the split must be between names[n/2-1] and names[n/2].
 // So: names[n/2-1] <= S < names[n/2]
 // We want the shortest such S, and lexicographically smallest on tie.
 
-const lo = names[n / 2 - 1]; // S must be >= lo
-const hi = names[n / 2];     // S must be < hi
+const lo = names[n / 2 - 1] // S must be >= lo
+const hi = names[n / 2] // S must be < hi
 
 // Find the shortest string S with lo <= S < hi.
 // Strategy: try increasing lengths L from 1 upward.
@@ -36,9 +35,9 @@ const hi = names[n / 2];     // S must be < hi
 // If found, output and done.
 
 function compare(a: string, b: string): number {
-  if (a < b) return -1;
-  if (a > b) return 1;
-  return 0;
+  if (a < b) return -1
+  if (a > b) return 1
+  return 0
 }
 
 // Find the lex-smallest string of exactly length L in [lo, hi)
@@ -68,7 +67,7 @@ function findShortest(L: number): string | null {
   // - Check if candidate < hi
   // - If yes, return candidate. If no, return null.
 
-  let candidate: string;
+  let candidate: string
 
   if (L >= lo.length) {
     // smallest of length L >= lo: just lo + 'A'*(L-lo.length)?
@@ -81,41 +80,41 @@ function findShortest(L: number): string | null {
     // If first lo.length chars == lo, then the remaining chars can be anything, smallest = 'A'.
     // If first lo.length chars > lo (strictly), then remaining can be 'A', but that's bigger.
     // So smallest = lo + 'A'*(L-lo.length).
-    candidate = lo + 'A'.repeat(L - lo.length);
+    candidate = lo + "A".repeat(L - lo.length)
   } else {
     // L < lo.length
     // Smallest of length L >= lo: we need S > lo[0..L-1] (see above)
     // So smallest is: lo[0..L-2] + nextChar(lo[L-1])
     // But nextChar might overflow past 'Z', in which case we need to backtrack further.
-    let prefix = lo.substring(0, L);
+    let prefix = lo.substring(0, L)
     // increment prefix by 1 in lex order (treating as base-26 A-Z)
-    let arr = prefix.split('');
-    let carry = true;
+    let arr = prefix.split("")
+    let carry = true
     for (let i = arr.length - 1; i >= 0 && carry; i--) {
-      if (arr[i] < 'Z') {
-        arr[i] = String.fromCharCode(arr[i].charCodeAt(0) + 1);
-        carry = false;
+      if (arr[i] < "Z") {
+        arr[i] = String.fromCharCode(arr[i].charCodeAt(0) + 1)
+        carry = false
       } else {
-        arr[i] = 'A';
+        arr[i] = "A"
       }
     }
     if (carry) {
       // overflow: no string of length L can be > lo[:L] in [A-Z]^L
-      return null;
+      return null
     }
-    candidate = arr.join('');
+    candidate = arr.join("")
   }
 
   // Check candidate < hi
   if (candidate < hi) {
-    return candidate;
+    return candidate
   }
-  return null;
+  return null
 }
 
-let answer: string | null = null;
+let answer: string | null = null
 for (let L = 1; L <= 31 && answer === null; L++) {
-  answer = findShortest(L);
+  answer = findShortest(L)
 }
 
-console.log(answer);
+console.log(answer)

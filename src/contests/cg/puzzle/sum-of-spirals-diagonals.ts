@@ -1,4 +1,3 @@
-// @ts-nocheck
 // 🎮 CodinGame Puzzle - sum-of-spirals-diagonals
 // https://www.codingame.com/training/easy/sum-of-spirals-diagonals
 
@@ -59,22 +58,22 @@
 // So the same formula 4*s + 6*(k-1) = 4*s + 6*1 = 4*s+6 works for k=2 too!
 // But for k=2, are all 4 values on diagonals? Yes (2x2 matrix has all corners on both diagonals).
 
-const n = parseInt(readline());
+const n = parseInt(readline())
 
-let sum = 0;
-let s = 1; // start value of current outermost ring
+let sum = 0
+let s = 1 // start value of current outermost ring
 
 for (let k = n; k >= 2; k -= 2) {
   // Add the 4 corner values of ring with side k starting at value s
   // corners: s, s+(k-1), s+2*(k-1), s+3*(k-1)
   // sum of corners = 4*s + 6*(k-1)
-  sum += 4 * s + 6 * (k - 1);
-  s += 4 * (k - 1); // next ring starts after this ring's cells
+  sum += 4 * s + 6 * (k - 1)
+  s += 4 * (k - 1) // next ring starts after this ring's cells
 }
 
 // If N is odd, add the center cell
 if (n % 2 === 1) {
-  sum += s; // center value = n*n
+  sum += s // center value = n*n
 }
 
-console.log(sum);
+console.log(sum)

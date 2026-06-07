@@ -1,4 +1,3 @@
-// @ts-nocheck
 // 🎮 CodinGame Puzzle - the-fall-episode-1
 // https://www.codingame.com/training/medium/the-fall-episode-1
 
@@ -29,32 +28,32 @@ const ROUTING: Record<number, Record<string, string>> = {
   11: { TOP: "RIGHT" },
   12: { RIGHT: "DOWN" },
   13: { LEFT: "DOWN" },
-};
-
-const [W, H] = readline().split(/\s+/).map(Number);
-
-const grid: number[][] = [];
-for (let row = 0; row < H; row++) {
-  grid.push(readline().split(/\s+/).map(Number));
 }
-readline(); // EX — not used in episode 1
+
+const [W, H] = readline().split(/\s+/).map(Number)
+
+const grid: number[][] = []
+for (let row = 0; row < H; row++) {
+  grid.push(readline().split(/\s+/).map(Number))
+}
+readline() // EX — not used in episode 1
 
 while (true) {
-  const line = readline();
-  if (!line) break;
-  const parts = line.split(/\s+/);
-  const xi = parseInt(parts[0]);
-  const yi = parseInt(parts[1]);
-  const pos = parts[2];
+  const line = readline()
+  if (!line) break
+  const parts = line.split(/\s+/)
+  const xi = parseInt(parts[0])
+  const yi = parseInt(parts[1])
+  const pos = parts[2]
 
-  const type = grid[yi][xi];
-  const exit = ROUTING[type][pos];
+  const type = grid[yi][xi]
+  const exit = ROUTING[type][pos]
 
-  let nx = xi;
-  let ny = yi;
-  if (exit === "DOWN") ny = yi + 1;
-  else if (exit === "LEFT") nx = xi - 1;
-  else if (exit === "RIGHT") nx = xi + 1;
+  let nx = xi
+  let ny = yi
+  if (exit === "DOWN") ny = yi + 1
+  else if (exit === "LEFT") nx = xi - 1
+  else if (exit === "RIGHT") nx = xi + 1
 
-  console.log(`${nx} ${ny}`);
+  console.log(`${nx} ${ny}`)
 }

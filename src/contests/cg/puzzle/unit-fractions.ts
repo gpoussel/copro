@@ -1,8 +1,7 @@
-// @ts-nocheck
 // 🎮 CodinGame Puzzle - unit-fractions
 // https://www.codingame.com/training/easy/unit-fractions
 
-const n = parseInt(readline());
+const n = parseInt(readline())
 
 // We need to find all pairs (x, y) with x >= y > 0 such that 1/n = 1/x + 1/y
 //
@@ -21,22 +20,22 @@ const n = parseInt(readline());
 //
 // Results should be sorted by x descending, i.e., by k ascending (smaller k => larger x).
 
-const n2 = n * n;
+const n2 = n * n
 
 // Collect all divisors of n^2 that are <= n
-const results: [number, number][] = [];
+const results: [number, number][] = []
 
 for (let k = 1; k <= n; k++) {
   if (n2 % k === 0) {
-    const y = n + k;
-    const x = n + n2 / k;
-    results.push([x, y]);
+    const y = n + k
+    const x = n + n2 / k
+    results.push([x, y])
   }
 }
 
 // Sort by x descending (k ascending = x descending, but let's be explicit)
-results.sort((a, b) => b[0] - a[0]);
+results.sort((a, b) => b[0] - a[0])
 
 for (const [x, y] of results) {
-  console.log(`1/${n} = 1/${x} + 1/${y}`);
+  console.log(`1/${n} = 1/${x} + 1/${y}`)
 }

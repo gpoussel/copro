@@ -1,8 +1,7 @@
-// @ts-nocheck
 // 🎮 CodinGame Puzzle - next-growing-number
 // https://www.codingame.com/training/easy/next-growing-number
 
-const n = readline();
+const n = readline()
 
 // A growing number has each digit >= the previous digit (non-decreasing).
 // We need the first growing number strictly greater than n.
@@ -16,39 +15,39 @@ const n = readline();
 //    Actually we can just restart from i-1 since digits[i-1] didn't change.
 // 3. This gives the smallest number >= candidate that is growing.
 
-function addOne(s) {
-  const digits = s.split('').map(Number);
-  let carry = 1;
+function addOne(s: string) {
+  const digits = s.split("").map(Number)
+  let carry = 1
   for (let i = digits.length - 1; i >= 0 && carry; i--) {
-    digits[i] += carry;
-    carry = Math.floor(digits[i] / 10);
-    digits[i] %= 10;
+    digits[i] += carry
+    carry = Math.floor(digits[i] / 10)
+    digits[i] %= 10
   }
-  if (carry) digits.unshift(1);
-  return digits;
+  if (carry) digits.unshift(1)
+  return digits
 }
 
-function nextGrowing(s) {
-  const digits = addOne(s);
+function nextGrowing(s: string) {
+  const digits = addOne(s)
 
-  let i = 1;
+  let i = 1
   while (i < digits.length) {
     if (digits[i] < digits[i - 1]) {
       // Fill from i to end with digits[i-1]
-      const fill = digits[i - 1];
+      const fill = digits[i - 1]
       for (let j = i; j < digits.length; j++) {
-        digits[j] = fill;
+        digits[j] = fill
       }
       // No need to restart from 0: digits[i-1] didn't change, so all pairs
       // before i are still valid. Continue from i+1.
       // Actually the fill made all following digits equal to fill, so they
       // are already non-decreasing. We can jump to the end.
-      break;
+      break
     }
-    i++;
+    i++
   }
 
-  return digits.join('');
+  return digits.join("")
 }
 
-console.log(nextGrowing(n));
+console.log(nextGrowing(n))
