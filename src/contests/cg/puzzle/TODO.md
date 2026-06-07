@@ -4,20 +4,10 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 114 (easy 86, medium 22, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 104 (easy 76, medium 22, hard 4, expert 2)._
 
-## Easy (86)
+## Easy (76)
 
-- [ ] [ghost-legs](https://www.codingame.com/training/easy/ghost-legs)
-- [ ] [gold-packing](https://www.codingame.com/training/easy/gold-packing)
-- [ ] [graffiti-on-the-fence](https://www.codingame.com/training/easy/graffiti-on-the-fence)
-- [ ] [happy-numbers](https://www.codingame.com/training/easy/happy-numbers)
-- [ ] [hello-world](https://www.codingame.com/training/easy/hello-world)
-- [ ] [hidden-messages-in-images](https://www.codingame.com/training/easy/hidden-messages-in-images)
-- [ ] [hooch-clash](https://www.codingame.com/training/easy/hooch-clash)
-- [ ] [horse-racing-duals](https://www.codingame.com/training/easy/horse-racing-duals)
-- [ ] [horse-racing-hyperduals](https://www.codingame.com/training/easy/horse-racing-hyperduals)
-- [ ] [how-time-flies](https://www.codingame.com/training/easy/how-time-flies)
 - [ ] [hunger-games](https://www.codingame.com/training/easy/hunger-games)
 - [ ] [ipv6-shortener](https://www.codingame.com/training/easy/ipv6-shortener)
 - [ ] [is-that-a-possible-word](https://www.codingame.com/training/easy/is-that-a-possible-word)
