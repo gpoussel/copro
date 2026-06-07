@@ -4,20 +4,10 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 84 (easy 56, medium 22, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 74 (easy 46, medium 22, hard 4, expert 2)._
 
-## Easy (56)
+## Easy (46)
 
-- [ ] [nature-of-triangles](https://www.codingame.com/training/easy/nature-of-triangles)
-- [ ] [next-growing-number](https://www.codingame.com/training/easy/next-growing-number)
-- [ ] [nicholas-breakspeare-and-hugh-of-evesham](https://www.codingame.com/training/easy/nicholas-breakspeare-and-hugh-of-evesham)
-- [ ] [number-derivation](https://www.codingame.com/training/easy/number-derivation)
-- [ ] [object-insertion](https://www.codingame.com/training/easy/object-insertion)
-- [ ] [offset-arrays](https://www.codingame.com/training/easy/offset-arrays)
-- [ ] [order-of-succession](https://www.codingame.com/training/easy/order-of-succession)
-- [ ] [organic-compounds](https://www.codingame.com/training/easy/organic-compounds)
-- [ ] [personal-best](https://www.codingame.com/training/easy/personal-best)
-- [ ] [pirates-treasure](https://www.codingame.com/training/easy/pirates-treasure)
 - [ ] [power-of-thor-episode-1](https://www.codingame.com/training/easy/power-of-thor-episode-1)
 - [ ] [prefix-code](https://www.codingame.com/training/easy/prefix-code)
 - [ ] [rectangle-partition](https://www.codingame.com/training/easy/rectangle-partition)
