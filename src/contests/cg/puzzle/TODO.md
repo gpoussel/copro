@@ -4,20 +4,10 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 54 (easy 26, medium 22, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 44 (easy 16, medium 22, hard 4, expert 2)._
 
-## Easy (26)
+## Easy (16)
 
-- [ ] [stall-tilt](https://www.codingame.com/training/easy/stall-tilt)
-- [ ] [substitution-encoding](https://www.codingame.com/training/easy/substitution-encoding)
-- [ ] [sudoku-validator](https://www.codingame.com/training/easy/sudoku-validator)
-- [ ] [sum-of-spirals-diagonals](https://www.codingame.com/training/easy/sum-of-spirals-diagonals)
-- [ ] [sweet-spot](https://www.codingame.com/training/easy/sweet-spot)
-- [ ] [temperatures](https://www.codingame.com/training/easy/temperatures)
-- [ ] [text-formatting](https://www.codingame.com/training/easy/text-formatting)
-- [ ] [the-dart-101](https://www.codingame.com/training/easy/the-dart-101)
-- [ ] [the-descent](https://www.codingame.com/training/easy/the-descent)
-- [ ] [the-electrician-apprentice](https://www.codingame.com/training/easy/the-electrician-apprentice)
 - [ ] [the-michelangelo-code](https://www.codingame.com/training/easy/the-michelangelo-code)
 - [ ] [the-mystic-rectangle](https://www.codingame.com/training/easy/the-mystic-rectangle)
 - [ ] [the-river-i-](https://www.codingame.com/training/easy/the-river-i-)
