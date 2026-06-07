@@ -4,20 +4,10 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 44 (easy 16, medium 22, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 34 (easy 6, medium 22, hard 4, expert 2)._
 
-## Easy (16)
+## Easy (6)
 
-- [ ] [the-michelangelo-code](https://www.codingame.com/training/easy/the-michelangelo-code)
-- [ ] [the-mystic-rectangle](https://www.codingame.com/training/easy/the-mystic-rectangle)
-- [ ] [the-river-i-](https://www.codingame.com/training/easy/the-river-i-)
-- [ ] [the-river-ii-](https://www.codingame.com/training/easy/the-river-ii-)
-- [ ] [the-travelling-salesman-problem](https://www.codingame.com/training/easy/the-travelling-salesman-problem)
-- [ ] [tictactoe](https://www.codingame.com/training/easy/tictactoe)
-- [ ] [treasure-hunt](https://www.codingame.com/training/easy/treasure-hunt)
-- [ ] [tree-paths](https://www.codingame.com/training/easy/tree-paths)
-- [ ] [unary](https://www.codingame.com/training/easy/unary)
-- [ ] [unique-prefixes](https://www.codingame.com/training/easy/unique-prefixes)
 - [ ] [unit-fractions](https://www.codingame.com/training/easy/unit-fractions)
 - [ ] [van-ecks-sequence](https://www.codingame.com/training/easy/van-ecks-sequence)
 - [ ] [whats-so-complex-about-mandelbrot](https://www.codingame.com/training/easy/whats-so-complex-about-mandelbrot)
