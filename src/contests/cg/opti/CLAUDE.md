@@ -97,6 +97,41 @@ real ghost AI and exact scoring are unknown, which is the whole problem.
 
 ---
 
+## code-vs-zombies
+
+Ash moves 1000/turn, shoots all zombies within 2000 at end of turn. Zombies move
+400/turn toward the nearest human (Ash included) and eat one they reach. Turn
+order: zombies move → Ash moves → Ash shoots ≤2000 → surviving zombies on a human
+eat it. **Score per kill = aliveHumans² × 10 × fib(n)** for the n-th kill that
+turn (fib = 1,2,3,5,8,…). Losing every human ⇒ **0 for that test**. So keeping
+humans alive (squared!) dominates; multi-kill combos are the secondary lever.
+
+**Big advantage over sponsored-contest: the rules are fully deterministic**, so we
+have a **faithful offline simulator** — `code-vs-zombies-tools/sim.mjs` + the 21
+visible scenarios in `cases.json`. Run:
+`pnpm exec node src/contests/cg/opti/code-vs-zombies-tools/sim.mjs` (prints per-
+test + TOTAL). `decide()` in sim.mjs **mirrors** `code-vs-zombies.ts` — keep them
+in sync by hand. Standard golden-rule caveat: visible totals don't predict the
+hidden validator, but they're great for catching regressions.
+
+**Input gotcha:** the raw `testIn` lists humans/zombies as just `x y` (the engine
+adds ids + zombie next-positions at runtime). The shipped bot reads the real
+stdin (`id x y` humans, `id x y nx ny` zombies); the sim parses the seed form.
+
+**Current bot (heuristic v2): offline TOTAL 42760.** Per human compute zombie ETA
+(`ceil(d/400)`) and Ash defend-ETA (`ceil((d−2000)/1000)`); defend the most urgent
+*savable* human; if none savable but some are threatened, rush the closest one
+(never let everyone die — v1 scored 0 on test 9 "Rectangle", v2 → 900); if all
+safe, farm the densest zombie cluster. Not submitted yet at time of writing.
+
+**Next lever = combos.** The heuristic defends one human at a time and barely
+combos. Top scores come from a per-turn **search** (genetic/Monte-Carlo over
+future Ash target sequences, evaluated with this exact simulator within the 100ms
+budget) that lines up multi-kills while keeping humans alive. The sim is the core
+piece for that and is ready.
+
+---
+
 ## travelling-salesman
 
 Tour over all points, start/end at 0; score ≈ tour length on the hidden instance. N≤300, 5s.
