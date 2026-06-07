@@ -118,17 +118,32 @@ hidden validator, but they're great for catching regressions.
 adds ids + zombie next-positions at runtime). The shipped bot reads the real
 stdin (`id x y` humans, `id x y nx ny` zombies); the sim parses the seed form.
 
-**Current bot (heuristic v2): offline TOTAL 42760.** Per human compute zombie ETA
-(`ceil(d/400)`) and Ash defend-ETA (`ceil((d−2000)/1000)`); defend the most urgent
-*savable* human; if none savable but some are threatened, rush the closest one
-(never let everyone die — v1 scored 0 on test 9 "Rectangle", v2 → 900); if all
-safe, farm the densest zombie cluster. Not submitted yet at time of writing.
+**Heuristic baseline (`sim.mjs`): offline TOTAL 42760.** Per human compute zombie
+ETA (`ceil(d/400)`) and Ash defend-ETA (`ceil((d−2000)/1000)`); defend the most
+urgent *savable* human; if none savable but some threatened, rush the closest one
+(never let everyone die — v1 scored 0 on test 9 "Rectangle", v2 → 900); else farm
+the densest zombie cluster. This is now just the GA's seed/floor.
 
-**Next lever = combos.** The heuristic defends one human at a time and barely
-combos. Top scores come from a per-turn **search** (genetic/Monte-Carlo over
-future Ash target sequences, evaluated with this exact simulator within the 100ms
-budget) that lines up multi-kills while keeping humans alive. The sim is the core
-piece for that and is ready.
+**Shipped bot = per-turn GENETIC SEARCH** over Ash's future move-angle sequence
+(genome = `HORIZON=40` angles), evaluated by an inline faithful simulator. Each
+turn: seed the population with the heuristic genome (guarantees we never score
+below it) + the previous turn's best (shifted) + mutations + randoms, evolve until
+`TIME_BUDGET_MS=90` (time-based so it auto-adapts to CG's slower hardware and never
+times out), output the first move. Eval penalises losing all humans (−1e9) and
+adds a small survivor bonus. This lines up Fibonacci multi-kill combos while
+keeping humans alive.
+
+**Offline scorer `ga.mjs`** mirrors the bot with a fixed gen budget instead of
+time: **TOTAL ≈ 250k–320k** (RNG variance) vs 42760 heuristic — combo tests jump
+hugely (test 6 3600→~80k, test 17/18 ~7k/9k→~40k+). Timing: ~5ms/turn at
+POP36/GENS12, ~22ms/turn at POP60/GENS30 locally — well under 100ms, so the
+time-budgeted bot gets many generations. End-to-end checked: the real bot reads
+the live stdin format (`id x y` humans, `id x y nx ny` zombies), returns a valid
+move in budget. Not submitted yet at time of writing.
+
+Keep `sim.mjs decide()`, `ga.mjs`, and `code-vs-zombies.ts` in sync by hand.
+Next ideas: target genes on entities (precise close-range aim), longer horizon,
+or a smarter eval (value future combo setups), but verify against `ga.mjs` first.
 
 ---
 
