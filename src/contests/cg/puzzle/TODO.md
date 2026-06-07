@@ -4,20 +4,10 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 74 (easy 46, medium 22, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 64 (easy 36, medium 22, hard 4, expert 2)._
 
-## Easy (46)
+## Easy (36)
 
-- [ ] [power-of-thor-episode-1](https://www.codingame.com/training/easy/power-of-thor-episode-1)
-- [ ] [prefix-code](https://www.codingame.com/training/easy/prefix-code)
-- [ ] [rectangle-partition](https://www.codingame.com/training/easy/rectangle-partition)
-- [ ] [rectangular-block-spinner](https://www.codingame.com/training/easy/rectangular-block-spinner)
-- [ ] [retaining-water](https://www.codingame.com/training/easy/retaining-water)
-- [ ] [reverse-fizzbuzz](https://www.codingame.com/training/easy/reverse-fizzbuzz)
-- [ ] [reverse-minesweeper](https://www.codingame.com/training/easy/reverse-minesweeper)
-- [ ] [robot-show](https://www.codingame.com/training/easy/robot-show)
-- [ ] [rock-paper-scissors-lizard-spock](https://www.codingame.com/training/easy/rock-paper-scissors-lizard-spock)
-- [ ] [rooks-movements](https://www.codingame.com/training/easy/rooks-movements)
 - [ ] [rotating-arrows](https://www.codingame.com/training/easy/rotating-arrows)
 - [ ] [rugby-score](https://www.codingame.com/training/easy/rugby-score)
 - [ ] [self-driving-car-testing](https://www.codingame.com/training/easy/self-driving-car-testing)
