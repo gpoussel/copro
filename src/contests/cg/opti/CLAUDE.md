@@ -46,11 +46,27 @@ keep a grid of `?`(unknown)/`#`(wall)/`_`(eaten), each turn fill in our cell +
 (`alternativeMove` keeps us alive otherwise). **JS gotcha:** Python's `%` is
 non-negative; JS isn't — every grid index uses a `mod(a,n)=((a%n)+n)%n` helper.
 
-**Local referee sim** (`D:\tmp`, ephemeral) with the real mapping: ~**96–97% of
-pellets** on tests 1 & 10, survives chasing ghosts. Tried also targeting known
-`.` cells (not just `?`): +1% with no ghosts but **collapses to 27% under
-ghosts** (fixates on a guarded pellet) — kept `?`-only as it's far more robust.
-Not submitted yet at time of writing.
+**Submitted: scored 2532** (clears the >2000 "we're hiring" bar; #1 ≈ 14337).
+The score accumulates across many Pac-Man levels, so **finishing each level fast
++ surviving** is the lever, not single-maze pellet %.
+
+**v2 improvements (current file):**
+- BFS target is now `?` OR `.` (clear the level, don't idle once explored).
+- never STAY when no target is reachable — `alternativeMove` actively **flees**
+  (picks the safe neighbour maximising distance to the nearest ghost).
+
+**Local referee sim** (`D:\tmp`, ephemeral) with the real mapping and three ghost
+models (stationary / random / perfect-chaser):
+- random ghosts (realistic): **clears 100%** of tests 1 & 10 in ~470 turns,
+  never dies → should advance through many levels.
+- perfect omniscient chaser (unrealistic worst case): eats less but still never
+  dies. CG keeps your best score, so shipping the aggressive v2 can't lower rank.
+- caveat: stationary ghosts leave ~6 pellets stuck by the ghost house (a sim
+  artifact — real ghosts leave the house).
+
+Next ideas if pushing past 2532: smarter ghost prediction (use ghost *next*
+cells, not just current), eat power-pellets/hunt frightened ghosts if the game
+has them, and keep BFS cheap on big mazes (the hidden test size is unknown).
 
 ---
 

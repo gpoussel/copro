@@ -72,7 +72,10 @@ function possibleMoves(x: number, y: number): Pos[] {
   return moves
 }
 
-// BFS from the player to the nearest unknown cell; return the FIRST step to take.
+// A cell worth heading to: unexplored (`?`) or a known, uneaten pellet (`.`).
+const isTarget = (ch: string): boolean => ch === "?" || ch === "."
+
+// BFS from the player to the nearest target cell; return the FIRST step to take.
 function stepToNearestUnknown(): Pos {
   const start: Pos = { x: me.x, y: me.y }
   const key = (p: Pos): number => p.y * width + p.x
@@ -82,7 +85,7 @@ function stepToNearestUnknown(): Pos {
   let head = 0
   while (head < queue.length) {
     const node = queue[head++]
-    if (grid[node.y][node.x] === "?") return firstStep.get(key(node)) ?? start
+    if (isTarget(grid[node.y][node.x])) return firstStep.get(key(node)) ?? start
     for (const next of possibleMoves(node.x, node.y)) {
       const k = key(next)
       if (visited.has(k)) continue
@@ -96,29 +99,46 @@ function stepToNearestUnknown(): Pos {
   return start
 }
 
-// Any move that keeps us alive one more turn; else attack an adjacent ghost; else wait.
+// Distance to the closest ghost from a cell (larger = safer).
+function distToNearestGhost(x: number, y: number): number {
+  let best = Infinity
+  for (const e of enemies) {
+    if (e.x < 0) continue
+    const d = Math.abs(e.x - x) + Math.abs(e.y - y)
+    if (d < best) best = d
+  }
+  return best
+}
+
+// No safe step toward a target: flee. Pick the safe neighbour that maximises the
+// distance to the nearest ghost; else bump an adjacent ghost; else wait.
 function alternativeMove(): string {
   const { x, y } = me
-  if (
-    cell(x, y - 1) !== "#" &&
-    !enemyAt(x, y - 1) && !enemyAt(x, y - 2) && !enemyAt(x - 1, y - 1) && !enemyAt(x + 1, y - 1)
-  )
-    return DIR.UP
-  if (
-    cell(x + 1, y) !== "#" &&
-    !enemyAt(x + 1, y) && !enemyAt(x + 2, y) && !enemyAt(x + 1, y - 1) && !enemyAt(x + 1, y + 1)
-  )
-    return DIR.RIGHT
-  if (
-    cell(x, y + 1) !== "#" &&
-    !enemyAt(x, y + 1) && !enemyAt(x, y + 2) && !enemyAt(x - 1, y + 1) && !enemyAt(x + 1, y + 1)
-  )
-    return DIR.DOWN
-  if (
-    cell(x - 1, y) !== "#" &&
-    !enemyAt(x - 1, y) && !enemyAt(x - 2, y) && !enemyAt(x - 1, y - 1) && !enemyAt(x - 1, y + 1)
-  )
-    return DIR.LEFT
+  const safe = (cx: number, cy: number, guards: boolean): boolean =>
+    cell(cx, cy) !== "#" && guards
+  const opts: { dir: string; nx: number; ny: number }[] = []
+  if (safe(x, y - 1, !enemyAt(x, y - 1) && !enemyAt(x, y - 2) && !enemyAt(x - 1, y - 1) && !enemyAt(x + 1, y - 1)))
+    opts.push({ dir: DIR.UP, nx: x, ny: y - 1 })
+  if (safe(x + 1, y, !enemyAt(x + 1, y) && !enemyAt(x + 2, y) && !enemyAt(x + 1, y - 1) && !enemyAt(x + 1, y + 1)))
+    opts.push({ dir: DIR.RIGHT, nx: x + 1, ny: y })
+  if (safe(x, y + 1, !enemyAt(x, y + 1) && !enemyAt(x, y + 2) && !enemyAt(x - 1, y + 1) && !enemyAt(x + 1, y + 1)))
+    opts.push({ dir: DIR.DOWN, nx: x, ny: y + 1 })
+  if (safe(x - 1, y, !enemyAt(x - 1, y) && !enemyAt(x - 2, y) && !enemyAt(x - 1, y - 1) && !enemyAt(x - 1, y + 1)))
+    opts.push({ dir: DIR.LEFT, nx: x - 1, ny: y })
+
+  if (opts.length > 0) {
+    let best = opts[0]
+    let bestD = distToNearestGhost(best.nx, best.ny)
+    for (const o of opts) {
+      const d = distToNearestGhost(o.nx, o.ny)
+      if (d > bestD) {
+        bestD = d
+        best = o
+      }
+    }
+    return best.dir
+  }
+
   if (enemyAt(x, y - 1)) return DIR.UP
   if (enemyAt(x + 1, y)) return DIR.RIGHT
   if (enemyAt(x, y + 1)) return DIR.DOWN
@@ -154,9 +174,11 @@ for (;;) {
   grid[me.y][mod(me.x + 1, width)] = right
 
   const step = stepToNearestUnknown()
+  const noTarget = step.x === me.x && step.y === me.y
 
-  // Take the suggested step only if its destination is not next to a ghost.
+  // Take the suggested step only if there is one and its destination is not next to a ghost.
   if (
+    !noTarget &&
     !enemyAt(step.x - 1, step.y) && !enemyAt(step.x + 1, step.y) &&
     !enemyAt(step.x, step.y - 1) && !enemyAt(step.x, step.y + 1)
   ) {
