@@ -4,20 +4,10 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 94 (easy 66, medium 22, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 84 (easy 56, medium 22, hard 4, expert 2)._
 
-## Easy (66)
+## Easy (56)
 
-- [ ] [mars-lander-episode-1](https://www.codingame.com/training/easy/mars-lander-episode-1)
-- [ ] [master-of-mayhem](https://www.codingame.com/training/easy/master-of-mayhem)
-- [ ] [may-the-triforce-be-with-you](https://www.codingame.com/training/easy/may-the-triforce-be-with-you)
-- [ ] [mime-type](https://www.codingame.com/training/easy/mime-type)
-- [ ] [monday-tuesday-happy-days](https://www.codingame.com/training/easy/monday-tuesday-happy-days)
-- [ ] [morellets-random-lines](https://www.codingame.com/training/easy/morellets-random-lines)
-- [ ] [mountain-map](https://www.codingame.com/training/easy/mountain-map)
-- [ ] [mountain-map-convergence](https://www.codingame.com/training/easy/mountain-map-convergence)
-- [ ] [murder-in-the-village](https://www.codingame.com/training/easy/murder-in-the-village)
-- [ ] [nature-of-quadrilaterals](https://www.codingame.com/training/easy/nature-of-quadrilaterals)
 - [ ] [nature-of-triangles](https://www.codingame.com/training/easy/nature-of-triangles)
 - [ ] [next-growing-number](https://www.codingame.com/training/easy/next-growing-number)
 - [ ] [nicholas-breakspeare-and-hugh-of-evesham](https://www.codingame.com/training/easy/nicholas-breakspeare-and-hugh-of-evesham)
