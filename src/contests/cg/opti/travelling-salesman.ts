@@ -1,12 +1,12 @@
 // 🎮 CodinGame Optimization - travelling-salesman
 // https://www.codingame.com/training/optim/travelling-salesman
 //
-// Neighbor-list (k-nearest) 2-opt + Or-opt(1/2/3) local search with don't-look
-// bits, driven by a double-bridge ILS that restarts from a fresh nearest-neighbor
-// tour on stagnation. Works on the undirected cycle and rotates to start at 0
-// only when printing. This structure (many fast restarts) scores 201541 on the
-// ranking instance — far better than full-neighborhood 2-opt+Or-opt despite
-// looking worse on the small visible test cases.
+// Multi-seed neighbor-list ILS: run independent double-bridge ILS rounds, each
+// with its own seed stream and start city, until the round stagnates; keep the
+// best tour found across all rounds. Each round uses a k-nearest-neighbor local
+// search (2-opt + Or-opt seg 1/2/3, don't-look bits) on the undirected cycle,
+// rotating to start at 0 only when printing. More time = more independent draws
+// = monotonically better. Scores 201418 on the ranking instance (36 off #1).
 const startTime = Date.now()
 const TIME_LIMIT = 4500
 const K0 = 16
@@ -278,11 +278,6 @@ if (n <= 1) {
 
   const allCities: number[] = new Array(n)
   for (let i = 0; i < n; i++) allCities[i] = i
-  optimize(allCities)
-  let best = t.slice()
-  let bestLen = tourLen(best)
-  let cur = best.slice()
-  let curLen = bestLen
 
   let seed = 123456789
   const rand = (m: number): number => {
@@ -290,58 +285,62 @@ if (n <= 1) {
     return seed % m
   }
 
-  let stagnation = 0
+  // Multi-seed: run independent ILS rounds, each with its own seed stream and
+  // start city, until it stagnates; keep the best tour found across all rounds.
+  const STAG_LIMIT = 300
+  let best: number[] = []
+  let bestLen = Infinity
+  let round = 0
   while (Date.now() - startTime < TIME_LIMIT) {
-    if (stagnation >= RESTART_AFTER) {
-      stagnation = 0
-      const fresh = nearestNeighbor(rand(n))
-      for (let i = 0; i < n; i++) t[i] = fresh[i]
-      syncPos()
-      optimize(allCities)
-      cur = t.slice()
-      curLen = tourLen(t)
-      if (curLen < bestLen - 1e-9) {
-        bestLen = curLen
-        best = cur.slice()
-      }
-      continue
-    }
-    for (let i = 0; i < n; i++) t[i] = cur[i]
-    const p1 = 1 + rand(n - 3)
-    const p2 = p1 + 1 + rand(n - p1 - 2)
-    const p3 = p2 + 1 + rand(n - p2 - 1)
-    const C = cur.slice(p2, p3)
-    const B = cur.slice(p1, p2)
-    let w = p1
-    for (const c of C) t[w++] = c
-    for (const c of B) t[w++] = c
+    seed = (123456789 + round * 40503) & 0x7fffffff
+    const fresh = nearestNeighbor(round % n)
+    for (let i = 0; i < n; i++) t[i] = fresh[i]
     syncPos()
-    const at = (idx: number): number => t[(idx + n) % n]
-    const lenC = p3 - p2
-    const lenB = p2 - p1
-    const seedCities = [
-      at(p1 - 1),
-      at(p1),
-      at(p1 + lenC - 1),
-      at(p1 + lenC),
-      at(p1 + lenC + lenB - 1),
-      at(p1 + lenC + lenB),
-    ]
-    optimize(seedCities)
-    const len = tourLen(t)
-    if (len < curLen - 1e-9) {
-      curLen = len
-      cur = t.slice()
-      if (len < bestLen - 1e-9) {
-        bestLen = len
-        best = cur.slice()
-        stagnation = 0
-      } else {
-        stagnation++
-      }
-    } else {
-      stagnation++
+    optimize(allCities)
+    let cur = t.slice()
+    let curLen = tourLen(t)
+    if (curLen < bestLen) {
+      bestLen = curLen
+      best = cur.slice()
     }
+    let stag = 0
+    while (stag < STAG_LIMIT && Date.now() - startTime < TIME_LIMIT) {
+      for (let i = 0; i < n; i++) t[i] = cur[i]
+      const p1 = 1 + rand(n - 3)
+      const p2 = p1 + 1 + rand(n - p1 - 2)
+      const p3 = p2 + 1 + rand(n - p2 - 1)
+      const C = cur.slice(p2, p3)
+      const B = cur.slice(p1, p2)
+      let w = p1
+      for (const c of C) t[w++] = c
+      for (const c of B) t[w++] = c
+      syncPos()
+      const at = (idx: number): number => t[(idx + n) % n]
+      const lenC = p3 - p2
+      const lenB = p2 - p1
+      const seedCities = [
+        at(p1 - 1),
+        at(p1),
+        at(p1 + lenC - 1),
+        at(p1 + lenC),
+        at(p1 + lenC + lenB - 1),
+        at(p1 + lenC + lenB),
+      ]
+      optimize(seedCities)
+      const len = tourLen(t)
+      if (len < curLen - 1e-9) {
+        curLen = len
+        cur = t.slice()
+        if (len < bestLen - 1e-9) {
+          bestLen = len
+          best = cur.slice()
+        }
+        stag = 0
+      } else {
+        stag++
+      }
+    }
+    round++
   }
 
   const startIdx = best.indexOf(0)
