@@ -142,8 +142,29 @@ the live stdin format (`id x y` humans, `id x y nx ny` zombies), returns a valid
 move in budget. Not submitted yet at time of writing.
 
 Keep `sim.mjs decide()`, `ga.mjs`, and `code-vs-zombies.ts` in sync by hand.
-Next ideas: target genes on entities (precise close-range aim), longer horizon,
-or a smarter eval (value future combo setups), but verify against `ga.mjs` first.
+`ga.mjs` takes `POP`/`GENS`/`HOR` env overrides.
+
+**Submitted: 210920** (heuristic baseline would be ~42k; #1 ≈ 1,763,840, ~8x).
+So the approach works and the offline scorer is representative, but top solutions
+extract far bigger Fibonacci combos.
+
+**The GA is high-variance** — repeated offline runs of the same config swing wildly
+(e.g. HOR=80 gave 195k–234k across runs; HOR=100 ~228k–253k). Longer horizon helps
+*on average* but a longer eval means fewer generations within the 90ms turn budget
+on CG, so it's not a clear win — don't bump HORIZON blindly. The variance also
+means a single submission is noisy; CG keeps your best, so resubmitting the same
+bot can itself bump the score.
+
+**Path to higher scores (combo herding).** 1.76M needs deliberately luring zombies
+into one tight cluster while keeping ALL humans alive (the aliveHumans² multiplier),
+then killing the whole cluster in one/few turns for a huge fib sum. Random-angle
+GA rarely discovers precise herding. Likely upgrades (each verify via `ga.mjs`,
+watching variance over several runs, before submitting): a genome of **target
+points / entities** instead of raw angles (expresses "go to cluster centroid"
+directly), a longer horizon paired with a faster eval (typed arrays / fewer allocs
+so more generations fit the budget), and an eval term that rewards *grouping*
+zombies (future combo potential), not just realized kills. This is a substantial
+optimisation effort with noisy feedback, not a quick tweak.
 
 ---
 

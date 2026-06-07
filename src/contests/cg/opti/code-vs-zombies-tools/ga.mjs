@@ -18,7 +18,7 @@ const HERE = dirname(fileURLToPath(import.meta.url))
 const cases = JSON.parse(readFileSync(join(HERE, "cases.json"), "utf8"))
 
 const ASH = 1000, ZS = 400, KILL = 2000, W = 16000, H = 9000, TAU = Math.PI * 2
-const HOR = 40
+const HOR = process.env.HOR?+process.env.HOR:40
 const POP = process.env.POP ? +process.env.POP : 60
 const GENS = process.env.GENS ? +process.env.GENS : 30
 const dist = (ax, ay, bx, by) => Math.hypot(ax - bx, ay - by)
