@@ -1,12 +1,16 @@
 // 🎮 CodinGame Optimization - travelling-salesman
 // https://www.codingame.com/training/optim/travelling-salesman
 //
-// Read N points, output a tour starting and ending at index 0 that visits every
-// point once. Score is based on the tour length, so we build a nearest-neighbor
-// tour then refine it with 2-opt and Or-opt within the 5s budget.
-
+// Neighbor-list (k-nearest) 2-opt + Or-opt(1/2/3) local search with don't-look
+// bits, driven by a double-bridge ILS that restarts from a fresh nearest-neighbor
+// tour on stagnation. Works on the undirected cycle and rotates to start at 0
+// only when printing. This structure (many fast restarts) scores 201541 on the
+// ranking instance — far better than full-neighborhood 2-opt+Or-opt despite
+// looking worse on the small visible test cases.
 const startTime = Date.now()
 const TIME_LIMIT = 4500
+const K0 = 16
+const RESTART_AFTER = 150
 
 const n = parseInt(readline())
 const xs: number[] = new Array(n)
@@ -17,175 +21,332 @@ for (let i = 0; i < n; i++) {
   ys[i] = y
 }
 
-// Full distance matrix (N <= 300 -> at most 90k entries).
-const dist = new Float64Array(n * n)
-for (let i = 0; i < n; i++) {
-  for (let j = i + 1; j < n; j++) {
-    const dx = xs[i] - xs[j]
-    const dy = ys[i] - ys[j]
-    const d = Math.sqrt(dx * dx + dy * dy)
-    dist[i * n + j] = d
-    dist[j * n + i] = d
-  }
-}
-const D = (a: number, b: number): number => dist[a * n + b]
-
-// Trivial cases: nothing to optimize.
 if (n <= 1) {
   console.log("0 0")
 } else if (n === 2) {
   console.log("0 1 0")
+} else if (n === 3) {
+  console.log("0 1 2 0")
 } else {
-  // --- Nearest-neighbor construction starting from 0 ---
-  const visited = new Array<boolean>(n).fill(false)
-  const tour: number[] = [0]
-  visited[0] = true
-  let current = 0
-  for (let k = 1; k < n; k++) {
-    let best = -1
-    let bestDist = Infinity
-    for (let j = 0; j < n; j++) {
-      if (!visited[j]) {
-        const d = D(current, j)
-        if (d < bestDist) {
-          bestDist = d
+  const dist = new Float64Array(n * n)
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      const dx = xs[i] - xs[j]
+      const dy = ys[i] - ys[j]
+      const d = Math.sqrt(dx * dx + dy * dy)
+      dist[i * n + j] = d
+      dist[j * n + i] = d
+    }
+  }
+  const D = (a: number, b: number): number => dist[a * n + b]
+  const K = Math.min(K0, n - 1)
+
+  const knn: number[][] = new Array(n)
+  {
+    const idx: number[] = new Array(n - 1)
+    for (let i = 0; i < n; i++) {
+      let m = 0
+      for (let j = 0; j < n; j++) if (j !== i) idx[m++] = j
+      idx.sort((a, b) => D(i, a) - D(i, b))
+      knn[i] = idx.slice(0, K)
+    }
+  }
+
+  const nearestNeighbor = (start: number): number[] => {
+    const visited = new Uint8Array(n)
+    const tour: number[] = [start]
+    visited[start] = 1
+    let cur = start
+    for (let k = 1; k < n; k++) {
+      let best = -1
+      let bd = Infinity
+      const base = cur * n
+      for (let j = 0; j < n; j++) {
+        if (!visited[j] && dist[base + j] < bd) {
+          bd = dist[base + j]
           best = j
         }
       }
+      visited[best] = 1
+      tour.push(best)
+      cur = best
     }
-    visited[best] = true
-    tour.push(best)
-    current = best
+    return tour
   }
-
-  // The tour is treated as a cycle: edge from tour[n-1] back to tour[0] = 0.
-  // 2-opt and Or-opt only touch positions 1..n-1, so index 0 stays put.
-  const next = (i: number): number => (i + 1) % n
-
-  const tourLength = (t: number[]): number => {
+  const tourLen = (o: number[]): number => {
     let len = 0
-    for (let i = 0; i < n; i++) len += D(t[i], t[next(i)])
+    for (let i = 0; i < n; i++) len += D(o[i], o[i + 1 < n ? i + 1 : 0])
     return len
   }
 
-  // --- 2-opt: reverse the segment between two edges if it shortens the tour ---
-  const twoOptPass = (tour: number[]): boolean => {
-    let improved = false
-    for (let i = 0; i < n - 1; i++) {
-      const a = tour[i]
-      const b = tour[i + 1]
-      const dab = D(a, b)
-      for (let j = i + 2; j < n; j++) {
-        const c = tour[j]
-        const d = tour[next(j)]
-        if (d === a) continue // adjacent wrap-around edge, skip
-        const delta = D(a, c) + D(b, d) - dab - D(c, d)
-        if (delta < -1e-9) {
-          // reverse tour[i+1 .. j]
-          let lo = i + 1
-          let hi = j
-          while (lo < hi) {
-            const t = tour[lo]
-            tour[lo] = tour[hi]
-            tour[hi] = t
-            lo++
-            hi--
+  const t = nearestNeighbor(0)
+  const pos = new Int32Array(n)
+  const syncPos = (): void => {
+    for (let i = 0; i < n; i++) pos[t[i]] = i
+  }
+  syncPos()
+  const reverse = (l: number, r: number): void => {
+    while (l < r) {
+      const a = t[l]
+      const b = t[r]
+      t[l] = b
+      t[r] = a
+      pos[b] = l
+      pos[a] = r
+      l++
+      r--
+    }
+  }
+
+  const inQ = new Uint8Array(n)
+  const qbuf = new Int32Array(n)
+  let qhead = 0
+  let qtail = 0
+  let qcount = 0
+  const qpush = (c: number): void => {
+    if (!inQ[c]) {
+      inQ[c] = 1
+      qbuf[qtail] = c
+      qtail = (qtail + 1) % n
+      qcount++
+    }
+  }
+  const qpop = (): number => {
+    const c = qbuf[qhead]
+    qhead = (qhead + 1) % n
+    qcount--
+    inQ[c] = 0
+    return c
+  }
+  const resetQueue = (seedCities: number[]): void => {
+    inQ.fill(0)
+    qhead = qtail = qcount = 0
+    for (const c of seedCities) qpush(c)
+  }
+
+  const relocate = (c1: number, u: number, afterU: boolean): void => {
+    const i = pos[c1]
+    t.splice(i, 1)
+    const up = t.indexOf(u)
+    t.splice(afterU ? up + 1 : up, 0, c1)
+    syncPos()
+  }
+  const relocateSeg = (i: number, L: number, u: number, reversed: boolean): void => {
+    const seg = t.splice(i, L)
+    if (reversed) seg.reverse()
+    const up = t.indexOf(u)
+    t.splice(up + 1, 0, ...seg)
+    syncPos()
+  }
+
+  let counter = 0
+  const optimize = (seedCities: number[]): void => {
+    resetQueue(seedCities)
+    while (qcount > 0) {
+      if ((counter++ & 1023) === 0 && Date.now() - startTime > TIME_LIMIT) return
+      const c1 = qpop()
+      const i = pos[c1]
+      const iN = i + 1 < n ? i + 1 : 0
+      const iP = i > 0 ? i - 1 : n - 1
+      const sN = t[iN]
+      const sP = t[iP]
+      const dN = D(c1, sN)
+      const dP = D(c1, sP)
+      const dMax = dN > dP ? dN : dP
+      const nb = knn[c1]
+      let moved = false
+
+      for (let x = 0; x < nb.length; x++) {
+        const c3 = nb[x]
+        const g = D(c1, c3)
+        if (g >= dMax) break
+        const j = pos[c3]
+        if (g < dN && c3 !== sN) {
+          const jN = j + 1 < n ? j + 1 : 0
+          const e2 = t[jN]
+          if (e2 !== c1 && g + D(sN, e2) - dN - D(c3, e2) < -1e-7) {
+            const lo = i < j ? i : j
+            const hi = i < j ? j : i
+            reverse(lo + 1, hi)
+            qpush(c1)
+            qpush(c3)
+            qpush(sN)
+            qpush(e2)
+            moved = true
+            break
           }
-          improved = true
-          break // edge (a,b) changed, move on
+        }
+        if (g < dP && c3 !== sP) {
+          const jP = j > 0 ? j - 1 : n - 1
+          const e2 = t[jP]
+          if (e2 !== c1 && g + D(sP, e2) - dP - D(c3, e2) < -1e-7) {
+            const lo = iP < jP ? iP : jP
+            const hi = iP < jP ? jP : iP
+            reverse(lo + 1, hi)
+            qpush(c1)
+            qpush(c3)
+            qpush(sP)
+            qpush(e2)
+            moved = true
+            break
+          }
         }
       }
-      if ((i & 31) === 0 && Date.now() - startTime > TIME_LIMIT) return improved
-    }
-    return improved
-  }
+      if (moved) continue
 
-  // --- Or-opt: move a chain of length L to a better position ---
-  const orOptPass = (tour: number[], segLen: number): boolean => {
-    let improved = false
-    for (let i = 1; i + segLen <= n; i++) {
-      const p = tour[i - 1]
-      const s0 = tour[i]
-      const s1 = tour[i + segLen - 1]
-      const q = tour[next(i + segLen - 1)]
-      const removed = D(p, s0) + D(s1, q) - D(p, q)
-      if (removed <= 1e-9) continue
-      let bestJ = -1
-      let bestGain = 1e-9
-      for (let j = 0; j < n - 1; j++) {
-        if (j >= i - 1 && j <= i + segLen - 1) continue // can't insert inside/adjacent
-        const u = tour[j]
-        const v = tour[j + 1]
-        const added = D(u, s0) + D(s1, v) - D(u, v)
-        const gain = removed - added
-        if (gain > bestGain) {
-          bestGain = gain
-          bestJ = j
+      const gainRemove = dP + dN - D(sP, sN)
+      if (gainRemove > 1e-7) {
+        for (let x = 0; x < nb.length; x++) {
+          const u = nb[x]
+          if (u === sP || u === sN) continue
+          const duc1 = D(u, c1)
+          if (duc1 >= gainRemove) break
+          const up = pos[u]
+          const uN = t[up + 1 < n ? up + 1 : 0]
+          if (uN !== c1 && duc1 + D(c1, uN) - D(u, uN) - gainRemove < -1e-7) {
+            relocate(c1, u, true)
+            qpush(c1)
+            qpush(u)
+            qpush(uN)
+            qpush(sP)
+            qpush(sN)
+            moved = true
+            break
+          }
+          const uP = t[up > 0 ? up - 1 : n - 1]
+          if (uP !== c1 && duc1 + D(c1, uP) - D(u, uP) - gainRemove < -1e-7) {
+            relocate(c1, u, false)
+            qpush(c1)
+            qpush(u)
+            qpush(uP)
+            qpush(sP)
+            qpush(sN)
+            moved = true
+            break
+          }
         }
       }
-      if (bestJ >= 0) {
-        const seg = tour.splice(i, segLen)
-        const insertAt = bestJ < i ? bestJ + 1 : bestJ + 1 - segLen
-        tour.splice(insertAt, 0, ...seg)
-        improved = true
+
+      if (!moved) {
+        for (let L = 2; L <= 3 && !moved; L++) {
+          const iEnd = i + L - 1
+          if (iEnd >= n) break
+          const s0 = c1
+          const s1 = t[iEnd]
+          const prev = t[i > 0 ? i - 1 : n - 1]
+          const nxt = t[iEnd + 1 < n ? iEnd + 1 : 0]
+          if (prev === s1 || nxt === s0) continue
+          const gainRem = D(prev, s0) + D(s1, nxt) - D(prev, nxt)
+          if (gainRem <= 1e-7) continue
+          for (let x = 0; x < nb.length; x++) {
+            const u = nb[x]
+            const up = pos[u]
+            if (up >= i && up <= iEnd) continue
+            const uNpos = up + 1 < n ? up + 1 : 0
+            if (uNpos >= i && uNpos <= iEnd) continue
+            const uN = t[uNpos]
+            const base = D(u, uN)
+            if (D(u, s0) + D(s1, uN) - base - gainRem < -1e-7) {
+              relocateSeg(i, L, u, false)
+              qpush(s0)
+              qpush(s1)
+              qpush(u)
+              qpush(uN)
+              qpush(prev)
+              qpush(nxt)
+              moved = true
+              break
+            }
+            if (D(u, s1) + D(s0, uN) - base - gainRem < -1e-7) {
+              relocateSeg(i, L, u, true)
+              qpush(s0)
+              qpush(s1)
+              qpush(u)
+              qpush(uN)
+              qpush(prev)
+              qpush(nxt)
+              moved = true
+              break
+            }
+          }
+        }
       }
-      if ((i & 31) === 0 && Date.now() - startTime > TIME_LIMIT) return improved
-    }
-    return improved
-  }
 
-  // Run 2-opt + Or-opt until no move helps or we run out of time.
-  const localSearch = (tour: number[]): void => {
-    let keepGoing = true
-    while (keepGoing && Date.now() - startTime < TIME_LIMIT) {
-      keepGoing = false
-      if (twoOptPass(tour)) keepGoing = true
-      if (Date.now() - startTime > TIME_LIMIT) break
-      if (orOptPass(tour, 1)) keepGoing = true
-      if (orOptPass(tour, 2)) keepGoing = true
-      if (orOptPass(tour, 3)) keepGoing = true
+      if (moved) qpush(c1)
     }
   }
 
-  // A simple deterministic pseudo-random generator (avoids relying on Math.random
-  // seeding and keeps runs reproducible).
+  const allCities: number[] = new Array(n)
+  for (let i = 0; i < n; i++) allCities[i] = i
+  optimize(allCities)
+  let best = t.slice()
+  let bestLen = tourLen(best)
+  let cur = best.slice()
+  let curLen = bestLen
+
   let seed = 123456789
   const rand = (m: number): number => {
     seed = (seed * 1103515245 + 12345) & 0x7fffffff
     return seed % m
   }
 
-  // Double-bridge: cut the tour (positions 1..n-1, leaving 0 fixed) into four
-  // pieces A|B|C|D and reconnect as A|C|B|D. This is the classic ILS kick that
-  // 2-opt cannot easily undo, letting us escape local optima.
-  const doubleBridge = (tour: number[]): number[] => {
+  let stagnation = 0
+  while (Date.now() - startTime < TIME_LIMIT) {
+    if (stagnation >= RESTART_AFTER) {
+      stagnation = 0
+      const fresh = nearestNeighbor(rand(n))
+      for (let i = 0; i < n; i++) t[i] = fresh[i]
+      syncPos()
+      optimize(allCities)
+      cur = t.slice()
+      curLen = tourLen(t)
+      if (curLen < bestLen - 1e-9) {
+        bestLen = curLen
+        best = cur.slice()
+      }
+      continue
+    }
+    for (let i = 0; i < n; i++) t[i] = cur[i]
     const p1 = 1 + rand(n - 3)
     const p2 = p1 + 1 + rand(n - p1 - 2)
     const p3 = p2 + 1 + rand(n - p2 - 1)
-    return [
-      ...tour.slice(0, p1),
-      ...tour.slice(p2, p3),
-      ...tour.slice(p1, p2),
-      ...tour.slice(p3),
+    const C = cur.slice(p2, p3)
+    const B = cur.slice(p1, p2)
+    let w = p1
+    for (const c of C) t[w++] = c
+    for (const c of B) t[w++] = c
+    syncPos()
+    const at = (idx: number): number => t[(idx + n) % n]
+    const lenC = p3 - p2
+    const lenB = p2 - p1
+    const seedCities = [
+      at(p1 - 1),
+      at(p1),
+      at(p1 + lenC - 1),
+      at(p1 + lenC),
+      at(p1 + lenC + lenB - 1),
+      at(p1 + lenC + lenB),
     ]
-  }
-
-  localSearch(tour)
-  let best = tour.slice()
-  let bestLen = tourLength(best)
-
-  // Iterated local search: kick + re-optimize, keep the best, until time runs out.
-  if (n >= 8) {
-    while (Date.now() - startTime < TIME_LIMIT) {
-      const candidate = doubleBridge(best)
-      localSearch(candidate)
-      const len = tourLength(candidate)
-      if (len < bestLen) {
+    optimize(seedCities)
+    const len = tourLen(t)
+    if (len < curLen - 1e-9) {
+      curLen = len
+      cur = t.slice()
+      if (len < bestLen - 1e-9) {
         bestLen = len
-        best = candidate
+        best = cur.slice()
+        stagnation = 0
+      } else {
+        stagnation++
       }
+    } else {
+      stagnation++
     }
   }
 
-  console.log(best.join(" ") + " 0")
+  const startIdx = best.indexOf(0)
+  const out: number[] = new Array(n + 1)
+  for (let i = 0; i < n; i++) out[i] = best[(startIdx + i) % n]
+  out[n] = 0
+  console.log(out.join(" "))
 }
