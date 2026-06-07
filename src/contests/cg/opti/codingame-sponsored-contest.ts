@@ -61,6 +61,9 @@ const UTURN_PENALTY = 3 // < PELLET_BONUS so a pellet behind us still wins
 // ===== DIAGNOSTIC MODE =====
 // Echo the first reads verbatim to STDERR so we can see the real stdin format
 // on CodinGame (the "Debug / Sortie d'erreurs" column). Remove once calibrated.
+// This banner prints BEFORE any read: if you don't see it in the Debug column,
+// stderr is hidden (wrong tab / suppressed), not that the bot is stuck.
+console.error("=== BOT START ===")
 let logCount = 0
 const LOG_LINES = 40
 function rl(): string {
