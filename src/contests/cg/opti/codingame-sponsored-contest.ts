@@ -58,25 +58,39 @@ const FLOOR_BONUS = 0
 const UTURN_PENALTY = 3 // < PELLET_BONUS so a pellet behind us still wins
 // ---------------------------------------------------------------------------
 
+// ===== DIAGNOSTIC MODE =====
+// Echo the first reads verbatim to STDERR so we can see the real stdin format
+// on CodinGame (the "Debug / Sortie d'erreurs" column). Remove once calibrated.
+let logCount = 0
+const LOG_LINES = 40
+function rl(): string {
+  const s = readline()
+  if (logCount < LOG_LINES) {
+    console.error(`[in ${logCount}] ${JSON.stringify(s)}`)
+    logCount++
+  }
+  return s
+}
+
 // Init: 3 integers. The third is the number of ghost pairs streamed each turn.
-parseInt(readline()) // init1 (maze width? unused in v1)
-parseInt(readline()) // init2 (maze height? unused in v1)
-const ghostCount = parseInt(readline()) // = pairs per turn
+parseInt(rl()) // init1 (maze width? unused in v1)
+parseInt(rl()) // init2 (maze height? unused in v1)
+const ghostCount = parseInt(rl()) // = pairs per turn
 
 let prev = -1 // last chosen direction index, -1 = none
 let tick = 0
 
 for (;;) {
-  const first = readline()
+  const first = rl()
   if (first === undefined || first === null) break
 
   // The 4 cells around Pac-Man, one char per line, in action order.
-  const cells = [first, readline(), readline(), readline()]
+  const cells = [first, rl(), rl(), rl()]
 
   // Consume the ghost pairs every turn (mandatory to stay in sync). A5.
   const ghosts: [number, number][] = []
   for (let i = 0; i < ghostCount; i++) {
-    const parts = readline().trim().split(/[\s,]+/).map(Number)
+    const parts = rl().trim().split(/[\s,]+/).map(Number)
     ghosts.push([parts[0], parts[1]])
   }
 
