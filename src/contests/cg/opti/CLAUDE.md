@@ -10,6 +10,38 @@ experiments never lower your rank. Keep files type-clean (CG runs `tsc`).
 
 ---
 
+## codingame-sponsored-contest
+
+The statement hides everything on purpose ("figure out what the inputs mean").
+**It is disguised PAC-MAN.** Proof: each `testIn` is base64+zlib **twice** —
+`inflate(base64(testIn))` yields another base64 string, inflate that to get a
+plain-text maze (`P`=you, `1..4`=ghosts with release timers `3,30`/`4,90`,
+`#`=walls, `.`=pellets, corners `A/B/C/D`). Decode snippet lived in `D:\tmp`
+(sandbox, ephemeral): `zlib.inflateSync(Buffer.from(s,"base64"))` applied twice.
+
+**The catch: the program never receives the maze.** Per the stub it only gets
+LOCAL info, so this is blind/local Pac-Man:
+- Init: 3 ints (3rd = number of int-pairs streamed per turn = ghost count = 4 in
+  the decoded replays; 1st/2nd likely maze w/h).
+- Each turn: **4 single-char lines** (the 4 cells around Pac-Man) then
+  `<3rd-init>` lines `"x y"` (ghosts). Output one of `A B C D E`.
+
+Solver `codingame-sponsored-contest.ts` is **v1: greedy local pellet-muncher**
+(never step into `#`, prefer `.`, mild anti-U-turn, rotating tie-break). It reads
+the ghost pairs only to stay in sync (not used yet). All the uncertain mappings
+are isolated as top-of-file constants — these are **INFERRED, unverified**:
+- cell order == action order (`cell[i] -> ACTIONS[i]`),
+- opposites are index pairs `{0,2}`/`{1,3}`,
+- `#`=wall, `.`=pellet, `E`=stay,
+- ghost pairs absolute vs relative = **unknown**.
+
+**Next (needs one live run):** paste the real first turn's stdin to confirm the
+char set and action mapping, then add ghost avoidance (track own position by
+dead-reckoning, or use the pairs directly if they turn out to be relative).
+Not submitted yet at time of writing.
+
+---
+
 ## travelling-salesman
 
 Tour over all points, start/end at 0; score ≈ tour length on the hidden instance. N≤300, 5s.
