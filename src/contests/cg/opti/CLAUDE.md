@@ -26,18 +26,30 @@ LOCAL info, so this is blind/local Pac-Man:
 - Each turn: **4 single-char lines** (the 4 cells around Pac-Man) then
   `<3rd-init>` lines `"x y"` (ghosts). Output one of `A B C D E`.
 
-Solver `codingame-sponsored-contest.ts` is **v1: greedy local pellet-muncher**
-(never step into `#`, prefer `.`, mild anti-U-turn, rotating tie-break). It reads
-the ghost pairs only to stay in sync (not used yet). All the uncertain mappings
-are isolated as top-of-file constants — these are **INFERRED, unverified**:
-- cell order == action order (`cell[i] -> ACTIONS[i]`),
-- opposites are index pairs `{0,2}`/`{1,3}`,
-- `#`=wall, `.`=pellet, `E`=stay,
-- ghost pairs absolute vs relative = **unknown**.
+**Exact I/O (reverse-engineered, confirmed via texus' published solution —
+https://github.com/texus/codingame "CodinGame Sponsored Contest"):**
+- Init: `width`, `height`, `players` (= ghosts + you).
+- Each turn: 4 chars in order **UP, RIGHT, DOWN, LEFT** (content of the 4 cells
+  around you), then `players` lines `"x y"` **1-indexed with wrap-around**; the
+  **last pair is YOU**, the rest are ghosts.
+- Action mapping (the gotcha): **A=RIGHT, B=STAY, C=UP, D=DOWN, E=LEFT**. Our
+  first naive bot always printed `D`=DOWN, a wall at spawn → it froze in place.
 
-**Next (needs one live run):** paste the real first turn's stdin to confirm the
-char set and action mapping, then add ghost avoidance (track own position by
-dead-reckoning, or use the pairs directly if they turn out to be relative).
+**stderr is HIDDEN for this puzzle** (a `console.error` banner printed before any
+read never showed up), so you cannot debug via stderr — only stdout (the A–E
+moves) and the score are visible. That's why we needed the published writeup.
+
+Solver `codingame-sponsored-contest.ts` is a faithful port of texus' approach:
+keep a grid of `?`(unknown)/`#`(wall)/`_`(eaten), each turn fill in our cell +
+4 neighbours, **BFS to the nearest still-unknown cell** and step toward it
+(exploring == eating), refusing any step whose destination sits next to a ghost
+(`alternativeMove` keeps us alive otherwise). **JS gotcha:** Python's `%` is
+non-negative; JS isn't — every grid index uses a `mod(a,n)=((a%n)+n)%n` helper.
+
+**Local referee sim** (`D:\tmp`, ephemeral) with the real mapping: ~**96–97% of
+pellets** on tests 1 & 10, survives chasing ghosts. Tried also targeting known
+`.` cells (not just `?`): +1% with no ghosts but **collapses to 27% under
+ghosts** (fixates on a guarded pellet) — kept `?`-only as it's far more robust.
 Not submitted yet at time of writing.
 
 ---
