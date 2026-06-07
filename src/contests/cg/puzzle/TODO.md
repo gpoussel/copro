@@ -4,20 +4,10 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 104 (easy 76, medium 22, hard 4, expert 2)._
+_Généré le 2026-06-06 — total : 94 (easy 66, medium 22, hard 4, expert 2)._
 
-## Easy (76)
+## Easy (66)
 
-- [ ] [hunger-games](https://www.codingame.com/training/easy/hunger-games)
-- [ ] [ipv6-shortener](https://www.codingame.com/training/easy/ipv6-shortener)
-- [ ] [is-that-a-possible-word](https://www.codingame.com/training/easy/is-that-a-possible-word)
-- [ ] [is-the-king-in-check-part-1](https://www.codingame.com/training/easy/is-the-king-in-check-part-1)
-- [ ] [isbn-check-digit](https://www.codingame.com/training/easy/isbn-check-digit)
-- [ ] [jack-silver-the-casino](https://www.codingame.com/training/easy/jack-silver-the-casino)
-- [ ] [logically-reasonable-inequalities](https://www.codingame.com/training/easy/logically-reasonable-inequalities)
-- [ ] [low-resolution-whats-the-shape](https://www.codingame.com/training/easy/low-resolution-whats-the-shape)
-- [ ] [lumen](https://www.codingame.com/training/easy/lumen)
-- [ ] [magic-string](https://www.codingame.com/training/easy/magic-string)
 - [ ] [mars-lander-episode-1](https://www.codingame.com/training/easy/mars-lander-episode-1)
 - [ ] [master-of-mayhem](https://www.codingame.com/training/easy/master-of-mayhem)
 - [ ] [may-the-triforce-be-with-you](https://www.codingame.com/training/easy/may-the-triforce-be-with-you)
