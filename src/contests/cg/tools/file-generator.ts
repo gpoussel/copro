@@ -22,10 +22,12 @@ export async function writeTemplateIfNecessary(
   const solutionFile = resolve(categoryFolder, filename)
   const created = !(await fs.pathExists(solutionFile))
   if (created) {
+    // golf files are byte-minimized and excluded from typecheck, so they keep
+    // @ts-nocheck; puzzle/opti are type-checked (readline() is declared ambiently).
+    const header = category === "golf" ? `// @ts-nocheck\n` : ""
     await fs.writeFile(
       solutionFile,
-      `// @ts-nocheck
-// 🎮 CodinGame ${CATEGORY_LABELS[category]} - ${slug}
+      `${header}// 🎮 CodinGame ${CATEGORY_LABELS[category]} - ${slug}
 // https://www.codingame.com/
 
 `
