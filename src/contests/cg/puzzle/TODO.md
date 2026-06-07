@@ -4,16 +4,7 @@ Puzzles (catégorie **puzzle**) **résolus sur CodinGame mais absents de ce repo
 Les solutions `golf/` ne comptent pas : un même problème a une entrée puzzle et une entrée golf distinctes sur CodinGame.
 À ré-implémenter dans `src/contests/cg/puzzle/<slug>.ts` ; retire la ligne une fois la solution committée.
 
-_Généré le 2026-06-06 — total : 34 (easy 6, medium 22, hard 4, expert 2)._
-
-## Easy (6)
-
-- [ ] [unit-fractions](https://www.codingame.com/training/easy/unit-fractions)
-- [ ] [van-ecks-sequence](https://www.codingame.com/training/easy/van-ecks-sequence)
-- [ ] [whats-so-complex-about-mandelbrot](https://www.codingame.com/training/easy/whats-so-complex-about-mandelbrot)
-- [ ] [wheres-wally](https://www.codingame.com/training/easy/wheres-wally)
-- [ ] [ww2-mortar-warfare](https://www.codingame.com/training/easy/ww2-mortar-warfare)
-- [ ] [xml-mdf-2016](https://www.codingame.com/training/easy/xml-mdf-2016)
+_Généré le 2026-06-06 — total : 28 (easy 0, medium 22, hard 4, expert 2)._
 
 ## Medium (22)
 
