@@ -71,6 +71,20 @@ behavior in edge cases.
   each turn (e.g. 8 lines), printing one answer per turn. That `for(;;)` is correct —
   CodinGame ends the process for you. The verifier handles it: it stops the loop when
   the sample input runs out.
+- **Print every move up front — skip the per-turn read entirely.** When the whole
+  move sequence is determined by the init input (move-to-target puzzles like Power
+  of Thor ep. 1), don't read the per-turn line at all: compute and `console.log`
+  each move in a bare `for(;;)`. The referee consumes one output line per turn and
+  kills your process the moment the game is won, so every extra line you flooded
+  (even empty ones once aligned) is never read. This deletes both the `readline`
+  alias and the per-turn `r()` — worth ~10 B (Power of Thor: 139→129 B, verified
+  locally; flood-printing is standard practice on CG solo puzzles). Mind the turn
+  budget: emit the *diagonal-first* path (`(d>b?(d--,"N"):d<b?(d++,"S"):"")+(...)`),
+  not axis-by-axis — validators allot ~Chebyshev-distance turns. ⚠️ `verify.mjs`
+  cannot run such a program (it never reads again, so never unwinds at EOF and
+  loops forever): verify a twin with a bounded header (`for(var k=39,...;k--;)` —
+  39 ≥ max Chebyshev distance on a 40×18 map; trailing empty lines are trimmed by
+  the comparison), then strip the bound and type-check the final form on its own.
 - **Merge a counted preamble into the game loop.** When init input is a count plus
   N data lines and then an infinite game loop, don't read the count or write the
   preamble loop at all: let the game loop read every line and branch on a token that
@@ -87,6 +101,10 @@ behavior in edge cases.
 ## 2. Numbers & coercion
 
 - `+s` instead of `parseInt(s)` / `Number(s)`.
+- For a whole array, `.map(eval)` (10 B) beats `.map(x=>+x)` (11 B) and
+  `.map(Number)` (12 B). It type-checks (`eval` is `(x:string)=>any`, assignable as
+  a map callback) and the resulting `any`s allow `d--`/`d>b` freely. Indirect eval
+  of a numeric literal just returns the number.
 - `~~s` converts a string to a truncated int in one go (`~~"4.9"` → 4); use it when
   you'd otherwise write `+s|0`. (`~~` is unary, so it compiles on strings — unlike
   `s-0`/`s*1`.)
