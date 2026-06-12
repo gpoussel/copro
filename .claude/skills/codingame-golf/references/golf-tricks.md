@@ -71,6 +71,15 @@ behavior in edge cases.
   each turn (e.g. 8 lines), printing one answer per turn. That `for(;;)` is correct —
   CodinGame ends the process for you. The verifier handles it: it stops the loop when
   the sample input runs out.
+- **Merge a counted preamble into the game loop.** When init input is a count plus
+  N data lines and then an infinite game loop, don't read the count or write the
+  preamble loop at all: let the game loop read every line and branch on a token that
+  only one line shape has (`var[f,p,d]=S();d?<game turn>:<store data line>` — data
+  lines have 2 tokens, game lines 3, so `d` is undefined exactly on data lines).
+  Submission-validated at **134 B** on Don't Panic ep. 1 (killed the whole
+  `n=+a[7];for(;n--;)` elevator loop). Only do this when the preamble lines all
+  *precede* the first game line, and mind ordering: anything seeded before the loop
+  (e.g. the exit position) can be overwritten by preamble lines processed inside it.
 - Output many lines at once: build an array and `console.log(a.join("\n"))` — one
   call is cheaper than many.
 - `console.log(1,"x",78)` prints `1 x 78` (space-separated), handy to avoid joins.
@@ -94,6 +103,16 @@ behavior in edge cases.
 - **`~NaN` is `-1`** — a free NaN fallback. NaN propagates through `-`/`*`, so
   `~(36-parseInt(c,36))` gives `p-37` for base-36 letters but exactly `-1` when
   `parseInt` returned NaN (punctuation/space) — no `||` and no guard needed.
+- **NaN comparisons are `false` — a free default branch.** Reading a key you never
+  wrote (`a[-1]`) gives undefined; pushed through arithmetic it becomes NaN, and
+  `NaN>0` is false, so the "no data" case falls through to the `:` branch with zero
+  guard bytes. Submission-validated on Don't Panic ep. 1: the `-1 -1 NONE` sentinel
+  line needed no special case — `(a[f]-+p)*s>0?"BLOCK":"WAIT"` emits `WAIT` by itself.
+- **Multiply by a ±1 sign instead of comparing twice — it gets `==` right for free.**
+  For "act iff moving away from target": `(t-p)*(dir?-1:1)>0`. The tempting
+  `t<p==dir` forms are shorter-looking but wrong on `t==p` (one direction always
+  lands on the acting branch); the product is 0 there, which is falsy — correct,
+  and cheaper than patching equality with `<=`/`>=` pairs.
 
 ## 3. Variables & functions
 
@@ -155,6 +174,10 @@ behavior in edge cases.
 - `[...s]` to split a string into characters (beats `s.split("")`).
 - `s[i]` for a single char; `s.at(-1)` or `s[s.length-1]` for the last.
 - Compare chars directly: `s[3]=="A"`.
+- **Discriminate keywords by length via indexing**: when one keyword is longer than
+  the others, index past the short ones' end — `d[4]` is `"T"` for `"RIGHT"` but
+  undefined for `"LEFT"`/`"NONE"`, so `d[4]?-1:1` beats `d<"R"?-1:1` by a byte and
+  needs no quotes. (Submission-validated on Don't Panic ep. 1.)
 - `s.repeat(n)` to build runs; `s.padStart(n,"0")` / `s.padEnd(n)` for fixed-width
   output (e.g. zero-padding numbers) — all shorter than manual loops.
 - `"A".charCodeAt(0)` → 65; `String.fromCharCode(n)` reverses it. ⚠️ **Pass the `0`** —
@@ -202,6 +225,12 @@ behavior in edge cases.
   sort is lexicographic — `[10,9].sort()` → `[10,9]`).
 - Membership: `~a.indexOf(x)` is truthy when present (avoids `>=0`); `!~a.indexOf(x)`
   tests absence; or `a.includes(x)`.
+- **Reuse the header array as your map/storage.** The `readline().split(" ")` array
+  holding the init line is a perfectly good dictionary once its values are consumed:
+  overwrite dead indices (`a[a[3]]=a[4]`, then `a[f]=p` per data line) instead of
+  declaring `E=[]`. Saves the whole extra declaration; valid as long as every key you
+  later *read* has been overwritten (leftover header values at unread indices are
+  harmless). Submission-validated on Don't Panic ep. 1.
 - Swap without a temp: `[a,b]=[b,a]`.
 - Destructure with holes to skip elements: `[a,,c]=arr`.
 - Spread to clone/concat: `[...a,...b]`.
