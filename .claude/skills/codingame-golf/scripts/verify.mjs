@@ -64,10 +64,13 @@ if (tscBin) {
     // esnext target so modern syntax (**, spread, optional chaining…) isn't
     // flagged just because of an old default target. Non-strict by default —
     // CodinGame is not known to enable strict, and we don't want false rejects.
+    // cwd: tmpdir so tsc 6+ doesn't reject the run with TS5112 when the repo
+    // has a tsconfig.json; explicit --strict false because TS 6 made strict the
+    // default while CodinGame compiles non-strict.
     execFileSync(
       process.execPath,
-      [tscBin, '--noEmit', '--target', 'esnext', '--lib', 'esnext', '--skipLibCheck', tcFile],
-      { encoding: 'utf8' },
+      [tscBin, '--noEmit', '--target', 'esnext', '--lib', 'esnext', '--skipLibCheck', '--strict', 'false', tcFile],
+      { encoding: 'utf8', cwd: tmpdir() },
     )
     process.stderr.write('TYPECHECK ✅\n')
   } catch (e) {

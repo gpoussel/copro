@@ -56,6 +56,11 @@ behavior in edge cases.
   Destructure: `var[a,b,c]=readline().split(" ")`.
 - Loop over N lines: `for(n=+readline();n--;)...` consumes the count then iterates
   (declare `n`).
+- If the line count is followed by data you read until EOF anyway, you don't need
+  the count at all: consume the line into a variable you then *reuse* as the loop
+  variable (`var ...,H=R(),T=R();H=R();` — submission-validated, `readline()` is
+  falsy at EOF on CodinGame). With no variable to spare, `T=R()&&R()` skips one
+  line and keeps the next (any real input line is truthy).
 - Read N lines into an array: `[...Array(n)].map(readline)`. Passing `readline`
   directly (not `_=>readline()`) works — `map` calls it with `(value,index,array)`,
   `readline` ignores the extras, and a `()=>string` is assignable where a 3-param
@@ -86,6 +91,9 @@ behavior in edge cases.
 - `var M=Math` once, then `M.hypot`, `M.abs`, etc., if you use several Math methods.
 - `+(cond)` turns a boolean into 0/1 (unary `+` on a boolean compiles fine);
   `+!0`→1, `+!1`→0.
+- **`~NaN` is `-1`** — a free NaN fallback. NaN propagates through `-`/`*`, so
+  `~(36-parseInt(c,36))` gives `p-37` for base-36 letters but exactly `-1` when
+  `parseInt` returned NaN (punctuation/space) — no `||` and no guard needed.
 
 ## 3. Variables & functions
 
@@ -155,16 +163,24 @@ behavior in edge cases.
   rejected with TS2554 (`Expected 1 arguments, but got 0`). Same for `codePointAt(0)`.
 - `parseInt(c,36)-10` maps letters to `A/a→0` ... `Z/z→25` compactly. It is good
   when lowercase can appear. If the puzzle also requires a fallback for spaces or
-  punctuation (e.g. ASCII-art `?` at index 26), keep the guard:
-  `((i=parseInt(c,36))>9?i-10:26)`. Dropping it is shorter but not equivalent.
-- **Negative `substr` start = "last field" fallback.** `s.substr(-L,L)` returns the
-  final `L`-wide slice. When the default maps to the *last* element (the ASCII-art
-  `?` glyph sits at the end of each row), route non-letters there instead of spelling
-  out `26*L`: `s.substr((i=parseInt(c,36)-10)>=0?i*L:-L,L)`. Baking the `-10` into the
-  assignment keeps the hot branch `i*L`, and `>=0` (not `<0`) ensures `NaN` from
-  spaces/punctuation also falls through to `-L`. Verified at 122 B on ASCII Art (the
-  shorter ~104 B "TypeScript" records assume a looser stub: `print` declared and/or
-  `readline` accepting args — neither survives `tsc` here, see §9 / the TS2554 note).
+  punctuation (e.g. ASCII-art `?` at index 26), combine with the `~NaN` trick (§2)
+  instead of a `>=0?:` guard — see the next bullet. Note the digit caveat below.
+- **Fully negative `substr` indexing on fixed-width rows.** When a row is exactly
+  `N*L` wide (glyph fonts, fixed-width fields), index every slot from the *end*:
+  slot `k` of `N` starts at `(k-N)*L`, and `~(36-parseInt(c,36))*L` gives that for
+  base-36 letters (`N=27`) while sending NaN (punctuation/space) to `-L` — the last
+  slot — for free, since `~NaN===-1`. Submission-validated at **111 B** on ASCII Art:
+  `for(var I=readline,L=+I(),H=I(),T=I();H=I();)console.log(T.replace(/./g,c=>H.substr(~(36-parseInt(c,36))*L,L)))`
+  Facts confirmed by that accepted submission: CodinGame serves the font rows at
+  exactly 27·L columns *including trailing spaces* (negative starts for every letter
+  land correctly); the ASCII Art validators contain no digits `1-9` (those would map
+  to the `A` glyph here — keep the `>=0?i*L:-L` guard, +12 B, if a puzzle really can
+  feed digits); and `readline()` is falsy at EOF, so `for(;H=I();)` row loops work.
+  Reuse the variable that consumed a count line you don't need (here `H`) as the
+  loop/row variable — it saves declaring an extra name. (The ~104 B "TypeScript"
+  leaderboard records assume a looser stub: `print` declared and/or `readline`
+  accepting args, or pre-2023 *character* counting — none survives `tsc` here, see
+  §9 / the TS2554 note.)
 - `c.charCodeAt(0)-65` maps `A→0` compactly when input is guaranteed uppercase
   `A-Z` only. It does not handle lowercase or punctuation unless the statement lets
   you ignore those cases.
