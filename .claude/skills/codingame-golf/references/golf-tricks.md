@@ -285,8 +285,15 @@ behavior in edge cases.
 
 ## 9. CodinGame-specific gotchas
 
-- The judge usually trims trailing whitespace/newline, but **not** internal spacing —
-  match the output format exactly (spaces between tokens, capitalization, etc.).
+- The judge **often** trims a trailing newline, but do **not** assume it trims a
+  trailing *space* — some puzzles reject it (confirmed on Chuck Norris /
+  chuck-norris-codesize). ⚠️ `verify.mjs`'s `norm()` strips trailing whitespace
+  before comparing, so a stray trailing space still shows `MATCH ✅` while CodinGame
+  rejects it. Never delete `.trim()` / your final-separator handling on the strength
+  of `MATCH` alone. To check, inspect the **raw output bytes** (run the program and
+  assert `out===expected` with a non-normalized compare and `/ $/.test(out)===false`),
+  not just the verifier's MATCH. Internal spacing is never trimmed — match the output
+  format exactly (spaces between tokens, capitalization, etc.).
 - Some puzzles feed input via several lines with counts; read them in the precise
   order the statement lists, or everything shifts by one.
 - `console.log` of an array prints comma-separated without brackets — sometimes that
