@@ -261,6 +261,16 @@ behavior in edge cases.
   declaring `E=[]`. Saves the whole extra declaration; valid as long as every key you
   later *read* has been overwritten (leftover header values at unread indices are
   harmless). Submission-validated on Don't Panic ep. 1.
+- **Argmax via pair-sort — tag each value with its index, sort, read the index off
+  the winner.** When values are single digits (or any fixed width) and you need the
+  *position* of the max, skip the `reduce`/max-tracking entirely: build equal-length
+  strings `value+index` and let the default lexicographic sort do the numeric
+  comparison — `[..."01234567"].map(i=>readline()+i).sort()[7][1]`. Equal-length
+  strings sort numerically for free, and the index travels with the value through
+  the sort. Verified at **69 B** on The Descent (vs 79 B for the
+  `.reduce((p,c,i,a)=>a[p]<c?i:p,0)` argmax). Ties resolve to the *last* max index
+  (larger index sorts later) — fine when any tied max is accepted. Needs every pair
+  the same length: 1-digit values + 1-digit indices, or pad.
 - Swap without a temp: `[a,b]=[b,a]`.
 - Destructure with holes to skip elements: `[a,,c]=arr`.
 - Spread to clone/concat: `[...a,...b]`.

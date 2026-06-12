@@ -1,1 +1,1 @@
-for(;;)console.log([...Array(8)].map(readline).reduce((p,c,i,a)=>a[p]<c?i:p,0))
+for(;;)console.log([..."01234567"].map(i=>readline()+i).sort()[7][1])
