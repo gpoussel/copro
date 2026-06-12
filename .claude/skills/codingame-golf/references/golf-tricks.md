@@ -67,6 +67,19 @@ behavior in edge cases.
   variable (`var ...,H=R(),T=R();H=R();` — submission-validated, `readline()` is
   falsy at EOF on CodinGame). With no variable to spare, `T=R()&&R()` skips one
   line and keeps the next (any real input line is truthy).
+- A parenthesized comma chain is the cheapest multi-skip: `[a,b]=(R(),R(),R()).split(" ")`
+  reads line 3 (2 bytes shorter than `R()&&R()&&R()`), and it composes with an alias
+  init for free: `L=(R(),R(),Math.log)` skips two lines while aliasing `Math.log`
+  (verified locally, Blunder ep. 3).
+- Keep the first AND last data line of an EOF loop without an array: capture in the
+  increment slot — `for(;k=R();a=a||c,b=b||e)[c,e]=k.split(" ")` (`a,b` freeze after
+  the first iteration, `c,e` end on the last; verified locally, Blunder ep. 3).
+- Bordered-grid puzzles: spread every line — including the `"L C"` header — into ONE
+  flat char array (`g.push(...x)`); the header digits are unreachable junk behind the
+  all-`#` border, rows need no separators (wrap-around always lands on a border `#`),
+  and the width comes free from the last row via the increment slot
+  (`for(...;x=readline();w=x.length)g.push(...x)`). Flat indices also make teleporter
+  pairs trivial: `p=g.indexOf(x)+g.lastIndexOf(x)-p` (verified locally, Blunder ep. 1).
 - Read N lines into an array: `[...Array(n)].map(readline)`. Passing `readline`
   directly (not `_=>readline()`) works — `map` calls it with `(value,index,array)`,
   `readline` ignores the extras, and a `()=>string` is assignable where a 3-param
@@ -149,6 +162,13 @@ behavior in edge cases.
   `t<p==dir` forms are shorter-looking but wrong on `t==p` (one direction always
   lands on the acting branch); the product is 0 there, which is falsy — correct,
   and cheaper than patching equality with `<=`/`>=` pairs.
+- `m=k+.5|0` rounds any plausible `k>-.5` — 4 bytes shorter than `Math.round(k)`.
+- **Classify a growth curve with ONE log-log slope instead of fitting every candidate.**
+  `k=L(+t2/+t1)/L(+n2/+n1)` between two samples: `k+.5|0` is the polynomial exponent
+  (0/1/2/3, huge for `2^n`) and the fractional part (`k-m>.04`) flags a `log n` factor.
+  Base it on the SECOND sample, not the first — the smallest measurement is distorted
+  by constant overhead (verified locally, Blunder ep. 3: 447 B → 209 B vs a full
+  8-candidate regression, robust to ±0.5% noise and large offsets in synthetic tests).
 
 ## 3. Variables & functions
 
@@ -201,6 +221,19 @@ behavior in edge cases.
 - Assign inside the condition you test: `(b=read())?use(b):0` reads and tests in one.
 - Replace nested ternaries with a lookup: `[v0,v1,v2][i]` or `({a:1,b:2})[k]`
   (object-literal-indexed-by-string compiles — implicit `any` is on).
+- A char-keyed lookup does double duty as a set-membership test: with
+  `F={S:w,E:1,N:-w,W:-1}`, `F[x]?d=x:...` both detects a direction char and applies
+  it — no `"SENW".indexOf` (verified locally, Blunder ep. 1).
+- **"Keep the current choice unless invalid, else first valid by priority" is one
+  `find`**: `d=[d,...P].find(ok)`. Starting `d` UNdeclared is correct for free (the
+  undefined candidate fails `ok`, so the first pass falls through to pure priority
+  order — deletes the `d="S"` init). Invert priorities with `P.reverse()`. The `ok`
+  callback can also leak the inspected cell (`(x=g[p+F[c]])!="#"&&...`) so the
+  destination char is already in `x` after the move (verified locally, Blunder ep. 1).
+- **Simulation loop detection: a step budget beats a visited-set.** `for(;cond&&k--;)`
+  with `k=1e4`, then `console.log(~k?O:"LOOP")` — `~k` is 0 exactly when the budget
+  ran out. Pick the budget ≫ any legitimate path but small enough to stay in the time
+  limit (verified locally, Blunder ep. 1).
 
 ## 6. Strings
 
@@ -246,6 +279,18 @@ behavior in edge cases.
 - Case test: compare the char code — `s.charCodeAt(0)>96` is true for lowercase
   letters. (The JS `"c"<{}` relational trick does **not** type-check: TS rejects `<`
   between `string` and `{}` with TS2365.)
+- **Pick a keyword by its first letter with a regex on a packed string**:
+  `"SOUTH EAST NORTH WEST".match(d+"\\w+")` — in a `+` concatenation the match array
+  coerces to the bare word, so no `[0]` and no `{S:"OUTH",...}` suffix map. `\w` stops
+  at the space separators (verified locally, Blunder ep. 1). Inline the string if used
+  once — a `Z=` alias only pays from 2 uses.
+- Compose output names from parts instead of listing them: `"n^"+m` with ternary
+  edges (`m>3?"2^n":m>1?"n^"+m:"n"`) beat the literal 8-entry complexity-name array
+  by ~35 B on Blunder ep. 3 (verified locally).
+- When writing a "cleared" marker into a grid, ANY value passing your own free-cell
+  test works — reusing a live string variable (e.g. the output accumulator,
+  `g[p]=O`) is 2 bytes shorter than `" "`; just check every branch that can later
+  re-read that cell stays a no-op (verified locally, Blunder ep. 1).
 
 ## 7. Arrays
 
@@ -321,6 +366,12 @@ behavior in edge cases.
   is exactly the required format and saves a manual `.join(',')`.
 - Floating-point output: if the puzzle wants rounding, `Math.round`, `.toFixed(n)`
   (returns a string), or `+x.toFixed(n)` to drop trailing zeros — pick by spec.
+- `for(;l=readline();)` read-till-EOF loops are fine on CodinGame (falsy at EOF) but
+  `verify.mjs`'s shim THROWS at EOF, killing the program before it prints anything.
+  Verify a twin with `R=()=>{try{return readline()}catch(e){}}` in place of the bare
+  `readline`/alias (identical behavior to CG), then type-check the stripped final
+  form on its own — same twin protocol as for `for(;;)` flood-printing (used on
+  Blunder ep. 1 and 3).
 - CodinGame both **type-checks** (rejects compile errors) and **runs** your code, so
   there are two ways to fail. Always run `scripts/verify.mjs` — it does both — before
   reporting a byte count.
