@@ -54,6 +54,12 @@ behavior in edge cases.
 - Several tokens on one line: `readline().split(" ")`. Use real call syntax — the
   ``split` ` `` tagged-template form does **not** type-check (TS2769).
   Destructure: `var[a,b,c]=readline().split(" ")`.
+- **Read N rows into parallel columns with indexed-target destructuring.** When each
+  line is `x y` and you want all `x`s in one array and all `y`s in another, assign
+  straight into the slots — `for(;i--;)[X[i],Y[i]]=readline().split(" ")` — instead of
+  a temp + two `.push`. Destructuring targets can be member expressions, so this needs
+  no extra variable. Keep the tokens as **strings**: numeric ops coerce later, and you
+  skip `.map(Number)`. Verified at **168 B** on Network Cabling.
 - Loop over N lines: `for(n=+readline();n--;)...` consumes the count then iterates
   (declare `n`).
 - If the line count is followed by data you read until EOF anyway, you don't need
@@ -253,6 +259,21 @@ behavior in edge cases.
 - `eval(a.join("+"))` sums an array of numeric strings in very few bytes.
 - `a.reduce((p,c)=>p+c)` to fold; `a.sort((x,y)=>x-y)` for numeric sort (the default
   sort is lexicographic — `[10,9].sort()` → `[10,9]`).
+- **Fold an in-place `.sort()` into the expression that consumes it.** `.sort()`
+  returns the (now-sorted) array, so a standalone sort statement is wasted bytes:
+  `X.sort(f)[n-1]-X[0]` sorts then indexes the max in one go, and `Y.sort(f).reduce(...)`
+  sorts inline. Multiple sorts can ride a single expression via argument-evaluation
+  order — e.g. `Y.sort(f).reduce(cb, X.sort(f)[n-1]-X[0])` sorts `Y` (the receiver),
+  then sorts `X` while evaluating the seed, before `reduce` runs. Share one comparator
+  `f=(a,b)=>a-b` across both.
+- **Order string arithmetic to keep it numeric.** With numeric-string operands,
+  `a-b+s` stays a number (`a-b` subtracts first, then `+s` adds), but `s+a-b`
+  concatenates (`number + string` → string). Put a `-` first to avoid stray
+  parentheses around the coercion.
+- **Σ|yᵢ − median| without `Math.abs` or a median lookup.** Sort, then pair ends:
+  `Σ_{i<n/2}(Y[n-1-i] − Y[i])` (use `Y[n+~i]` for `Y[n-1-i]`). Self-correcting for odd
+  `n` — the middle element pairs with itself → 0 — so no special-casing. Beats both
+  `reduce((s,v)=>s+Math.abs(v-Y[n>>1]),0)` and the sign-weighted `v*Math.sign(2*i-n+1)`.
 - Membership: `~a.indexOf(x)` is truthy when present (avoids `>=0`); `!~a.indexOf(x)`
   tests absence; or `a.includes(x)`.
 - **Reuse the header array as your map/storage.** The `readline().split(" ")` array
