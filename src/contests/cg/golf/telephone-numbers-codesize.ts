@@ -1,3 +1,1 @@
-var n=+readline(),S=new Set,p="",c
-for(;n--;p="")for(c of readline())S.add(p+=c)
-console.log(S.size)
+var o={},t,r=0;for(readline();t||=readline();t=t.slice(0,-1))o[t]||=++r;console.log(r)
