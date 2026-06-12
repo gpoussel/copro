@@ -113,6 +113,18 @@ behavior in edge cases.
 - `x**2` for `Math.pow(x,2)`; `x**.5` for `Math.sqrt(x)`.
 - `2e3` for `2000`; exponential literals beat trailing zeros.
 - `!+s` is true when `s` is `"0"` or empty/NaN-ish — cheap zero test.
+- **Coerce inside the comparator, don't `.map(Number)` the array.** To sort string
+  tokens numerically you can't write `a*a-b*b` (binary op on strings → TS2362), but
+  coercing each side with unary `+` compiles: `.sort((a,b)=>+a*+a-+b*+b||+b-+a)`.
+  This beats mapping first (`.map(Number).sort((a,b)=>a*a-b*b||b-a)`): the inline
+  `+`s cost less than a whole `.map(Number)`/`.map(x=>+x)` pass. The array stays
+  strings, so finish with a coercion on the pick (next bullet).
+- **One leading `+` coerces the result *and* defaults empty input to 0.** `+x[0]`
+  on a string array prints the number, and `+""` is `0` — so an empty data line
+  (e.g. `N=0` with a blank second line, `"".split(" ")` → `[""]`) yields `0` for
+  free, no `||0` needed: `console.log(+readline().split(" ").sort(cmp)[0])`.
+  Submission-validated at **81 B** on Temperature (`+a*+a-+b*+b||+b-+a` sorts by
+  distance to 0, positive winning ties).
 - `a<b?a:b` (7 bytes) beats `Math.min(a,b)` (13). Same for max with `>`. For a whole
   array, `Math.min(...a)` / `Math.max(...a)` (spread) is shortest.
 - `var M=Math` once, then `M.hypot`, `M.abs`, etc., if you use several Math methods.
