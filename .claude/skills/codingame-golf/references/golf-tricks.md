@@ -210,6 +210,15 @@ behavior in edge cases.
 - In TypeScript, `for(r=R(),o='',c of T)` is invalid (TS2487). Use a normal body
   init, or avoid `for...of` if the declaration/setup overhead erases the gain.
 - `a.map`, `a.reduce`, `a.filter` often beat manual loops when you already have an array.
+- **Refill-on-empty with `||=` merges "for each line" × "consume the line" into ONE
+  loop.** When the per-line work shrinks its string to empty (prefix teardown, char
+  eating), `for(readline();t||=readline();t=t.slice(0,-1))<work on t>` reads the next
+  line only when `t` is exhausted and stops at EOF for free — deleting both the nested
+  loop header and the whole `n=+readline();for(;n--;)` counter. The leading bare
+  `readline()` in the init slot discards an unneeded count line. Submission-validated
+  at **86 B** on Telephone Numbers. If reading past EOF must be avoided, the counted
+  fallback is `t||=n--&&readline()` (`n--` is both counter and stop guard: at 0 it
+  assigns `0`, falsy, ending the loop) — verified locally at 95 B.
 
 ## 5. Conditionals & boolean logic
 
@@ -219,6 +228,11 @@ behavior in edge cases.
 - Chain side effects: `c?(a++,b--):0`.
 - `!0` / `!1` for `true` / `false` (2 bytes vs 4/5).
 - Assign inside the condition you test: `(b=read())?use(b):0` reads and tests in one.
+- **Logical assignment `||=`/`??=` compiles on CodinGame's TS** (TS 4.0+) and
+  short-circuits: the RHS only evaluates when the target is falsy. Two payoffs in
+  one operator — lazy refill (`t||=readline()` reads only when needed) and
+  mark-first-time (`o[t]||=++r` increments only on new keys). Submission-validated
+  on Telephone Numbers.
 - Replace nested ternaries with a lookup: `[v0,v1,v2][i]` or `({a:1,b:2})[k]`
   (object-literal-indexed-by-string compiles — implicit `any` is on).
 - A char-keyed lookup does double duty as a set-membership test: with
@@ -337,6 +351,15 @@ behavior in edge cases.
   `.reduce((p,c,i,a)=>a[p]<c?i:p,0)` argmax). Ties resolve to the *last* max index
   (larger index sorts later) — fine when any tied max is accepted. Needs every pair
   the same length: 1-digit values + 1-digit indices, or pad.
+- **Count distinct strings with an object + counter, not a Set.** `o[t]||=++r` then
+  `console.log(r)`: `var o={}` is 4 B shorter than `var s=new Set`, `o[t]||=++r` only
+  1 B longer than `s.add(t)`, and `console.log(r)` 5 B shorter than
+  `console.log(s.size)` — ~8 B net. Safe when keys can't be falsy `""`/`"0"`-as-only
+  or prototype names (digit strings are fine; the stored `++r` starts at 1, always
+  truthy). For "number of trie nodes" = distinct prefixes, tear each word down with
+  `t=t.slice(0,-1)` instead of growing `p+=c` — no per-line `p=""` reset (combines
+  with the §4 refill-on-empty loop; submission-validated at **86 B** on Telephone
+  Numbers).
 - Swap without a temp: `[a,b]=[b,a]`.
 - Destructure with holes to skip elements: `[a,,c]=arr`.
 - Spread to clone/concat: `[...a,...b]`.
