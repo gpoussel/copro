@@ -207,6 +207,12 @@ behavior in edge cases.
 
 - `for(;;)` over `while(1)`; both 1 statement but `for` lets you fold init/step in.
 - Countdown loops are shortest: `for(i=n;i--;)` runs `i` from `n-1` to `0`.
+- **Reuse the value a prior loop left the counter at — skip the re-init.** A
+  `for(;i<N;)…` read/fill loop exits with `i===N`, so an immediately following
+  per-index pass can be a bare countdown `for(;i--;)…` with no header init at all
+  (covers exactly `i=N-1…0`). Order-independent passes (each index computed from
+  scratch) don't care about the reversed direction. Verified at **211 B** on Roller
+  Coaster (`for(;i<N;)P[i++]=+readline()` then `for(;i--;…)` precompute).
 - Fold the body into the increment via the comma operator:
   `for(i=0;i<n;s+=i++);` — empty body, work done in the `for` header.
 - Put the initial `var` declaration in the `for` header when it saves a separator:
