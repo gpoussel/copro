@@ -268,6 +268,31 @@ behavior in edge cases.
   at **86 B** on Telephone Numbers. If reading past EOF must be avoided, the counted
   fallback is `t||=n--&&readline()` (`n--` is both counter and stop guard: at 0 it
   assigns `0`, falsy, ending the loop) — verified locally at 95 B.
+- **Target-sourced BFS that stores the *return move* — the move is then one lookup.**
+  In a "navigate the grid each turn" game loop, BFS from the TARGET (not from your
+  position) over a flat grid, and at each expansion store the name of the step that
+  walks back toward the source: `g[v]=N[t]`, where `v=u+D[t]` and `N` lists the
+  direction words in the OPPOSITE order to the offsets `D` (so `N[t]` is already the
+  reverse of `D[t]` — no `^1`). Your move is just `g[P]`; no `findIndex`, no distance
+  comparison at output. Pick the source per phase (`go-to-X` → BFS from X; explore →
+  multi-source BFS from every frontier `?`). Verified at **441 B** on The Labyrinth.
+- **Multi-source BFS with lazy `d[u]??=0` seeding + a live `for(u of s)` queue.** Seed
+  by *pushing* all sources into `s`, then `for(u of s)for(t in D)…,d[u]??=0,…s.push(v)`
+  — the live array iterator (§4 BFS note) sweeps sources then every pushed node, and
+  `d[u]??=0` lazily zeroes a source the first time it's processed. This is only correct
+  when sources are never *expanded into* as neighbours (e.g. `?` cells that are
+  themselves non-passable): otherwise a source reached as a child gets a wrong non-zero
+  distance. When that holds it deletes the separate seed pass. Verified on The Labyrinth.
+- **Make the BFS fill a GLOBAL `d`/`g` and return nothing** — then the phase selector
+  is a bare ternary *statement* and you can reuse one BFS for two purposes: run it inside
+  the condition for a check and keep its result for the move,
+  `B?b([T]):~E&&(b([E]),d[T]<=A)||b(<explore>)` (comma runs the BFS, then tests `d[T]`;
+  `||` falls through to explore when unsafe/unreachable). Deletes every `d=b(...)`
+  plumbing and the `return d`. Verified on The Labyrinth.
+- **Cache a turn-1 invariant from the position, not `indexOf`.** When the player starts
+  ON a fixed marker (`T`), its flat index equals your position `P` on the first turn —
+  `T??=P` (nullish, set once) is shorter than `S.indexOf("T")` every turn and survives
+  `T===0`. Works for any value derivable from first-turn state.
 
 ## 5. Conditionals & boolean logic
 
@@ -518,3 +543,17 @@ behavior in edge cases.
   assert their emitted move sequences are **byte-identical**. Then golf only changes that
   preserve that equality (re-run the diff after each). 0 diffs over thousands of games ⇒
   behavioural equivalence ⇒ it passes whatever the reference passed.
+- **Adaptive-input interactive puzzles (the world reacts to your moves) can't be diffed
+  *or* replayed — you must simulate the environment and check the WIN, not the output.**
+  On The Labyrinth each turn's grid depends on where you moved (fog-of-war reveal), so a
+  static `verify.mjs` input is meaningless and two correct solutions legitimately take
+  different paths (so move-sequence diffing is wrong too). Build a real referee that
+  generates random maps, reveals the 5×5 scan, drives the solution turn-by-turn over a
+  pipe (child reads via blocking `fs.readSync(0,…)` for a synchronous `readline`), and
+  asserts the actual success condition (reached goal, returned in time, under the move
+  budget). Generate adversarial maps deliberately — perfect mazes hide bugs that only
+  *braided* mazes (multiple paths) with a *tight* resource limit expose; that's how I
+  proved an alarm/feasibility check was load-bearing rather than optional. ⚠️ On Windows,
+  console output to a pipe/file is buffered and **lost when the process is killed by a
+  timeout** — log debug with synchronous `fs.appendFileSync` and give the referee its own
+  internal watchdog instead of relying on an external `timeout`.

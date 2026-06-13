@@ -1,14 +1,1 @@
-var dr=[-1,1,0,0],dc=[0,0,-1,1],nm=["UP","DOWN","LEFT","RIGHT"],Z=()=>readline().split(" ").map(Number),S,W
-function bfs(s){var d=[],f=[],q=[s],k=0;d[s]=0;for(;k<q.length;k++){var u=q[k],y=u/C|0,x=u%C;if(S[u]=="?")continue;for(var t=0;t<4;t++){var Y=y+dr[t],X=x+dc[t];if(Y<0||X<0||Y>=R||X>=C)continue;var id=Y*C+X;if(S[id]=="#"||S[id]==W||d[id]>=0)continue;d[id]=d[u]+1;f[id]=u==s?nm[t]:f[u];q.push(id)}}return[d,f]}
-var[R,C,A]=Z(),B=0
-for(;;){
-var[r,c]=Z(),i
-for(S="",i=0;i<R;i++)S+=readline()
-var T=S.indexOf("T"),E=S.indexOf("C"),P=r*C+c
-if(P==E)B=1
-var Q=E>=0&&bfs(E)[0][T]<=A
-W=B||Q?"":"C"
-var[d,f]=bfs(P),G=T
-if(!B)if(Q)G=E;else{var b=1/0;for(i=0;i<R*C;i++)if(S[i]=="?"&&d[i]<b){b=d[i];G=i}}
-console.log(f[G])
-}
+var I=readline,Z=()=>I().split(" "),[R,L,A]=Z(),W=-~L,D=[-1,1,-W,W],N=["RIGHT","LEFT","DOWN","UP"],S,B=0,Y,d,T,g=[],b=s=>{var u,v,t;d=[];for(u of s)for(t in D)v=u+D[t],d[u]??=0,!Y.includes(S[v])||v in d||(d[v]=d[u]+1,g[v]=N[t],s.push(v))};for(;;){var[r,c]=Z(),i;for(S="",i=R;i--;)S+=I()+"#";var E=S.search("C"),P=+r*W+ +c;T??=P;Y=(P==E?B=1:B)?".TC":".T";B?b([T]):~E&&(b([E]),d[T]<=A)||b([...S].flatMap((x,i)=>x=="?"?i:[]));console.log(g[P])}
