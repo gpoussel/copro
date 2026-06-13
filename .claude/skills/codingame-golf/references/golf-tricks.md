@@ -227,6 +227,35 @@ behavior in edge cases.
 - In TypeScript, `for(r=R(),o='',c of T)` is invalid (TS2487). Use a normal body
   init, or avoid `for...of` if the declaration/setup overhead erases the gain.
 - `a.map`, `a.reduce`, `a.filter` often beat manual loops when you already have an array.
+- **BFS/flood-fill with a live `for(node of q)` over the queue you're still pushing
+  into.** A JS array iterator re-checks `.length` each step, so `for(var[s,x,Z,f]of q){…q.push(child)…}`
+  visits every node you append mid-iteration — a complete breadth-first sweep with no
+  `h` index and no `q[h]`. Pair with `m[k=[...]+'']` dedup (array key needs the `+''` —
+  a bare array index is TS2538).
+  ⚠️ **Flood-printing the whole plan on turn 1 FAILS on a re-reading game referee.** Power
+  of Thor never reads after turn 1, so flooding works there. But The Bridge (and most
+  multi-turn games) send fresh state every turn and read exactly ONE output line per turn,
+  discarding the rest of your buffer — so a flood delivers only your first move and every
+  later turn gets nothing (≈42% of validators, the near-1-turn wins). Confirmed: flooding
+  *and* a `for(;;)readline()` keep-alive both scored ~42%; only **re-planning per turn**
+  fixed it. So structure it as `for(;;){<read S + M bike lines> <BFS from the ACTUAL
+  state> console.log(firstMove)}` — keep just the FIRST move of the path (`f||A[j]` in the
+  node freezes it) and recompute next turn from the real positions/alive-flags CG reports.
+  This is also robust to small rule-model errors: reading ground truth each turn
+  self-corrects. ⚠️ **Never emit an empty line.** When the bikes have already crossed
+  (`x>=L` at the BFS root, so the stored first-move string is `""`), the referee may still
+  send one trailing turn and rejects `""` with `Failure: invalid instruction :` — output a
+  real forward move instead (`o=f||"SPEED"`; safe because there's no road data past `L`, so
+  accelerating can't hit a hole). Reproduce this in your referee by sending a trailing turn
+  at `x>=L` and rejecting any command not in the 6-word set. Verified at **616 B** on The
+  Bridge ep. 2 (strict interactive referee, 139/139 random solvable boards won). Mirror the search in plain JS and
+  cross-check emitted sequences against a reference simulator — but that only catches
+  *search* bugs, not whether your *rules* match CG's; validate those against the statement's
+  worked example, and prefer per-turn replanning so a rule mismatch degrades gracefully.
+- **Parse a fixed-width init line by character index, not `.split`.** When a line is
+  guaranteed `"0 Y A"` (single-digit fields at known columns), `+R()[2]` pulls the
+  middle token directly — shorter than `+R().split(" ")[1]`. Only safe when every field
+  really is one char (check the constraints).
 - **Refill-on-empty with `||=` merges "for each line" × "consume the line" into ONE
   loop.** When the per-line work shrinks its string to empty (prefix teardown, char
   eating), `for(readline();t||=readline();t=t.slice(0,-1))<work on t>` reads the next
