@@ -138,6 +138,9 @@ behavior in edge cases.
 - `~~s` converts a string to a truncated int in one go (`~~"4.9"` → 4); use it when
   you'd otherwise write `+s|0`. (`~~` is unary, so it compiles on strings — unlike
   `s-0`/`s*1`.)
+- **`-~s` is `+s+1` in one fewer byte** — `~` coerces the string and `-~"4"===5`
+  (unary, so it compiles on strings). Handy for off-by-one reads like a grid
+  row-stride `W=L+1` → `W=-~readline()` (verified locally, Surface).
 - `x|0` or `~~x` for `Math.floor(x)` (positive numbers); both also truncate.
 - `a/b|0` for integer division.
 - `x**2` for `Math.pow(x,2)`; `x**.5` for `Math.sqrt(x)`.
@@ -434,6 +437,27 @@ behavior in edge cases.
   leaves — no separate declaration, no trailing `console.log(b)`. Verified at **202 B**
   on Genome Sequencing (exact shortest-common-superstring; ⚠️ greedy max-overlap merging
   is NOT safe — it fails ~2.5% of random cases, so you must enumerate orderings).
+- **Flood fill / connected-component size: use an explicit stack, NOT recursion.**
+  CodinGame validators include large maps (e.g. Surface's *"Grande carte, grand
+  lac"*), and a recursive flood overflows the call stack — depth = lake size, and
+  `RangeError: Maximum call stack size exceeded` is an instant fail no matter how
+  short. Pop from an array instead:
+  `for(s=[q];s.length;)S[p=s.pop()]>"#"&&!m[p]&&(m[p]=1,s.push(p-1,p+1,p-W,p+W))`.
+  Guard on `s.length`, **not** `s.pop()` truthiness — a popped index of `0` is falsy
+  and would end the loop early. Flatten the grid into one string with a non-water
+  separator between rows (width `W=L+1`, e.g. `S+=readline()+" "`) so a horizontal
+  step at a row edge lands on the separator instead of wrapping, and out-of-bounds
+  indices read `undefined`, which fails `>"#"` for free.
+- **Memoize lake sizes with a shared one-element counter array — and skip the
+  cache-hit branch.** Point every cell of a lake at the *same* array and bump it
+  while flooding: `++(m[p]=a)[0]` marks the cell (truthy ⇒ visited) and increments
+  the shared count in one expression (pre-increment, so it's truthy on the first
+  cell and the following `&&s.push(...)` still runs). Seed `a=m[q]||[0]`: for an
+  already-seen start the flood's own `!m[p]` guard pops `q` once and stops (O(1)),
+  so `return a[0]` yields the cached size with **no** explicit `if(m[q])return…`.
+  Re-flooding every query without caching times out when many queries hit one big
+  lake (measured 2m38s vs 0.5s for 999 queries into a 1M-cell lake). Verified at
+  **243 B** on Surface.
 - Swap without a temp: `[a,b]=[b,a]`.
 - Destructure with holes to skip elements: `[a,,c]=arr`.
 - Spread to clone/concat: `[...a,...b]`.
