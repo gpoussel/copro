@@ -293,6 +293,17 @@ behavior in edge cases.
 - Case test: compare the char code — `s.charCodeAt(0)>96` is true for lowercase
   letters. (The JS `"c"<{}` relational trick does **not** type-check: TS rejects `<`
   between `string` and `{}` with TS2365.)
+- **`~s.search(t)` is a 1-byte-shorter `s.includes(t)`** — `search` returns `-1` when
+  absent (`~-1` is `0`, falsy) and `≥0` when present (truthy). ⚠️ the argument is a
+  **regex**, so this is only safe when the needle can't contain regex metacharacters
+  (plain alphabets like DNA `ACGT` are fine). Verified on Genome Sequencing.
+- **Overlap-merge two strings (longest suffix of `a` = prefix of `b`) in a tiny loop**:
+  `for(k=0;b.search(a.slice(k));)k++` stops at the smallest `k` where `a.slice(k)` is a
+  prefix of `b` (the longest overlap), then `a.slice(0,k)+b` glues them with the overlap
+  removed. Guard full containment separately (`~a.search(b)?a:a.slice(0,k)+b`): overlap
+  alone misses a string buried in the *interior* of the other. Declare the counter once
+  with the function (`var k,g=...`) so the inner `for(k=0;...)` needs no `var`. Verified
+  at **202 B** on Genome Sequencing.
 - **Pick a keyword by its first letter with a regex on a packed string**:
   `"SOUTH EAST NORTH WEST".match(d+"\\w+")` — in a `+` concatenation the match array
   coerces to the bare word, so no `[0]` and no `{S:"OUTH",...}` suffix map. `\w` stops
@@ -360,6 +371,14 @@ behavior in edge cases.
   `t=t.slice(0,-1)` instead of growing `p+=c` — no per-line `p=""` reset (combines
   with the §4 refill-on-empty loop; submission-validated at **86 B** on Telephone
   Numbers).
+- **Enumerate all orderings by recursing on the remaining set, removing the picked
+  element by value.** `g=(s,r)=>r[0]?Math.min(...r.map(t=>g(merge(s,t),r.filter(x=>x!=t)))):s.length`
+  folds an accumulator `s` over every permutation; `r.filter(x=>x!=t)` is shorter than
+  the index form `(_,j)=>i!=j` and stays correct when duplicates collapse under `merge`.
+  **Returning `Math.min(...)` up the tree beats a `var b=1e9` global** updated at the
+  leaves — no separate declaration, no trailing `console.log(b)`. Verified at **202 B**
+  on Genome Sequencing (exact shortest-common-superstring; ⚠️ greedy max-overlap merging
+  is NOT safe — it fails ~2.5% of random cases, so you must enumerate orderings).
 - Swap without a temp: `[a,b]=[b,a]`.
 - Destructure with holes to skip elements: `[a,,c]=arr`.
 - Spread to clone/concat: `[...a,...b]`.
