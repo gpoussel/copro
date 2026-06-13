@@ -496,3 +496,25 @@ behavior in edge cases.
 - CodinGame both **type-checks** (rejects compile errors) and **runs** your code, so
   there are two ways to fail. Always run `scripts/verify.mjs` — it does both — before
   reporting a byte count.
+- **Resource-limited interactive puzzles can't be golfed by a naive greedy — some
+  validators exist purely to defeat it.** On Vox Codei ep. 1 a plain "each turn bomb
+  the cell destroying the most nodes" greedy fails the *Mieux prévoir le futur* and
+  *Pas si vite* validators (`Failure: You do not have any bombs left` — greedy strands
+  a node and runs out of the tight bomb budget). The passing algorithm needs: read &
+  respect the per-turn resource count (`bombs` = 2nd token; never act at 0); a
+  **feasibility filter** (only take the max-coverage move if the rest stays solvable —
+  `maxRemainingCoverage*(bombs-1) >= nodesLeft`); and a **real grid + action timers**
+  kept separate from the planning grid (bombs detonate 3 turns later, so plan on a sim
+  grid that clears targets immediately but gate the *actual* placement on the real grid
+  being free, so you can act on a cell only after an earlier explosion frees it). A
+  ~300 B simple greedy *looks* the right size but doesn't clear 100%; the correct port
+  was **608 B** (down from 988). Leaderboard entries far below a correct solution are
+  usually pre-strict-`tsc` (char-count era / JS stub), not beatable under today's compiler.
+- **Validate an interactive solution by diffing it against a known-good one, not by a
+  hand-rolled outcome check.** A coverage/outcome-only referee gives false confidence —
+  it misses timing and stranding traps (it told me a broken greedy was equivalent). The
+  reliable method: keep a reference solution you trust (e.g. the previous committed
+  version), run both on thousands of **random games** with a shared stdin shim, and
+  assert their emitted move sequences are **byte-identical**. Then golf only changes that
+  preserve that equality (re-run the diff after each). 0 diffs over thousands of games ⇒
+  behavioural equivalence ⇒ it passes whatever the reference passed.
