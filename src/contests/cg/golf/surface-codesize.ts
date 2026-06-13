@@ -1,5 +1,3 @@
-var L=+readline(),H=+readline(),S="",m={},i,o=[]
-for(i=0;i<H;i++)S+=readline()
-function A(p){if(S[p]!="O")return 0;if(m[p])return m[p];var s=[p],C=[],a=0,x,P=q=>S[q]=="O"&&!m[q]&&(m[q]=-1,s.push(q));m[p]=-1;while(s.length){p=s.pop();x=p%L;C.push(p);a++;x<L-1&&P(p+1);x&&P(p-1);P(p+L);P(p-L)}for(p of C)m[p]=a;return a}
-for(i=+readline();i--;){var r=readline().split(" ");o.push(A(+r[1]*L+ +r[0]))}
-console.log(o.join("\n"))
+var R=readline,W=-~R(),H=+R(),S="",m={},p,g=(q,a=m[q]||[0],s=[q])=>{for(;s.length;)S[p=s.pop()]>"#"&&!m[p]&&++(m[p]=a)[0]&&s.push(p-1,p+1,p-W,p+W);return a[0]}
+for(;H--;)S+=R()+" "
+for(H=+R();H--;console.log(g(+x+W*+y)))var[x,y]=R().split(" ")

@@ -1,3 +1,3 @@
-var Y=[],a,b,n=+readline(),L=1/0,H=-L
-for(;n--;)[a,b]=readline().split(" "),L>+a&&(L=+a),H<+a&&(H=+a),Y.push(b)
-console.log(H-L+Y.sort((p,q)=>p-q).reduce((p,c)=>p+Math.abs(c-Y[Y.length>>1]),0))
+var n=+readline(),X=[],Y=[],i=n,f=(a,b)=>a-b
+for(;i--;)[X[i],Y[i]]=readline().split(" ")
+console.log(Y.sort(f).reduce((s,v,i)=>i<n/2?Y[n+~i]-v+s:s,X.sort(f)[n-1]-X[0]))

@@ -1,2 +1,1 @@
-var R=()=>readline().split(" ").map(a=>+a),[r,d]=R(),[X,Y]=(R(),R()),l=0,u=0,s
-for(--r,--d;s=readline();)console.log((s>"T"?d=Y-1:s<"E"&&(u=Y+1),/R/.test(s)?l=X+1:/L/.test(s)&&(r=X-1),X=l+r>>1),Y=u+d>>1)
+var R=readline,q,j;for(q=(R()+" -1 -1 "+(R(),R())).split(/ /);;console.log(q[4]=q[0]-~q[2]>>1,q[5]=q[1]-~q[3]>>1))for(j of R())q[j="LURD".search(j)]=q[4+j%2]

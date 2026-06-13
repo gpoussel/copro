@@ -1,5 +1,3 @@
-var n=+readline(),g={},d=[],a,b,q=[],L=[],M=Math.max,r=1
-for(;n--;)[a,b]=readline().split(" "),(g[a]??=[]).push(b),d[b]=-~d[b]
-for(a in g)d[a]||q.push(a)
-for(a of q)for(b of g[a]||[])r=M(r,L[b]=M(L[b]|0,(L[a]||1)+1)),--d[b]||q.push(b)
-console.log(r)
+var n=+readline(),g={},c={},M=Math.max,a,b,f=k=>c[k]??=g[k]?1+M(...g[k].map(f)):1
+for(;n--;)[a,b]=readline().split(" "),(g[a]??=[]).push(b)
+console.log(M(...Object.keys(g).map(f)))
