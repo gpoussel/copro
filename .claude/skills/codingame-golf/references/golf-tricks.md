@@ -124,6 +124,17 @@ behavior in edge cases.
   `.map(Number)` (12 B). It type-checks (`eval` is `(x:string)=>any`, assignable as
   a map callback) and the resulting `any`s allow `d--`/`d>b` freely. Indirect eval
   of a numeric literal just returns the number.
+- ⚠️ **`.map(eval)` is slow at scale — it can TLE.** `eval` parses a fresh program
+  each call; at N≈1e5 input lines (×2 numbers = 2e5 evals) it measured **~720 ms**
+  vs ~120 ms for `.map(Number)`, risking the ~1 s limit on CodinGame's slower
+  hardware. When N is large, prefer `.map(Number)` (+2 B) or — shortest *and* fast —
+  keep the tokens as **strings** and coerce with unary `+` only at the point of use
+  in the comparator/callback (next bullet); the few extra `+`s cost less than a
+  `.map(Number)` pass and run in ~240 ms (verified locally, Super Computer).
+- **Spacing rule for chained unary `+`/`-`.** A space is only needed to break up a
+  `++`/`--` token: `+a+ +b` needs the space (`+a++b` is a parse error), but after a
+  binary `-` the unary `+` glues fine — `-+c`, not `- +c`. So a numeric sum of string
+  tokens is `+a+ +b-+c-+d` (one space), saving 2 B over the naive `+a+ +b- +c- +d`.
 - `~~s` converts a string to a truncated int in one go (`~~"4.9"` → 4); use it when
   you'd otherwise write `+s|0`. (`~~` is unary, so it compiles on strings — unlike
   `s-0`/`s*1`.)
@@ -336,6 +347,15 @@ behavior in edge cases.
   order — e.g. `Y.sort(f).reduce(cb, X.sort(f)[n-1]-X[0])` sorts `Y` (the receiver),
   then sorts `X` while evaluating the seed, before `reduce` runs. Share one comparator
   `f=(a,b)=>a-b` across both.
+- **Max non-overlapping intervals = sort-by-end then `.filter(...).length`.** The
+  classic activity-selection greedy golfs to one chain: sort the `[start,dur]` pairs
+  by end (`(a,b)=>+a+ +b-+c-+d` on destructured `[a,b],[c,d]`), then count the picks
+  with a filter whose callback both tests and advances a closure accumulator —
+  `var e=0;...sort(...).filter(([s,d])=>+s>=e&&(e=+s+ +d)).length`. `s>=e&&(e=s+d)`
+  returns the new end (always truthy, since durations are positive) on a pick and
+  `false` otherwise, so `.length` is the answer — beats a `reduce` counter by ~2 B and
+  needs no `k`. `e=0` seeds the first interval (starts are `>0`). Verified at **150 B**
+  on Super Computer.
 - **Order string arithmetic to keep it numeric.** With numeric-string operands,
   `a-b+s` stays a number (`a-b` subtracts first, then `+s` adds), but `s+a-b`
   concatenates (`number + string` → string). Put a `-` first to avoid stray
