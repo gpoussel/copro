@@ -173,8 +173,7 @@ for (let k = 0; k < L; k++) {
 
 // Looking from `side`, an arc (crease) hides everything nested inside it.
 // Count only the outermost features (arcs + open edges at nesting depth 0).
-const enclosedArc = ([lo, hi]: [number, number]) =>
-  arcs.some(([l, h]) => l < lo && hi < h)
+const enclosedArc = ([lo, hi]: [number, number]) => arcs.some(([l, h]) => l < lo && hi < h)
 const enclosedOpen = (k: number) => arcs.some(([l, h]) => l < k && k < h)
 
 let visible = 0

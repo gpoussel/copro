@@ -22,7 +22,7 @@ remaining[10] = 16
 
 for (const segment of stream.split(".")) {
   // A segment is cards only if it's non-empty and every char is a valid card.
-  if (segment.length > 0 && [...segment].every((c) => c in value)) {
+  if (segment.length > 0 && [...segment].every(c => c in value)) {
     for (const c of segment) {
       const v = value[c]
       if (remaining[v] > 0) remaining[v]--
