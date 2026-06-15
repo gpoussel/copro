@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - snap
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/snap
 
 const suitOrder: { [key: string]: number } = { S: 4, H: 3, D: 2, C: 1 }
 

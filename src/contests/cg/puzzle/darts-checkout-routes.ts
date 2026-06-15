@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - darts-checkout-routes
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/darts-checkout-routes
 
 const score: number = parseInt(readline(), 10)
 const darts: number = parseInt(readline(), 10)

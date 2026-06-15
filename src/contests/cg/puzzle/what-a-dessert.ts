@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - what-a-dessert
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/what-a-dessert
 
 const [e, f, s, b]: number[] = readline()
   .split(" ")

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - tabloid-couple-names
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/tabloid-couple-names
 
 function couple(a: string, b: string): string {
   const byOverlap: Map<number, Set<string>> = new Map()

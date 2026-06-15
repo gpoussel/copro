@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - squash-pi
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/squash-pi
 
 const index: number = parseInt(readline(), 10)
 const count: number = parseInt(readline(), 10)

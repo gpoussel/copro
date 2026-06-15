@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - score-a-bridge-deal
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/score-a-bridge-deal
 
 const nbTests: number = parseInt(readline(), 10)
 

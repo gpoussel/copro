@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - the-leaking-bathtub
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/the-leaking-bathtub
 
 const S: number = parseInt(readline(), 10)
 const h: number = parseInt(readline(), 10)

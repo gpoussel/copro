@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - wordle-colorizer
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/wordle-colorizer
 
 const answer: string = readline()
 const n: number = parseInt(readline(), 10)

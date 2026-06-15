@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - cistercian-addition
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/cistercian-addition
 
 type Mark = [number, number, string]
 

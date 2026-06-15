@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - max-area
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/max-area
 
 readline()
 const a: number[] = readline().split(" ").map(Number)

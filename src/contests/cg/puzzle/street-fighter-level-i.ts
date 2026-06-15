@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - street-fighter-level-i
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/street-fighter-level-i
 
 interface Fighter {
   name: string

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - tile-a-floor-differently
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/tile-a-floor-differently
 
 const n: number = parseInt(readline())
 const tl: string[][] = []

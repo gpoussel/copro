@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - ascii-worms
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/ascii-worms
 
 const thickness: number = parseInt(readline(), 10)
 const length: number = parseInt(readline(), 10)

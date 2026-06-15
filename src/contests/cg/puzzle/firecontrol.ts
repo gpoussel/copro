@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - firecontrol
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/firecontrol
 
 const grid: string[] = []
 for (let i = 0; i < 6; i++) {

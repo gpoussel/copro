@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - build-a-bookcase
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/build-a-bookcase
 
 const height: number = parseInt(readline(), 10)
 const width: number = parseInt(readline(), 10)

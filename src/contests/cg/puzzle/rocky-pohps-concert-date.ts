@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - rocky-pohps-concert-date
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/rocky-pohps-concert-date
 
 const n: string = readline().trim()
 

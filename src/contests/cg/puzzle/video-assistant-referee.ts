@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - video-assistant-referee
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/video-assistant-referee
 
 type Player = { x: number; active: boolean }
 

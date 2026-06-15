@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - pyramid-stacker
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/pyramid-stacker
 
 const [n, h]: number[] = readline()
   .split(" ")

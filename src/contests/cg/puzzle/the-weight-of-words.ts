@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - the-weight-of-words
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/the-weight-of-words
 
 const steps: number = parseInt(readline(), 10)
 const h: number = parseInt(readline(), 10)

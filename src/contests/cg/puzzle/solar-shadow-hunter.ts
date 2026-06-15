@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - solar-shadow-hunter
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/solar-shadow-hunter
 
 const [w, h] = readline()
   .split(" ")

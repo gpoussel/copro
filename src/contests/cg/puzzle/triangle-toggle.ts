@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - triangle-toggle
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/triangle-toggle
 
 const [HI, WI]: number[] = readline().split(" ").map(Number)
 const style: string = readline()

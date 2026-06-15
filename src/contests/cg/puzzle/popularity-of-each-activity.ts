@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - popularity-of-each-activity
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/popularity-of-each-activity
 
 const height: number = parseInt(readline(), 10)
 const grid: string[] = []

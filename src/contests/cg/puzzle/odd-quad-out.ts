@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - odd-quad-out
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/odd-quad-out
 
 const sideSize: number = parseInt(readline(), 10)
 const grid: string[] = []

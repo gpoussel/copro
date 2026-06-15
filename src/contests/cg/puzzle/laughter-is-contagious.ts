@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - laughter-is-contagious
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/laughter-is-contagious
 
 const row: string = readline()
 

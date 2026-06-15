@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - interstellar
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/interstellar
 
 function parseVector(s: string): [number, number, number] {
   const clean = s.replace(/\s+/g, "")

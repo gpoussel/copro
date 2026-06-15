@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - a-bit-of-accounting---lettering
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/a-bit-of-accounting---lettering
 
 const n: number = parseInt(readline(), 10)
 const m: number = parseInt(readline(), 10)

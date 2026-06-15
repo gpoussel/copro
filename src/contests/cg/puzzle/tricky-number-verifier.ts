@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - tricky-number-verifier
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/tricky-number-verifier
 
 const factors: number[] = [3, 7, 9, 5, 8, 4, 2, 1, 6]
 

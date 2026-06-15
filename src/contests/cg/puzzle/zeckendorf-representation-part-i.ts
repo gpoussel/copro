@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - zeckendorf-representation-part-i
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/zeckendorf-representation-part-i
 
 const n: bigint = BigInt(readline())
 

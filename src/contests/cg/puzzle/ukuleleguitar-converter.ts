@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - ukuleleguitar-converter
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/ukuleleguitar-converter
 
 const guitarOpen: number[] = [4 + 4 * 12, 11 + 3 * 12, 7 + 3 * 12, 2 + 3 * 12, 9 + 2 * 12, 4 + 2 * 12]
 const guitarFrets: number = 21

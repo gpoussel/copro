@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - remove-insert-statements
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/remove-insert-statements
 
 const n: number = parseInt(readline(), 10)
 const lines: string[] = []

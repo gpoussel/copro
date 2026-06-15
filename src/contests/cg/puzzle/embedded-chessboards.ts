@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - embedded-chessboards
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/embedded-chessboards
 
 const n: number = parseInt(readline(), 10)
 const out: string[] = []

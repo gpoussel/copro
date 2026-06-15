@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - snail-run
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/snail-run
 
 const numberSnails: number = parseInt(readline(), 10)
 const speeds: number[] = []

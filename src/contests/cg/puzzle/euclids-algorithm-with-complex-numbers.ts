@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - euclids-algorithm-with-complex-numbers
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/euclids-algorithm-with-complex-numbers
 
 type Complex = { re: number; im: number }
 

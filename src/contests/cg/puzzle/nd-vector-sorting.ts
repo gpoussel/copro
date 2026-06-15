@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - nd-vector-sorting
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/nd-vector-sorting
 
 const d: number = parseInt(readline(), 10)
 const n: number = parseInt(readline(), 10)

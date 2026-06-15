@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - bijective-numeration
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/bijective-numeration
 
 const count = parseInt(readline(), 10)
 const values = readline().split(" ").slice(0, count)

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - ascii-art-the-drunken-bishop-algorithm
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/ascii-art-the-drunken-bishop-algorithm
 
 const fingerprint: string = readline()
 const bytes: number[] = fingerprint.split(":").map(h => parseInt(h, 16))

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - minimal-palindrome-distance
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/minimal-palindrome-distance
 
 const n: number = parseInt(readline(), 10)
 const s: string = readline()

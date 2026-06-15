@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - simple-ai-duels
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/simple-ai-duels
 
 type Action = "C" | "D"
 

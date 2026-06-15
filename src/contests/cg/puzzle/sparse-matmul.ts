@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - sparse-matmul
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/sparse-matmul
 
 const firstLine: string[] = readline().split(" ")
 const m: number = parseInt(firstLine[0], 10)

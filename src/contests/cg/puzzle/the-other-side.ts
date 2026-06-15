@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - the-other-side
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/the-other-side
 
 const h: number = parseInt(readline(), 10)
 const w: number = parseInt(readline(), 10)

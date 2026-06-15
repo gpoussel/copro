@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - fix-the-networks
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/fix-the-networks
 
 const m: number = parseInt(readline(), 10)
 const out: string[] = []

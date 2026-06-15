@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - duo-combinations
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/duo-combinations
 
 const total: number = parseInt(readline(), 10)
 const symbols: string[] = []

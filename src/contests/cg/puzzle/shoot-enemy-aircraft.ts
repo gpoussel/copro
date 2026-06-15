@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - shoot-enemy-aircraft
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/shoot-enemy-aircraft
 
 const n: number = parseInt(readline())
 const rows: string[] = []

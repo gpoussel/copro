@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - scaleable-tictactoe
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/scaleable-tictactoe
 
 const [n, g]: number[] = readline()
   .split(" ")

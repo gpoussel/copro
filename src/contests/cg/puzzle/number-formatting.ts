@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - number-formatting
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/number-formatting
 
 const s: string = readline()
 

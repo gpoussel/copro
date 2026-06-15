@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - crazy-list
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/crazy-list
 
 const list: number[] = readline()
   .split(" ")

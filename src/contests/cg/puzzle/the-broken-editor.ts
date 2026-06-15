@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - the-broken-editor
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/the-broken-editor
 
 const typedKeys: string = readline()
 const buffer: string[] = []

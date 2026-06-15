@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - table-of-contents
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/table-of-contents
 
 const lengthOfLine: number = parseInt(readline(), 10)
 const n: number = parseInt(readline(), 10)

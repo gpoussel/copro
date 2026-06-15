@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - minesweeper-level-generator
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/minesweeper-level-generator
 
 const line: string = readline()
 const [width, height, n, x, y, seed]: number[] = line.split(" ").map((v: string) => parseInt(v, 10))

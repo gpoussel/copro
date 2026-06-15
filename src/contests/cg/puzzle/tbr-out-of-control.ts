@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - tbr-out-of-control
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/tbr-out-of-control
 
 const b: number = parseInt(readline(), 10)
 const newTitles: Set<string> = new Set<string>()

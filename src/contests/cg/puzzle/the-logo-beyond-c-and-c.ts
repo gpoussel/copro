@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - the-logo-beyond-c-and-c
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/the-logo-beyond-c-and-c
 
 const size: number = parseInt(readline(), 10)
 const thickness: number = parseInt(readline(), 10)

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - blending-colors
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/blending-colors
 
 interface Shape {
   name: string

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - buzzle
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/buzzle
 
 const [n, a, b] = readline().split(" ").map(Number)
 const k = Number(readline())

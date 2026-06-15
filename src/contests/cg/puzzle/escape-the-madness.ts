@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - escape-the-madness
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/escape-the-madness
 
 const text: string = readline()
 

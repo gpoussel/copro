@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - survey-prediction
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/survey-prediction
 
 const n: number = parseInt(readline(), 10)
 

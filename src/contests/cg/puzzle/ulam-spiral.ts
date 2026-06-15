@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - ulam-spiral
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/ulam-spiral
 
 const n: number = parseInt(readline())
 

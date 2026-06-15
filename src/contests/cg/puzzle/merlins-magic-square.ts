@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - merlins-magic-square
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/merlins-magic-square
 
 const effects: { [key: string]: number[] } = {
   "1": [0, 1, 3, 4],

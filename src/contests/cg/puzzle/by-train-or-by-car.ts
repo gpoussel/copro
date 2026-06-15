@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - by-train-or-by-car
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/by-train-or-by-car
 
 const firstLine: string = readline()
 const [start, dest]: string[] = firstLine.split(" ")

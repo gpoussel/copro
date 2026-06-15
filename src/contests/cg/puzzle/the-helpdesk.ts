@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - the-helpdesk
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/the-helpdesk
 
 const worktime: number = parseInt(readline(), 10)
 const nc: number = parseInt(readline(), 10)

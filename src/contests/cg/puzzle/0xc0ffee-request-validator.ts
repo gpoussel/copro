@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - 0xc0ffee-request-validator
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/0xc0ffee-request-validator
 
 readline() // frameLength (unused; frame string is self-describing)
 const frame = readline()

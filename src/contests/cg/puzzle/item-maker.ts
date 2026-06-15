@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - item-maker
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/item-maker
 
 const data: string = readline()
 const parts: string[] = data.split(",")

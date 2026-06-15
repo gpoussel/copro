@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - logic-gates
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/logic-gates
 
 const n = Number(readline())
 const m = Number(readline())

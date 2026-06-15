@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - timer-for-clash-of-code
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/timer-for-clash-of-code
 
 const n: number = parseInt(readline(), 10)
 

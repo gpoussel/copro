@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - rocks-papers-scissors-es
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/rocks-papers-scissors-es
 
 const n: number = parseInt(readline(), 10)
 const moves: string[] = []

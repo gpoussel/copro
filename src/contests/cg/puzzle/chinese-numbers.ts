@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - chinese-numbers
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/chinese-numbers
 
 const ref: string[] = [
   "*000* ***** 00000 00000 00000 00000 **0** **0** *0*0* **0**",

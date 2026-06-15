@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - you-are-the-father-maury-povich-style
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/you-are-the-father-maury-povich-style
 
 function parse(line: string): { name: string; pairs: string[] } {
   const idx: number = line.indexOf(":")

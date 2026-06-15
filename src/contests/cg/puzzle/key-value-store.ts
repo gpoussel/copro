@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - key-value-store
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/key-value-store
 
 const n: number = parseInt(readline(), 10)
 const store: Map<string, string> = new Map<string, string>()

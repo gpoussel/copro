@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - library-dependencies
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/library-dependencies
 
 const nImp: number = parseInt(readline(), 10)
 const imports: string[] = []

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - periodic-table-spelling
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/periodic-table-spelling
 
 const word: string = readline().toLowerCase()
 

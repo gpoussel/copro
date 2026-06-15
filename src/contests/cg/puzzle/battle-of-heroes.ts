@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - battle-of-heroes
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/battle-of-heroes
 
 interface Stack {
   name: string

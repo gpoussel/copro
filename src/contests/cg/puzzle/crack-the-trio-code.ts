@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - crack-the-trio-code
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/crack-the-trio-code
 
 const L: number[] = readline()
   .split(",")

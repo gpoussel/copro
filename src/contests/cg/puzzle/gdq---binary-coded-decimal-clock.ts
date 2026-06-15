@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - gdq---binary-coded-decimal-clock
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/gdq---binary-coded-decimal-clock
 
 const input: string = readline()
 const digits: number[] = input

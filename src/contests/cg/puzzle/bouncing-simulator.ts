@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - bouncing-simulator
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/bouncing-simulator
 
 const w: number = parseInt(readline(), 10)
 const h: number = parseInt(readline(), 10)

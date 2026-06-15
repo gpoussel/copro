@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - set-probabilities-card-game
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/set-probabilities-card-game
 
 const numbers: string[] = ["1", "2", "3"]
 const shadings: string[] = ["OUTLINED", "STRIPED", "SOLID"]

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - genetics-and-computers
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/genetics-and-computers
 
 const [parent1, parent2] = readline().split(" ")
 const ratio: string[] = readline().split(":")

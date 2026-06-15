@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - crop-circles
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/crop-circles
 
 const W = 19
 const H = 25

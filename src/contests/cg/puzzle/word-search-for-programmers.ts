@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - word-search-for-programmers
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/word-search-for-programmers
 
 const size: number = parseInt(readline(), 10)
 const grid: string[] = []

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - where-was-this-knight-before
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/where-was-this-knight-before
 
 const pieces: string = readline()
 const valid: Set<string> = new Set<string>()

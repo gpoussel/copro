@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - vectors-in-variables-dimensions
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/vectors-in-variables-dimensions
 
 readline()
 const n: number = parseInt(readline(), 10)

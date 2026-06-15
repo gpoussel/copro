@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - simple-diff-tool
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/simple-diff-tool
 
 const mode: string = readline()
 const n1: number = parseInt(readline(), 10)

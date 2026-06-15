@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - diagonal-achoo
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/diagonal-achoo
 
 const n: number = parseInt(readline(), 10)
 const g: number = parseInt(readline(), 10)

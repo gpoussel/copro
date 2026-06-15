@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - codongame
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/codongame
 
 const table: Record<string, string> = {
   UUU: "F",

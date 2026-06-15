@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - organic-compound
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/organic-compound
 
 const formula: string = readline().trim()
 

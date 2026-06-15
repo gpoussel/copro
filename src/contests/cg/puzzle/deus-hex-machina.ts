@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - deus-hex-machina
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/deus-hex-machina
 
 const input: string = readline().trim()
 

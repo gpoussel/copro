@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - number-of-digits
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/number-of-digits
 
 const n: number = parseInt(readline(), 10)
 const k: number = parseInt(readline(), 10)

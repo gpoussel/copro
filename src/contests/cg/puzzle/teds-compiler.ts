@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - teds-compiler
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/teds-compiler
 
 const line: string = readline()
 let balance: number = 0

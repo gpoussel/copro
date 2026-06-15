@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - compiler-cg86-easy-version
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/compiler-cg86-easy-version
 
 const tokens: string[] = readline().trim().split(/\s+/)
 

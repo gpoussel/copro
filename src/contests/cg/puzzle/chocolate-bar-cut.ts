@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - chocolate-bar-cut
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/chocolate-bar-cut
 
 function gcd(a: bigint, b: bigint): bigint {
   while (b > 0n) {

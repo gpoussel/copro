@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - nato-alphabets-odd-uncles
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/nato-alphabets-odd-uncles
 
 const alphabets: string[][] = [
   [

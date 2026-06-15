@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - robot-reach
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/robot-reach
 
 const R: number = parseInt(readline(), 10)
 const C: number = parseInt(readline(), 10)

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - scrabble-score
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/scrabble-score
 
 const nbTiles: number = parseInt(readline(), 10)
 const tileScore: Map<string, number> = new Map<string, number>()

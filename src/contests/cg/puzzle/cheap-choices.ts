@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - cheap-choices
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/cheap-choices
 
 interface Item {
   category: string

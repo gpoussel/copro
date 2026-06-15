@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - azimut
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/azimut
 
 const dirs: string[] = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 

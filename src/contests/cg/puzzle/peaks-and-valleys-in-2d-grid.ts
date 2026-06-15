@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - peaks-and-valleys-in-2d-grid
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/peaks-and-valleys-in-2d-grid
 
 const h: number = parseInt(readline(), 10)
 const grid: number[][] = []

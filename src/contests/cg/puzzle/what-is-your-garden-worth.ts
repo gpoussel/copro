@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - what-is-your-garden-worth
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/what-is-your-garden-worth
 
 // CodinGame's readline() corrupts multi-byte emoji that straddle its internal
 // buffer boundary (they arrive as U+FFFD). Reading raw stdin bytes and decoding

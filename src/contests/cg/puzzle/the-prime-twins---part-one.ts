@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - the-prime-twins---part-one
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/the-prime-twins---part-one
 
 const n: number = parseInt(readline(), 10)
 

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - city-lights-part-2
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/city-lights-part-2
 
 const l: number = parseInt(readline(), 10)
 const w: number = parseInt(readline(), 10)

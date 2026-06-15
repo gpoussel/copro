@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - cubic-bezier-curves
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/cubic-bezier-curves
 
 const [width, height] = readline().split(" ").map(Number)
 const steps = Number(readline())

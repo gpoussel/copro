@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - mandelbrot-set-approximation
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/mandelbrot-set-approximation
 
 const n: number = parseInt(readline(), 10)
 const cols: number = (3 * (n - 1)) / 2 + 1

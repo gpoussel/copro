@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - faro-shuffle
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/faro-shuffle
 
 const n: number = parseInt(readline(), 10)
 let deck: string[] = readline().split(" ")

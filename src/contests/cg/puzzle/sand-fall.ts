@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - sand-fall
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/sand-fall
 
 const [w, h]: number[] = readline()
   .split(" ")

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - random-walk
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/random-walk
 
 const a: number = parseInt(readline(), 10)
 const b: number = parseInt(readline(), 10)

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - snake-sort-2d
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/snake-sort-2d
 
 type Apple = { name: string; row: number; col: number }
 

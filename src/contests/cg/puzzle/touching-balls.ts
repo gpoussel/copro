@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - touching-balls
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/touching-balls
 
 const n: number = parseInt(readline(), 10)
 const spheres: number[][] = []

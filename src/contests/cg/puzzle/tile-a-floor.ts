@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - tile-a-floor
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/tile-a-floor
 
 const n: number = parseInt(readline())
 const m: number = 2 * n - 1

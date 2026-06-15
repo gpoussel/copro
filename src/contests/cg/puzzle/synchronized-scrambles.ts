@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - synchronized-scrambles
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/synchronized-scrambles
 
 const [offset1, offset2]: string[] = readline().split(" ")
 

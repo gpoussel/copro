@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - square-spiral-for-alien-contact
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/square-spiral-for-alien-contact
 
 const line: string = readline().trim()
 const parts: string[] = line.split(/\s+/)

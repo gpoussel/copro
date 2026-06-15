@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - kangaroo-words
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/kangaroo-words
 
 const isSubsequence = (joey: string, kangaroo: string): boolean => {
   let i = 0

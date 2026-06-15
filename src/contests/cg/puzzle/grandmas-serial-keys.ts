@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - grandmas-serial-keys
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/grandmas-serial-keys
 
 const username: string = readline()
 const len: number = username.length

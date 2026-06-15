@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - production-pipeline
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/production-pipeline
 
 const n: number = parseInt(readline(), 10)
 const k: number = parseInt(readline(), 10)

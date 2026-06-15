@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - who-is-leading
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/who-is-leading
 
 const teams: string[] = readline().split(",")
 const scores1: string = readline()

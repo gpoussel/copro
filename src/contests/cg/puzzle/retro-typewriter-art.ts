@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - retro-typewriter-art
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/retro-typewriter-art
 
 const recipe = readline()
 

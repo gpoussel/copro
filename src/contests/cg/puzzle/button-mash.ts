@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - button-mash
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/button-mash
 
 const n: number = parseInt(readline(), 10)
 

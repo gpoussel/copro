@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - agent-x-mission-1-the-caesar-cipher
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/agent-x-mission-1-the-caesar-cipher
 
 const ciphertext: string = readline()
 const word: string = readline()

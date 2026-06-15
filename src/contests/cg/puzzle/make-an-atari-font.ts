@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - make-an-atari-font
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/make-an-atari-font
 
 const hex: { [letter: string]: string } = {
   A: "0x1818243C42420000",

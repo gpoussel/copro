@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - video-comments
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/video-comments
 
 type Comment = {
   line: string

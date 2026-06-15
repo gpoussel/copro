@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - anagram-to-break-the-code
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/anagram-to-break-the-code
 
 const w: string = readline()
 const s: string = readline()

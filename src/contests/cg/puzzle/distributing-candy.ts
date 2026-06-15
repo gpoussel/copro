@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - distributing-candy
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/distributing-candy
 
 const [n, m] = readline()
   .split(" ")

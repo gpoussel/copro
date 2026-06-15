@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - kiss-the-girls
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/kiss-the-girls
 
 const [h] = (readline().split(" ") as string[]).map(Number)
 const risks: number[] = []

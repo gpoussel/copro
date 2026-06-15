@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - the-l-game-counting-board-states
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/the-l-game-counting-board-states
 
 const [height, width, n]: number[] = readline()
   .split(" ")

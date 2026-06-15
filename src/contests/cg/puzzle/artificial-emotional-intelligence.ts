@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - artificial-emotional-intelligence
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/artificial-emotional-intelligence
 
 const name: string = readline()
 

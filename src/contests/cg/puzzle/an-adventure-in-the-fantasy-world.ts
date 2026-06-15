@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - an-adventure-in-the-fantasy-world
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/an-adventure-in-the-fantasy-world
 
 const path: string = readline()
 const n: number = parseInt(readline())

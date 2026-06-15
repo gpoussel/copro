@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - saving-snoopy
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/saving-snoopy
 
 const n: number = parseInt(readline(), 10)
 const swaps: Map<string, string> = new Map<string, string>()

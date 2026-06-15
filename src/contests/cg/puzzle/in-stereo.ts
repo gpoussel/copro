@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - in-stereo
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/in-stereo
 
 const P: number = parseInt(readline(), 10)
 const pattern: string = readline()

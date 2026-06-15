@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - leap-of-sheep
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/leap-of-sheep
 
 const n: number = parseInt(readline(), 10)
 const h: number[] = readline()

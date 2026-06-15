@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - shikaku-skill-builder
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/shikaku-skill-builder
 
 const [w, h] = readline()
   .split(" ")

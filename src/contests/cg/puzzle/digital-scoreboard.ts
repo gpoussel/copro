@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - digital-scoreboard
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/digital-scoreboard
 
 // Segment positions inside a 7-row x 7-col digit cell.
 // a=top, b=top-right, c=bottom-right, d=bottom, e=bottom-left, f=top-left, g=middle

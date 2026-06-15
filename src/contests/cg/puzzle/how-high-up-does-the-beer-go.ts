@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - how-high-up-does-the-beer-go
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/how-high-up-does-the-beer-go
 
 const [bottomRadius, topRadius, glassHeight, beerVol] = readline().split(" ").map(Number)
 

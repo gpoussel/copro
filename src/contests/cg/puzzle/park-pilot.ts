@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - park-pilot
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/park-pilot
 
 const n: number = parseInt(readline(), 10)
 const fl: number[] = []

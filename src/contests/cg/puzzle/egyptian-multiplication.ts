@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - egyptian-multiplication
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/egyptian-multiplication
 
 const [a, b]: number[] = readline()
   .split(" ")

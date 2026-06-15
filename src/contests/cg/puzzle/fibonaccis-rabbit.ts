@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - fibonaccis-rabbit
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/fibonaccis-rabbit
 
 const [f0, n]: number[] = readline().split(" ").map(Number)
 const [a, b]: number[] = readline().split(" ").map(Number)

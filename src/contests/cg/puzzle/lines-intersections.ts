@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - lines-intersections
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/lines-intersections
 
 const n: number = parseInt(readline())
 const lines: number[][] = []

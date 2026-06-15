@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - count-your-coins
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/count-your-coins
 
 const valueToReach: number = parseInt(readline(), 10)
 const n: number = parseInt(readline(), 10)

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - furlongs-per-fortnight
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/furlongs-per-fortnight
 
 const line: string = readline()
 const [in1, dist1, , time1, , , dist2, , time2] = line.split(" ")

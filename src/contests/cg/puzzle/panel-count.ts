@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - panel-count
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/panel-count
 
 const p: number = parseInt(readline(), 10)
 const properties: string[] = []

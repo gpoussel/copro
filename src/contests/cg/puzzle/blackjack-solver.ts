@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - blackjack-solver
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/blackjack-solver
 
 function cardValue(card: string): number {
   if (card === "A") return 11

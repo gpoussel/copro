@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - largest-number
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/largest-number
 
 const number: string = readline()
 const d: bigint = BigInt(readline())

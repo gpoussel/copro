@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - annihilation
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/annihilation
 
 const [H, W] = readline().split(" ").map(Number)
 

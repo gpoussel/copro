@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - calculator
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/calculator
 
 const round3 = (x: number): number => Math.round(x * 1000) / 1000
 

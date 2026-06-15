@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - takuzu-solver-easy-mode
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/takuzu-solver-easy-mode
 
 const n: number = parseInt(readline(), 10)
 const grid: string[][] = []

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - gauss-and-the-stolen-numbers
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/gauss-and-the-stolen-numbers
 
 const n = BigInt(readline())
 const s = BigInt(readline())

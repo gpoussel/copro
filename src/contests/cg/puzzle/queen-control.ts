@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - queen-control
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/queen-control
 
 const color: string = readline()
 const ally: string = color === "white" ? "w" : "b"

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - seeing-squares
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/seeing-squares
 
 const [r, c]: number[] = readline()
   .split(" ")

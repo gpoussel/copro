@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - couples-picture-frame
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/couples-picture-frame
 
 const wife: string = readline()
 const husband: string = readline()

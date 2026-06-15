@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - metric-units
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/metric-units
 
 const factors: { [unit: string]: number } = {
   um: 1,

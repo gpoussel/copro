@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - markov-text-generation
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/markov-text-generation
 
 const text: string = readline()
 const depth: number = parseInt(readline(), 10)

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - 2nd-degree-polynomial---simple-analysis
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/2nd-degree-polynomial---simple-analysis
 
 const [a, b, c] = readline()
   .split(" ")

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - sign-programming-language
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/sign-programming-language
 
 const program: string = readline()
 

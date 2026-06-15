@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - probability-for-dummies
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/probability-for-dummies
 
 const m: number = parseInt(readline(), 10)
 const n: number = parseInt(readline(), 10)

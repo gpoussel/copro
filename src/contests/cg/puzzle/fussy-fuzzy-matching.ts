@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - fussy-fuzzy-matching
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/fussy-fuzzy-matching
 
 const letterCase: boolean = readline() === "true"
 const letterFuzz: number = parseInt(readline(), 10)

@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - number-partition
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/number-partition
 
 const n: number = parseInt(readline(), 10)
 const out: string[] = []

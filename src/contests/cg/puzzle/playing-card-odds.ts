@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - playing-card-odds
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/playing-card-odds
 
 const RANKS: string = "23456789TJQKA"
 const SUITS: string = "CDHS"
