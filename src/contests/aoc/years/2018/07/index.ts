@@ -1,5 +1,4 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
-import { DirectedGraph } from "../../../../../utils/graph.js"
 import utils from "../../../../../utils/index.js"
 
 // 🎄 Advent of Code 2018 - Day 7

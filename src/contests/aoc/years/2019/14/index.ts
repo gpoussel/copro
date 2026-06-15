@@ -1,5 +1,4 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
-import { dijkstraOnGraph } from "../../../../../utils/algo.js"
 import utils from "../../../../../utils/index.js"
 
 // 🎄 Advent of Code 2019 - Day 14

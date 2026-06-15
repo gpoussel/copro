@@ -38,11 +38,6 @@ function part2(inputString: string) {
       ),
     new Vector3(-Infinity, -Infinity, -Infinity)
   )
-  const maxDimension = Math.max(
-    maxDimensional.x - minDimensional.x,
-    maxDimensional.y - minDimensional.y,
-    maxDimensional.z - minDimensional.z
-  )
   const loopReduction = 10
   let factor = new Vector3(
     Math.ceil((maxDimensional.x - minDimensional.x) / loopReduction),

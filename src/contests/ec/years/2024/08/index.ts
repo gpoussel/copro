@@ -1,5 +1,4 @@
 import { EverybodyCodesContest } from "../../../../../types/contest.js"
-import utils from "../../../../../utils/index.js"
 
 // 🎲 Everybody Codes 2024 - Quest 8
 

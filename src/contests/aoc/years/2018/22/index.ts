@@ -1,7 +1,6 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import { dijkstraOnGraph } from "../../../../../utils/algo.js"
 import utils from "../../../../../utils/index.js"
-import { PriorityQueue } from "../../../../../utils/structures/priority-queue.js"
 import { Vector2 } from "../../../../../utils/vector.js"
 
 // 🎄 Advent of Code 2018 - Day 22
@@ -109,7 +108,7 @@ function part2(inputString: string) {
     key(node) {
       return `${node.position.str()},${node.tool}`
     },
-    moves(node, path) {
+    moves(node, _path) {
       const currentRiskLevel = scanner.getRiskLevel(node.position)
       const moves: { to: Node; cost: number }[] = []
       getAllowedTools(currentRiskLevel)

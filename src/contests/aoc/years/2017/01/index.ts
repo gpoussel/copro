@@ -25,8 +25,6 @@ function part2(inputString: string) {
     .reduce((a, b) => a + b, 0)
 }
 
-const EXAMPLE = ``
-
 export default {
   part1: {
     run: part1,

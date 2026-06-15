@@ -96,7 +96,7 @@ function part1(inputString: string) {
   return count
 }
 
-function part2(inputString: string) {
+function part2() {
   return "Well done! 🎉"
 }
 

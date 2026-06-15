@@ -15,7 +15,7 @@ export function solve() {
     }
     primesByLength.get(primeDigits.length)!.add(prime)
   }
-  for (const [length, primes] of primesByLength) {
+  for (const [, primes] of primesByLength) {
     if (primes.size < 8) {
       continue
     }

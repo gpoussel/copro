@@ -11,7 +11,6 @@
 const startTime = Date.now()
 const TIME_LIMIT = 4900
 const K0 = 16
-const RESTART_AFTER = 150
 
 const n = parseInt(readline())
 const xs: number[] = new Array(n)

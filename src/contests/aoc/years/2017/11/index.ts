@@ -39,8 +39,6 @@ function part2(inputString: string) {
   return solve(inputString).maxDistance
 }
 
-const EXAMPLE = ``
-
 export default {
   part1: {
     run: part1,

@@ -3,7 +3,7 @@
 
 // Init reads
 const [W, H]: number[] = readline().split(" ").map(Number)
-const N: number = parseInt(readline())
+readline()
 const [x0, y0]: number[] = readline().split(" ").map(Number)
 
 // Search bounds (inclusive on both ends)

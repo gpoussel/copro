@@ -1,5 +1,4 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
-import utils from "../../../../../utils/index.js"
 
 // 🎄 Advent of Code 2015 - Day 12
 

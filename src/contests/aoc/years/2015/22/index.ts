@@ -105,7 +105,7 @@ function findLowestWinningMana(bossInitialStats: ReturnType<typeof parseInput>, 
       key(node) {
         return `${node.player.health} ${node.player.mana} ${node.player.effects.map(e => `${e.name}${e.duration}`).join(" ")} ${node.bossHealth} ${node.manaSpent} ${node.turn}`
       },
-      visitEnd(node, path) {
+      visitEnd(node, _path) {
         if (node.bossHealth <= 0 && node.player.health > 0 && node.manaSpent < minMana) {
           minMana = node.manaSpent
         }

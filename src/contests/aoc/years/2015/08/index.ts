@@ -17,8 +17,6 @@ function part2(inputString: string) {
   return lines.map(line => JSON.stringify(line).length - line.length).reduce((a, b) => a + b, 0)
 }
 
-const EXAMPLE = ``
-
 export default {
   part1: {
     run: part1,

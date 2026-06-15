@@ -234,8 +234,6 @@ function part3(inputString: string) {
 
   const MAX_ALTITUDE = 384400
   const distanceToClosestColumnWithMaxPlus = Math.abs(closestColumnWithMaxPlus - startColumn)
-  // Altitude lost to reach the closest column with the maximum number of plus signs
-  const altitudeDiffOnFirstSegment = -endState!.altitude
   const travelColumn = columns[closestColumnWithMaxPlus]
   const altitudeDiffInLoop = -(
     numberOfPlusInBestColumn -

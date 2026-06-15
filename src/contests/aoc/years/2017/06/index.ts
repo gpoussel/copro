@@ -43,8 +43,6 @@ function part2(inputString: string) {
   return solve(inputString, 3).loopSize
 }
 
-const EXAMPLE = ``
-
 export default {
   part1: {
     run: part1,

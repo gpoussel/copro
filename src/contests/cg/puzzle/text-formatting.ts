@@ -3,11 +3,6 @@
 
 const line = readline()
 
-// A punctuation mark is a character other than a space, a letter or a digit
-function isPunct(c: string) {
-  return c !== " " && !/[a-zA-Z0-9]/.test(c)
-}
-
 function isLetter(c: string) {
   return /[a-zA-Z]/.test(c)
 }

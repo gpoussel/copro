@@ -1,7 +1,7 @@
 // 🎮 CodinGame Puzzle - addem-up
 // https://www.codingame.com/training/easy/addem-up
 
-const n = parseInt(readline())
+readline()
 const cards = readline().split(" ").map(Number)
 
 // Use a min-heap to always merge the two smallest cards first (Huffman-style)

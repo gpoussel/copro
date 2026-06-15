@@ -1,7 +1,7 @@
 // 🎮 CodinGame Puzzle - mountain-map
 // https://www.codingame.com/training/easy/mountain-map
 
-const n = parseInt(readline())
+readline()
 const heights = readline().split(" ").map(Number)
 
 const maxHeight = Math.max(...heights)

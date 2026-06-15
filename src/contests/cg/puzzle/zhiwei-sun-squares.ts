@@ -3,10 +3,6 @@
 
 const n: number = parseInt(readline())
 
-// Precompute perfect squares up to n (for checking a²)
-// and squares map for checking e
-const sqrtN: number = Math.floor(Math.sqrt(n))
-
 // isSquare: check if a number is a perfect square
 function isSquare(x: number): boolean {
   if (x < 0) return false

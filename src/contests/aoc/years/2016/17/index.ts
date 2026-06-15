@@ -51,7 +51,7 @@ function solve(input: ReturnType<typeof parseInput>) {
       key(node) {
         return node.path
       },
-      visitEnd(node, path) {
+      visitEnd(_node, _path) {
         return false
       },
     }
@@ -69,8 +69,6 @@ function part2(inputString: string) {
   const result = solve(input)
   return utils.iterate.max(result.paths.map(p => p.length))
 }
-
-const EXAMPLE = ``
 
 export default {
   part1: {

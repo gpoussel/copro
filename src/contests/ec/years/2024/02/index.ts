@@ -52,7 +52,7 @@ function part3(inputString: string) {
   const grid = utils.input.readGrid(input.sentences.join("\n"))
   const words = input.words
   const usedPositions = new VectorSet<Vector2>()
-  utils.grid.iterate(grid, (cell, x, y) => {
+  utils.grid.iterate(grid, (_cell, x, y) => {
     for (const word of words) {
       for (const direction of DIRECTIONS) {
         let foundWord = true

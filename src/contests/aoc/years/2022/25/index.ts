@@ -61,7 +61,7 @@ function part1(inputString: string) {
   return decimalToSnafu(sum)
 }
 
-function part2(inputString: string) {
+function part2() {
   return "Merry Christmas!"
 }
 

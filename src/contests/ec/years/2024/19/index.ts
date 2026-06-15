@@ -13,7 +13,7 @@ function parseInput(input: string) {
 }
 
 function rotate(instructions: string[], grid: string[][], count: number) {
-  const coordinateGrid = utils.grid.map(grid, (cell, x, y) => Vector2.fromCoordinates({ x, y }))
+  const coordinateGrid = utils.grid.map(grid, (_cell, x, y) => Vector2.fromCoordinates({ x, y }))
   let counter = 0
   for (let i = 1; i < coordinateGrid.length - 1; i++) {
     for (let j = 1; j < coordinateGrid[i].length - 1; j++) {
