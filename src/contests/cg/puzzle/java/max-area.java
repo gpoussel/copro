@@ -1,0 +1,24 @@
+// 🎮 CodinGame Puzzle - max-area
+// https://www.codingame.com/training/easy/max-area
+
+import java.io.*;
+
+class Solution {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        br.readLine();
+        String[] tok = br.readLine().trim().split(" ");
+        long[] a = new long[tok.length];
+        for (int i = 0; i < tok.length; i++) a[i] = Long.parseLong(tok[i]);
+        int left = 0, right = a.length - 1;
+        long best = 0;
+        while (left < right) {
+            long h = Math.min(a[left], a[right]);
+            long area = h * (right - left);
+            if (area > best) best = area;
+            if (a[left] < a[right]) left++;
+            else right--;
+        }
+        System.out.println(best);
+    }
+}
