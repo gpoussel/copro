@@ -1,7 +1,7 @@
 // 🎮 CodinGame Puzzle - ghost-legs
 // https://www.codingame.com/training/easy/ghost-legs
 
-const [W, H] = readline().split(" ").map(Number)
+const [, H] = readline().split(" ").map(Number)
 const lines: string[] = []
 for (let i = 0; i < H; i++) {
   lines.push(readline())

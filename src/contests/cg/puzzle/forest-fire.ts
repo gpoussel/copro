@@ -19,7 +19,7 @@ const UNITS = [
 ]
 
 const L = parseInt(readline())
-const totalWater = parseInt(readline())
+readline()
 
 function coverageAt(fires: Set<string>, ux: number, uy: number, size: number) {
   let c = 0

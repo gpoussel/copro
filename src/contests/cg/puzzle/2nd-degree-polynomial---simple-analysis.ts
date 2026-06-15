@@ -1,40 +1,49 @@
 // 🎮 CodinGame Puzzle - 2nd-degree-polynomial---simple-analysis
 // https://www.codingame.com/training/easy/2nd-degree-polynomial---simple-analysis
 
-const [a, b, c] = readline().split(" ").map(Number)
+const [a, b, c] = readline()
+  .split(" ")
+  .map(s => parseFloat(s))
 
-function fmt(n: number): string {
-  let r = Math.round(n * 100) / 100
-  if (r === 0) r = 0
-  return r.toString()
-}
+const points: [number, number][] = []
 
-const pts: { x: number; y: number }[] = []
-if (a === 0) {
-  if (b !== 0) {
-    pts.push({ x: -c / b, y: 0 })
-  }
-} else {
+if (a !== 0) {
   const delta = b * b - 4 * a * c
   if (delta === 0) {
-    pts.push({ x: -b / (2 * a), y: 0 })
+    points.push([-b / (2 * a), 0])
   } else if (delta > 0) {
-    const s = Math.sqrt(delta)
-    pts.push({ x: (-b - s) / (2 * a), y: 0 })
-    pts.push({ x: (-b + s) / (2 * a), y: 0 })
+    const r = Math.sqrt(delta)
+    points.push([(-b - r) / (2 * a), 0])
+    points.push([(-b + r) / (2 * a), 0])
   }
+  points.push([0, c])
+} else if (b !== 0) {
+  points.push([-c / b, 0])
+  points.push([0, c])
+} else {
+  // a = 0, b = 0 -> horizontal line y = c
+  points.push([0, c])
 }
-pts.push({ x: 0, y: c })
 
+// Normalize -0 and round to max 2 decimals
+const fmt = (n: number): string => {
+  const r = Math.round(n * 100) / 100
+  const v = r === 0 ? 0 : r
+  return String(v)
+}
+
+// Sort left-to-right by x, then by y
+points.sort((p, q) => p[0] - q[0] || p[1] - q[1])
+
+// Dedup identical points (after rounding-independent equality)
+const out: string[] = []
 const seen = new Set<string>()
-const uniq: { x: number; y: number }[] = []
-for (const p of pts) {
-  const key = `${p.x}|${p.y}`
+for (const [x, y] of points) {
+  const key = `${fmt(x)},${fmt(y)}`
   if (!seen.has(key)) {
     seen.add(key)
-    uniq.push(p)
+    out.push(`(${key})`)
   }
 }
-uniq.sort((p, q) => p.x - q.x)
 
-console.log(uniq.map(p => `(${fmt(p.x)},${fmt(p.y)})`).join(","))
+console.log(out.join(","))

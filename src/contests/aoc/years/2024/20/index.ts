@@ -1,8 +1,7 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import { dijkstraOnGrid } from "../../../../../utils/algo.js"
-import { Direction } from "../../../../../utils/grid.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, VectorSet } from "../../../../../utils/vector.js"
+import { Vector2 } from "../../../../../utils/vector.js"
 
 // 🎄 Advent of Code 2024 - Day 20
 
@@ -38,7 +37,7 @@ function findEfficientCheats(grid: string[][], minGain: number, maxCheatLength: 
     ends(node) {
       return node.equals(endPosition)
     },
-    isMoveValid: (from, to) => [".", "E"].includes(to),
+    isMoveValid: (_from, to) => [".", "E"].includes(to),
     moveCost: 1,
   })
 

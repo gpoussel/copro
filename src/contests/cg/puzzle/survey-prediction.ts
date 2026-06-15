@@ -1,32 +1,36 @@
 // 🎮 CodinGame Puzzle - survey-prediction
 // https://www.codingame.com/training/easy/survey-prediction
 
-const n = parseInt(readline())
-type Range = { gender: string; genre: string; min: number; max: number }
-const ranges: Map<string, Range> = new Map()
-const missing: { age: number; gender: string }[] = []
+const n: number = parseInt(readline(), 10)
+
+type Range = { genre: string; min: number; max: number }
+const ranges: Map<string, Range[]> = new Map<string, Range[]>()
+const queries: Array<{ age: number; gender: string }> = []
+
 for (let i = 0; i < n; i++) {
-  const parts = readline().split(" ")
-  const age = parseInt(parts[0])
-  const gender = parts[1]
+  const parts: string[] = readline().split(" ")
+  const age: number = parseInt(parts[0], 10)
+  const gender: string = parts[1]
   if (parts.length >= 3) {
-    const genre = parts[2]
-    const key = `${gender}|${genre}`
-    const r = ranges.get(key)
-    if (r) {
-      r.min = Math.min(r.min, age)
-      r.max = Math.max(r.max, age)
+    const genre: string = parts[2]
+    const list: Range[] = ranges.get(gender) ?? []
+    const existing: Range | undefined = list.find(r => r.genre === genre)
+    if (existing) {
+      existing.min = Math.min(existing.min, age)
+      existing.max = Math.max(existing.max, age)
     } else {
-      ranges.set(key, { gender, genre, min: age, max: age })
+      list.push({ genre, min: age, max: age })
     }
+    ranges.set(gender, list)
   } else {
-    missing.push({ age, gender })
+    queries.push({ age, gender })
   }
 }
-const out = missing.map(m => {
-  for (const r of ranges.values()) {
-    if (r.gender === m.gender && m.age >= r.min && m.age <= r.max) return r.genre
-  }
-  return "None"
-})
+
+const out: string[] = []
+for (const q of queries) {
+  const list: Range[] = ranges.get(q.gender) ?? []
+  const match: Range | undefined = list.find(r => q.age >= r.min && q.age <= r.max)
+  out.push(match ? match.genre : "None")
+}
 console.log(out.join("\n"))

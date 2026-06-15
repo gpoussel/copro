@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - six-degrees-of-kevin-bacon
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/six-degrees-of-kevin-bacon
 
 const actorName = readline().trim()
 const n = Number(readline())

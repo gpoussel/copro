@@ -20,8 +20,7 @@ function part1(inputString: string) {
   return groups.length
 }
 
-function part2(inputString: string) {
-  const input = parseInput(inputString)
+function part2(_inputString: string) {
   return "Merry Christmas"
 }
 

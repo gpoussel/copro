@@ -1,43 +1,39 @@
 // 🎮 CodinGame Puzzle - you-are-the-father-maury-povich-style
 // https://www.codingame.com/training/easy/you-are-the-father-maury-povich-style
 
-const parsePairs = (line: string): string[] => {
-  const idx = line.indexOf(":")
-  return line
+function parse(line: string): { name: string; pairs: string[] } {
+  const idx: number = line.indexOf(":")
+  const name: string = line.slice(0, idx)
+  const pairs: string[] = line
     .slice(idx + 1)
     .trim()
     .split(/\s+/)
-}
-const nameOf = (line: string): string => {
-  const idx = line.indexOf(":")
-  const before = line.slice(0, idx).trim().split(/\s+/)
-  return before[before.length - 1]
+  return { name, pairs }
 }
 
-const motherLine = readline()
-const childLine = readline()
-const mother = parsePairs(motherLine)
-const child = parsePairs(childLine)
-const n = parseInt(readline(), 10)
+const mother = parse(readline())
+const child = parse(readline())
+const n: number = parseInt(readline(), 10)
 
-const fits = (parentPairs: string[]): boolean => {
-  for (let i = 0; i < child.length; i++) {
-    const c = child[i]
-    const m = mother[i]
-    const p = parentPairs[i]
-    const a = c[0]
-    const b = c[1]
-    const ok = (m.includes(a) && p.includes(b)) || (m.includes(b) && p.includes(a))
-    if (!ok) return false
-  }
-  return true
+function fits(c: string, m: string, f: string): boolean {
+  const a: string = c[0]
+  const b: string = c[1]
+  if (m.includes(a) && f.includes(b)) return true
+  if (m.includes(b) && f.includes(a)) return true
+  return false
 }
 
+let answer: string = ""
 for (let i = 0; i < n; i++) {
-  const line = readline()
-  const pairs = parsePairs(line)
-  if (fits(pairs)) {
-    console.log(`${nameOf(line)}, you are the father!`)
-    break
+  const father = parse(readline())
+  let ok: boolean = true
+  for (let j = 0; j < child.pairs.length; j++) {
+    if (!fits(child.pairs[j], mother.pairs[j], father.pairs[j])) {
+      ok = false
+      break
+    }
   }
+  if (ok) answer = father.name
 }
+
+console.log(`${answer}, you are the father!`)

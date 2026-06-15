@@ -27,7 +27,7 @@ function getMinMovesForSwitches(target: string, switches: number[][]): number {
     new Set([
       target
         .split("")
-        .map(c => ".")
+        .map(() => ".")
         .join(""),
     ])
   )

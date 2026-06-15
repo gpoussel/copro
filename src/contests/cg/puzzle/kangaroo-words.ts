@@ -1,31 +1,37 @@
 // 🎮 CodinGame Puzzle - kangaroo-words
 // https://www.codingame.com/training/easy/kangaroo-words
 
-const n: number = parseInt(readline())
-const results: string[] = []
-const isSubseq = (joey: string, kang: string): boolean => {
+const isSubsequence = (joey: string, kangaroo: string): boolean => {
   let i = 0
-  for (let j = 0; j < kang.length && i < joey.length; j++) {
-    if (kang[j] === joey[i]) i++
+  for (let j = 0; j < kangaroo.length && i < joey.length; j++) {
+    if (kangaroo[j] === joey[i]) i++
   }
   return i === joey.length
 }
-for (let l = 0; l < n; l++) {
+
+const n: number = parseInt(readline(), 10)
+const results: string[] = []
+for (let k = 0; k < n; k++) {
   const words: string[] = readline()
     .split(",")
-    .map(w => w.trim())
-  for (const kang of words) {
+    .map((w: string) => w.trim())
+  for (const kangaroo of words) {
     const joeys: string[] = []
     for (const joey of words) {
-      if (joey === kang) continue
-      if (joey.length >= kang.length) continue
-      if (isSubseq(joey, kang)) joeys.push(joey)
+      if (joey !== kangaroo && joey.length < kangaroo.length && isSubsequence(joey, kangaroo)) {
+        joeys.push(joey)
+      }
     }
     if (joeys.length > 0) {
       joeys.sort()
-      results.push(`${kang}: ${joeys.join(", ")}`)
+      results.push(`${kangaroo}: ${joeys.join(", ")}`)
     }
   }
 }
-results.sort()
-console.log(results.length > 0 ? results.join("\n") : "NONE")
+
+if (results.length === 0) {
+  console.log("NONE")
+} else {
+  results.sort()
+  console.log(results.join("\n"))
+}

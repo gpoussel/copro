@@ -1,7 +1,7 @@
 // 🎮 CodinGame Puzzle - rectangle-partition
 // https://www.codingame.com/training/easy/rectangle-partition
 
-const [w, h, countX, countY] = readline().split(" ").map(Number)
+const [w, h] = readline().split(" ").map(Number)
 const xMeasurements = readline().split(" ").map(Number)
 const yMeasurements = readline().split(" ").map(Number)
 

@@ -53,7 +53,7 @@ class AxialCoord {
   }
 }
 
-function getTargetCoordinate(start: AxialCoord, path: string): AxialCoord {
+function getTargetCoordinate(_start: AxialCoord, path: string): AxialCoord {
   let coord = new AxialCoord(0, 0)
   const directions = path.match(/(e|se|sw|w|nw|ne)/g)!
   for (const dir of directions) {

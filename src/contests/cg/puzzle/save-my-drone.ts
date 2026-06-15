@@ -1,7 +1,7 @@
 // 🎮 CodinGame Puzzle - save-my-drone
 // https://www.codingame.com/training/easy/save-my-drone
 
-const X = parseInt(readline())
+readline()
 const Y = parseInt(readline())
 const R = parseInt(readline())
 

@@ -20,7 +20,7 @@ function solve(inputString: string, neighbors: (position: Vector2) => Vector2[])
     const nextLevelGrid = utils.grid.clone(grid)
     utils.grid.iterate(
       grid,
-      (value, x, y) => {
+      (_value, x, y) => {
         const canDig = neighbors(new Vector2(x, y)).every(neighbor => utils.grid.at(grid, neighbor) === level)
         if (canDig) {
           utils.grid.set(nextLevelGrid, { x, y }, level + 1)

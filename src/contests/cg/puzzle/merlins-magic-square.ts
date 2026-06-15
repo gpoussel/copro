@@ -1,15 +1,7 @@
 // 🎮 CodinGame Puzzle - merlins-magic-square
 // https://www.codingame.com/training/easy/merlins-magic-square
 
-const r1 = readline().replace(/ /g, "")
-const r2 = readline().replace(/ /g, "")
-const r3 = readline().replace(/ /g, "")
-const presses = readline().trim()
-
-const state: boolean[] = []
-for (const ch of r1 + r2 + r3) state.push(ch === "*")
-
-const effects: { [btn: string]: number[] } = {
+const effects: { [key: string]: number[] } = {
   "1": [0, 1, 3, 4],
   "2": [0, 1, 2],
   "3": [1, 2, 4, 5],
@@ -21,27 +13,33 @@ const effects: { [btn: string]: number[] } = {
   "9": [4, 5, 7, 8],
 }
 
-function press(s: boolean[], btn: string): void {
-  for (const i of effects[btn]) s[i] = !s[i]
-}
-
-for (const ch of presses) press(state, ch)
-
-const solved = [true, true, true, true, false, true, true, true, true]
-
-function isSolved(s: boolean[]): boolean {
-  for (let i = 0; i < 9; i++) if (s[i] !== solved[i]) return false
-  return true
-}
-
-let answer = ""
-for (let b = 1; b <= 9; b++) {
-  const copy = state.slice()
-  press(copy, String(b))
-  if (isSolved(copy)) {
-    answer = String(b)
-    break
+const state: boolean[] = []
+for (let r = 0; r < 3; r++) {
+  const cells: string[] = readline().split(" ")
+  for (const c of cells) {
+    state.push(c === "*")
   }
 }
 
-console.log(answer)
+const presses: string = readline()
+
+const apply = (grid: boolean[], button: string): void => {
+  for (const i of effects[button]) {
+    grid[i] = !grid[i]
+  }
+}
+
+for (const button of presses) {
+  apply(state, button)
+}
+
+const target: boolean[] = [true, true, true, true, false, true, true, true, true]
+
+for (let b = 1; b <= 9; b++) {
+  const test: boolean[] = state.slice()
+  apply(test, String(b))
+  if (test.every((v, i) => v === target[i])) {
+    console.log(b)
+    break
+  }
+}

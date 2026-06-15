@@ -1,7 +1,7 @@
 // 🎮 CodinGame Puzzle - mountain-map-convergence
 // https://www.codingame.com/training/easy/mountain-map-convergence
 
-const n = parseInt(readline())
+readline()
 const heights = readline().split(" ").map(Number)
 
 // Build the height profile column by column.

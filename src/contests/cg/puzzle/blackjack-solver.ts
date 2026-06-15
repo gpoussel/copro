@@ -1,18 +1,19 @@
-const bank = readline().split(" ")
-const player = readline().split(" ")
+// 🎮 CodinGame Puzzle - blackjack-solver
+// https://www.codingame.com/training/easy/blackjack-solver
 
-function value(card: string): number {
+function cardValue(card: string): number {
   if (card === "A") return 11
-  if (["10", "J", "Q", "K"].includes(card)) return 10
-  return parseInt(card)
+  if (card === "J" || card === "Q" || card === "K") return 10
+  return parseInt(card, 10)
 }
 
-function score(cards: string[]): number {
+function handValue(cards: string[]): number {
   let total = 0
   let aces = 0
-  for (const c of cards) {
-    total += value(c)
-    if (c === "A") aces++
+  for (const card of cards) {
+    const v = cardValue(card)
+    if (card === "A") aces++
+    total += v
   }
   while (total > 21 && aces > 0) {
     total -= 10
@@ -22,36 +23,38 @@ function score(cards: string[]): number {
 }
 
 function isBlackjack(cards: string[]): boolean {
-  return cards.length === 2 && score(cards) === 21
+  return cards.length === 2 && handValue(cards) === 21
 }
 
-const bankScore = score(bank)
-const playerScore = score(player)
-const bankBJ = isBlackjack(bank)
-const playerBJ = isBlackjack(player)
+const bankCards: string[] = readline().split(" ")
+const playerCards: string[] = readline().split(" ")
+
+const bankValue = handValue(bankCards)
+const playerValue = handValue(playerCards)
+const bankBJ = isBlackjack(bankCards)
+const playerBJ = isBlackjack(playerCards)
+
+const bankBust = bankValue > 21
+const playerBust = playerValue > 21
 
 let result: string
 
 if (playerBJ && !bankBJ) {
   result = "Blackjack!"
-} else if (playerBJ && bankBJ) {
-  result = "Draw"
 } else if (bankBJ && !playerBJ) {
   result = "Bank"
+} else if (playerBust && bankBust) {
+  result = "Bank"
+} else if (playerBust) {
+  result = "Bank"
+} else if (bankBust) {
+  result = "Player"
+} else if (playerValue > bankValue) {
+  result = "Player"
+} else if (playerValue < bankValue) {
+  result = "Bank"
 } else {
-  const bankBust = bankScore > 21
-  const playerBust = playerScore > 21
-  if (playerBust) {
-    result = "Bank"
-  } else if (bankBust) {
-    result = "Player"
-  } else if (playerScore > bankScore) {
-    result = "Player"
-  } else if (playerScore < bankScore) {
-    result = "Bank"
-  } else {
-    result = "Draw"
-  }
+  result = "Draw"
 }
 
 console.log(result)

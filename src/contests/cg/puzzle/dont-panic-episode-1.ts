@@ -3,13 +3,8 @@
 
 // Read initialization data
 const initLine = readline().split(" ").map(Number)
-const nbFloors = initLine[0]
-const width = initLine[1]
-const nbRounds = initLine[2]
 const exitFloor = initLine[3]
 const exitPos = initLine[4]
-const nbTotalClones = initLine[5]
-const nbAdditionalElevators = initLine[6] // always 0 in episode 1
 const nbElevators = initLine[7]
 
 // Map: floor -> elevator position on that floor

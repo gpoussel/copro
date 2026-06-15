@@ -21,10 +21,6 @@ for (let y = 0; y < h; y++) {
 const dx = [0, 1, 0, -1]
 const dy = [-1, 0, 1, 0]
 
-function cell(x: number, y: number): string {
-  return grid[y][x]
-}
-
 function isObstacle(x: number, y: number): boolean {
   if (x < 0 || x >= w || y < 0 || y >= h) return true
   return grid[y][x] === "#"

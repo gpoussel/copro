@@ -1,52 +1,60 @@
 // 🎮 CodinGame Puzzle - tricky-number-verifier
 // https://www.codingame.com/training/easy/tricky-number-verifier
 
-const N: number = parseInt(readline())
-const out: string[] = []
+const factors: number[] = [3, 7, 9, 5, 8, 4, 2, 1, 6]
 
-const isLeap = (y: number): boolean => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0
-
-const validDate = (dd: number, mm: number, yy: number): boolean => {
-  const year = 2000 + yy
+function isValidDate(dd: number, mm: number, yy: number): boolean {
   if (mm < 1 || mm > 12) return false
   if (dd < 1) return false
-  const days = [31, isLeap(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-  return dd <= days[mm - 1]
+  const year: number = 2000 + yy
+  const leap: boolean = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)
+  const daysInMonth: number[] = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  return dd <= daysInMonth[mm - 1]
 }
 
-const idFactors = [3, 7, 9]
-const bdFactors = [5, 8, 4, 2, 1, 6]
-
-const checkDigit = (lll: number, bd: string): number => {
-  const ls = lll.toString().padStart(3, "0")
-  let sum = 0
-  for (let i = 0; i < 3; i++) sum += parseInt(ls[i]) * idFactors[i]
-  for (let i = 0; i < 6; i++) sum += parseInt(bd[i]) * bdFactors[i]
-  return sum % 11
+function checkDigit(lll: number, birthDigits: number[]): number {
+  let l: number = lll
+  while (true) {
+    const digits: number[] = [Math.floor(l / 100) % 10, Math.floor(l / 10) % 10, l % 10, ...birthDigits]
+    let sum: number = 0
+    for (let i: number = 0; i < 9; i++) sum += digits[i] * factors[i]
+    const r: number = sum % 11
+    if (r === 10) {
+      l += 1
+      continue
+    }
+    return l * 10000000 + r * 1000000 + birthNumber(birthDigits)
+  }
 }
 
-for (let k = 0; k < N; k++) {
-  const line = readline()
-  if (line.length !== 10 || !/^[0-9]{10}$/.test(line) || line[0] === "0") {
+function birthNumber(birthDigits: number[]): number {
+  let n: number = 0
+  for (const d of birthDigits) n = n * 10 + d
+  return n
+}
+
+const n: number = parseInt(readline(), 10)
+const out: string[] = []
+for (let k: number = 0; k < n; k++) {
+  const s: string = readline()
+  if (!/^[0-9]{10}$/.test(s) || s[0] === "0") {
     out.push("INVALID SYNTAX")
     continue
   }
-  const lll = parseInt(line.slice(0, 3))
-  const bd = line.slice(4)
-  const dd = parseInt(bd.slice(0, 2))
-  const mm = parseInt(bd.slice(2, 4))
-  const yy = parseInt(bd.slice(4, 6))
-  if (!validDate(dd, mm, yy)) {
+  const lll: number = parseInt(s.slice(0, 3), 10)
+  const dd: number = parseInt(s.slice(4, 6), 10)
+  const mm: number = parseInt(s.slice(6, 8), 10)
+  const yy: number = parseInt(s.slice(8, 10), 10)
+  if (!isValidDate(dd, mm, yy)) {
     out.push("INVALID DATE")
     continue
   }
-  let curLll = lll
-  let cd = checkDigit(curLll, bd)
-  while (cd === 10) {
-    curLll++
-    cd = checkDigit(curLll, bd)
-  }
-  const corrected = curLll.toString().padStart(3, "0") + cd.toString() + bd
-  out.push(corrected === line ? "OK" : corrected)
+  const birthDigits: number[] = s
+    .slice(4, 10)
+    .split("")
+    .map((c: string): number => parseInt(c, 10))
+  const corrected: number = checkDigit(lll, birthDigits)
+  const correctedStr: string = String(corrected).padStart(10, "0")
+  out.push(correctedStr === s ? "OK" : correctedStr)
 }
 console.log(out.join("\n"))

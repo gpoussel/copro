@@ -13,12 +13,10 @@ for (let i = 0; i < n; i++) {
   // Find the first digit 1-9 in the transaction string.
   // We skip zeros because a leading zero (e.g. "0.50") means the significant digit is after the decimal.
   // Strategy: scan characters left-to-right, skip non-digits, skip '0', take first non-zero digit found.
-  let found = false
   for (let j = 0; j < line.length; j++) {
     const c = line[j]
     if (c >= "1" && c <= "9") {
       counts[parseInt(c)]++
-      found = true
       break
     }
   }

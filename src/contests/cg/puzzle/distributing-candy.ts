@@ -1,11 +1,18 @@
 // 🎮 CodinGame Puzzle - distributing-candy
 // https://www.codingame.com/training/easy/distributing-candy
 
-const [n, m] = readline().split(" ").map(Number)
-const c = readline().split(" ").map(Number)
-c.sort((a, b) => a - b)
+const [n, m] = readline()
+  .split(" ")
+  .map(s => parseInt(s, 10))
+const candies: number[] = readline()
+  .split(" ")
+  .map(s => parseInt(s, 10))
+  .sort((a, b) => a - b)
+
 let best = Infinity
-for (let i = 0; i + m <= n; i++) {
-  best = Math.min(best, c[i + m - 1] - c[i])
+for (let i = 0; i + m - 1 < n; i++) {
+  const diff = candies[i + m - 1] - candies[i]
+  if (diff < best) best = diff
 }
+
 console.log(best)

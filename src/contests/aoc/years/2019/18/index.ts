@@ -1,6 +1,5 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import { dijkstraOnGraph, dijkstraOnGrid } from "../../../../../utils/algo.js"
-import { DirectedGraph } from "../../../../../utils/graph.js"
 import utils from "../../../../../utils/index.js"
 import { Vector2 } from "../../../../../utils/vector.js"
 
@@ -60,7 +59,7 @@ function getAllPathsBetweenKeys(input: ReturnType<typeof parseInput>) {
         ends(position) {
           return position.equals(destination)
         },
-        isMoveValid(from, to) {
+        isMoveValid(_from, to) {
           return to !== "#"
         },
         starts: [start],
@@ -100,7 +99,7 @@ function getShortestPathBetweenKeys(
     key(node) {
       return `${node.positions.map(p => p.str()).join(";")};${node.keys.join(",")}`
     },
-    moves(node, path) {
+    moves(node, _path) {
       const positions = node.positions
       const validTargets: { to: Node; cost: number }[] = []
       for (const keyPosition of keyPositions) {

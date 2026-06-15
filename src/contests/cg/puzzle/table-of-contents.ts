@@ -1,28 +1,33 @@
 // 🎮 CodinGame Puzzle - table-of-contents
 // https://www.codingame.com/training/easy/table-of-contents
 
-const L: number = parseInt(readline())
-const N: number = parseInt(readline())
+const lengthOfLine: number = parseInt(readline(), 10)
+const n: number = parseInt(readline(), 10)
+
 const counters: number[] = []
-const out: string[] = []
-for (let i = 0; i < N; i++) {
-  const line = readline()
-  let level = 0
-  while (level < line.length && line[level] === ">") level++
-  const rest = line.slice(level)
-  const sp = rest.lastIndexOf(" ")
-  const title = rest.slice(0, sp)
-  const page = rest.slice(sp + 1)
-  if (counters.length <= level) {
-    while (counters.length <= level) counters.push(0)
+
+for (let i = 0; i < n; i++) {
+  const entry: string = readline()
+  let level: number = 0
+  while (entry[level] === ">") {
+    level++
   }
-  counters[level]++
+  const rest: string = entry.slice(level)
+  const lastSpace: number = rest.lastIndexOf(" ")
+  const title: string = rest.slice(0, lastSpace)
+  const page: string = rest.slice(lastSpace + 1)
+
   counters.length = level + 1
-  const num = counters[level]
-  const indent = " ".repeat(level * 4)
-  const left = indent + num + " " + title
-  const dotsCount = L - left.length - page.length
-  const dots = ".".repeat(Math.max(0, dotsCount))
-  out.push(left + dots + page)
+  counters[level] = (counters[level] ?? 0) + 1
+  for (let j = 0; j <= level; j++) {
+    if (counters[j] === undefined) {
+      counters[j] = 0
+    }
+  }
+
+  const indent: string = " ".repeat(level * 4)
+  const left: string = `${indent}${counters[level]} ${title}`
+  const dotsCount: number = lengthOfLine - left.length - page.length
+  const dots: string = ".".repeat(dotsCount)
+  console.log(`${left}${dots}${page}`)
 }
-console.log(out.join("\n"))

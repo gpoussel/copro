@@ -1,26 +1,31 @@
 // 🎮 CodinGame Puzzle - wordle-colorizer
 // https://www.codingame.com/training/easy/wordle-colorizer
 
-const answer = readline()
-const n = parseInt(readline(), 10)
-for (let k = 0; k < n; k++) {
-  const attempt = readline()
-  const res: string[] = new Array(5).fill("X")
-  const counts: Record<string, number> = {}
-  for (const ch of answer) counts[ch] = (counts[ch] ?? 0) + 1
-  for (let i = 0; i < 5; i++) {
-    if (attempt[i] === answer[i]) {
-      res[i] = "#"
-      counts[attempt[i]]--
+const answer: string = readline()
+const n: number = parseInt(readline(), 10)
+for (let i = 0; i < n; i++) {
+  const attempt: string = readline()
+  const result: string[] = new Array<string>(5).fill("X")
+  const counts: Map<string, number> = new Map<string, number>()
+  for (const c of answer) {
+    counts.set(c, (counts.get(c) ?? 0) + 1)
+  }
+  for (let j = 0; j < 5; j++) {
+    if (attempt[j] === answer[j]) {
+      result[j] = "#"
+      counts.set(attempt[j], (counts.get(attempt[j]) ?? 0) - 1)
     }
   }
-  for (let i = 0; i < 5; i++) {
-    if (res[i] === "#") continue
-    const c = attempt[i]
-    if ((counts[c] ?? 0) > 0) {
-      res[i] = "O"
-      counts[c]--
+  for (let j = 0; j < 5; j++) {
+    if (result[j] === "#") {
+      continue
+    }
+    const c: string = attempt[j]
+    const remaining: number = counts.get(c) ?? 0
+    if (remaining > 0) {
+      result[j] = "O"
+      counts.set(c, remaining - 1)
     }
   }
-  console.log(res.join(""))
+  console.log(result.join(""))
 }

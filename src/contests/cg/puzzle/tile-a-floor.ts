@@ -1,21 +1,15 @@
 // 🎮 CodinGame Puzzle - tile-a-floor
 // https://www.codingame.com/training/easy/tile-a-floor
 
-const N = parseInt(readline())
-const rows: string[] = []
-for (let i = 0; i < N; i++) rows.push(readline())
-
-const S = 2 * N - 1
-
-const inp: string[][] = []
-for (let r = 0; r < N; r++) {
-  const line = rows[r]
-  const arr: string[] = []
-  for (let c = 0; c < N; c++) arr.push(c < line.length ? line[c] : " ")
-  inp.push(arr)
+const n: number = parseInt(readline())
+const m: number = 2 * n - 1
+const input: string[] = []
+for (let i = 0; i < n; i++) {
+  const row: string = readline()
+  input.push(row.padEnd(n, " "))
 }
 
-const lr: { [k: string]: string } = {
+const hMap: { [key: string]: string } = {
   "(": ")",
   ")": "(",
   "{": "}",
@@ -24,8 +18,11 @@ const lr: { [k: string]: string } = {
   "]": "[",
   "<": ">",
   ">": "<",
+  "/": "\\",
+  "\\": "/",
 }
-const tb: { [k: string]: string } = {
+
+const vMap: { [key: string]: string } = {
   "^": "v",
   v: "^",
   A: "V",
@@ -36,43 +33,42 @@ const tb: { [k: string]: string } = {
   M: "W",
   u: "n",
   n: "u",
-}
-
-function lrSwap(ch: string): string {
-  return lr[ch] ?? ch
-}
-function tbSwap(ch: string): string {
-  return tb[ch] ?? ch
-}
-function diagSwap(ch: string): string {
-  if (ch === "/") return "\\"
-  if (ch === "\\") return "/"
-  return ch
+  "/": "\\",
+  "\\": "/",
 }
 
 const tile: string[][] = []
-for (let r = 0; r < S; r++) {
-  const row: string[] = []
-  for (let c = 0; c < S; c++) {
-    const mh = c > N - 1
-    const mv = r > N - 1
-    const sr = mv ? S - 1 - r : r
-    const sc = mh ? S - 1 - c : c
-    let ch = inp[sr][sc]
-    if (mh) ch = lrSwap(ch)
-    if (mv) ch = tbSwap(ch)
-    if ((mh ? 1 : 0) + (mv ? 1 : 0) === 1) ch = diagSwap(ch)
-    row.push(ch)
+for (let r = 0; r < m; r++) {
+  const line: string[] = []
+  for (let c = 0; c < m; c++) {
+    const flipH: boolean = c > n - 1
+    const flipV: boolean = r > n - 1
+    const sr: number = flipV ? m - 1 - r : r
+    const sc: number = flipH ? m - 1 - c : c
+    let ch: string = input[sr][sc]
+    if (flipH && hMap[ch] !== undefined) {
+      ch = hMap[ch]
+    }
+    if (flipV && vMap[ch] !== undefined) {
+      ch = vMap[ch]
+    }
+    line.push(ch)
   }
-  tile.push(row)
+  tile.push(line)
 }
 
-const tileLines = tile.map(r => r.join(""))
-const border = "+" + "-".repeat(S) + "+" + "-".repeat(S) + "+"
+const tileLines: string[] = tile.map((row: string[]): string => row.join(""))
+
+const border: string = "+" + "-".repeat(m) + "+" + "-".repeat(m) + "+"
 const out: string[] = []
 out.push(border)
-for (const tl of tileLines) out.push("|" + tl + "|" + tl + "|")
+for (const line of tileLines) {
+  out.push("|" + line + "|" + line + "|")
+}
 out.push(border)
-for (const tl of tileLines) out.push("|" + tl + "|" + tl + "|")
+for (const line of tileLines) {
+  out.push("|" + line + "|" + line + "|")
+}
 out.push(border)
+
 console.log(out.join("\n"))

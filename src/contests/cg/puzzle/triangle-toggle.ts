@@ -1,31 +1,27 @@
 // 🎮 CodinGame Puzzle - triangle-toggle
 // https://www.codingame.com/training/easy/triangle-toggle
 
-const [HI, WI] = readline()
-  .split(" ")
-  .map(s => parseInt(s, 10))
-const style: string = readline().trim()
-const expanded: boolean = style === "expanded"
-const howMany: number = parseInt(readline(), 10)
-type Tri = [number, number, number, number, number, number]
-const tris: Tri[] = []
-for (let i = 0; i < howMany; i++) {
-  const v = readline()
-    .split(" ")
-    .map(s => parseInt(s, 10))
-  tris.push([v[0], v[1], v[2], v[3], v[4], v[5]])
+const [HI, WI]: number[] = readline().split(" ").map(Number)
+const style: string = readline()
+const howManyTriangles: number = Number(readline())
+
+type Triangle = [number, number, number, number, number, number]
+const triangles: Triangle[] = []
+for (let i = 0; i < howManyTriangles; i++) {
+  const [x1, y1, x2, y2, x3, y3]: number[] = readline().split(" ").map(Number)
+  triangles.push([x1, y1, x2, y2, x3, y3])
 }
 
-function sign(px: number, py: number, ax: number, ay: number, bx: number, by: number): number {
-  return (px - bx) * (ay - by) - (ax - bx) * (py - by)
-}
+const cross = (ax: number, ay: number, bx: number, by: number, px: number, py: number): number =>
+  (bx - ax) * (py - ay) - (by - ay) * (px - ax)
 
-function inTriangle(px: number, py: number, t: Tri): boolean {
-  const d1 = sign(px, py, t[0], t[1], t[2], t[3])
-  const d2 = sign(px, py, t[2], t[3], t[4], t[5])
-  const d3 = sign(px, py, t[4], t[5], t[0], t[1])
-  const hasNeg = d1 < 0 || d2 < 0 || d3 < 0
-  const hasPos = d1 > 0 || d2 > 0 || d3 > 0
+const inTriangle = (t: Triangle, px: number, py: number): boolean => {
+  const [x1, y1, x2, y2, x3, y3]: Triangle = t
+  const d1: number = cross(x1, y1, x2, y2, px, py)
+  const d2: number = cross(x2, y2, x3, y3, px, py)
+  const d3: number = cross(x3, y3, x1, y1, px, py)
+  const hasNeg: boolean = d1 < 0 || d2 < 0 || d3 < 0
+  const hasPos: boolean = d1 > 0 || d2 > 0 || d3 > 0
   return !(hasNeg && hasPos)
 }
 
@@ -34,11 +30,12 @@ for (let y = 0; y < HI; y++) {
   const cells: string[] = []
   for (let x = 0; x < WI; x++) {
     let count = 0
-    for (const t of tris) {
-      if (inTriangle(x, y, t)) count++
+    for (const t of triangles) {
+      if (inTriangle(t, x, y)) count++
     }
-    cells.push(count % 2 === 1 ? " " : "*")
+    cells.push(count % 2 === 0 ? "*" : " ")
   }
-  lines.push(expanded ? cells.join(" ") : cells.join(""))
+  lines.push(cells.join(style === "expanded" ? " " : ""))
 }
+
 console.log(lines.join("\n"))

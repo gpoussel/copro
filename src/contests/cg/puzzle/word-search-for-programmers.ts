@@ -1,45 +1,49 @@
 // 🎮 CodinGame Puzzle - word-search-for-programmers
 // https://www.codingame.com/training/easy/word-search-for-programmers
 
-const size: number = parseInt(readline())
+const size: number = parseInt(readline(), 10)
 const grid: string[] = []
-for (let i = 0; i < size; i++) grid.push(readline())
-const words = readline()
-  .trim()
+for (let i = 0; i < size; i++) {
+  grid.push(readline())
+}
+const words: string[] = readline()
   .split(" ")
-  .map(w => w.toUpperCase())
+  .filter((w: string) => w.length > 0)
+  .map((w: string) => w.toUpperCase())
 
-const keep: boolean[][] = Array.from({ length: size }, () => new Array(size).fill(false))
+const used: boolean[][] = grid.map((row: string) => new Array<boolean>(row.length).fill(false))
+
 const dirs: [number, number][] = [
-  [0, 1],
-  [0, -1],
-  [1, 0],
-  [-1, 0],
-  [1, 1],
-  [1, -1],
-  [-1, 1],
   [-1, -1],
+  [-1, 0],
+  [-1, 1],
+  [0, -1],
+  [0, 1],
+  [1, -1],
+  [1, 0],
+  [1, 1],
 ]
 
 for (const word of words) {
-  const len = word.length
+  const len: number = word.length
   for (let r = 0; r < size; r++) {
-    for (let c = 0; c < size; c++) {
-      if (grid[r][c] !== word[0]) continue
+    for (let c = 0; c < grid[r].length; c++) {
       for (const [dr, dc] of dirs) {
-        const er = r + dr * (len - 1)
-        const ec = c + dc * (len - 1)
-        if (er < 0 || er >= size || ec < 0 || ec >= size) continue
-        let ok = true
+        const er: number = r + dr * (len - 1)
+        const ec: number = c + dc * (len - 1)
+        if (er < 0 || er >= size || ec < 0 || ec >= grid[r].length) {
+          continue
+        }
+        let match: boolean = true
         for (let k = 0; k < len; k++) {
           if (grid[r + dr * k][c + dc * k] !== word[k]) {
-            ok = false
+            match = false
             break
           }
         }
-        if (ok) {
+        if (match) {
           for (let k = 0; k < len; k++) {
-            keep[r + dr * k][c + dc * k] = true
+            used[r + dr * k][c + dc * k] = true
           }
         }
       }
@@ -47,12 +51,10 @@ for (const word of words) {
   }
 }
 
-const out: string[] = []
-for (let r = 0; r < size; r++) {
-  let line = ""
-  for (let c = 0; c < size; c++) {
-    line += keep[r][c] ? grid[r][c] : " "
-  }
-  out.push(line)
-}
-console.log(out.join("\n"))
+const output: string[] = grid.map((row: string, r: number) =>
+  row
+    .split("")
+    .map((ch: string, c: number) => (used[r][c] ? ch : " "))
+    .join("")
+)
+console.log(output.join("\n"))

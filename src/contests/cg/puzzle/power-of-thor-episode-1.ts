@@ -7,7 +7,7 @@ let thorX = initialTX
 let thorY = initialTY
 
 while (true) {
-  const remainingTurns = parseInt(readline())
+  readline()
 
   let directionY = ""
   let directionX = ""

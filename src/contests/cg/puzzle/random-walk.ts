@@ -1,30 +1,23 @@
 // 🎮 CodinGame Puzzle - random-walk
 // https://www.codingame.com/training/easy/random-walk
 
-const a = parseInt(readline(), 10)
-const b = parseInt(readline(), 10)
-const m = parseInt(readline(), 10)
-let d = 0
-let x = 0,
-  y = 0
-let steps = 0
-while (steps < 500000) {
+const a: number = parseInt(readline(), 10)
+const b: number = parseInt(readline(), 10)
+const m: number = parseInt(readline(), 10)
+
+let d: number = 0
+let x: number = 0
+let y: number = 0
+let steps: number = 0
+
+do {
   d = (a * d + b) % m
-  switch (d % 4) {
-    case 0:
-      y += 1 // Up
-      break
-    case 1:
-      y -= 1 // Down
-      break
-    case 2:
-      x -= 1 // Left
-      break
-    case 3:
-      x += 1 // Right
-      break
-  }
-  steps++
-  if (x === 0 && y === 0) break
-}
+  const dir: number = d % 4
+  if (dir === 0) y += 1
+  else if (dir === 1) y -= 1
+  else if (dir === 2) x -= 1
+  else x += 1
+  steps += 1
+} while (x !== 0 || y !== 0)
+
 console.log(steps)

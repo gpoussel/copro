@@ -2,55 +2,56 @@
 // https://www.codingame.com/training/easy/minesweeper-level-generator
 
 const line: string = readline()
-const parts = line.split(/\s+/).map(s => parseInt(s, 10))
-const [width, height, n, fx, fy, seed] = parts
+const [width, height, n, x, y, seed]: number[] = line.split(" ").map((v: string) => parseInt(v, 10))
 
-let r = seed >>> 0
-function next(): number {
-  const mul = Math.imul(214013, r) >>> 0
-  r = (mul + 2531011) >>> 0
-  r = (r / 65536) >>> 0
-  return r
+let state: number = seed >>> 0
+const next = (): number => {
+  state = ((Math.imul(214013, state) + 2531011) >>> 0) >>> 16
+  return state
 }
 
-const grid: boolean[][] = []
-for (let y = 0; y < height; y++) {
-  grid.push(new Array<boolean>(width).fill(false))
+const mines: boolean[][] = []
+for (let row = 0; row < height; row++) {
+  mines.push(new Array<boolean>(width).fill(false))
 }
 
-function isFree(x: number, y: number): boolean {
-  return Math.abs(x - fx) <= 1 && Math.abs(y - fy) <= 1
-}
+const isFree = (cx: number, cy: number): boolean => Math.abs(cx - x) <= 1 && Math.abs(cy - y) <= 1
 
-let placed = 0
+let placed: number = 0
 while (placed < n) {
-  const x = next() % width
-  const y = next() % height
-  if (grid[y][x]) continue
-  if (isFree(x, y)) continue
-  grid[y][x] = true
+  const mx: number = next() % width
+  const my: number = next() % height
+  if (isFree(mx, my) || mines[my][mx]) {
+    continue
+  }
+  mines[my][mx] = true
   placed++
 }
 
-const out: string[] = []
-for (let y = 0; y < height; y++) {
-  let row = ""
-  for (let x = 0; x < width; x++) {
-    if (grid[y][x]) {
-      row += "#"
-    } else {
-      let c = 0
-      for (let dy = -1; dy <= 1; dy++) {
-        for (let dx = -1; dx <= 1; dx++) {
-          if (dx === 0 && dy === 0) continue
-          const ny = y + dy,
-            nx = x + dx
-          if (ny >= 0 && ny < height && nx >= 0 && nx < width && grid[ny][nx]) c++
+const output: string[] = []
+for (let row = 0; row < height; row++) {
+  let str: string = ""
+  for (let col = 0; col < width; col++) {
+    if (mines[row][col]) {
+      str += "#"
+      continue
+    }
+    let count: number = 0
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        if (dx === 0 && dy === 0) {
+          continue
+        }
+        const ny: number = row + dy
+        const nx: number = col + dx
+        if (ny >= 0 && ny < height && nx >= 0 && nx < width && mines[ny][nx]) {
+          count++
         }
       }
-      row += c === 0 ? "." : String(c)
     }
+    str += count === 0 ? "." : String(count)
   }
-  out.push(row)
+  output.push(str)
 }
-console.log(out.join("\n"))
+
+console.log(output.join("\n"))

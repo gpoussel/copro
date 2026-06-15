@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - folding-paper
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/folding-paper
 
 const order = readline().trim()
 const side = readline().trim()

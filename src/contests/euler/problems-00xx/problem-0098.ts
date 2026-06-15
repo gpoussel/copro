@@ -16,7 +16,7 @@ export function solve() {
 
   // Only words of the same length can be anagrams
   const wordsByLength = mapBy(dictionary, w => w.length)
-  for (const [length, words] of wordsByLength) {
+  for (const [, words] of wordsByLength) {
     for (let i = 0; i < words.length; i++) {
       const word1 = words[i]
       for (let j = i + 1; j < words.length; ++j) {

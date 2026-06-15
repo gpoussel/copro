@@ -1,6 +1,5 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import { Direction, nextDirClockwise, nextDirCounterClockwise } from "../../../../../utils/grid.js"
-import utils from "../../../../../utils/index.js"
 import { Vector2 } from "../../../../../utils/vector.js"
 
 // 🎄 Advent of Code 2022 - Day 22
@@ -167,39 +166,39 @@ function part2(inputString: string) {
     const S = faceSize - 1
 
     // Face 1 transitions
-    t.set("1,up", { toFace: 6, newDir: "right", transform: (x, y) => ({ x: 0, y: x }) })
-    t.set("1,left", { toFace: 4, newDir: "right", transform: (x, y) => ({ x: 0, y: S - y }) })
+    t.set("1,up", { toFace: 6, newDir: "right", transform: (x, _y) => ({ x: 0, y: x }) })
+    t.set("1,left", { toFace: 4, newDir: "right", transform: (_x, y) => ({ x: 0, y: S - y }) })
     // right -> goes to face 2 naturally
     // down -> goes to face 3 naturally
 
     // Face 2 transitions
-    t.set("2,up", { toFace: 6, newDir: "up", transform: (x, y) => ({ x: x, y: S }) })
-    t.set("2,right", { toFace: 5, newDir: "left", transform: (x, y) => ({ x: S, y: S - y }) })
-    t.set("2,down", { toFace: 3, newDir: "left", transform: (x, y) => ({ x: S, y: x }) })
+    t.set("2,up", { toFace: 6, newDir: "up", transform: (x, _y) => ({ x: x, y: S }) })
+    t.set("2,right", { toFace: 5, newDir: "left", transform: (_x, y) => ({ x: S, y: S - y }) })
+    t.set("2,down", { toFace: 3, newDir: "left", transform: (x, _y) => ({ x: S, y: x }) })
     // left -> goes to face 1 naturally
 
     // Face 3 transitions
-    t.set("3,left", { toFace: 4, newDir: "down", transform: (x, y) => ({ x: y, y: 0 }) })
-    t.set("3,right", { toFace: 2, newDir: "up", transform: (x, y) => ({ x: y, y: S }) })
+    t.set("3,left", { toFace: 4, newDir: "down", transform: (_x, y) => ({ x: y, y: 0 }) })
+    t.set("3,right", { toFace: 2, newDir: "up", transform: (_x, y) => ({ x: y, y: S }) })
     // up -> goes to face 1 naturally
     // down -> goes to face 5 naturally
 
     // Face 4 transitions
-    t.set("4,up", { toFace: 3, newDir: "right", transform: (x, y) => ({ x: 0, y: x }) })
-    t.set("4,left", { toFace: 1, newDir: "right", transform: (x, y) => ({ x: 0, y: S - y }) })
+    t.set("4,up", { toFace: 3, newDir: "right", transform: (x, _y) => ({ x: 0, y: x }) })
+    t.set("4,left", { toFace: 1, newDir: "right", transform: (_x, y) => ({ x: 0, y: S - y }) })
     // right -> goes to face 5 naturally
     // down -> goes to face 6 naturally
 
     // Face 5 transitions
-    t.set("5,right", { toFace: 2, newDir: "left", transform: (x, y) => ({ x: S, y: S - y }) })
-    t.set("5,down", { toFace: 6, newDir: "left", transform: (x, y) => ({ x: S, y: x }) })
+    t.set("5,right", { toFace: 2, newDir: "left", transform: (_x, y) => ({ x: S, y: S - y }) })
+    t.set("5,down", { toFace: 6, newDir: "left", transform: (x, _y) => ({ x: S, y: x }) })
     // up -> goes to face 3 naturally
     // left -> goes to face 4 naturally
 
     // Face 6 transitions
-    t.set("6,left", { toFace: 1, newDir: "down", transform: (x, y) => ({ x: y, y: 0 }) })
-    t.set("6,down", { toFace: 2, newDir: "down", transform: (x, y) => ({ x: x, y: 0 }) })
-    t.set("6,right", { toFace: 5, newDir: "up", transform: (x, y) => ({ x: y, y: S }) })
+    t.set("6,left", { toFace: 1, newDir: "down", transform: (_x, y) => ({ x: y, y: 0 }) })
+    t.set("6,down", { toFace: 2, newDir: "down", transform: (x, _y) => ({ x: x, y: 0 }) })
+    t.set("6,right", { toFace: 5, newDir: "up", transform: (_x, y) => ({ x: y, y: S }) })
     // up -> goes to face 4 naturally
 
     return t
@@ -210,39 +209,39 @@ function part2(inputString: string) {
     const S = faceSize - 1
 
     // Face 1 transitions (top face)
-    t.set("1,up", { toFace: 2, newDir: "down", transform: (x, y) => ({ x: S - x, y: 0 }) })
-    t.set("1,left", { toFace: 3, newDir: "down", transform: (x, y) => ({ x: y, y: 0 }) })
-    t.set("1,right", { toFace: 6, newDir: "left", transform: (x, y) => ({ x: S, y: S - y }) })
+    t.set("1,up", { toFace: 2, newDir: "down", transform: (x, _y) => ({ x: S - x, y: 0 }) })
+    t.set("1,left", { toFace: 3, newDir: "down", transform: (_x, y) => ({ x: y, y: 0 }) })
+    t.set("1,right", { toFace: 6, newDir: "left", transform: (_x, y) => ({ x: S, y: S - y }) })
     // down -> goes to face 4 naturally
 
     // Face 2 transitions
-    t.set("2,up", { toFace: 1, newDir: "down", transform: (x, y) => ({ x: S - x, y: 0 }) })
-    t.set("2,left", { toFace: 6, newDir: "up", transform: (x, y) => ({ x: S - y, y: S }) })
-    t.set("2,down", { toFace: 5, newDir: "up", transform: (x, y) => ({ x: S - x, y: S }) })
+    t.set("2,up", { toFace: 1, newDir: "down", transform: (x, _y) => ({ x: S - x, y: 0 }) })
+    t.set("2,left", { toFace: 6, newDir: "up", transform: (_x, y) => ({ x: S - y, y: S }) })
+    t.set("2,down", { toFace: 5, newDir: "up", transform: (x, _y) => ({ x: S - x, y: S }) })
     // right -> goes to face 3 naturally
 
     // Face 3 transitions
-    t.set("3,up", { toFace: 1, newDir: "right", transform: (x, y) => ({ x: 0, y: x }) })
-    t.set("3,down", { toFace: 5, newDir: "right", transform: (x, y) => ({ x: 0, y: S - x }) })
+    t.set("3,up", { toFace: 1, newDir: "right", transform: (x, _y) => ({ x: 0, y: x }) })
+    t.set("3,down", { toFace: 5, newDir: "right", transform: (x, _y) => ({ x: 0, y: S - x }) })
     // left -> goes to face 2 naturally
     // right -> goes to face 4 naturally
 
     // Face 4 transitions
-    t.set("4,right", { toFace: 6, newDir: "down", transform: (x, y) => ({ x: S - y, y: 0 }) })
+    t.set("4,right", { toFace: 6, newDir: "down", transform: (_x, y) => ({ x: S - y, y: 0 }) })
     // up -> goes to face 1 naturally
     // left -> goes to face 3 naturally
     // down -> goes to face 5 naturally
 
     // Face 5 transitions
-    t.set("5,left", { toFace: 3, newDir: "up", transform: (x, y) => ({ x: S - y, y: S }) })
-    t.set("5,down", { toFace: 2, newDir: "up", transform: (x, y) => ({ x: S - x, y: S }) })
+    t.set("5,left", { toFace: 3, newDir: "up", transform: (_x, y) => ({ x: S - y, y: S }) })
+    t.set("5,down", { toFace: 2, newDir: "up", transform: (x, _y) => ({ x: S - x, y: S }) })
     // up -> goes to face 4 naturally
     // right -> goes to face 6 naturally
 
     // Face 6 transitions
-    t.set("6,up", { toFace: 4, newDir: "left", transform: (x, y) => ({ x: S, y: S - x }) })
-    t.set("6,right", { toFace: 1, newDir: "left", transform: (x, y) => ({ x: S, y: S - y }) })
-    t.set("6,down", { toFace: 2, newDir: "right", transform: (x, y) => ({ x: 0, y: S - x }) })
+    t.set("6,up", { toFace: 4, newDir: "left", transform: (x, _y) => ({ x: S, y: S - x }) })
+    t.set("6,right", { toFace: 1, newDir: "left", transform: (_x, y) => ({ x: S, y: S - y }) })
+    t.set("6,down", { toFace: 2, newDir: "right", transform: (x, _y) => ({ x: 0, y: S - x }) })
     // left -> goes to face 5 naturally
 
     return t

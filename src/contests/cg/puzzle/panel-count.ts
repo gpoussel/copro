@@ -1,38 +1,58 @@
 // 🎮 CodinGame Puzzle - panel-count
 // https://www.codingame.com/training/easy/panel-count
 
-const P: number = parseInt(readline(), 10)
-const props: string[] = []
-for (let i = 0; i < P; i++) props.push(readline())
-
-const N: number = parseInt(readline(), 10)
-const persons: Map<string, string>[] = []
-for (let i = 0; i < N; i++) {
-  const parts = readline().split(" ")
-  const m = new Map<string, string>()
-  for (let j = 0; j < P; j++) m.set(props[j], parts[j + 1])
-  persons.push(m)
+const p: number = parseInt(readline(), 10)
+const properties: string[] = []
+for (let i = 0; i < p; i++) {
+  properties.push(readline())
 }
 
-const F: number = parseInt(readline(), 10)
-const out: string[] = []
-for (let i = 0; i < F; i++) {
-  const formula = readline()
-  const conds = formula.split(" AND ").map(c => {
-    const eq = c.indexOf("=")
-    return [c.slice(0, eq), c.slice(eq + 1)] as [string, string]
-  })
-  let count = 0
-  for (const p of persons) {
-    let ok = true
-    for (const [k, v] of conds) {
-      if (p.get(k) !== v) {
-        ok = false
-        break
+const index: Map<string, number> = new Map<string, number>()
+for (let i = 0; i < properties.length; i++) {
+  index.set(properties[i], i)
+}
+
+const n: number = parseInt(readline(), 10)
+const persons: string[][] = []
+for (let i = 0; i < n; i++) {
+  const tokens: string[] = readline().split(" ")
+  persons.push(tokens.slice(1))
+}
+
+const f: number = parseInt(readline(), 10)
+const output: string[] = []
+for (let i = 0; i < f; i++) {
+  const clauses: string[] = readline().split(" AND ")
+  const constraints: Array<[number, string]> = []
+  let valid: boolean = true
+  for (const clause of clauses) {
+    const eq: number = clause.indexOf("=")
+    const name: string = clause.slice(0, eq)
+    const value: string = clause.slice(eq + 1)
+    const idx: number | undefined = index.get(name)
+    if (idx === undefined) {
+      valid = false
+      break
+    }
+    constraints.push([idx, value])
+  }
+
+  let count: number = 0
+  if (valid) {
+    for (const person of persons) {
+      let match: boolean = true
+      for (const [idx, value] of constraints) {
+        if (person[idx] !== value) {
+          match = false
+          break
+        }
+      }
+      if (match) {
+        count++
       }
     }
-    if (ok) count++
   }
-  out.push(String(count))
+  output.push(String(count))
 }
-console.log(out.join("\n"))
+
+console.log(output.join("\n"))

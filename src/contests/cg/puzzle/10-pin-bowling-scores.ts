@@ -1,40 +1,47 @@
 // 🎮 CodinGame Puzzle - 10-pin-bowling-scores
 // https://www.codingame.com/training/easy/10-pin-bowling-scores
 
-const N = parseInt(readline())
-const out: string[] = []
-for (let g = 0; g < N; g++) {
+const n = parseInt(readline(), 10)
+
+for (let g = 0; g < n; g++) {
   const frames = readline().split(" ")
-  // Flatten every roll into pin values (handling X, /, -, digits).
+
+  // Flatten into a list of pin counts per ball, resolving notation.
   const rolls: number[] = []
-  for (const f of frames) {
-    let prev = 0
-    for (const ch of f) {
-      let v: number
-      if (ch === "X") v = 10
-      else if (ch === "-") v = 0
-      else if (ch === "/") v = 10 - prev
-      else v = parseInt(ch)
-      rolls.push(v)
-      prev = v
+  for (const frame of frames) {
+    for (let i = 0; i < frame.length; i++) {
+      const c = frame[i]
+      if (c === "X") {
+        rolls.push(10)
+      } else if (c === "-") {
+        rolls.push(0)
+      } else if (c === "/") {
+        // Spare: 10 minus the previous ball in this frame.
+        rolls.push(10 - rolls[rolls.length - 1])
+      } else {
+        rolls.push(parseInt(c, 10))
+      }
     }
   }
-  const cum: number[] = []
+
+  const cumulative: number[] = []
   let total = 0
-  let i = 0
+  let r = 0
   for (let frame = 0; frame < 10; frame++) {
-    if (rolls[i] === 10) {
-      total += 10 + (rolls[i + 1] ?? 0) + (rolls[i + 2] ?? 0)
-      i += 1
-    } else if (rolls[i] + rolls[i + 1] === 10) {
-      total += 10 + (rolls[i + 2] ?? 0)
-      i += 2
+    if (rolls[r] === 10) {
+      // Strike
+      total += 10 + rolls[r + 1] + rolls[r + 2]
+      r += 1
+    } else if (rolls[r] + rolls[r + 1] === 10) {
+      // Spare
+      total += 10 + rolls[r + 2]
+      r += 2
     } else {
-      total += rolls[i] + rolls[i + 1]
-      i += 2
+      total += rolls[r] + rolls[r + 1]
+      r += 2
     }
-    cum.push(total)
+    cumulative.push(total)
   }
-  out.push(cum.join(" "))
+
+  console.log(cumulative.join(" "))
 }
-console.log(out.join("\n"))

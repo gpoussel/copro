@@ -1,22 +1,24 @@
-const keys = readline()
+// 🎮 CodinGame Puzzle - the-broken-editor
+// https://www.codingame.com/training/easy/the-broken-editor
 
-const buf: string[] = []
-let cursor = 0
+const typedKeys: string = readline()
+const buffer: string[] = []
+let cursor: number = 0
 
-for (const k of keys) {
-  if (k === "<") {
+for (const key of typedKeys) {
+  if (key === "<") {
     if (cursor > 0) cursor--
-  } else if (k === ">") {
-    if (cursor < buf.length) cursor++
-  } else if (k === "-") {
+  } else if (key === ">") {
+    if (cursor < buffer.length) cursor++
+  } else if (key === "-") {
     if (cursor > 0) {
-      buf.splice(cursor - 1, 1)
+      buffer.splice(cursor - 1, 1)
       cursor--
     }
   } else {
-    buf.splice(cursor, 0, k)
+    buffer.splice(cursor, 0, key)
     cursor++
   }
 }
 
-console.log(buf.join(""))
+console.log(buffer.join(""))

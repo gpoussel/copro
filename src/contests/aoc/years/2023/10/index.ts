@@ -31,12 +31,6 @@ function findStart(grid: string[][]): Vector2 {
   throw new Error("No start found")
 }
 
-function getConnections(grid: string[][], pos: Vector2): Vector2[] {
-  const char = grid[pos.y]?.[pos.x]
-  if (!char) return []
-  return PIPE_CONNECTIONS[char] || []
-}
-
 function connects(grid: string[][], from: Vector2, to: Vector2): boolean {
   const char = grid[to.y]?.[to.x]
   if (!char) return false

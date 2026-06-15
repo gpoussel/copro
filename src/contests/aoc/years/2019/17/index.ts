@@ -1,5 +1,5 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
-import { DIRECTION_CHARS, fromDirectionChar } from "../../../../../utils/grid.js"
+import { fromDirectionChar } from "../../../../../utils/grid.js"
 import utils from "../../../../../utils/index.js"
 import { Vector2 } from "../../../../../utils/vector.js"
 import { Computer } from "../09/index.js"

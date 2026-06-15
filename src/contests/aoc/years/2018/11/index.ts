@@ -65,8 +65,6 @@ function part2(inputString: string) {
   return bestPosition?.str() + "," + size
 }
 
-const EXAMPLE = ``
-
 export default {
   part1: {
     run: part1,

@@ -23,8 +23,6 @@ function part2(inputString: string) {
   }).length
 }
 
-const EXAMPLE = ``
-
 export default {
   part1: {
     run: part1,

@@ -1,42 +1,48 @@
 // 🎮 CodinGame Puzzle - ulam-spiral
 // https://www.codingame.com/training/easy/ulam-spiral
 
-const N = parseInt(readline())
-function isPrime(n: number): boolean {
-  if (n < 2) return false
-  for (let i = 2; i * i <= n; i++) if (n % i === 0) return false
+const n: number = parseInt(readline())
+
+const isPrime = (x: number): boolean => {
+  if (x < 2) return false
+  for (let d = 2; d * d <= x; d++) {
+    if (x % d === 0) return false
+  }
   return true
 }
-const grid: number[][] = Array.from({ length: N }, () => new Array(N).fill(0))
-let r = (N - 1) / 2
-let c = (N - 1) / 2
-grid[r][c] = 1
-// Counterclockwise spiral starting toward the right: right, up, left, down.
-const dirs: [number, number][] = [
-  [0, 1],
-  [-1, 0],
-  [0, -1],
-  [1, 0],
-]
-let d = 0
-let steps = 1
-let num = 2
-while (num <= N * N) {
-  for (let twice = 0; twice < 2; twice++) {
-    for (let s = 0; s < steps; s++) {
-      r += dirs[d][0]
-      c += dirs[d][1]
-      if (r >= 0 && r < N && c >= 0 && c < N) grid[r][c] = num
-      num++
-      if (num > N * N) break
+
+const grid: string[][] = []
+for (let i = 0; i < n; i++) {
+  const row: string[] = []
+  for (let j = 0; j < n; j++) row.push(" ")
+  grid.push(row)
+}
+
+const c: number = (n - 1) / 2
+let x: number = c
+let y: number = c
+const dx: number[] = [1, 0, -1, 0]
+const dy: number[] = [0, -1, 0, 1]
+let dir: number = 0
+let stepLen: number = 1
+let value: number = 1
+
+if (isPrime(value)) grid[y][x] = "#"
+
+while (value < n * n) {
+  for (let rep = 0; rep < 2; rep++) {
+    for (let s = 0; s < stepLen; s++) {
+      x += dx[dir]
+      y += dy[dir]
+      value++
+      if (value > n * n) break
+      if (x >= 0 && x < n && y >= 0 && y < n && isPrime(value)) grid[y][x] = "#"
     }
-    d = (d + 1) % 4
-    if (num > N * N) break
+    dir = (dir + 1) % 4
+    if (value >= n * n) break
   }
-  steps++
+  stepLen++
 }
-const lines: string[] = []
-for (let i = 0; i < N; i++) {
-  lines.push(grid[i].map(v => (isPrime(v) ? "#" : " ")).join(" "))
-}
+
+const lines: string[] = grid.map((row: string[]) => row.join(" "))
 console.log(lines.join("\n"))

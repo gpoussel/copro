@@ -2,7 +2,6 @@ import { Vector2 } from "./vector.js"
 import { PriorityQueue } from "./structures/priority-queue.js"
 import { at, Direction, inBounds, nextDirClockwise, nextDirCounterClockwise } from "./grid.js"
 import { logEvery } from "./log.js"
-import { log } from "console"
 
 export interface DijkstraPath {
   positions: Vector2[]

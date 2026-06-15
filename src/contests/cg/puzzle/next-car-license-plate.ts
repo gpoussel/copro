@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - next-car-license-plate
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/next-car-license-plate
 
 const [ab, cde, fg] = readline().split("-")
 const n = Number(readline())

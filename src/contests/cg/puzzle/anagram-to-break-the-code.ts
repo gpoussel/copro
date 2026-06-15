@@ -1,24 +1,21 @@
 // 🎮 CodinGame Puzzle - anagram-to-break-the-code
 // https://www.codingame.com/training/easy/anagram-to-break-the-code
 
-const w = readline().trim()
-const s = readline()
+const w: string = readline()
+const s: string = readline()
 
-function sig(str: string): string {
-  return str.toLowerCase().split("").sort().join("")
-}
+const sortLetters = (str: string): string => str.toLowerCase().split("").sort().join("")
 
-const wSig = sig(w)
-const wLower = w.toLowerCase()
+const target: string = sortLetters(w)
+const lower: string = w.toLowerCase()
 
-// Words are separated by spaces or the punctuation marks : . , ? !
-const words = s.split(/[\s:.,?!]+/).filter(x => x.length > 0)
+const words: string[] = s.split(/[\s:.,?!]+/).filter(t => t.length > 0)
 
-let keyIndex = -1
+let keyIndex: number = -1
 for (let i = 0; i < words.length; i++) {
-  const word = words[i]
-  if (word.toLowerCase() === wLower) continue // a word is not an anagram of itself
-  if (sig(word) === wSig) {
+  const word: string = words[i]
+  if (word.toLowerCase() === lower) continue
+  if (sortLetters(word) === target) {
     keyIndex = i
     break
   }
@@ -27,12 +24,14 @@ for (let i = 0; i < words.length; i++) {
 if (keyIndex === -1) {
   console.log("IMPOSSIBLE")
 } else {
-  const wordsBefore = keyIndex
-  const wordsAfter = words.length - keyIndex - 1
-  let lettersBefore = 0
-  for (let i = 0; i < keyIndex; i++) lettersBefore += words[i].length
-  let lettersAfter = 0
-  for (let i = keyIndex + 1; i < words.length; i++) lettersAfter += words[i].length
-  const d = (x: number) => x % 10 // keep only the rightmost digit
+  const wordsBefore: number = keyIndex
+  const wordsAfter: number = words.length - keyIndex - 1
+  let lettersBefore: number = 0
+  let lettersAfter: number = 0
+  for (let i = 0; i < words.length; i++) {
+    if (i < keyIndex) lettersBefore += words[i].length
+    else if (i > keyIndex) lettersAfter += words[i].length
+  }
+  const d = (n: number): number => n % 10
   console.log(`${d(wordsBefore)}.${d(wordsAfter)}.${d(lettersBefore)}.${d(lettersAfter)}`)
 }

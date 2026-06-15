@@ -1,27 +1,31 @@
-const [x, y] = readline().split(" ").map(Number)
-let a = Math.max(x, y)
-let m = Math.min(x, y)
+// 🎮 CodinGame Puzzle - egyptian-multiplication
+// https://www.codingame.com/training/easy/egyptian-multiplication
 
-const lines: string[] = []
-lines.push(`${a} * ${m}`)
+const [a, b]: number[] = readline()
+  .split(" ")
+  .map((x: string) => parseInt(x, 10))
+const small: number = Math.min(a, b)
+const product: number = a * b
+let big: number = Math.max(a, b)
+let mult: number = small
 
-const acc: number[] = []
-while (m > 0) {
-  if (m % 2 === 1) {
-    m = m - 1
-    acc.push(a)
+const lines: string[] = [`${big} * ${mult}`]
+const collected: number[] = []
+
+while (mult > 0) {
+  if (mult % 2 === 1) {
+    collected.push(big)
+    mult -= 1
   } else {
-    m = m / 2
-    a = a * 2
+    mult /= 2
+    big *= 2
   }
-  let line = `= ${a} * ${m}`
-  if (acc.length > 0) {
-    line += " + " + acc.join(" + ")
+  let line: string = `= ${big} * ${mult}`
+  if (collected.length > 0) {
+    line += " + " + collected.join(" + ")
   }
   lines.push(line)
 }
 
-const total = acc.reduce((s, v) => s + v, 0)
-lines.push(`= ${total}`)
-
+lines.push(`= ${product}`)
 console.log(lines.join("\n"))
