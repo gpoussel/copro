@@ -41,7 +41,7 @@ outer: for (let y = 0; y < n; y++) {
   }
 }
 
-const out: string[][] = grid.map((row) => row.split("").map(() => "-"))
+const out: string[][] = grid.map(row => row.split("").map(() => "-"))
 for (const [y, x] of path) out[y][x] = grid[y][x]
 
-console.log(out.map((row) => row.join("")).join("\n"))
+console.log(out.map(row => row.join("")).join("\n"))

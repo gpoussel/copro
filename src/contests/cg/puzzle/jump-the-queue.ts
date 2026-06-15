@@ -25,7 +25,7 @@ for (const event of readline().split(" ").map(Number)) {
   let insertAt = queue.length // No friend found -> join at the tail.
 
   if (group !== undefined) {
-    const first = queue.findIndex((id) => groupOf.get(id) === group)
+    const first = queue.findIndex(id => groupOf.get(id) === group)
     if (first !== -1) {
       // Skip past the contiguous block of friends already gathered together,
       // then insert right behind that friend group.
