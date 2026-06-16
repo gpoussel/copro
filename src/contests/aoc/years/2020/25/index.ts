@@ -28,7 +28,7 @@ function part1(inputString: string) {
   return encryptionKeyFromCard
 }
 
-function part2(inputString: string) {
+function part2(_inputString: string) {
   return "Merry Christmas!"
 }
 

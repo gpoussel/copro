@@ -1,44 +1,50 @@
 // 🎮 CodinGame Puzzle - queen-control
-// https://www.codingame.com/training/queen-control
+// https://www.codingame.com/training/easy/queen-control
 
-const color: string = readline().trim()
+const color: string = readline()
+const ally: string = color === "white" ? "w" : "b"
 const board: string[] = []
-for (let i = 0; i < 8; i++) board.push(readline())
+for (let i = 0; i < 8; i++) {
+  board.push(readline())
+}
 
-let qr = 0,
-  qc = 0
-for (let r = 0; r < 8; r++) {
-  const c = board[r].indexOf("Q")
-  if (c !== -1) {
-    qr = r
-    qc = c
+let qx = 0
+let qy = 0
+for (let y = 0; y < 8; y++) {
+  const x: number = board[y].indexOf("Q")
+  if (x >= 0) {
+    qx = x
+    qy = y
   }
 }
 
-const ally = color === "white" ? "w" : "b"
-
-const dirs: number[][] = [
-  [-1, 0],
+const directions: number[][] = [
   [1, 0],
-  [0, -1],
+  [-1, 0],
   [0, 1],
-  [-1, -1],
-  [-1, 1],
-  [1, -1],
+  [0, -1],
   [1, 1],
+  [1, -1],
+  [-1, 1],
+  [-1, -1],
 ]
 
 let count = 0
-for (const [dr, dc] of dirs) {
-  let r = qr + dr,
-    c = qc + dc
-  while (r >= 0 && r < 8 && c >= 0 && c < 8) {
-    const cell = board[r][c]
-    if (cell === ally) break
-    count++
-    if (cell !== ".") break
-    r += dr
-    c += dc
+for (const [dx, dy] of directions) {
+  let x: number = qx + dx
+  let y: number = qy + dy
+  while (x >= 0 && x < 8 && y >= 0 && y < 8) {
+    const cell: string = board[y][x]
+    if (cell === ".") {
+      count++
+    } else if (cell === ally) {
+      break
+    } else {
+      count++
+      break
+    }
+    x += dx
+    y += dy
   }
 }
 

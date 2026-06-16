@@ -3,7 +3,6 @@
 
 const firstLine = readline().split(" ")
 const N = parseInt(firstLine[0])
-const M = parseInt(firstLine[1])
 
 // Read N lines and concatenate into a single string
 let s = ""

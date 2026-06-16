@@ -55,7 +55,7 @@ function part1(inputString: string) {
 function part2(inputString: string) {
   const input = parseInput(inputString)
   const matchMap = buildMatchingNumberMap(input)
-  const copies = Array.from(matchMap.values()).map(count => 1)
+  const copies = Array.from(matchMap.values()).map(() => 1)
   for (const [index, matchCount] of matchMap.entries()) {
     for (let i = 1; i <= matchCount; i++) {
       copies[index + i - 1] += copies[index - 1]

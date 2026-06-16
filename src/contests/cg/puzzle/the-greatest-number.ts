@@ -1,7 +1,7 @@
 // 🎮 CodinGame Puzzle - the-greatest-number
 // https://www.codingame.com/training/hard/the-greatest-number
 
-const N: number = parseInt(readline())
+readline()
 const chars: string[] = readline().split(" ")
 
 const hasMinus: boolean = chars.includes("-")

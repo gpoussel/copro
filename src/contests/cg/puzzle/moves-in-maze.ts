@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - moves-in-maze
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/moves-in-maze
 
 const [w, h] = readline().split(" ").map(Number)
 const grid: string[] = []

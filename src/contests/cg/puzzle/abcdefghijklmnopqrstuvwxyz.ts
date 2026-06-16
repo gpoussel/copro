@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - abcdefghijklmnopqrstuvwxyz
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/abcdefghijklmnopqrstuvwxyz
 
 const n = Number(readline())
 const grid: string[] = []

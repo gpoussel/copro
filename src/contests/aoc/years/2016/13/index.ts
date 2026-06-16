@@ -1,7 +1,7 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import { dijkstraOnGrid } from "../../../../../utils/algo.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, VectorSet } from "../../../../../utils/vector.js"
+import { Vector2 } from "../../../../../utils/vector.js"
 
 // 🎄 Advent of Code 2016 - Day 13
 
@@ -27,7 +27,7 @@ function part1(inputString: string) {
 
   const { bestScore } = dijkstraOnGrid(grid, {
     starts: [new Vector2(1, 1)],
-    isMoveValid(from, to) {
+    isMoveValid(_from, to) {
       return to !== "#"
     },
     ends: (position, _) => position.equals(target),
@@ -44,7 +44,7 @@ function part2(inputString: string) {
 
   const { visitedNodes } = dijkstraOnGrid(grid, {
     starts: [new Vector2(1, 1)],
-    isMoveValid(from, to) {
+    isMoveValid(_from, to) {
       return to !== "#"
     },
     ends: (_, path) => path.length > 50,

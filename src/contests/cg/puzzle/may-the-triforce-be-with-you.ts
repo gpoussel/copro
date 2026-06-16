@@ -32,7 +32,6 @@ for (let i = 1; i <= N; i++) {
   const leftEnd = leftStart + starCount - 1 // left triangle ends here
   // Gap between left and right: columns leftEnd+1 to rightStart-1
   const rightStart = 3 * N - i // right triangle starts here
-  const rightEnd = rightStart + starCount - 1
 
   const gapWidth = rightStart - leftEnd - 1
 

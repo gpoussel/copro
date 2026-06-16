@@ -37,8 +37,6 @@ function fight(
 
 // Run the tournament
 let bracket = [...players]
-const opponents: number[] = []
-
 // Track opponents of the eventual winner by running each round
 // We need to track who the final winner beats across all rounds
 // Approach: simulate round by round, track each player's opponents list

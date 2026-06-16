@@ -1,37 +1,40 @@
 // 🎮 CodinGame Puzzle - timer-for-clash-of-code
-// https://www.codingame.com/training/timer-for-clash-of-code
+// https://www.codingame.com/training/easy/timer-for-clash-of-code
 
-const n = parseInt(readline())
-const joins: number[] = []
-for (let i = 0; i < n; i++) {
-  const parts = readline().split(":")
-  joins.push(parseInt(parts[0]) * 60 + parseInt(parts[1]))
-}
-
-const fmt = (s: number): string => {
-  const m = Math.floor(s / 60)
-  const sec = s % 60
-  return `${m}:${sec.toString().padStart(2, "0")}`
-}
+const n: number = parseInt(readline(), 10)
 
 if (n === 0) {
   console.log("NO GAME")
 } else {
-  let players = 1
-  let stop = 0
-  let result = 0
+  const parse = (s: string): number => {
+    const [m, sec] = s.split(":")
+    return parseInt(m, 10) * 60 + parseInt(sec, 10)
+  }
+
+  let stop: number = -1
+  let players: number = 1
+  let joined: number = 0
+  let lastJoin: number = 0
+
   for (let i = 0; i < n; i++) {
-    const t = joins[i]
-    if (t < stop) break
-    let newStop = t - 256 / Math.pow(2, players - 1)
-    if (newStop < 0) newStop = 0
-    stop = newStop
-    players++
-    result = stop
-    if (players === 8) {
-      result = t
+    const t: number = parse(readline())
+    if (stop >= 0 && t < stop) {
       break
     }
+    lastJoin = t
+    stop = t - 256 / 2 ** (players - 1)
+    if (stop < 0) {
+      stop = 0
+    }
+    players++
+    joined++
   }
-  console.log(fmt(result))
+
+  if (joined === 7) {
+    stop = lastJoin
+  }
+
+  const mins: number = Math.floor(stop / 60)
+  const secs: number = stop % 60
+  console.log(`${mins}:${secs.toString().padStart(2, "0")}`)
 }

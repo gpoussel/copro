@@ -1,5 +1,5 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
-import { breadthFirstSearch, dijkstraOnGraph } from "../../../../../utils/algo.js"
+import { breadthFirstSearch } from "../../../../../utils/algo.js"
 import utils from "../../../../../utils/index.js"
 
 // 🎄 Advent of Code 2016 - Day 11
@@ -25,7 +25,7 @@ function getPossibleElevatorContent(floor: string[], upstairs: boolean) {
   return [
     ...floor.filter(item => item.endsWith("G")).map(item => [item]),
     ...floor.filter(item => item.endsWith("M")).map(item => [item]),
-    ...floor.flatMap((item1, i) => floor.map((item2, j) => [item1, item2]).filter(([a, b]) => a !== b)),
+    ...floor.flatMap(item1 => floor.map(item2 => [item1, item2]).filter(([a, b]) => a !== b)),
   ]
     .map(content => content.sort())
     .filter((content, index, array) => {

@@ -23,7 +23,7 @@ function part1(inputString: string) {
   let grid = parseInput(inputString)
   let turns = TURNS
   while (turns--) {
-    grid = utils.grid.map(grid, (cell, x, y) => {
+    grid = utils.grid.map(grid, (_cell, x, y) => {
       return computeNewState(new Vector2(x, y), grid)
     })
   }
@@ -34,7 +34,7 @@ function part2(inputString: string) {
   let grid = parseInput(inputString)
   let turns = TURNS
   while (turns--) {
-    grid = utils.grid.map(grid, (cell, x, y) => {
+    grid = utils.grid.map(grid, (_cell, x, y) => {
       if (x === 0 && y === 0) return "#"
       if (x === 0 && y === grid.length - 1) return "#"
       if (x === grid[0].length - 1 && y === 0) return "#"

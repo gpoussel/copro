@@ -43,7 +43,7 @@ function part1(inputString: string) {
   let maxForZ = new Map<number, string>()
   maxForZ.set(0, "")
 
-  parameters.forEach((param, idx) => {
+  parameters.forEach(param => {
     const newMaxForZ = new Map<number, string>()
     for (const [z, model] of maxForZ) {
       for (let inputDigit = 9; inputDigit >= 1; inputDigit--) {
@@ -79,7 +79,7 @@ function part2(inputString: string) {
   let minForZ = new Map<number, string>()
   minForZ.set(0, "")
 
-  parameters.forEach((param, idx) => {
+  parameters.forEach(param => {
     const newMinForZ = new Map<number, string>()
     for (const [z, model] of minForZ) {
       for (let inputDigit = 1; inputDigit <= 9; inputDigit++) {

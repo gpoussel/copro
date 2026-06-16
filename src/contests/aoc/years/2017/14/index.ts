@@ -36,13 +36,13 @@ function part2(inputString: string) {
     const firstWall = walls.vectors[0]
     regions++
     const visited = new VectorSet<Vector2>()
-    const result = dijkstraOnGrid(grid, {
+    dijkstraOnGrid(grid, {
       starts: [firstWall],
-      ends(position, path) {
+      ends(position, _path) {
         visited.add(position)
         return false
       },
-      isMoveValid(from, to) {
+      isMoveValid(_from, to) {
         return to === "1"
       },
       moveCost: 1,

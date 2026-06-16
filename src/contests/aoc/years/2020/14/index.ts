@@ -76,7 +76,6 @@ function part2(inputString: string) {
       mask = instruction.mask!
       continue
     }
-    const binaryValue = instruction.value!.toString(2).padStart(36, "0")
     for (const address of applyMakToAddress(mask, instruction.address!)) {
       memory.set(address!, instruction.value!)
     }

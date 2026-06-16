@@ -1,29 +1,36 @@
-const valueToReach = parseInt(readline())
-const N = parseInt(readline())
-const counts = readline().split(" ").map(Number)
-const values = readline().split(" ").map(Number)
+// 🎮 CodinGame Puzzle - count-your-coins
+// https://www.codingame.com/training/easy/count-your-coins
 
-type Coin = { count: number; value: number }
-const coins: Coin[] = []
-for (let i = 0; i < N; i++) {
-  coins.push({ count: counts[i], value: values[i] })
+const valueToReach: number = parseInt(readline(), 10)
+const n: number = parseInt(readline(), 10)
+const counts: number[] = readline()
+  .split(" ")
+  .map(s => parseInt(s, 10))
+const values: number[] = readline()
+  .split(" ")
+  .map(s => parseInt(s, 10))
+
+const coins: { value: number; count: number }[] = []
+for (let i = 0; i < n; i++) {
+  coins.push({ value: values[i], count: counts[i] })
 }
-
 coins.sort((a, b) => a.value - b.value)
 
 let sum = 0
 let grabbed = 0
+let answer = -1
 for (const coin of coins) {
-  if (sum >= valueToReach) break
-  for (let k = 0; k < coin.count; k++) {
+  for (let c = 0; c < coin.count; c++) {
     sum += coin.value
     grabbed++
-    if (sum >= valueToReach) break
+    if (sum >= valueToReach) {
+      answer = grabbed
+      break
+    }
+  }
+  if (answer !== -1) {
+    break
   }
 }
 
-if (sum >= valueToReach) {
-  console.log(grabbed)
-} else {
-  console.log(-1)
-}
+console.log(answer)

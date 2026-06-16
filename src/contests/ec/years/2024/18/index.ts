@@ -1,6 +1,6 @@
 import { EverybodyCodesContest } from "../../../../../types/contest.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, VectorSet } from "../../../../../utils/vector.js"
+import { Vector2 } from "../../../../../utils/vector.js"
 
 // 🎲 Everybody Codes 2024 - Quest 18
 
@@ -54,7 +54,7 @@ function part2(inputString: string) {
 }
 
 function part3(inputString: string) {
-  const { grid, entrances, treePositions } = parseInput(inputString)
+  const { grid, treePositions } = parseInput(inputString)
   const distances = new Map<string, number>()
   for (const treePosition of treePositions) {
     const visited = new Set<string>()

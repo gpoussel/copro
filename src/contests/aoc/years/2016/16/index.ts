@@ -48,8 +48,6 @@ function part2(inputString: string) {
   return solve(input, 35651584)
 }
 
-const EXAMPLE = ``
-
 export default {
   part1: {
     run: part1,

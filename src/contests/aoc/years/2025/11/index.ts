@@ -1,8 +1,5 @@
-import { log } from "console"
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
-import { breadthFirstSearch } from "../../../../../utils/algo.js"
 import utils from "../../../../../utils/index.js"
-import { logEvery } from "../../../../../utils/log.js"
 
 // 🎄 Advent of Code 2025 - Day 11
 

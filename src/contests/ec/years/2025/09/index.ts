@@ -1,4 +1,3 @@
-import { count } from "console"
 import { EverybodyCodesContest } from "../../../../../types/contest.js"
 import utils from "../../../../../utils/index.js"
 

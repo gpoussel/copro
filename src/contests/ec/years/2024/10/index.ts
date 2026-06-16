@@ -122,7 +122,7 @@ function part3(inputString: string) {
     changed = false
     let nextScore = 0
     for (const start of starts.vectors) {
-      const { solvable, word, power } = solve(input, start)
+      const { solvable, power } = solve(input, start)
       if (!solvable) {
         continue
       }

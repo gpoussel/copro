@@ -44,7 +44,7 @@
  */
 
 const L = parseInt(readline())
-const N = parseInt(readline())
+readline()
 const positions = readline().split(" ").map(Number)
 
 let maxTime = 0

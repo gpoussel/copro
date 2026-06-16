@@ -1,7 +1,7 @@
 // 🎮 CodinGame Puzzle - gravity-tumbler
 // https://www.codingame.com/training/medium/gravity-tumbler
 
-const [width, height] = readline().split(" ").map(Number)
+const [, height] = readline().split(" ").map(Number)
 const count = parseInt(readline())
 
 // Read the initial grid as an array of rows (strings)

@@ -11,13 +11,7 @@ for (let i = 0; i < surfaceN; i++) {
 // Game loop
 while (true) {
   const line = readline().split(" ")
-  const X: number = parseInt(line[0])
-  const Y: number = parseInt(line[1])
-  const hSpeed: number = parseInt(line[2])
   const vSpeed: number = parseInt(line[3])
-  const fuel: number = parseInt(line[4])
-  const rotate: number = parseInt(line[5])
-  const power: number = parseInt(line[6])
 
   // For episode 1:
   // - The landing zone is directly below, rotation stays at 0

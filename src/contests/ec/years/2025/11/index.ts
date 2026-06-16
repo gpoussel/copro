@@ -93,7 +93,6 @@ function calculateRounds(numbers: number[]) {
 
 // Pool Adjacent Violators Algorithm with integer output
 function pavaInteger(arr: number[]): number[] {
-  const n = arr.length
   // blocks[i] = { sum, count }
   let blocks: { sum: number; count: number }[] = arr.map(v => ({ sum: v, count: 1 }))
 

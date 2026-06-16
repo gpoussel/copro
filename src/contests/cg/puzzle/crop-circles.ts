@@ -3,50 +3,42 @@
 
 const W = 19
 const H = 25
-const input = readline().trim()
 
-// true = planted, false = mowed
-const grid: boolean[][] = []
-for (let y = 0; y < H; y++) {
-  const row: boolean[] = []
-  for (let x = 0; x < W; x++) row.push(true)
-  grid.push(row)
-}
+const field: boolean[][] = Array.from({ length: H }, () => Array<boolean>(W).fill(true))
 
-const tokens = input.split(/\s+/).filter(t => t.length > 0)
+const input: string = readline().trim()
+const tokens: string[] = input.split(/\s+/)
 
-for (const tok of tokens) {
-  let op = "MOW"
-  let rest = tok
+for (const token of tokens) {
+  let mode: "MOW" | "PLANT" | "PLANTMOW" = "MOW"
+  let rest: string = token
   if (rest.startsWith("PLANTMOW")) {
-    op = "PLANTMOW"
-    rest = rest.substring("PLANTMOW".length)
+    mode = "PLANTMOW"
+    rest = rest.slice(8)
   } else if (rest.startsWith("PLANT")) {
-    op = "PLANT"
-    rest = rest.substring("PLANT".length)
+    mode = "PLANT"
+    rest = rest.slice(5)
   }
-  const cx = rest.charCodeAt(0) - 97 // 'a'
-  const cy = rest.charCodeAt(1) - 97
-  const d = parseInt(rest.substring(2))
-  const r = d / 2
-  const r2 = r * r
+  const cx: number = rest.charCodeAt(0) - 97
+  const cy: number = rest.charCodeAt(1) - 97
+  const d: number = parseInt(rest.slice(2), 10)
+  const r: number = d / 2
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
-      const dx = x - cx
-      const dy = y - cy
-      if (dx * dx + dy * dy <= r2) {
-        if (op === "MOW") grid[y][x] = false
-        else if (op === "PLANT") grid[y][x] = true
-        else grid[y][x] = !grid[y][x]
+      const dx: number = x - cx
+      const dy: number = y - cy
+      if (dx * dx + dy * dy <= r * r) {
+        if (mode === "MOW") {
+          field[y][x] = false
+        } else if (mode === "PLANT") {
+          field[y][x] = true
+        } else {
+          field[y][x] = !field[y][x]
+        }
       }
     }
   }
 }
 
-const out: string[] = []
-for (let y = 0; y < H; y++) {
-  let line = ""
-  for (let x = 0; x < W; x++) line += grid[y][x] ? "{}" : "  "
-  out.push(line)
-}
-console.log(out.join("\n"))
+const lines: string[] = field.map(row => row.map(c => (c ? "{}" : "  ")).join(""))
+console.log(lines.join("\n"))

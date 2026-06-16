@@ -44,7 +44,6 @@ function part3(inputString: string) {
     if (!isNameValid(name, rules)) {
       continue
     }
-    function record(name: string) {}
     const stack = [name]
     while (stack.length > 0) {
       const currentName = stack.pop()!

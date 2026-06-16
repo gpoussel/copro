@@ -1,7 +1,5 @@
 // 🧮 Project Euler - Problem 86
 
-const MAX = 10
-
 function shortestPath(a: number, b: number, c: number) {
   return Math.sqrt((a + b) ** 2 + c ** 2)
 }

@@ -30,7 +30,7 @@ const ROUTING: Record<number, Record<string, string>> = {
   13: { LEFT: "DOWN" },
 }
 
-const [W, H] = readline().split(/\s+/).map(Number)
+const [, H] = readline().split(/\s+/).map(Number)
 
 const grid: number[][] = []
 for (let row = 0; row < H; row++) {

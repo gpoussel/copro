@@ -151,7 +151,7 @@ function part2(inputString: string) {
     xyRhs.push(rhs)
   }
 
-  const [rx, ry, rvx, rvy] = solve(xyMatrix, xyRhs)
+  const [rx, ry] = solve(xyMatrix, xyRhs)
 
   // Build system for x,z
   const xzMatrix: number[][] = []
@@ -167,7 +167,7 @@ function part2(inputString: string) {
     xzRhs.push(rhs)
   }
 
-  const [rx2, rz, rvx2, rvz] = solve(xzMatrix, xzRhs)
+  const [, rz] = solve(xzMatrix, xzRhs)
 
   return Math.round(rx) + Math.round(ry) + Math.round(rz)
 }

@@ -1,8 +1,5 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
-import { breadthFirstSearch } from "../../../../../utils/algo.js"
-import { fromCompassChar, fromDirectionChar } from "../../../../../utils/grid.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2 } from "../../../../../utils/vector.js"
 import { Computer } from "../09/index.js"
 
 // 🎄 Advent of Code 2019 - Day 25
@@ -11,53 +8,12 @@ function parseInput(input: string) {
   return utils.input.firstLine(input).split(",").map(Number)
 }
 
-function getOutput(computer: Computer) {
-  const text = computer.outputs.map(code => String.fromCharCode(code)).join("")
-  if (text.includes("back in the cockpit")) {
-    return undefined
-  }
-  const lines = utils.input.lines(text)
-  const name = lines[0].slice(3, -3)
-  const startOfDoorsList = lines.findIndex(line => line === "Doors here lead:")
-  const availableDirections = []
-  if (startOfDoorsList >= 0) {
-    for (let i = startOfDoorsList + 1; i < lines.length; i++) {
-      const line = lines[i]
-      if (line === "") {
-        break
-      }
-      const direction = line.slice(2)
-      availableDirections.push(direction)
-    }
-  }
-  const startOfItemList = lines.findIndex(line => line === "Items here:")
-  const availableItems = []
-  if (startOfItemList >= 0) {
-    for (let i = startOfItemList + 1; i < lines.length; i++) {
-      const line = lines[i]
-      if (line === "") {
-        break
-      }
-      const item = line.slice(2)
-      if (!["infinite loop", "giant electromagnet", "photons", "molten lava", "escape pod"].includes(item)) {
-        availableItems.push(item)
-      }
-    }
-  }
-  return {
-    name,
-    availableDirections,
-    availableItems,
-  }
-}
-
 function toAscii(text: string) {
   return [...text.split("").map(char => char.charCodeAt(0)), 10]
 }
 
 function explore(program: number[]) {
   const computer = new Computer(program, [])
-  const computers = new Map<string, Computer>()
   for (const command of [
     "south",
     "south",
@@ -131,11 +87,9 @@ function part1(inputString: string) {
   return explore(program)
 }
 
-function part2(inputString: string) {
+function part2(_inputString: string) {
   return "Merry Christmas!"
 }
-
-const EXAMPLE = ``
 
 export default {
   part1: {

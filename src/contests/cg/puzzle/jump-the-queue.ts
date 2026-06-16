@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - jump-the-queue
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/jump-the-queue
 
 const [g] = readline().split(" ").map(Number)
 

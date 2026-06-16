@@ -20,7 +20,7 @@ export class DirectedGraph<K> {
 
   public roots(): K[] {
     const numberOfParents = new Map<K, number>()
-    for (const [node, children] of this.nodes) {
+    for (const [, children] of this.nodes) {
       for (const child of children) {
         numberOfParents.set(child, (numberOfParents.get(child) || 0) + 1)
       }

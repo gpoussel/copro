@@ -1,5 +1,5 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
-import { breadthFirstSearch, dijkstraOnGrid } from "../../../../../utils/algo.js"
+import { breadthFirstSearch } from "../../../../../utils/algo.js"
 import { Direction } from "../../../../../utils/grid.js"
 import utils from "../../../../../utils/index.js"
 import { Vector2 } from "../../../../../utils/vector.js"
@@ -24,7 +24,7 @@ function solve(inputString: string) {
   }
 
   const lettersToCollect: string[] = []
-  utils.grid.map(grid, (cell, position) => {
+  utils.grid.map(grid, (cell, _position) => {
     if (cell >= "A" && cell <= "Z") {
       lettersToCollect.push(cell)
     }
@@ -74,7 +74,7 @@ function solve(inputString: string) {
       key(node) {
         return `${node.position.str()},${node.direction}`
       },
-      distance(from, to) {
+      distance(_from, _to) {
         return 1
       },
     }

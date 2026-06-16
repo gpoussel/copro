@@ -253,7 +253,6 @@ function decodeAsciiDigit(cols: string[]): string {
 // ss_con: Find pattern ¬X. in line 1, output 1-based index where X == 'r'
 function solveSSCon(line: string): number {
   // ¬ is U+00AC
-  const re = /\xACw\./g // placeholder - actually match ¬(single char).
   // We need to find all ¬X. occurrences and find index (1-based) of first 'r'
   const matches: string[] = []
   let i = 0

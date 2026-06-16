@@ -1,7 +1,7 @@
 // 🎮 CodinGame Puzzle - blowing-fuse
 // https://www.codingame.com/training/easy/blowing-fuse
 
-const [n, m, c] = readline().split(" ").map(Number)
+const [n, , c] = readline().split(" ").map(Number)
 const consumptions = readline().split(" ").map(Number)
 const clicks = readline().split(" ").map(Number)
 

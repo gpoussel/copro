@@ -1,28 +1,24 @@
 // 🎮 CodinGame Puzzle - snake-sort-2d
-// https://www.codingame.com/training/snake-sort-2d
+// https://www.codingame.com/training/easy/snake-sort-2d
 
-const n = parseInt(readline())
-type Apple = { name: string; r: number; c: number }
+type Apple = { name: string; row: number; col: number }
+
+const n: number = parseInt(readline(), 10)
 const apples: Apple[] = []
 for (let i = 0; i < n; i++) {
-  const parts = readline().split(" ")
-  apples.push({ name: parts[0], r: parseInt(parts[1]), c: parseInt(parts[2]) })
+  const [name, r, c]: string[] = readline().split(" ")
+  apples.push({ name, row: parseInt(r, 10), col: parseInt(c, 10) })
 }
 
-const byRow = new Map<number, Apple[]>()
-for (const a of apples) {
-  if (!byRow.has(a.r)) byRow.set(a.r, [])
-  byRow.get(a.r)!.push(a)
-}
+const rows: number[] = [...new Set<number>(apples.map((a: Apple) => a.row))].sort((a: number, b: number) => a - b)
 
-const rows = [...byRow.keys()].sort((a, b) => a - b)
 const result: string[] = []
-let leftToRight = true
-for (const row of rows) {
-  const list = byRow.get(row)!
-  list.sort((a, b) => (leftToRight ? a.c - b.c : b.c - a.c))
-  for (const a of list) result.push(a.name)
-  leftToRight = !leftToRight
-}
+rows.forEach((row: number, idx: number) => {
+  const inRow: Apple[] = apples.filter((a: Apple) => a.row === row)
+  inRow.sort((a: Apple, b: Apple) => (idx % 2 === 0 ? a.col - b.col : b.col - a.col))
+  for (const a of inRow) {
+    result.push(a.name)
+  }
+})
 
 console.log(result.join(","))

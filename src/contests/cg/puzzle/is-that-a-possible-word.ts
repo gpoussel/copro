@@ -2,7 +2,7 @@
 // https://www.codingame.com/training/easy/is-that-a-possible-word
 
 const alphabet = readline().split(" ")
-const states = readline().split(" ")
+readline()
 const numberOfTransitions = parseInt(readline())
 
 // transitions[sourceState][character] = destinationState

@@ -1,7 +1,7 @@
 // 🎮 CodinGame Puzzle - hidden-messages-in-images
 // https://www.codingame.com/training/easy/hidden-messages-in-images
 
-const [w, h] = readline().split(" ").map(Number)
+const [, h] = readline().split(" ").map(Number)
 const bits: number[] = []
 
 for (let i = 0; i < h; i++) {

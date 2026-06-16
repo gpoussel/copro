@@ -34,12 +34,6 @@ const hi = names[n / 2] // S must be < hi
 // find the lex-smallest S of that length where lo <= S < hi.
 // If found, output and done.
 
-function compare(a: string, b: string): number {
-  if (a < b) return -1
-  if (a > b) return 1
-  return 0
-}
-
 // Find the lex-smallest string of exactly length L in [lo, hi)
 // Returns null if none exists.
 function findShortest(L: number): string | null {

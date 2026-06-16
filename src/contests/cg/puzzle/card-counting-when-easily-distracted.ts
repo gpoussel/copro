@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - card-counting-when-easily-distracted
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/card-counting-when-easily-distracted
 
 const stream = readline()
 const bustThreshold = Number(readline())

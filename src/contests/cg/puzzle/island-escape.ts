@@ -1,5 +1,5 @@
 // 🎮 CodinGame Puzzle - island-escape
-// https://www.codingame.com/
+// https://www.codingame.com/training/easy/island-escape
 
 const N = Number(readline())
 const grid: number[][] = []

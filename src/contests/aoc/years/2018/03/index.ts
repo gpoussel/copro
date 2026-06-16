@@ -1,6 +1,6 @@
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import utils from "../../../../../utils/index.js"
-import { Vector2, VectorSet } from "../../../../../utils/vector.js"
+import { Vector2 } from "../../../../../utils/vector.js"
 
 // 🎄 Advent of Code 2018 - Day 3
 

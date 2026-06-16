@@ -35,10 +35,10 @@ const allOperations = {
   bori(registers: number[], a: number, b: number, c: number) {
     registers[c] = registers[a] | b
   },
-  setr(registers: number[], a: number, b: number, c: number) {
+  setr(registers: number[], a: number, _b: number, c: number) {
     registers[c] = registers[a]
   },
-  seti(registers: number[], a: number, b: number, c: number) {
+  seti(registers: number[], a: number, _b: number, c: number) {
     registers[c] = a
   },
   gtir(registers: number[], a: number, b: number, c: number) {

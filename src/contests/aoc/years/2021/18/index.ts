@@ -45,7 +45,7 @@ function add(n1: SnailfishNumber, n2: SnailfishNumber): SnailfishNumber {
 }
 
 function explode(n: SnailfishNumber): boolean {
-  const i = utils.iterate.slidingWindows(n, 2).findIndex(([[v1, lvl1], [v2, lvl2]]) => lvl1 === lvl2 && lvl1 > 4)
+  const i = utils.iterate.slidingWindows(n, 2).findIndex(([[, lvl1], [, lvl2]]) => lvl1 === lvl2 && lvl1 > 4)
   if (i === -1) {
     return false
   }
@@ -60,7 +60,7 @@ function explode(n: SnailfishNumber): boolean {
 }
 
 function split(n: SnailfishNumber): boolean {
-  const i = n.findIndex(([value, level]) => value >= 10)
+  const i = n.findIndex(([value]) => value >= 10)
   if (i === -1) {
     return false
   }
@@ -70,7 +70,7 @@ function split(n: SnailfishNumber): boolean {
 
 function magnitude(n: SnailfishNumber): number {
   while (n.length > 1) {
-    const i = utils.iterate.slidingWindows(n, 2).findIndex(([[v1, lvl1], [v2, lvl2]]) => lvl1 === lvl2)
+    const i = utils.iterate.slidingWindows(n, 2).findIndex(([[, lvl1], [, lvl2]]) => lvl1 === lvl2)
     const v = 3 * n[i][0] + 2 * n[i + 1][0]
     n.splice(i, 2, [v, n[i][1] - 1])
   }

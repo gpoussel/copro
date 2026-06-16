@@ -1,10 +1,7 @@
 // 🎮 CodinGame Puzzle - metric-units
-// https://www.codingame.com/training/metric-units
+// https://www.codingame.com/training/easy/metric-units
 
-const line = readline().trim()
-const [left, right] = line.split(" + ")
-
-const factors: { [k: string]: number } = {
+const factors: { [unit: string]: number } = {
   um: 1,
   mm: 1000,
   cm: 10000,
@@ -13,22 +10,22 @@ const factors: { [k: string]: number } = {
   km: 1000000000,
 }
 
-const parse = (s: string): { value: number; unit: string } => {
-  const m = s.match(/^([0-9.]+)([a-z]+)$/)!
-  return { value: parseFloat(m[1]), unit: m[2] }
+const expression: string = readline()
+const [left, right] = expression.split(" + ")
+
+const parse = (token: string): { value: number; unit: string } => {
+  const match = token.match(/^([0-9.]+)([a-z]+)$/) as RegExpMatchArray
+  return { value: parseFloat(match[1]), unit: match[2] }
 }
 
 const a = parse(left)
 const b = parse(right)
 
-const fa = factors[a.unit]
-const fb = factors[b.unit]
-const smaller = Math.min(fa, fb)
-const smallerUnit = fa <= fb ? a.unit : b.unit
+const smaller: string = factors[a.unit] <= factors[b.unit] ? a.unit : b.unit
+const um: number = a.value * factors[a.unit] + b.value * factors[b.unit]
+const result: number = um / factors[smaller]
 
-const sumUm = a.value * fa + b.value * fb
-let result = sumUm / smaller
+const rounded: number = Math.round(result * 100000) / 100000
+const text: string = rounded.toFixed(5).replace(/\.?0+$/, "")
 
-result = Math.round(result * 1e5) / 1e5
-
-console.log(`${result}${smallerUnit}`)
+console.log(`${text}${smaller}`)

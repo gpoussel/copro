@@ -1,7 +1,5 @@
-import exp from "constants"
 import { AdventOfCodeContest } from "../../../../../types/contest.js"
 import utils from "../../../../../utils/index.js"
-import { swap } from "../../../../../utils/grid.js"
 
 // 🎄 Advent of Code 2024 - Day 24
 
@@ -141,7 +139,7 @@ function part2(inputString: string) {
 
     const expressionsByWire = new Map<string, string>()
     const wiresByExpression = new Map<string, string>()
-    for (const [output, instruction] of wires) {
+    for (const [output] of wires) {
       const expr = getExpression(output, localWires)
       expressionsByWire.set(output, expr)
       wiresByExpression.set(expr, output)
