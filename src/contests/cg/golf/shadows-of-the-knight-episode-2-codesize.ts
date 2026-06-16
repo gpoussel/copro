@@ -1,18 +1,14 @@
-var [W,H]=readline().split(" ").map(eval)
+// @ts-nocheck
+var[W,H]=readline().split(" ").map(eval)
 readline()
-var [x,y]=readline().split(" ").map(eval),A=0,B=W-1,C=0,D=H-1,M=Math,a=-1,p=0,q=0
-var T=(l,h,o,S)=>{var c=l+h-o;if(c<0||c>S-1){var b=c<0?0:S-1,i=(o+b)/2;c=i>l&&i<h?b:o<l?l:h}if(c==o)c+=c<h?1:-1;return c}
+var P=readline().split(" ").map(eval),L=[0,0],G=[W-1,H-1],a=-1,p,q
+var T=(l,h,o,s)=>{var c=l+h-o;if(c<0||c>=s){var b=c<0?0:s-1,i=(o+b)/2;c=i>l&&i<h?b:o<l?l:h}if(c==o)c+=c<h?1:-1;return c}
 for(;;){
- var d=readline()
- if(d!="UNKNOWN"&&a>=0){
-  var m=(p+q)/2
-  if(d=="SAME"){if(a<1)A=B=M.round(m);else C=D=M.round(m)}
-  else{var s=(q>p)==(d=="WARMER")
-   if(a<1){if(s)A=M.floor(m)+1;else B=M.ceil(m)-1}
-   else{if(s)C=M.floor(m)+1;else D=M.ceil(m)-1}}
- }
- if(A<B){a=0;p=x;q=T(A,B,x,W);x=q}
- else if(C<D){a=1;p=y;q=T(C,D,y,H);y=q}
- else{a=-1;x=A;y=C}
- console.log(x+" "+y)
+var d=readline(),m=p+q
+if(d!="UNKNOWN"&&a>=0)
+if(d=="SAME")L[a]=G[a]=m+1>>1
+else(q>p)==(d=="WARMER")?L[a]=(m>>1)+1:G[a]=(m+1>>1)-1
+a=L[0]<G[0]?0:L[1]<G[1]?1:-1
+if(a<0)P=[L[0],L[1]];else P[a]=q=T(L[a],G[a],p=P[a],a?H:W)
+console.log(P.join(" "))
 }
