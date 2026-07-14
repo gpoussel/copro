@@ -1,5 +1,4 @@
-// @ts-nocheck
-T="010123010123000130013011000101201021100010"
+eval(`T="010123010123000130013011000101201021100010"
 R=readline
 S=s=>s.split(" ")
 ;[W,H]=S(R()).map(Number)
@@ -168,4 +167,4 @@ if(!bt)bt=[null]
 cm=fc(bt)
 a0=bt[0]
 if(a0)ro(O,a0.x,a0.y,a0.to)
-console.log(cm)}
+print(cm)}`)

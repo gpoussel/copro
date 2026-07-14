@@ -515,6 +515,51 @@ behavior in edge cases.
   `print` and allows sloppy globals, so it validates such code — but it proves
   nothing about *other* undeclared runtime globals; confirm any new one on the real
   runtime (MCP `run_puzzle_tests`) before trusting it.
+- **Template-literal eval wrapper for MULTI-LINE code: `` eval(`…`) ``.** A normal
+  (untagged) call with a template literal type-checks (`eval` takes `string`), so a
+  whole multi-line program can be pasted inside unchanged — newlines survive, no
+  `;`-joining pass, same 8 B wrapper cost. Constraint: the *outer* parser processes
+  the template first, so the inner code must contain **no backticks, no `${`, and no
+  backslashes** (each `\` would need doubling). Single quotes and multi-line
+  functions inside are fine. Submission-validated at 100% on Shadows of the Knight
+  ep. 2 (522→455 B), The Bridge ep. 2 (634→568), Vox Codei ep. 1 (615→568),
+  Music Scores (1519→1505), The Fall ep. 2 (3508→3365) and ep. 3 (4765→4751).
+  Pick the wrapper by content: single-quoted for one-liners (backticks/`${}` are
+  then usable *inside*, e.g. an inner template or nested `eval(\`a${R()}b\`)` —
+  Mayan Calculation), template-quoted for multi-line var-free code.
+- **`print(a,b)` prints `a b`** — space-separated, exactly like `console.log(a,b)`
+  (submission-validated on Shadows of the Knight ep. 1). So multi-arg outputs need
+  no restructuring when switching to `print`.
+- **`// @ts-nocheck` is the eval alternative when you must keep `var` locals.** It
+  costs 15 B (vs 8 for `eval('')`) but also disables ALL type errors, so `print`,
+  undeclared globals, and `parseInt`→`+` shortening work in plain top-level code —
+  and `var`s inside functions stay **function-local**. Submission-validated on Mars
+  Lander ep. 3 (3856→3787 with `parseInt(x)`→`+x` ×7 and `print`) and Vox Codei
+  ep. 2 (6541→6499).
+- ⚠️ **CG's runtime is brutally slower than local node — converting `var` locals to
+  eval-scope globals can TLE heavy code.** Measured on Mars Lander ep. 3: the same
+  init grid pass took **845 ms on CG vs ~5 ms locally**; the fully globalized eval
+  version timed out on turn 1 while the `var`-based `@ts-nocheck` version passes
+  comfortably. Eval-scope "globals" are global-object properties (slow interpreted
+  path); `var` inside a function body — even inside `eval` — stays a fast local. So:
+  keep `var` in every function (also required for recursion correctness — each call
+  needs fresh bindings), and only strip statement-level `var`s when per-turn compute
+  is light (The Fall ep. 2/3-scale search is fine; 8k×polygon+Dijkstra init is not).
+- **`readline(readline())` skips a line inside eval/nocheck code** — extra args are
+  ignored at runtime, so the inner call consumes the unwanted line and the outer
+  reads the next: `q=(R()+" -1 -1 "+R(R()))`, `P=readline(readline()).split(" ")`,
+  `L=Math.log,R(R())`. Beats `(R(),R())` by 3 B. Submission-validated on Shadows 1
+  & 2, Temperature, Blunder ep. 3.
+- **Sloppy mode forgives undeclared *writes*, never undeclared *reads*.** `x=1` is
+  fine in eval'd code, but `t||=readline()`, `T??=P`, `b^=…`, `a=a||c` all READ the
+  target first → ReferenceError. Seed such accumulators for free where you can:
+  `r=t=readline()*0` (consume the count line AND zero-init both, Telephone Numbers
+  86→84 B), `d=b=0` in a `for` init (Blunder ep. 1), or keep a lone `var T;`
+  (The Labyrinth) when no zero value is semantically safe (`??=` must see undefined).
+- **In a single-quoted eval string, escapes cost 2 outer bytes each**: a newline in
+  the inner code is `\\n` (inner `"\n"`), a regex backslash `\\\\` (inner `\\` →
+  regex `\w`). Budget +2 B per escape when deciding between the eval form and the
+  type-checked form (Blunder ep. 1: still +11 B net despite two escapes).
 - The judge **often** trims a trailing newline, but do **not** assume it trims a
   trailing *space* — some puzzles reject it (confirmed on Chuck Norris /
   chuck-norris-codesize). ⚠️ `verify.mjs`'s `norm()` strips trailing whitespace

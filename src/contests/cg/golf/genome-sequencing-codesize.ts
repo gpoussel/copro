@@ -1,2 +1,1 @@
-var k,g=(s,r)=>r[0]?Math.min(...r.map(t=>{for(k=0;t.search(s.slice(k));)k++;return g(~s.search(t)?s:s.slice(0,k)+t,r.filter(x=>x!=t))})):s.length
-console.log(g("",[...Array(+readline())].map(readline)))
+eval('g=(s,r)=>r[0]?Math.min(...r.map(t=>{for(k=0;t.search(s.slice(k));)k++;return g(~s.search(t)?s:s.slice(0,k)+t,r.filter(x=>x!=t))})):s.length;print(g("",[...Array(+readline())].map(readline)))')

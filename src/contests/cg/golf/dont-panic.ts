@@ -1,1 +1,1 @@
-var S=()=>readline().split(" "),a=S();for(a[a[3]]=a[4];;){var[f,p,d]=S();d?console.log((a[f]-+p)*(d[4]?-1:1)>0?"BLOCK":"WAIT"):a[f]=p}
+eval('for(S=()=>readline().split(" "),a=S(),a[a[3]]=a[4];;){[f,p,d]=S();d?print((a[f]-p)*(d[4]?-1:1)>0?"BLOCK":"WAIT"):a[f]=p}')

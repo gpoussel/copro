@@ -1,5 +1,4 @@
-// @ts-nocheck
-[W,H]=readline().split(" ").map(eval)
+eval(`[W,H]=readline().split(" ").map(eval)
 T=readline().split(" "),B=[],p=0,Z=Math.round
 for(i=0;i<T.length;i+=2)for(n=+T[i+1];n--;)B[p++]=T[i]<"C"
 a=(x,y)=>B[y*W+x]
@@ -33,4 +32,4 @@ for(g=0;g<m-1;g++){I=S[g]+.5|0,U=1e9;for(j=I;j<=S[g+1];j++)if(o[j]<U){U=o[j];I=j
 d.push(x1)
 for(g=0;g<m;g++)O.push(hd(d[g],d[g+1]))}
 }
-console.log(O.join(" "))
+print(O.join(" "))`)

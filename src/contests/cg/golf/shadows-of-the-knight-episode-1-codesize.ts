@@ -1,1 +1,1 @@
-var R=readline,q,j;for(q=(R()+" -1 -1 "+(R(),R())).split(/ /);;console.log(q[4]=q[0]-~q[2]>>1,q[5]=q[1]-~q[3]>>1))for(j of R())q[j="LURD".search(j)]=q[4+j%2]
+eval('for(R=readline,q=(R()+" -1 -1 "+R(R())).split(/ /);;print(q[4]=q[0]-~q[2]>>1,q[5]=q[1]-~q[3]>>1))for(j of R())q[j="LURD".search(j)]=q[4+j%2]')
