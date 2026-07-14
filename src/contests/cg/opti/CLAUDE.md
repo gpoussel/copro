@@ -344,3 +344,70 @@ Next likely direction:
 - Compare JSONs using `wordle_simulate_ts.py` before submitting.
 - If returning to runtime-only, restore the baseline greedy with `LACIES`; that is
   currently the best known submitted score (**171**).
+
+---
+
+## mars-lander (fuel optimisation)
+
+Score = fuel remaining after a safe landing, summed over validators. **Exception
+to the golden rule:** the statement explicitly says validators are near-copies of
+the visible tests ("un programme qui passe un test passera le validateur
+correspondant") — tune directly against the 5 visible tests.
+
+**Physics (calibrated bit-exact vs the real runner, `mars-lander-tools/validate.mjs`):**
+per 1s turn: `angle += clamp(req-angle, ±15)` (req clamped ±90), `power +=
+clamp(req-power, ±1)` (0..4, forced 0 when fuel 0), `fuel -= power`, `ax =
+-sin(angle°)*power`, `ay = cos(angle°)*power - 3.711`, `pos += v + a/2`, `v += a`.
+Internal referee state is FLOAT; the ints we receive are `Math.round` of it.
+
+**Two referee semantics worth real fuel (found via fixed-script probes through
+`run_puzzle_tests` — stderr IS returned per frame for this puzzle):**
+- **Landing speed limits are checked on ROUNDED speeds**: float vy = −40.34
+  (displays −40) was accepted. So the true float limits are < 40.5 / 20.5. The
+  bot uses MAX_VY=40.35 / MAX_VX=20.35 (0.15 buffer). Worth ~+20 fuel/test vs
+  a naive 39/19 margin.
+- **Collision fires only when the trajectory goes strictly below the surface in
+  rounded terms** — a turn ending at float y=149.83 over ground 150 is still
+  flying (referee waited one more turn than a float segment-intersection test).
+  Model it by lowering the surface by `SINK = 0.5` in the intersection test;
+  after that fix our sim's landing turn + fuel match the referee exactly.
+
+**Solver** (`mars-lander.ts`): per-turn GA over future command deltas
+(dAngle∈[-15..15], dPower∈[-1..1], horizon H=120), fitness bands landed(+fuel)
+> crash-in-zone(overspeed/angle-graded) > outside/lost/timeout(distance-graded),
+decode-time guard forcing rotation→0 when a gravity-only fall reaches ground
+within `ceil(|angle|/15)+1` turns (makes nearly every genome landing-legal),
+internal FLOAT state maintained by replaying our own commands (rounded inputs
+only used for a desync check — never fired in any real run), population
+warm-started across turns (shift left, refill tail, re-eval postponed into the
+next turn's 80ms budget; post-output work is copies only). Seeded with a
+hand-written descent controller as floor.
+
+Tuned values: POP=50, ELITE=8, MUT=0.06, BLOCK_MUT=0.35, H=120, TIME_MS=80.
+The GA is remarkably flat here: POP 30–80, MUT 0.03–0.12, BLOCK_MUT 0.35–0.6
+all score within ±20 total (noise). Don't waste time on these knobs; the
+referee-semantics work above was worth more than all parameter tuning combined.
+
+**Real-runner scores (run_puzzle_tests, the committed bot):** test1 327,
+test2 334, test3 469, test4 532, test5 707 → **TOTAL 2369**, all landed, no
+desync. Offline bench predicts 2380–2405 at the same settings (CG hardware is
+slower ⇒ fewer generations ⇒ a few fuel less). NOT SUBMITTED yet at time of
+writing (user submits).
+
+**Harness** (`mars-lander-tools/`, `pnpm exec node …`):
+- `sim.mjs` referee (SINK + rounded-speed landing check), `cases.json` the 5 tests.
+- `validate.mjs` — replays a captured real-referee trajectory; must print
+  CALIBRATION OK after any sim change.
+- `bench.mjs [--ms=80 --seed=N --case=K --pop --mut --bmut --h --maxvx --maxvy]`
+  — full episodes over the 5 cases, prints per-case fuel + TOTAL.
+- `bot.mjs` mirrors `mars-lander.ts` BY HAND — keep in sync.
+- `dump.mjs --case=K [--maxvy=…]` — dumps a full command script + touchdown
+  floats; paste into a fixed-script probe to interrogate the real referee.
+
+**Insights for reruns:** fuel-optimal shape is free-fall/cruise, ride vy ≈
+−41…−47 mid-flight (only the TOUCHDOWN speed is checked), late full-power brake
+to touch at rounded −40; horizontal travel tilts hard (±60°) early. The
+descent-speed profile follows from thrust 4 barely beating gravity (net +0.289):
+you can only shave ~0.3 m/s per braking second, so the GA rides just above the
+recoverable envelope. Turn-1 GA has no landed genome yet; fitness shaping alone
+steers the early free-fall commits — that was never a problem in practice.
