@@ -9,6 +9,7 @@ behavior in edge cases.
 > on the loose JavaScript runtime are *rejected by the compiler* even though they
 > would run. The recurring ones, called out inline below:
 > - **No `print`** — output is `console.log` (`print` is a JS-only global → TS2304).
+>   It DOES exist at *runtime*, though — reachable via the `eval('…')` loophole (§9).
 > - **No tagged-template arguments** — ``split`,` ``, ``join`+` ``, ``repeat`3` ``
 >   fail with TS2769; use `split(",")`, `join("+")`, `repeat(3)`.
 > - **Declare your variables** (`var`) — undeclared assignment is TS2304.
@@ -349,18 +350,16 @@ behavior in edge cases.
   `N*L` wide (glyph fonts, fixed-width fields), index every slot from the *end*:
   slot `k` of `N` starts at `(k-N)*L`, and `~(36-parseInt(c,36))*L` gives that for
   base-36 letters (`N=27`) while sending NaN (punctuation/space) to `-L` — the last
-  slot — for free, since `~NaN===-1`. Submission-validated at **111 B** on ASCII Art:
-  `for(var I=readline,L=+I(),H=I(),T=I();H=I();)console.log(T.replace(/./g,c=>H.substr(~(36-parseInt(c,36))*L,L)))`
+  slot — for free, since `~NaN===-1`. Submission-validated at **104 B** on ASCII Art
+  (via the §9 `eval` loophole; the fully type-checked form is 111 B):
+  `eval('for(I=readline,T=I(I(L=I()));H=I();)print(T.replace(/./g,c=>H.substr(~(36-parseInt(c,36))*L,L)))')`
   Facts confirmed by that accepted submission: CodinGame serves the font rows at
   exactly 27·L columns *including trailing spaces* (negative starts for every letter
   land correctly); the ASCII Art validators contain no digits `1-9` (those would map
   to the `A` glyph here — keep the `>=0?i*L:-L` guard, +12 B, if a puzzle really can
   feed digits); and `readline()` is falsy at EOF, so `for(;H=I();)` row loops work.
   Reuse the variable that consumed a count line you don't need (here `H`) as the
-  loop/row variable — it saves declaring an extra name. (The ~104 B "TypeScript"
-  leaderboard records assume a looser stub: `print` declared and/or `readline`
-  accepting args, or pre-2023 *character* counting — none survives `tsc` here, see
-  §9 / the TS2554 note.)
+  loop/row variable — it saves declaring an extra name.
 - `c.charCodeAt(0)-65` maps `A→0` compactly when input is guaranteed uppercase
   `A-Z` only. It does not handle lowercase or punctuation unless the statement lets
   you ignore those cases.
@@ -497,6 +496,25 @@ behavior in edge cases.
 
 ## 9. CodinGame-specific gotchas
 
+- **The `eval('…')` loophole: `tsc` only sees a string literal — and `print` EXISTS
+  in the TypeScript runtime.** CodinGame type-checks the source, but code inside an
+  `eval` string is invisible to the compiler, so every JS-only trick works there:
+  undeclared globals (sloppy-mode assignment — the user code is NOT run in strict
+  mode), `readline` arg-folds (`T=I(I(L=I()))` reads a line, skips one, reads the
+  next — extra args are ignored at runtime), string operands to `*`/`substr`
+  (runtime coercion, so no `+I()`), and — the big one — the legacy `print` global,
+  which IS defined in the TS runtime even though naming it in checked code is
+  TS2304. The wrapper costs 8 B (`eval('')`); `print` alone repays 6 over
+  `console.log`, and the folds + dropped `var`/`+` do the rest. Submission-validated
+  at **104 B** on ASCII Art (100%, 7/7 validators — beat the 111 B type-checked
+  form):
+  `eval('for(I=readline,T=I(I(L=I()));H=I();)print(T.replace(/./g,c=>H.substr(~(36-parseInt(c,36))*L,L)))')`
+  Caveats: single-quote the string and keep quotes/backslashes out of the inner
+  code (escaping costs bytes); a tagged ``eval`…` `` does NOT work (TS2769, and at
+  runtime eval of a non-string returns it unevaluated). `verify.mjs`'s shim defines
+  `print` and allows sloppy globals, so it validates such code — but it proves
+  nothing about *other* undeclared runtime globals; confirm any new one on the real
+  runtime (MCP `run_puzzle_tests`) before trusting it.
 - The judge **often** trims a trailing newline, but do **not** assume it trims a
   trailing *space* — some puzzles reject it (confirmed on Chuck Norris /
   chuck-norris-codesize). ⚠️ `verify.mjs`'s `norm()` strips trailing whitespace
