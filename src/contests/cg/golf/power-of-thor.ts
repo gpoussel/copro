@@ -1,1 +1,1 @@
-for(var[a,b,c,d]=readline().split(' ').map(eval);;)console.log((d>b?(d--,"N"):d<b?(d++,"S"):"")+(a>c?(c++,"E"):a<c?(c--,"W"):""))
+eval('for([a,b,c,d]=readline().split(" ");;)print((d-b>0?(d--,"N"):d-b<0?(d++,"S"):"")+(a-c>0?(c++,"E"):a-c<0?(c--,"W"):""))')

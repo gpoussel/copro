@@ -1,6 +1,6 @@
 // @ts-nocheck
-var M=Math,N=parseInt(readline()),xs=[],ys=[],i,c,r,t,k
-for(i=0;i<N;i++){var p=readline().split(' ');xs.push(parseInt(p[0]));ys.push(parseInt(p[1]))}
+var M=Math,N=+readline(),xs=[],ys=[],i,c,r,t,k
+for(i=0;i<N;i++){var p=readline().split(' ');xs.push(+p[0]);ys.push(+p[1])}
 var xL=0,xR=0,pY=0
 for(i=0;i<N-1;i++)if(ys[i]===ys[i+1]){xL=xs[i];xR=xs[i+1];pY=ys[i]}
 if(xL>xR){var tm=xL;xL=xR;xR=tm}
@@ -30,10 +30,10 @@ function cO(x,y){var c=M.floor(x/CS),r=M.floor(y/CS);if(c<0)c=0;if(c>=GW)c=GW-1;
 function pa(x,y,st){var ce=cO(x,y),c=ce[0],r=ce[1],ou=[[c,r]];for(var s=0;s<st;s++){if(D[c][r]<=0)break;var be=D[c][r],bc=c,br=r;for(t=0;t<8;t++){var nc=c+d8[t][0],nr=r+d8[t][1];if(nc<0||nr<0||nc>=GW||nr>=GH)continue;if(!isFinite(D[nc][nr]))continue;if(D[nc][nr]<be){be=D[nc][nr];bc=nc;br=nr}}if(bc===c&&br===r)break;c=bc;r=br;ou.push([c,r])}return ou}
 function mT(a,b){if(a>b){var t=a;a=b;b=t}var m=0;for(var x=a;x<=b;x+=50){var s=0;for(var y=0;y<3000;y+=20)if(!sd(x,y)){s=y;break}if(s>m)m=s}return m}
 function cl(v,lo,hi){return v<lo?lo:v>hi?hi:v}
-while(true){var ln=readline().split(' '),X=parseInt(ln[0]),Y=parseInt(ln[1]),hS=parseInt(ln[2]),vS=parseInt(ln[3]),oP=X>xL+5&&X<xR-5,cD=oP
+while(true){var ln=readline().split(' '),X=+ln[0],Y=+ln[1],hS=+ln[2],vS=+ln[3],oP=X>xL+5&&X<xR-5,cD=oP
 if(oP)for(var yy=pY+20;yy<Y;yy+=25)if(sd(X,yy)){cD=false;break}
 var ax=0,au=0
 if(oP&&cD){ax=M.abs(hS)>15?cl((0-hS)*0.5,-2,2):0;var h=Y-pY,al=M.sqrt(2*0.27*M.max(0,h-30))+5,tv=-M.min(38,al);au=cl((tv-vS)*0.8+G,0.3,5)}else{var ce=pa(X,Y,5),la=ce[ce.length-1],gx=la[0]*CS+CS/2,gy=la[1]*CS+CS/2,dx=gx-X,dy=gy-Y,cu=cO(X,Y),cc=clr[cu[0]][cu[1]]*CS,SC=cl(cc*0.12,14,40),hA=Y-pY;if(hA<700)SC=M.min(SC,cl(hA*0.035+12,12,40));var ds=M.max(1,M.hypot(dx,dy)),dVx=dx/ds*SC,dVy=dy/ds*SC,di=gx>=X?1:-1,mt=mT(X,X+di*700)+90,bk=M.sqrt(2*0.27*M.max(0,Y-mt))+5;if(dVy<-bk)dVy=-bk;if(Y<mt)dVy=M.max(dVy,18);ax=cl((dVx-hS)*0.6,-4,4);au=cl((dVy-vS)*0.7+G,0.3,5)}
 var pw=cl(M.round(M.hypot(ax,au)),1,4),an=cl(M.round(M.atan2(-ax,au)*180/M.PI),-90,90)
 if(oP&&cD&&Y-pY<60)an=0
-console.log(an+' '+pw)}
+print(an+' '+pw)}

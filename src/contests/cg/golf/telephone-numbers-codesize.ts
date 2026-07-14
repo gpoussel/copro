@@ -1,1 +1,1 @@
-var o={},t,r=0;for(readline();t||=readline();t=t.slice(0,-1))o[t]||=++r;console.log(r)
+eval('for(o={},r=t=readline()*0;t||=readline();t=t.slice(0,-1))o[t]||=++r;print(r)')

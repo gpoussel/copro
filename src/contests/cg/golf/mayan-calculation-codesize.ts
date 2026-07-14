@@ -1,2 +1,1 @@
-var R=readline,[L,H]=R().split(" ").map(eval),m=()=>[...Array(H)].map(R),M=m(),G=d=>M.map(r=>r.substr(d*L,L)),T=[...Array(20)].map((_,d)=>G(d)+""),P=()=>[...Array(+R()/H)].reduce(v=>v*20n+BigInt(T.indexOf(m()+"")),0n),a=P(),b=P()
-console.log([...eval(`a${R()}b`).toString(20)].flatMap(c=>G(parseInt(c,20))).join("\n"))
+eval('R=readline,[L,H]=R().split(" "),m=()=>[...Array(+H)].map(R),M=m(),G=d=>M.map(r=>r.substr(d*L,L)),T=[...Array(20)].map((_,d)=>G(d)+""),P=()=>[...Array(+R()/H)].reduce(v=>v*20n+BigInt(T.indexOf(m()+"")),0n),a=P(),b=P(),print([...eval(`a${R()}b`).toString(20)].flatMap(c=>G(parseInt(c,20))).join("\\n"))')

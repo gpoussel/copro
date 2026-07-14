@@ -1,1 +1,1 @@
-readline();console.log(+readline().split(' ').sort((a,b)=>+a*+a-+b*+b||+b-+a)[0])
+eval('r=readline,print(+r(r()).split(" ").sort((a,b)=>a*a-b*b||b-a)[0])')

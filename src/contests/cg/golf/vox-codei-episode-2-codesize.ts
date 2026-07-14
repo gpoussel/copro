@@ -1,5 +1,5 @@
 // @ts-nocheck
-var fl=readline().split(" "),W=parseInt(fl[0]),H=parseInt(fl[1]),M=Math,wa=[];
+var fl=readline().split(" "),W=+fl[0],H=+fl[1],M=Math,wa=[];
 for(var y=0;y<H;y++){var r=[];for(var x=0;x<W;x++)r.push(false);wa.push(r)}
 var wk=false,nd=[],turn=0,bo=[],pl={},pm=false;
 function inB(x,y){return x>=0&&x<W&&y>=0&&y<H}
@@ -7,7 +7,7 @@ function ss(s){if(s.vx===0&&s.vy===0)return;var nx=s.x+s.vx,ny=s.y+s.vy;if(!inB(
 function bl(bx,by){var c=[by*W+bx],d=[[1,0],[-1,0],[0,1],[0,-1]];for(var i=0;i<4;i++)for(var r=1;r<=3;r++){var cx=bx+d[i][0]*r,cy=by+d[i][1]*r;if(!inB(cx,cy))break;if(wa[cy][cx])break;c.push(cy*W+cx)}return c}
 function pc(v){v=v-((v>>1)&0x55555555);v=(v&0x33333333)+((v>>2)&0x33333333);v=(v+(v>>4))&0x0f0f0f0f;return(v*0x01010101)>>24}
 while(true){
-var line=readline(),pp=line.split(" "),rl=parseInt(pp[0]),bL=parseInt(pp[1]),gr=[];
+var line=readline(),pp=line.split(" "),rl=+pp[0],bL=+pp[1],gr=[];
 for(var y=0;y<H;y++)gr.push(readline());
 if(!wk){for(var y=0;y<H;y++)for(var x=0;x<W;x++)if(gr[y][x]==="#")wa[y][x]=true;wk=true}
 var cu=[];
@@ -93,6 +93,6 @@ for(var i=0;i<bs.length;i++)pl[bs[i].pt]=bs[i].cell;
 if(bc2<tg&&rl>6){pm=false;pl={}}
 }
 if(bL>0&&pl[turn]!==undefined){var nc=pl[turn],ax=nc%W,ay=(nc-(nc%W))/W;if(gr[ay][ax]==="."){action=ax+" "+ay;bo.push({x:ax,y:ay,et:turn+3})}else{action="WAIT"}}
-console.log(action);
+print(action);
 turn++;
 }
