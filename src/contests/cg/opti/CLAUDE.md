@@ -461,9 +461,11 @@ of the general game-loop timing hazard — the blocking read is not free wall-cl
 re-scores each result as a mismatch check): TOTAL **9285** at 900ms, every map > 0, no
 mismatch → all validators pass (100%). Visible totals don't predict the hidden
 leaderboard, but here every non-empty placement clears the bar; the lever for rank is
-placement *quality* (longer non-looping coverage tours). NOT SUBMITTED yet at time of
-writing (user submits). Bench is the regression guard; the online `run_puzzle_tests`
-calibration is the correctness proof.
+placement *quality* (longer non-looping coverage tours). Bench is the regression
+guard; the online `run_puzzle_tests` calibration is the correctness proof.
+
+**SUBMITTED: score 100, 30/30 validators (submissionId 41009675)** — puzzle solved.
+Labels claimed (optimization, simulation).
 
 Next directions if pushing rank: incremental re-eval (only re-sim robots whose path
 touches the changed cell) to raise iterations; multi-restart / population SA; a
