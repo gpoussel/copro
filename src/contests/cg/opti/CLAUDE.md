@@ -411,3 +411,63 @@ descent-speed profile follows from thrust 4 barely beating gravity (net +0.289):
 you can only shave ~0.3 m/s per braking second, so the GA rides just above the
 recoverable envelope. Turn-1 GA has no landed genome yet; fitness shaping alone
 steers the early free-fall commits — that was never a problem in practice.
+
+---
+
+## a-star-craft
+
+Place arrows once on a 19x10 **torus** to route robots; each turn score += number
+of live robots. A robot moves 1 cell in its facing, an arrow rotates it, void or a
+repeated `(cell,dir)` state kills it. **Score = sum of per-robot lifetimes.** It is
+a **one-shot combinatorial optimization** (output all arrows once, no game loop),
+so the whole game is: faithful simulator + local search.
+
+**Referee facts** (CodinGameCommunity/A-Star-Craft, read verbatim):
+- A robot's state hashes on `Cell` *identity* (no `hashCode` override) + direction,
+  and there is one Cell per (x,y) → state == `(x, y, dir)`.
+- Raw contributor map (what the MCP `testIn` shows): **UPPERCASE `URDL` = a robot**
+  with that facing on an empty cell; **lowercase `urdl` = a FIXED pre-placed arrow**;
+  `.` empty platform; `#` void. The program's actual stdin uppercases the arrows and
+  lists robots separately (`robotCount` then `x y DIR`), robot cells shown as `.`.
+- `apply(x,y,d)`: only onto an empty (`NONE`) platform cell; if a robot sits there it
+  **overrides that robot's initial direction** (place an arrow under a robot to turn
+  it at start). Then `registerStates()`.
+- `play()` order: `score += robots.size()`; each robot moves; void → dead; else arrow
+  turns it; register new state; repeat → dead. Robots **never interact** (arrows are
+  static), so each robot is simulated independently and summed.
+
+**Simulator** `a-star-craft-tools/solver.mjs` — `score(cfg, robots)` walks each robot
+with a stamped `visited` buffer (state = `idx*4+dir`), no allocation. Candidate cells
+= empty platform cells reachable from a robot on the non-void component (flood fill);
+arrows anywhere else can never be visited, so they're excluded from the search.
+
+**Solver** `a-star-craft.ts` = **simulated annealing** over single-cell arrow choices
+(`{NONE,U,R,D,L}`), full re-eval each step (a few thousand ops), geometric cooling
+`T*=0.99997` from 3.0, reheat-to-best after 60k non-improving steps, ~900ms budget.
+Millions of iterations fit easily. Mirrors solver.mjs by hand (keep in sync).
+
+**Calibration = BIT-EXACT.** Via `run_puzzle_tests` (side-effect-free) the referee's
+`Points` matched the solver's own `PREDICT` on every probed test: Simple 23=23,
+Plateforme3x3 11=11, Rond-point 100=100, CodinGame 86=86. No sim discrepancy.
+
+**THE bug worth remembering — start the clock AFTER reading input.** First submit
+scored the *baseline* (12/24/1/2 = no arrows) on every test: `T0 = Date.now()` at
+module load, but the first `readline()` **blocks ~1s** until the referee sends turn-0
+data, so the very first SA time-check already saw `Date.now()-T0 >= budget` and broke
+at iteration 0. Fix: capture `T0` right after the input read. This is the A*Craft form
+of the general game-loop timing hazard — the blocking read is not free wall-clock.
+
+**Offline bench** (`a-star-craft-tools/bench.mjs [timeMs] [seed]`, all 30 visible maps,
+re-scores each result as a mismatch check): TOTAL **9285** at 900ms, every map > 0, no
+mismatch → all validators pass (100%). Visible totals don't predict the hidden
+leaderboard, but here every non-empty placement clears the bar; the lever for rank is
+placement *quality* (longer non-looping coverage tours). Bench is the regression
+guard; the online `run_puzzle_tests` calibration is the correctness proof.
+
+**SUBMITTED: score 100, 30/30 validators (submissionId 41009675)** — puzzle solved.
+Labels claimed (optimization, simulation).
+
+Next directions if pushing rank: incremental re-eval (only re-sim robots whose path
+touches the changed cell) to raise iterations; multi-restart / population SA; a
+coverage-biased eval or seeding a boustrophedon fill so the search starts near a
+board-covering tour instead of from empty.
