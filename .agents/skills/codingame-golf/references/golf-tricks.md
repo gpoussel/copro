@@ -11,7 +11,8 @@ behavior in edge cases.
 > - **No `print`** — output is `console.log` (`print` is a JS-only global → TS2304).
 >   It DOES exist at *runtime*, though — reachable via the `eval('…')` loophole (§9).
 > - **No tagged-template arguments** — ``split`,` ``, ``join`+` ``, ``repeat`3` ``
->   fail with TS2769; use `split(",")`, `join("+")`, `repeat(3)`.
+>   fail with TS2769; use `split(",")`, `join("+")`, `repeat(3)`. (Inside the
+>   `eval('…')` loophole they work — the compiler never sees them, §7.)
 > - **Declare your variables** (`var`) — undeclared assignment is TS2304.
 > - **No invalid `for...of` headers** — `for(a=0,b of s)` is rejected (TS2487);
 >   the left side of `of` must be a variable/property access, not a comma expression.
@@ -118,6 +119,33 @@ behavior in edge cases.
   call is cheaper than many.
 - `console.log(1,"x",78)` prints `1 x 78` (space-separated), handy to avoid joins.
 
+- **Sort lines by shape with destructuring defaults.** In
+  `[f,p,d=a[f]=p,e,a[e]]=line.split(" ")` the default `d=a[f]=p` only runs on lines
+  missing a 3rd token (so it stores the 2-token lines), and the member target `a[e]` uses
+  the `e` just assigned in the same pattern (so the 5-token header line stores itself).
+  Shorter lines write a harmless `a.undefined`. Submission-validated at **111 B** on
+  Don't Panic ep. 1 (was 128).
+- **Merge counted sections into one read-until-EOF loop by line shape.** Destructure
+  `[x,y]=l.split(" ")` and branch on `y?query:gridRow` — no count read, no second loop.
+  Make sure the swallowed count line is harmless where it lands (Surface: the `N` line
+  is appended to the grid, where the water test `>"N"` ignores it). Submission-validated
+  at **190 B** on Surface.
+- **Read the count line as junk data and correct at the end.** When the count can't
+  interact with the data, just let it through: Genome reads it as a digit "word" (it
+  never overlaps a DNA string) and prints `g("",a)-1`; The Resistance turns it into the
+  harmless key `D[""]`. Submission-validated on both.
+- **Flood-print a move-to-target path without tracking position.** On turn `t`, print the
+  axis letter while `t<distance`: `(t<b-d?"S":t<d-b?"N":"")+(t<a-c?"E":t<c-a?"W":"")`.
+  Still the diagonal-first optimal path, no `d--`/`c++`. Submission-validated at
+  **109 B** on Power of Thor (was 126).
+- **Setup inside a readline argument also works in `for…of` and in callbacks** (eval
+  code only): `for(c of readline(o=l=""))`, `r(V={})` resets a memo while reading.
+- **Define a helper at its first use**: `(Q=_=>(r=readline)().split(" "))()` reads the
+  first line and leaves `Q` for grid rows and per-turn lines (−13 B on The Fall).
+- **Read the per-turn input inside the root node of the search** (`q=[[R(),…read bikes…]]`
+  — array elements evaluate left to right), which removes the loop body braces
+  (The Bridge ep. 2).
+
 ## 2. Numbers & coercion
 
 - `+s` instead of `parseInt(s)` / `Number(s)`.
@@ -185,6 +213,17 @@ behavior in edge cases.
   by constant overhead (verified locally, Blunder ep. 3: 447 B → 209 B vs a full
   8-candidate regression, robust to ±0.5% noise and large offsets in synthetic tests).
 
+- **Add to a maybe-undefined slot without `||0`: `[x]-y*-t`** equals `x+y*t` and
+  treats an undefined `x` as 0 (`[undefined]` → `""` → 0). Exact on large integers,
+  unlike `~~`/`|0` (32-bit). Pair with **negative counts** `D[k]=~-D[k]`, so `~~D[k]` is
+  the negated count or 0: `d[i+l]=[d[i+l]]-d[i]*~~D[w]` needs no guard
+  (submission-validated at **259 B** on The Resistance).
+- **`1/s[0]` as "stack not empty"** (6 B vs 8 for `s.length`) when the bottom value is
+  never negative: `1/0` is Infinity, `1/undefined` is NaN (Surface).
+- **`~(n=…)&&` rejects exactly `n==-1`**; **`!~-j` means `j==1`** (The Bridge ep. 2).
+- **`d[v]=-~d[u]` gives BFS distances with no source seeding** — the unset source
+  counts as 0 (The Labyrinth).
+
 ## 3. Variables & functions
 
 - Single-letter names everywhere. Reuse freed names.
@@ -206,6 +245,27 @@ behavior in edge cases.
   it is declared zero-arg, so `readline(a=0)` is TS2554. Seed such init in a `for`
   header or `var` list instead.
 - Store a repeated method name as a string and index: `c="charCodeAt",s[c](0)`.
+
+- **A function object is a free dictionary.** `print[t]||=++r` replaces `o={}`
+  (Telephone Numbers **83 B**), `G[G(d)]=d` stores glyph → digit on the glyph function
+  itself (an array key joins with commas, so no `+""`; Mayan Calculation **258 B**),
+  `b[v]=t` stores the BFS move on the BFS function (The Labyrinth **332 B**). All
+  submission-validated. ⚠️ Keys that collide with function properties (`name`,
+  `length`, `caller`…) silently fail — fine for digit strings or grid indices.
+- **Header destructuring declares undefined variables for free.** `[R,L,A,B,T]=I().split(" ")`
+  on a 3-token line leaves `B`,`T` undefined but *existing*, so sloppy-mode eval accepts
+  `T??=P` and `B|=…` without a `var` (The Labyrinth).
+- **Name variables after the input tokens and `eval` the assignment.** Shadows ep. 1
+  keeps its bounds in `L/R/U/D` and updates the right one with
+  `` for(j of dir)eval(j+"=j>`D`&j<`U`?x:y") `` — no index lookup, no ternary chain.
+  Submission-validated at **138 B** (was 148; beats the 140 B TS leaderboard entry).
+- **Nest initialisers**: `X=[Y=[]]` (index 0 of `X` overwritten before use), `O=[K=0]`
+  (counter + output map; `O[K]||"WAIT"` still falls back because `O[0]` is 0).
+- **`filter`'s thisArg is a free fresh initialiser**: `.filter(h=>E[h]!=(E[h]=1),E={})`
+  dedupes with a new object per call (Vox Codei ep. 2).
+- **Default parameters as fast locals** in hot functions (`X=(c,a=[],r,s)=>…`) — they stay
+  real locals even inside eval code. Avoid *destructured* params in hot code: it made the
+  Mars Lander ep. 3 first turn ~1.5× slower.
 
 ## 4. Loops
 
@@ -295,6 +355,33 @@ behavior in edge cases.
   `T??=P` (nullish, set once) is shorter than `S.indexOf("T")` every turn and survives
   `T===0`. Works for any value derivable from first-turn state.
 
+- **`for(t in A)` visits array indices in ascending order — a sort with no comparator.**
+  Store each item at a numeric key and walk them. Super Computer stores each interval at
+  its end day (keeping the latest start) and greedily scans:
+  `for(t in A)A[t]<e||(e=t,c++)`. Preallocate with `Array(2e6)`: out-of-order writes into
+  `[]` fall back to a slow sparse array (+400 ms per 100k writes). Two keys can be packed
+  into one index below 2^32. Submission-validated at **132 B** (was 143).
+- **Longest path in a DAG by layer peeling.** Each round keeps only edges whose source is
+  still the target of a surviving edge; the number of rounds is the answer:
+  `for(c=0;E[0];c++)E=E.filter(([a,b])=>-~B[a]>c&&(B[b]=c+1))`. `-~B[a]>c` is true for an
+  unmarked key only when `c=0`, so round 0 doubles as the "mark all targets" pass.
+  O(chain × edges) — fine for CG's sizes. Submission-validated at **131 B** on Dwarfs
+  (was 172, 10/10 validators).
+- **Two-pointer pair sums**: `for(;++i<--n;)s+=Y[n]-Y[i]` beats `Y[n+~i]` with `i<n/2`,
+  and `n` can stay a string (Network Cabling **149 B**).
+- **Guard and counter in one condition**: `--l*d[i]` replaces `d[i]&&--l` (an undefined
+  `d[i]` gives NaN, falsy) (The Resistance).
+- **BFS tricks**: `d[v]??(…)` is a 2 B shorter visited test than `v in d||(…)` when
+  stored values are never nullish; `q[key]||=q.push(node)` uses the queue array itself as
+  the visited set; `q.splice(print(x))` prints the answer AND empties a live `for…of`
+  queue in one expression (The Bridge ep. 2, **413 B**, was 568).
+- **Scalar max beats the pair-sort argmax in eval code**:
+  `for(i=M=0;i<8;i++)(h=readline())>M&&(M=h,m=i)` (The Descent **68 B**; single-digit
+  heights so string comparison is safe).
+- **Work in the update slot, pre-step in the body**: `for(init;cond;work)prestep;`
+  saves the braces; success can be handled in the condition itself
+  (`f<=n?Date.now()<T:A.map(out)&&0`).
+
 ## 5. Conditionals & boolean logic
 
 - Ternary over `if/else`: `x=c?a:b`.
@@ -323,6 +410,19 @@ behavior in edge cases.
   with `k=1e4`, then `console.log(~k?O:"LOOP")` — `~k` is 0 exactly when the budget
   ran out. Pick the budget ≫ any legitimate path but small enough to stay in the time
   limit (verified locally, Blunder ep. 1).
+
+- **A dummy start value can delete a first-turn guard.** Shadows ep. 2 starts with
+  `a=p=q=P` (an array): first-turn writes land on string keys like `L["3,5"]` that
+  `print(...L)` never shows. Ending a ternary with `…:P=L` lets the rest of the turn run
+  on NaN keys and print `...P`. Submission-validated at **308 B** (was 455).
+- **Timers keyed on the "rounds left" value the game sends** (`Z[b]=o`, fire on
+  `z-o-2||…`, pending check `Z[b]-o<3`) replace countdown-and-delete (Vox Codei ep. 1,
+  **466 B**). ⚠️ A stored value used as a truthy flag must never be 0.
+- **When every possible char is known, ordered `>` tests replace an equality chain**:
+  Blunder uses `x>"S"` (T), `x>"H"` (I), `x>"A"` (B) — only valid if nothing else can
+  reach those tests (**345 B**).
+- **An unconditional clamp may make an out-of-range branch redundant** — check whether
+  the in-range case already satisfies the fallback (−6 B on Shadows ep. 2).
 
 ## 6. Strings
 
@@ -389,6 +489,28 @@ behavior in edge cases.
   test works — reusing a live string variable (e.g. the output accumulator,
   `g[p]=O`) is 2 bytes shorter than `" "`; just check every branch that can later
   re-read that cell stays a no-op (verified locally, Blunder ep. 1).
+
+- **Tagged templates DO work inside the `eval` string** — the compiler never sees them.
+  ``split` ` `` saves 2 B, ``join`\n` `` saves 3 B (in a single-quoted wrapper `\n` becomes
+  a real newline inside the template, which is legal). A function called as ``b`T` ``
+  receives `["T"]`, and `x==k` still matches because the array compares as `"T"`.
+  Submission-validated on a dozen puzzles in the 2026 pass.
+- **Overlap merge in one regex**: `(s+" "+t).replace(/(.*) \1/,"$1")` removes the
+  longest suffix-of-`s`/prefix-of-`t` overlap (leftmost match = longest suffix; the empty
+  capture fallback just drops the space). Keep the containment check
+  (`~s.search(t)?s:…`) — without it 13% of random cases fail. Inside a single-quoted
+  eval write `\\1`. Submission-validated at **174 B** on Genome Sequencing (was 198).
+- **Emit a marker only when it changes**: `(l!=(l=X)&&l)+0` — `l` doubles as the previous
+  bit, `l=""` makes the first bit always open a run, `false+0` appends `"0"` for free.
+  Submission-validated at **115 B** on Chuck Norris (was 154):
+  `for(c of readline(o=l=""))for(j=7;j--;)o+=(l!=(l=[" 00 "," 0 "][c.charCodeAt()>>j&1])&&l)+0`.
+  A regex alternative: `/(0)0*|1+/g` with `" 0$1 $&"` (unmatched `$1` → empty).
+- **Comparator tie-break `a*a-b*b||b`** puts the positive value first when `|a|==|b|`
+  (3 B shorter than `||b-a`); inconsistent on equal values, harmless for `[0]`.
+  Submission-validated at **71 B** on Temperatures.
+- **`s.search(c)` is 1 B shorter than `s.indexOf(c)`** for non-regex-special chars
+  (`@`, `T`…).
+- **Popcount for comparisons**: `m.toString(2).split(1).length`.
 
 ## 7. Arrays
 
@@ -485,6 +607,15 @@ behavior in edge cases.
 - Swap without a temp: `[a,b]=[b,a]`.
 - Destructure with holes to skip elements: `[a,,c]=arr`.
 - Spread to clone/concat: `[...a,...b]`.
+
+- **Rotation inside a 2- or 4-state group, in place**: `G[q]=o&~m|o+d&m` with
+  `m=o&8?3:1`; `d=0` is a no-op, so a sentinel action needs no guard (The Fall).
+- **Pack search state as `pos*4+entry`** and step with `s+[,S,1,-1][d]*4&-4|d`; keep
+  dead entries at −1 because position 0 is a real cell (The Fall).
+- **Bit-packed keys**: `(cell,time)` as `c<<6|j`, so `|dj|<3` becomes `(a-q+2&63)<5`
+  (Vox Codei ep. 2).
+- **Put the map bounds into the terrain**: extending the polyline with virtual walls
+  `[0,3e3]…[6999,3e3]` deletes every out-of-bounds check (Mars Lander ep. 3).
 
 ## 8. Regex
 
@@ -620,3 +751,34 @@ behavior in edge cases.
   console output to a pipe/file is buffered and **lost when the process is killed by a
   timeout** — log debug with synchronous `fs.appendFileSync` and give the referee its own
   internal watchdog instead of relying on an external `timeout`.
+- **Big puzzles: rewrite, don't micro-golf.** The 2026 pass rewrote the large solutions
+  from scratch with a compact algorithm and kept 100% on submission: The Fall ep. 2
+  3308→879 B and ep. 3 4582→909 B (one DFS per turn over Indy's path with rock
+  simulation and a failed-state memo), Vox Codei ep. 2 6402→939 B (trajectory hypotheses
+  + time-boxed hill climb), Mars Lander ep. 3 3749→1256 B (visibility graph +
+  Bellman-Ford + speed controller), Music Scores 1471→424 B (column scan with
+  black-count thresholds). Micro-golf of the old code would never have got there.
+- **Performance of eval code**: loops over eval-scope globals cost ~0.6–1 µs per
+  iteration even locally. When touching a hot loop, time it against the accepted version.
+  Setting string keys on an array puts it into slow dictionary mode; feeding a BFS queue
+  with junk entries (NaN, chars) was 2–3× slower. `with(Math)` saved ~100 B on Mars
+  Lander but only around the non-hot code: wrapping the geometry functions too made the
+  first turn ~4× slower.
+- **ASI trap in multi-line eval code**: a line starting with `[` after a line ending
+  in `)` merges into one statement (`f()\n[X,Y]=T` is `f()[X,Y]=T`); add a `;`.
+- **Don't trust a passing solution's rules model.** The old Bridge ep. 2 solution moved
+  bikes individually when UP/DOWN hit the rail and still passed CG, but failed 23/74
+  random boards under the statement's rule. When a rule is ambiguous, avoid the ambiguous
+  move altogether (a blocked UP/DOWN equals WAIT, which is tried anyway) so the solution
+  is right under either reading. Calibrate every local referee by running the previously
+  accepted solution through it first.
+- **Checking on CodinGame itself (MCP tools).** `run_puzzle_tests` runs the visible
+  tests without touching the ranking; for interactive puzzles its `passed` counter is
+  always 0 — judge each case by `scores:[1]` and the green "Success" in the last frame.
+  `submit_puzzle_solution` grades against the hidden validators (validator counts often
+  exceed the visible tests: Dwarfs 10 vs 4, Genome 14 vs 7). Pretty ids: the golf
+  variants are `<slug>-codesize`, except `power-of-thor`, `temperature-code-golf` and
+  `don't-panic` (with the apostrophe). The submit response has no rank/byte field.
+- **Leaderboard "best TS" scores far below yours** usually date from the char-count era
+  (before March 2023, when 2 ASCII chars could be packed per UTF-16 char) and are
+  unreachable in bytes: e.g. The Fall ep. 2 at 233, Genome Sequencing at 76.
