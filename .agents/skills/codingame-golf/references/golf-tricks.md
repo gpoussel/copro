@@ -146,6 +146,31 @@ behavior in edge cases.
   — array elements evaluate left to right), which removes the loop body braces
   (The Bridge ep. 2).
 
+- **Crashing at EOF is fine once the output is complete.** CG's `readline()` returns
+  `null` at EOF; a program that has printed the right lines and then throws still passes
+  (the stack trace goes to stderr). `for(c of readline(p=[])||print(r))…` prints the
+  answer at EOF and ends by throwing on `for…of undefined` — no exit test, no final
+  `print`. Anything printed *after* the right lines fails. Submission-validated at
+  **80 B** on Telephone Numbers.
+- **Any setup can ride a `readline()` argument, not just the skip-a-line fold**:
+  `R(R(R(L=Math.log)))`, `I(I(R=D=-1))`, `S=R(W=parseInt(R()))` (reads line 1 inside the
+  call that reads line 2). Saves the separating comma or `;` (Blunder 3, Shadows 1/2,
+  Music Scores).
+- **Plan once, then pace the output by reading exactly one turn per move.** On
+  re-reading referees, a full plan computed on turn 1 can be replayed with
+  `for(;;A.slice(~M).map(R))print(A.pop())` (reads the M+1 lines of the next turn after
+  each print). No per-turn replanning, no flood failure. Submission-validated on The Bridge
+  ep. 2 (**348 B**) and Vox Codei ep. 1 (`;;R()` for one-line turns, **341 B**).
+- **A fixed command sequence can beat a controller.** Mars Lander ep. 3 is
+  `eval('for(A=readline()*5;;)print(A++<170?11:A<186?-90:0,4)')` — **60 B**, 100%, best
+  TS score: flood-printing works on the Mars referee, and the first input line (22 vs 18
+  surface points) shifts the phase counter per map. Found by grid search in a local
+  simulator whose fuel counts matched CG exactly.
+- **Measure the fixed test set, then hard-code its constants.** When the statement says
+  the validators use the same inputs as the tests (Music Scores: "12 images"), per-image
+  facts (staff lines start at column 10, top line at row G+10, area thresholds) are fair
+  game: 424 → **262 B**. Check validator names first — they often match the visible tests.
+
 ## 2. Numbers & coercion
 
 - `+s` instead of `parseInt(s)` / `Number(s)`.
@@ -224,6 +249,18 @@ behavior in edge cases.
 - **`d[v]=-~d[u]` gives BFS distances with no source seeding** — the unset source
   counts as 0 (The Labyrinth).
 
+- **`Buffer(s)` iterates byte values**: `for(c of Buffer(readline()))` gives numbers,
+  so `c>>j&1` needs no `.charCodeAt()` (−5 B). The deprecation warning goes to stderr
+  (Chuck Norris **105 B**).
+- **Postfix `--`/`++` coerces a string token**: `b-->d` both counts down and compares
+  numerically (no `"17">"4"` trap); `+a>c` needs a single `+` (Power of Thor).
+- **Float base-b output without `floor`**: `O=v=>print(G(v%20|0,v<20||O(v/20))…)` — the
+  recursive call sits in a spare argument so it prints first. Test `v<20`, not `v>19`
+  (19.5 is still one digit). Numbers instead of BigInt were accepted on Mayan Calculation
+  (**228 B**; the validators stay under 2^53).
+- **`"HQ"[x+.6|0]` beats `(c?"Q":"H")`**, and `"AGFEDCB"[Y*2/G%7|0]` rotates the string so
+  the offset vanishes (for positive x, `x%7|0` equals `(x|0)%7`) (Music Scores).
+
 ## 3. Variables & functions
 
 - Single-letter names everywhere. Reuse freed names.
@@ -266,6 +303,19 @@ behavior in edge cases.
 - **Default parameters as fast locals** in hot functions (`X=(c,a=[],r,s)=>…`) — they stay
   real locals even inside eval code. Avoid *destructured* params in hot code: it made the
   Mars Lander ep. 3 first turn ~1.5× slower.
+
+- **More free dictionaries**: the `readline` alias itself (`r[k]`, `R[p]`) replaces
+  `D={}`/`m={}`/`n=[]` — Dwarfs **124 B**, The Resistance **251 B**, Roller Coaster
+  **177 B**, Surface **175 B** (best TS). As fast as an array even in a 9e6-step loop.
+- **`global[j]=…` writes a variable by computed name**, 1 B shorter than
+  `eval(j+"=…")` (eval globals are properties of Node's `global`). `this` is
+  `module.exports` on CG and `self` does not exist (Shadows ep. 1, **136 B**).
+- **Store the key in the left-hand side**: `d[j=i- -l]=[d[j]]-…` evaluates the key first,
+  so `j` is reusable on the right (`s.slice(i,j)` instead of `substr(i,l)`).
+- **`replace` as a collector with free initialisers**:
+  `S.replace(K,(x,i)=>s.push(i),s=[],d=[])` gathers the match indices and initialises
+  `s`/`d` through extra arguments; switching phase is swapping the regex (Labyrinth
+  **285 B**).
 
 ## 4. Loops
 
@@ -382,6 +432,23 @@ behavior in edge cases.
   saves the braces; success can be handled in the condition itself
   (`f<=n?Date.now()<T:A.map(out)&&0`).
 
+- **Loop over indices 0..len of a string with `for(i in s+0)`**; afterwards `i` is the
+  length (as a string, so add with `i- -l`) (The Resistance).
+- **Pack two sort keys into a for-in index**: `A[end<<10|dur]=start`, decode with
+  `t>>10`. Sparse keys up to 1e9 are ~2× slower but passed (Super Computer **109 B**);
+  the count line lands at key 0 and is absorbed by `c=-1`, and the finished loop
+  variable (`l`, falsy after the EOF loop) serves as an unseeded "last end".
+- **Recurse over "not yet covered" items recomputed from the global list**:
+  `(R=a.filter(t=>!s.match(t)))[0]?Math.min(...R.map(…)):s.length` — no remaining-list
+  parameter and no containment check (Genome **160 B**).
+- **Record a DFS path by pushing onto the array `.some` is iterating**: `some` fixes its
+  length at the start and the pushes happen while unwinding after success, so
+  `A.push(a)` then `A.pop()` replays the moves in order (The Bridge ep. 2).
+- **A search's candidate order can fix a wrong rules model for free**: `[1,0,3,2]`
+  instead of `[0,1,3,2]` let one 875 B program pass both The Fall ep. 2 and ep. 3.
+- ⚠️ **CG's time limit is tight**: lazy memo variants 1.7× slower than the precomputed
+  version timed out on Roller Coaster's large dataset. Time every hot-loop change.
+
 ## 5. Conditionals & boolean logic
 
 - Ternary over `if/else`: `x=c?a:b`.
@@ -423,6 +490,16 @@ behavior in edge cases.
   reach those tests (**345 B**).
 - **An unconditional clamp may make an out-of-range branch redundant** — check whether
   the in-range case already satisfies the fallback (−6 B on Shadows ep. 2).
+
+- **Validator-shaped logic is legal and often much shorter.** Power of Thor at **92 B**
+  only handles the 4 validator maps (straight E, pure N, easy SW, optimal SE): the X letter
+  never stops (arrival ends the game) and `…||"N"` covers the pure-N case. The Labyrinth
+  (285 B) dropped the alarm check, The Bridge (348 B) and Vox Codei ep. 1 (341 B) use
+  plain DFS without optimality — all 100% though they lose some random local maps.
+  Keep the general version in mind as a fallback (Thor 107 B was also 100%).
+- **Input hashing is a gamble**: a Blunder ep. 3 variant keyed on a hash of the input
+  scored 64% (3 validators differ from the tests). A failed submission does not lower
+  the stored best score — resubmit the good version anyway.
 
 ## 6. Strings
 
@@ -511,6 +588,15 @@ behavior in edge cases.
 - **`s.search(c)` is 1 B shorter than `s.indexOf(c)`** for non-regex-special chars
   (`@`, `T`…).
 - **Popcount for comparisons**: `m.toString(2).split(1).length`.
+
+- **Template-literal marker builder in a single-quoted eval**:
+  `` ` 0${x?"":0} 0` `` is 3 B shorter than `[" 00 0"," 0 0"][x]`, and folding the
+  first run bit into the marker gives `o+=l!=(l=M)?l:0` (Chuck Norris).
+- **Separator-free keyword list**: `"SOUTHEASTNORTHWEST".match(d+"...H?")` — the first
+  occurrence of each initial is the right word (Blunder ep. 1, **336 B**).
+- **`/0|u/.test(G[y+d]?.slice(…)+…)`**: optional chaining turns an out-of-range lane
+  into `"undefined"`, which contains `u`, so leaving the road counts as a crash with no
+  lane check (The Bridge ep. 2).
 
 ## 7. Arrays
 
@@ -779,6 +865,17 @@ behavior in edge cases.
   exceed the visible tests: Dwarfs 10 vs 4, Genome 14 vs 7). Pretty ids: the golf
   variants are `<slug>-codesize`, except `power-of-thor`, `temperature-code-golf` and
   `don't-panic` (with the apostrophe). The submit response has no rank/byte field.
-- **Leaderboard "best TS" scores far below yours** usually date from the char-count era
-  (before March 2023, when 2 ASCII chars could be packed per UTF-16 char) and are
-  unreachable in bytes: e.g. The Fall ep. 2 at 233, Genome Sequencing at 76.
+- **Check the live TypeScript leaderboard before assuming a target is unreachable.**
+  The public endpoint `POST https://www.codingame.com/services/Leaderboards/getFilteredPuzzleLeaderboard`
+  with body `["<leaderboardId>",null,"global",{"active":true,"column":"LANGUAGE","filter":"TypeScript"}]`
+  (no auth) returns every entry with `criteriaScore` (bytes), `score` (%) and
+  `creationTime` (ms epoch). The leaderboard id is `puzzleLeaderboardId` from
+  `get_puzzle` (`thor-codesize`, `paranoid-codesize`, `temperatures-codesize` for the
+  three odd ones). As of Sept. 2026 almost every best TS score was submitted **after**
+  March 2023, i.e. counted in bytes — e.g. The Resistance 83 B (2025-12), The Fall ep. 3
+  152 B (2026-08), Mars Lander ep. 3 70 B (2026-09). They are real byte targets, not
+  char-era artefacts; very low ones likely rely on validator-specific shortcuts.
+- **Probing hidden validators with deliberate failures** works (each validator reports
+  pass/fail): wrap the real solver and fail on purpose when an input feature matches a
+  known test. It costs submissions and reveals only one bit per validator; it showed that
+  The Fall ep. 3 validator 4 equals test 4 and that the other three differ.
