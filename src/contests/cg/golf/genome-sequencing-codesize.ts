@@ -1,1 +1,1 @@
-eval('g=(s,r)=>r[0]?Math.min(...r.map(t=>g(~s.search(t)?s:(s+" "+t).replace(/(.*) \\1/,"$1"),r.filter(x=>x!=t)))):s.length;for(a=[];l=readline();)a.push(l);print(g("",a)-1)')
+eval('g=s=>(R=a.filter(t=>!s.match(t)))[0]?Math.min(...R.map(t=>g((s+0+t).replace(/(.*)0\\1/,"$1")))):s.length;for(a=[];l=readline();)a.push(l);print(g("")-1)')

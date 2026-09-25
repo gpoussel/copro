@@ -1,1 +1,1 @@
-eval('for(I=readline,[L,U]=I().split` `,[x,y]=I(I()).split` `,R=D=-1;;print(x=L-~R>>1,y=U-~D>>1))for(j of I())eval(j+"=j>`D`&j<`U`?x:y")')
+eval('for(I=readline,[L,U]=I().split` `,[x,y]=I(I(R=D=-1)).split` `;;print(x=L-~R>>1,y=U-~D>>1))for(j of I())global[j]=j>`D`&j<`U`?x:y')

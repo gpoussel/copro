@@ -1,1 +1,1 @@
-eval('for([a,b,c,d]=readline().split(" "),t=0;;t++)print((t<b-d?"S":t<d-b?"N":"")+(t<a-c?"E":t<c-a?"W":""))')
+eval('for([a,b,c,d]=readline().split` `;;)print((b-->d?"S":"")+(a-c?+a>c?"E":"W":"")||"N")')

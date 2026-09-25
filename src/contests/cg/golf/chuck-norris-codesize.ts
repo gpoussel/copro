@@ -1,1 +1,1 @@
-eval('for(c of readline(o=l=""))for(j=7;j--;)o+=(l!=(l=[" 00 "," 0 "][c.charCodeAt()>>j&1])&&l)+0;print(o.trim())')
+eval('for(c of Buffer(readline(o=l="")))for(j=7;j--;)o+=l!=(l=` 0${c>>j&1?"":0} 0`)?l:0;print(o.trim())')

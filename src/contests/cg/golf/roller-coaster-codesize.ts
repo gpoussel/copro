@@ -1,1 +1,1 @@
-eval('for([L,C,N]=(r=readline)().split(" "),P=[g=[n=[]]],t=i=0;i<N;)P[i++]=+r();for(;i--;g[i]=s,n[i]=j%N)for(s=0,j=i;j-N<i&&s+P[j%N]<=L;)s+=P[j++%N];for(i=0;C--;i=n[i])t+=g[i];print(t)')
+eval('for([L,C,N]=P=(r=readline)().split` `,g=[t=i=0];i<N;)P[i++]=+r();for(;i--;g[i]=s,r[i]=j%N)for(s=0,j=i;j-N<i&&s+P[j%N]<=L;)s+=P[j++%N];for(i=0;C--;i=r[i])t+=g[i];print(t)')

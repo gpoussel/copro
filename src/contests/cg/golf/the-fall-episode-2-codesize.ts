@@ -6,11 +6,11 @@ L=_=>([a,b,c]=Q(),(b*S+ +a)*4+c.length-2)
 f=(s,R,b,C=[0],p=s>>2,m=M(s),q=m>>2,o=G[q],x,a)=>{if(V[k=[s,b,R[0]?G:m]+R]|p==Z|!m)return p==Z&&m
 V[k]=1
 for(t of R)(w=M(t))&&G[w>>=2]>19&&w-p&&C.push(w*4+1)
-for(x of[0,1,3,2])for(a of C){if((n=b-(x>2||x)+!a)<0||x&&o<20)continue
+for(x of[1,0,3,2])for(a of C){if((n=b-(x>2||x)+!a)<0||x&&o<20)continue
 P(q,x)
 P(a>>2,a)
-N=R.map(t=>M(t=M(t))?t:-1)
-y=!N.some((t,i)=>(t>>2==p?R[i]:t)>>2==q)&&f(m,N.filter(t=>t>0&&!N.some(u=>u!=t&&u>>2==t>>2)),n)
+N=R.map(t=>M(t=M(t))&&t)
+y=!N.some((t,i)=>(t>>2==p?R[i]:t)>>2==q)&&f(m,N.filter(t=>t&&!N.some(u=>u!=t&&u>>2==t>>2)),n)
 P(a>>2,-a)
 G[q]=o
 if(y)return x&&(U=q*4+x|1),X=a||U,1}}

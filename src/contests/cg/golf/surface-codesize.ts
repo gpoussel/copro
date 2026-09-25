@@ -1,1 +1,1 @@
-eval('for(R=readline,R(W=-~R()),S="",m={};l=R();y?print(a[0]):S+=l+" ")for([x,y]=l.split` `,a=m[q=+x+W*y]||[0],s=[q];1/s[0];)S[p=s.pop()]>"N"&&!m[p]&&++(m[p]=a)[0]&&s.push(p+1,p-1,p-W,p+W)')
+eval('for(R=readline,R(W=-~R()),S="";l=R();y?print(a[0]):S+=l+" ")for(p of([x,y]=l.split` `,a=R[q=+x+W*y]||[0],s=[q]))S[p]>"N"&&!R[p]&&++(R[p]=a)[0]&&s.push(p-1,p+1,p-W,p+W)')

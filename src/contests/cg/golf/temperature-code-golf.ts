@@ -1,1 +1,1 @@
-eval('r=readline,print(+r(r()).split(" ").sort((a,b)=>a*a-b*b||b)[0])')
+eval('r=readline,print(+r(r()).split` `.sort((a,b)=>a*a-b*b||b)[0])')

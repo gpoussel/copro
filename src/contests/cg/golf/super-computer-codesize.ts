@@ -1,1 +1,1 @@
-eval('for(r=readline,r(A=Array(2e6),c=e=0);l=r();A[k=j- -d]>+j||(A[k]=+j))[j,d]=l.split(" ");for(t in A)A[t]<e||(e=t,c++);print(c)')
+eval('for(A=[c=-1];l=readline();A[j- -d<<10|d]=j)[j,d]=l.split` `;for(t in A)A[t]<l||(l=t>>10,c++);print(c)')

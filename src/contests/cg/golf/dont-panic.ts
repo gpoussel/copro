@@ -1,1 +1,1 @@
-eval('for(a=[];;d[3]&&print((a[f]-p)*(!d[4]-.5)>0?"BLOCK":"WAIT"))[f,p,d=a[f]=p,e,a[e]]=readline().split(" ")')
+eval('for(a=[];;d[3]&&print((a[f]-p)*(!d[4]-.5)>0?"BLOCK":"WAIT"))[f,p,d=a[f]=p,e,a[e]]=readline().split` `')

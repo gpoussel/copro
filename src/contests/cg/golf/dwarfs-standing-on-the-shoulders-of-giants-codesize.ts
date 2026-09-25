@@ -1,1 +1,1 @@
-eval('for(r=readline,r(E=[],B={});l=r();)E.push(l.split(" "));for(c=0;E[0];c++)E=E.filter(([a,b])=>-~B[a]>c&&(B[b]=c+1));print(c)')
+eval('for(r=readline,r(E=[]);l=r();)E.push(l.split` `);for(c=0;E[0];c++)E=E.filter(([a,b])=>-~r[a]>c&&(r[b]=c+1));print(c)')
