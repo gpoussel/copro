@@ -99,7 +99,19 @@ Golfing blind produces short, wrong programs. Work in this order:
    things in surprising ways, and a single misplaced byte can flip correctness.
    Keep going until you can't find another safe byte to remove.
 
-5. **Report** the final code and its byte count (see Reporting).
+5. **Check on CodinGame** when the CodinGame MCP tools are available: run the
+   visible tests with `run_puzzle_tests` (no effect on ranking), then grade against
+   the hidden validators with `submit_puzzle_solution`. Only a 100% submission counts
+   as validated. See `references/golf-tricks.md` §9 for how to read the results.
+
+6. **Report** the final code and its byte count (see Reporting).
+
+For large solutions (several hundred bytes and more), rethink the algorithm before
+micro-golfing: in the 2026 pass, rewriting from scratch cut The Fall ep. 3 from 4582
+to 909 B and Vox Codei ep. 2 from 6402 to 939 B, far beyond what byte-shaving the old
+code could reach. For interactive puzzles, write a local referee from the statement,
+check that the previously accepted solution passes it, then test every candidate on
+the tests plus hundreds of random maps.
 
 ## Verifying & counting bytes
 

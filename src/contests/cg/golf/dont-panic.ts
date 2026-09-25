@@ -1,1 +1,1 @@
-eval('for(S=()=>readline().split(" "),a=S(),a[a[3]]=a[4];;){[f,p,d]=S();d?print((a[f]-p)*(d[4]?-1:1)>0?"BLOCK":"WAIT"):a[f]=p}')
+eval('for(a=[];;d[3]&&print((a[f]-p)*(!d[4]-.5)>0?"BLOCK":"WAIT"))[f,p,d=a[f]=p,e,a[e]]=readline().split` `')

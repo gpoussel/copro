@@ -1,1 +1,1 @@
-eval('e=0;print([...Array(+readline())].map(_=>readline().split(" ")).sort(([a,b],[c,d])=>a-c+(b-d)).filter(([s,d])=>s>=e&&(e=s- -d)).length)')
+eval('for(A=[c=-1];l=readline();A[j- -d<<10|d]=j)[j,d]=l.split` `;for(t in A)A[t]<l||(l=t>>10,c++);print(c)')

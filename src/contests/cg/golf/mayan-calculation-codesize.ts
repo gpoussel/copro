@@ -1,1 +1,1 @@
-eval('R=readline,[L,H]=R().split(" "),m=()=>[...Array(+H)].map(R),M=m(),G=d=>M.map(r=>r.substr(d*L,L)),T=[...Array(20)].map((_,d)=>G(d)+""),P=()=>[...Array(+R()/H)].reduce(v=>v*20n+BigInt(T.indexOf(m()+"")),0n),a=P(),b=P(),print([...eval(`a${R()}b`).toString(20)].flatMap(c=>G(parseInt(c,20))).join("\\n"))')
+eval('for(R=readline,[L,H]=R().split` `,M=[...Array(+H)].map(R),G=d=>M.map(r=>r.substr(d*L,L)),P=(n=R(),v=0)=>n?P(n-H,v*20+G[M.map(R)]):v,O=v=>print(G(v%20|0,v<20||O(v/20)).join`\n`),d=20;d--;)G[G(d)]=d;O(eval(P()+R(b=P())+b))')

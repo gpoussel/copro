@@ -1,1 +1,1 @@
-eval('for(r=readline,L=(s=r().replace(/./g,c=>+(c<"."))).length,D={},d=[1];t=r();)D[t=t.replace(/./g,c=>("ETIANMSURWDKGOHVF L PJBXCYZQ".search(c)+2).toString(2).slice(1))]=-~D[t];for(i=0;i<L;i++)for(l=77;d[i]&&--l;)if(t=D[s.substr(i,l)])d[i+l]=d[i]*t+(d[i+l]||0);print(d[L]||0)')
+eval('for(r=readline,s=r().replace(/./g,c=>c<"."|0),d=[1];t=r();)r[t=t.replace(/./g,c=>("ETIANMSURWDKGOHVF L PJBXCYZQ".search(c)+2).toString(2).slice(1))]=~-r[t];for(i in s+0)for(l=77;--l*d[i];)d[j=i- -l]=[d[j]]-d[i]*~~r[s.slice(i,j)];print(d[i]||0)')
