@@ -1,1 +1,1 @@
-eval('for(o={},r=t=readline()*0;t||=readline();t=t.slice(0,-1))o[t]||=++r;print(r)')
+eval('for(r=t=readline()*0;t||=readline();t=t.slice(0,-1))print[t]||=++r;print(r)')

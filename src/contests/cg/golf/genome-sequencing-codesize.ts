@@ -1,1 +1,1 @@
-eval('g=(s,r)=>r[0]?Math.min(...r.map(t=>{for(k=0;t.search(s.slice(k));)k++;return g(~s.search(t)?s:s.slice(0,k)+t,r.filter(x=>x!=t))})):s.length;print(g("",[...Array(+readline())].map(readline)))')
+eval('g=(s,r)=>r[0]?Math.min(...r.map(t=>g(~s.search(t)?s:(s+" "+t).replace(/(.*) \\1/,"$1"),r.filter(x=>x!=t)))):s.length;for(a=[];l=readline();)a.push(l);print(g("",a)-1)')

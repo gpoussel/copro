@@ -1,1 +1,1 @@
-console.log(readline().replace(/./g,c=>(c.charCodeAt(0)+128).toString(2).slice(1)).replace(/0+|1+/g,m=>(m<"1"?"00 ":"0 ")+m.replace(/./g,"0")+" ").trim())
+eval('for(c of readline(o=l=""))for(j=7;j--;)o+=(l!=(l=[" 00 "," 0 "][c.charCodeAt()>>j&1])&&l)+0;print(o.trim())')

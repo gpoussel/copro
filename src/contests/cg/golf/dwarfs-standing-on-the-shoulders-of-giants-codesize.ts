@@ -1,1 +1,1 @@
-eval('for(n=readline(),g={},c={},M=Math.max,f=k=>c[k]??=g[k]?1+M(...g[k].map(f)):1;n--;)[a,b]=readline().split(" "),(g[a]??=[]).push(b);print(M(...Object.keys(g).map(f)))')
+eval('for(r=readline,r(E=[],B={});l=r();)E.push(l.split(" "));for(c=0;E[0];c++)E=E.filter(([a,b])=>-~B[a]>c&&(B[b]=c+1));print(c)')

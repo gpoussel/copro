@@ -1,1 +1,1 @@
-eval('for(R=readline,q=(R()+" -1 -1 "+R(R())).split(/ /);;print(q[4]=q[0]-~q[2]>>1,q[5]=q[1]-~q[3]>>1))for(j of R())q[j="LURD".search(j)]=q[4+j%2]')
+eval('for(I=readline,[L,U]=I().split` `,[x,y]=I(I()).split` `,R=D=-1;;print(x=L-~R>>1,y=U-~D>>1))for(j of I())eval(j+"=j>`D`&j<`U`?x:y")')

@@ -1,12 +1,1 @@
-eval(`[W,H]=readline().split(" ")
-P=readline(readline()).split(" "),L=[0,0],G=[W-1,H-1],a=-1,p=q=0
-T=(l,h,o,s)=>{c=l+h-o;if(c<0||c>=s){b=c<0?0:s-1,i=(o+b)/2;c=i>l&&i<h?b:o<l?l:h}if(c==o)c+=c<h?1:-1;return c}
-for(;;){
-d=readline(),m=p+q
-if(d!="UNKNOWN"&&a>=0)
-if(d=="SAME")L[a]=G[a]=m+1>>1
-else(q>p)==(d=="WARMER")?L[a]=(m>>1)+1:G[a]=(m+1>>1)-1
-a=L[0]<G[0]?0:L[1]<G[1]?1:-1
-if(a<0)P=[L[0],L[1]];else P[a]=q=T(L[a],G[a],p=+P[a],a?H:W)
-print(P.join(" "))
-}`)
+eval('for(R=readline,[W,H]=R().split` `,P=R(R()).split` `,L=[0,0],G=[W-1,H-1],a=p=q=P;d=R();print(...P))m=p+q,d[4]?q>p==d>"W"?L[a]=m+2>>1:G[a]=m-1>>1:L[a]=G[a]=m+1>>1,a=L[0]<G[0]?0:L[1]<G[1]?1:P=L,l=L[a],h=G[a],p=+P[a],s=a?H:W,b=(c=l+h-p)<0?0:c<s?c:s-1,c=p+b>2*l&p+b<2*h?b:p<l?l:h,P[a]=q=c==p?c<h?c+1:c-1:c')

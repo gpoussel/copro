@@ -1,39 +1,18 @@
-// @ts-nocheck
-var M=Math,N=+readline(),xs=[],ys=[],i,c,r,t,k
-for(i=0;i<N;i++){var p=readline().split(' ');xs.push(+p[0]);ys.push(+p[1])}
-var xL=0,xR=0,pY=0
-for(i=0;i<N-1;i++)if(ys[i]===ys[i+1]){xL=xs[i];xR=xs[i+1];pY=ys[i]}
-if(xL>xR){var tm=xL;xL=xR;xR=tm}
-var tx=(xL+xR)/2,G=3.711,px=[],py=[]
-for(i=0;i<N;i++){px.push(xs[i]);py.push(ys[i])}
-px.push(6999);py.push(0);px.push(0);py.push(0)
-function sd(x,y){if(y<=0)return 1;var I=0,n=px.length,j=n-1;for(k=0;k<n;k++){var yi=py[k],yj=py[j],xi=px[k],xj=px[j];if(yi>y!==yj>y){var xt=xi+(xj-xi)*(y-yi)/(yj-yi);if(x<xt)I=!I}j=k}return I}
-var CS=50,GW=M.ceil(7000/CS),GH=M.ceil(3000/CS),sg=[],clr=[]
-for(c=0;c<GW;c++){sg[c]=[];for(r=0;r<GH;r++)sg[c][r]=sd(c*CS+CS/2,r*CS+CS/2)}
-for(c=0;c<GW;c++){clr[c]=[];for(r=0;r<GH;r++)clr[c][r]=sg[c][r]?0:1e9}
-var bq=[]
-for(c=0;c<GW;c++)for(r=0;r<GH;r++)if(sg[c][r])bq.push([c,r])
-var bh=0,d4=[[1,0],[-1,0],[0,1],[0,-1]]
-while(bh<bq.length){var cc=bq[bh][0],cr=bq[bh][1];bh++;for(t=0;t<4;t++){var nc=cc+d4[t][0],nr=cr+d4[t][1];if(nc<0||nr<0||nc>=GW||nr>=GH)continue;if(clr[nc][nr]>clr[cc][cr]+1){clr[nc][nr]=clr[cc][cr]+1;bq.push([nc,nr])}}}
-var MN=2,fr=[]
-for(c=0;c<GW;c++){fr[c]=[];for(r=0;r<GH;r++)fr[c][r]=!sg[c][r]&&clr[c][r]>=MN}
-var pC=M.floor(tx/CS),pR=M.floor((pY+CS)/CS)
-while(pR<GH&&!fr[pC][pR])pR++
-var MC=1
-for(c=0;c<GW;c++)for(r=0;r<GH;r++)if(fr[c][r]&&clr[c][r]<1e8&&clr[c][r]>MC)MC=clr[c][r]
-var D=[]
-for(c=0;c<GW;c++){D[c]=[];for(r=0;r<GH;r++)D[c][r]=Infinity}
-D[pC][pR]=0
-var pq=[[0,pC,pR]],d8=[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
-while(pq.length){var bi=0;for(i=1;i<pq.length;i++)if(pq[i][0]<pq[bi][0])bi=i;var tp=pq.splice(bi,1)[0],cd=tp[0],cx=tp[1],cy=tp[2];if(cd>D[cx][cy])continue;for(t=0;t<8;t++){var nc=cx+d8[t][0],nr=cy+d8[t][1];if(nc<0||nr<0||nc>=GW||nr>=GH)continue;if(!fr[nc][nr])continue;var dg=d8[t][0]&&d8[t][1]?1.4142:1,pe=(MC-M.min(clr[nc][nr],MC))*0.6,nco=cd+dg+pe;if(nco<D[nc][nr]){D[nc][nr]=nco;pq.push([nco,nc,nr])}}}
-function cO(x,y){var c=M.floor(x/CS),r=M.floor(y/CS);if(c<0)c=0;if(c>=GW)c=GW-1;if(r<0)r=0;if(r>=GH)r=GH-1;if(!isFinite(D[c][r])){var be=1e9,fc=c,f2=r;for(var dc=-10;dc<=10;dc++)for(var dr=-10;dr<=10;dr++){var nc=c+dc,nr=r+dr;if(nc<0||nr<0||nc>=GW||nr>=GH)continue;if(!isFinite(D[nc][nr]))continue;var dd=dc*dc+dr*dr;if(dd<be){be=dd;fc=nc;f2=nr}}c=fc;r=f2}return[c,r]}
-function pa(x,y,st){var ce=cO(x,y),c=ce[0],r=ce[1],ou=[[c,r]];for(var s=0;s<st;s++){if(D[c][r]<=0)break;var be=D[c][r],bc=c,br=r;for(t=0;t<8;t++){var nc=c+d8[t][0],nr=r+d8[t][1];if(nc<0||nr<0||nc>=GW||nr>=GH)continue;if(!isFinite(D[nc][nr]))continue;if(D[nc][nr]<be){be=D[nc][nr];bc=nc;br=nr}}if(bc===c&&br===r)break;c=bc;r=br;ou.push([c,r])}return ou}
-function mT(a,b){if(a>b){var t=a;a=b;b=t}var m=0;for(var x=a;x<=b;x+=50){var s=0;for(var y=0;y<3000;y+=20)if(!sd(x,y)){s=y;break}if(s>m)m=s}return m}
-function cl(v,lo,hi){return v<lo?lo:v>hi?hi:v}
-while(true){var ln=readline().split(' '),X=+ln[0],Y=+ln[1],hS=+ln[2],vS=+ln[3],oP=X>xL+5&&X<xR-5,cD=oP
-if(oP)for(var yy=pY+20;yy<Y;yy+=25)if(sd(X,yy)){cD=false;break}
-var ax=0,au=0
-if(oP&&cD){ax=M.abs(hS)>15?cl((0-hS)*0.5,-2,2):0;var h=Y-pY,al=M.sqrt(2*0.27*M.max(0,h-30))+5,tv=-M.min(38,al);au=cl((tv-vS)*0.8+G,0.3,5)}else{var ce=pa(X,Y,5),la=ce[ce.length-1],gx=la[0]*CS+CS/2,gy=la[1]*CS+CS/2,dx=gx-X,dy=gy-Y,cu=cO(X,Y),cc=clr[cu[0]][cu[1]]*CS,SC=cl(cc*0.12,14,40),hA=Y-pY;if(hA<700)SC=M.min(SC,cl(hA*0.035+12,12,40));var ds=M.max(1,M.hypot(dx,dy)),dVx=dx/ds*SC,dVy=dy/ds*SC,di=gx>=X?1:-1,mt=mT(X,X+di*700)+90,bk=M.sqrt(2*0.27*M.max(0,Y-mt))+5;if(dVy<-bk)dVy=-bk;if(Y<mt)dVy=M.max(dVy,18);ax=cl((dVx-hS)*0.6,-4,4);au=cl((dVy-vS)*0.7+G,0.3,5)}
-var pw=cl(M.round(M.hypot(ax,au)),1,4),an=cl(M.round(M.atan2(-ax,au)*180/M.PI),-90,90)
-if(oP&&cD&&Y-pY<60)an=0
-print(an+' '+pw)}
+eval(`R=readline;P=[[0,3e3],...[...Array(+R())].map(_=>R().split(" ").map(Number)),[6999,3e3]]
+P.map((p,i)=>i&&p[1]==P[i-1][1]&&(L=P[i-1][0],M=p[0],F=p[1]))
+O=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])
+S=(a,b)=>!P.some((c,i,_,d=P[i-1])=>i&&O(a,b,c)*O(a,b,d)<=0&&O(c,d,a)*O(c,d,b)<=0)
+H=([a,b],[c,d])=>Math.hypot(a-c,b-d)
+Z=([a,b],[c,d],w=60,x=c-a,y=d-b,l=Math.hypot(x,y))=>[0,w,-w].every(k=>S([a-y*(k/=l),b+x*k],[c-y*k,d+x*k]))
+C=(v,a,b)=>v<a?a:v>b?b:v
+with(Math){Q=[[(L+M)/2,F+200]]
+P.map((b,i)=>(a=P[i-1])&&(c=P[i+1])&&Q.push([b[0]+(a[1]-c[1])*(g=200/H(a,c)),b[1]+(c[0]-a[0])*g]))
+D=Q.map((_,i)=>i?1e9:0)
+for(k of Q)for(i in Q)for(j in Q)(t=D[j]+H(Q[i],Q[j]))<D[i]&&Z(Q[i],Q[j])&&(D[i]=t)
+for(;;){[x,y,h,v]=p=R().split(" ").map(Number);z=y-F
+if(f=x>L+20&&x<M-20&&(z<30||S(p,[x,F+1])))a=C(-h*.3,-1.5,1.5),u=C((-min(30,sqrt(.5*max(0,z-20))+4)-v)*1.2+3.711,0,4)
+else{m=1e9;T=[x,y+99];for(i in Q)(t=H(p,Q[i])+D[i])<m&&Z(p,Q[i])&&(m=t,T=Q[i])
+X=T[0]-x;Y=T[1]-y;s=hypot(X,Y)+1;e=min(40,sqrt(2.4*s)+5);c=X/s*e;d=max(Y/s*e,-sqrt(.5*max(0,-Y))-3)
+S(p,[x+h*12,y])&&Z(p,[x+h*6,y+v*6],30)||(c=0,d=max(v,0))
+u=C((d-v)*.7+3.711,0,4);e=max(.5,sqrt(16-u*u));a=C((c-h)*.5,-e,e)}
+print(f&&z<3*abs(v)+40?0:round(atan2(-a,u)*57.3),min(4,round(hypot(a,u))))}}`)

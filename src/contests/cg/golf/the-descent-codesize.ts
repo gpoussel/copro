@@ -1,1 +1,1 @@
-for(;;)console.log([..."01234567"].map(i=>readline()+i).sort()[7][1])
+eval('for(;;print(m))for(i=M=0;i<8;i++)(h=readline())>M&&(M=h,m=i)')

@@ -1,1 +1,1 @@
-eval('for(R=readline,L=Math.log,R(R()),a=b=0;k=R();a=a||c,b=b||e)[c,e]=k.split(" ");k=L(e/b)/L(c/a),m=k+.5|0,B=m>3?"2^n":m>1?"n^"+m:"n";print(`O(${m<3&&k-m>.04?(m?B+" ":"")+"log n":m?B:1})`)')
+eval('for(R=readline,L=Math.log,[a,b]=R(R(R())).split` `;k=R();)[c,e]=k.split` `;print(`O(${"1,log n,n,n log n,n^2,n^2 log n,n^3,n^3".split`,`[2*L(e/b)/L(c/a)+.92|0]||"2^n"})`)')

@@ -1,1 +1,1 @@
-eval('for(n=+readline(),X=[],Y=[],i=n,f=(a,b)=>a-b;i--;)[X[i],Y[i]]=readline().split(" ");print(Y.sort(f).reduce((s,v,i)=>i<n/2?Y[n+~i]-v+s:s,X.sort(f)[n-1]-X[0]))')
+eval('for(n=i=(r=readline)(),X=[Y=[]];i--;)[X[i],Y[i]]=r().split(" ");for(s=X.sort(f=(a,b)=>a-b)[n-1]-X[0],Y.sort(f);++i<--n;)s+=Y[n]-Y[i];print(s)')
