@@ -561,3 +561,54 @@ arrays instead of per-genome objects), simulated-annealing/hill-climb hybrid on
 the best genome tail, lap-aware lookahead past the chased checkpoint (aim-line
 blending toward the following checkpoint), and re-tuning VEL_W per-phase
 (approach vs cruise).
+
+---
+
+## code-of-the-rings ("Brain Fork")
+
+Output one Brainfuck-like program that prints the phrase. The tape has 30 cells and wraps; each
+cell holds a rune in the 27-symbol ring (space=0, A..Z = 1..26, wraps both ways). Ops are
+`< > + - .` plus `[ ]` (loop while the current cell is not space). **Score = total program
+length summed over the passed validators (lower is better).** A test fails on a wrong phrase or
+on more than 4000 executed ops. There are 23 validators, which are "similar but different" to
+the 24 visible tests (same labels: "Une lettre x70", "Sort long", ...). The referee is fully
+known, so `tools/bench.mjs` has an exact interpreter.
+
+**Solver** (`code-of-the-rings.ts`): a beam search over the phrase index. A state is
+(tape, pointer, cost); states are bucketed by index, deduped with zobrist hashes and cut to
+the beam width. Transitions:
+- print one char from any of the 30 cells (move + rune adjust + `.`);
+- a **period loop**: r repetitions of a period of length L ≤ 14, where each position j
+  advances by a per-repetition delta |d_j| ≤ 3. d = 0 covers plain repeats; d = ±1/±2 covers
+  alphabets and step sequences. Positions with d = 0 and the same letter share a cell. The
+  period cells sit contiguously next to a counter cell, in either direction and at any of
+  the 30 positions; the cheapest placement wins, and cells that already hold the right
+  value cost nothing. The counter can be:
+  - a dedicated cell stepping by k ∈ {±1, ±2, ±4, ±5, ±7}. k is coprime to 27, so the
+    counter hits space exactly after r ≤ 26 steps, and k is picked to minimise |k| plus
+    the adjustment from the cell's current value. The counter ends at 0, which gives a
+    free space cell afterwards.
+  - a **self counter**: one period cell with d ≠ 0 that reaches space after exactly r
+    steps, e.g. `+[.+]` prints A..Z.
+  For each state and pattern, it tries r = rmax (capped at 26) and rmax - 1.
+- The beam width adapts (8..200) to keep elapsed time proportional to progress
+  (`TIME_BUDGET_MS = 900`, limit is 2 s).
+
+**Bench** (`pnpm exec node src/contests/cg/opti/code-of-the-rings-tools/bench.mjs [idx...]`):
+it runs the real TS solver through a readline preload (`preload.mjs`), interprets the output,
+checks the phrase and counts length and steps.
+- Visible-test TOTAL: **3314** at 900 ms adaptive (3283 with a fixed beam of 160 and no time
+  limit). "Sort long" (371 chars of prose) alone is ~1230-1250, so the prose-heavy tests
+  dominate.
+
+**Submitted (1 submission): 100% (23/23), criteriaScore 3306, rank 52 / 1000 shown on the
+board** (the board is capped at 1000; solvedCount is 8620). #1 = 2491. The top-25% cutoff
+(rank 250) is about 3869. Objective reached, so I stopped there. Labels claimed
+(pattern-recognition, optimization).
+
+Next levers, if anyone pushes further:
+- nested loops;
+- loops whose body re-adjusts shared cells;
+- `[-]` / `[>]` idioms to reach zero or space cells;
+- a smarter single-char transition for prose, such as multi-char lookahead or keeping
+  common letters parked in cells. Prose tests are where most of the remaining length is.
