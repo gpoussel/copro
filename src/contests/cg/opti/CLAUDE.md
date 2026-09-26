@@ -612,3 +612,48 @@ Next levers, if anyone pushes further:
 - `[-]` / `[>]` idioms to reach zero or space cells;
 - a smarter single-char transition for prose, such as multi-char lookahead or keeping
   common letters parked in cells. Prose tests are where most of the remaining length is.
+
+---
+
+## samegame
+
+15x15, 5 colors; removing a group of n>=2 scores (n-2)^2, gravity down then empty
+columns shift left, +1000 for clearing the board. Referee: acatai/SameGame (the
+standard AI-benchmark rules). Fully deterministic, whole board known on turn 1
+(20 s first turn, 50 ms after) → plan the whole game on turn 1, replay after
+(replan if the board ever differs from the prediction — never happened offline).
+
+**Validators = 40 boards: "Standard Testset 1..20" + the same 20 "(recolored)".**
+The criterion is the sum of the 40 game scores. Visible tests 6-10 are standard
+sets 1/5/10/15/20, so they are representative of the hidden set.
+
+Leaderboard (2026-09-26): #1 178016 (~4450/board), rank ~223 ≈ 45k, rank 250 ≈
+40k. The API reports total=1000, capped=false, but global ranks go past 1059, so
+the list is really capped; solvedCount = 892.
+
+**Solver** `samegame.ts`: iterated beam search (width 60, ×1.6 each restart
+until the 15 s budget), dedupe by Zobrist hash, eval = score + W_COLOR ×
+Σ_c (n_c−2)² (lone cell of a color −50) + 1000 if the move clears the board.
+Keeping each color's total count high rewards saving colors for big final
+removals (tabu-color idea).
+
+**Submitted v1 (1 submission): 49901, 100% (40/40), global rank 195 → top
+~20-22% → objective met.** v1 materialized every child (copy+apply+flood fill),
+reaching only width ~400 in 15 s.
+
+**Submitted v2 (current file, 2nd submission): 67552, 100% (40/40), global
+rank 119 → top ~12-13%.** v2 ranks children from the parent's group list alone
+(the eval needs only color counts), and survivors are built lazily in rank order
+with dedupe → ~7x wider beam (width ~1000 in 4 s, ~2600-4100 in 15 s locally).
+No timeouts on CG with the 15 s first-turn budget (run_puzzle_tests itself
+errored on the long first turn, so use submissions or the offline referee).
+
+Offline (`samegame-tools/referee.mjs`, spawns the real .ts via a readline
+preload; `SG_BUDGET` ms, `SG_WC` weight; args = test indexes), tests 6-10 total:
+- v1 @4 s: WC 0 → 3130, 0.25 → 4573, 1 → 3548.
+- v2 @4 s: WC 0.1 → 5421, 0.25 → 6500, 0.5 → 6483, 1 → 6310.
+- v2 @15 s, WC 0.35: 6867 (the +1000 clear bonus makes per-board results jumpy).
+
+Next levers: better eval (e.g. penalise isolated
+cells, pick one tabu color); NMCS/NRPA, which the leaders use (puzzle label
+"NRPA"); keep refining the tail of the plan during the 50 ms turns.
