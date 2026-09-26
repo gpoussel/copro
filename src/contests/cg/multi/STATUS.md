@@ -47,7 +47,7 @@ Surveyed 2026-09-26.
 | tulips-and-daisies | 2 | Gold | 0 | — | 2 | |
 | twixt-pp | 1 | Legend | 0 | — | 2 | |
 | vindinium | 2 | Gold | 0 | — | 4 | |
-| yavalath | 1 | Legend | 0 | — | 2 | |
+| yavalath | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | yinsh | 1 | Legend | 0 | — | 2 | |
 | beeminegame | 3 | Silver | 1 | — | 2 | |
 | counting-tictactoe | 3 | Silver | 1 | — | 2 | |

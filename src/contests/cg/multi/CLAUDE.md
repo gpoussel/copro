@@ -157,3 +157,12 @@ on CG: `A1` is on the **last** input line and row delta = −dy. Actions are
 turn count. 50 ms. Bot: negamax alpha-beta (100/stone incl. hand, ±15 per
 open two-in-a-mill), mill moves searched first; the engine's commands match
 the referee's (no desync). 4/4 vs the boss.
+
+## yavalath
+
+61-cell hex board; 4 in a row wins, 3 (without 4) loses. **The opponent move
+arrives as `x y` on one line** (the statement lists two lines): found with
+`tools/echo-input.ts`. Coordinates: y = row, x = index in the row; axial
+a = x + max(0, y − 4) gives line directions (1,0), (0,1), (1,1). Bot: MCTS,
+playouts retry suicidal (3-making) moves up to 4 times, move outcomes stored
+in the nodes. No steal. 4/4 vs the boss.
