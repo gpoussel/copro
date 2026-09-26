@@ -24,7 +24,7 @@ Surveyed 2026-09-26.
 | clobber | 2 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss |
 | code-keeper---the-hero | 1 | Legend | 0 | — | 4 | |
 | connect-4 | 2 | **Legend** ✅ | 0 | TypeScript MCTS | 2 | Gold→Legend 2026-09-26 |
-| dice-duel | 2 | Gold | 0 | — | 2 | |
+| dice-duel | 2 | **Gold** ✅ | 0 | TypeScript 1-ply, submitted | 2 | 4/4 vs boss; **set SEVEN_RULE=true once in Legend** |
 | dice-shogi | 1 | Legend | 0 | — | 2 | |
 | domain-expansion | 1 | Legend | 0 | — | 2 | |
 | dots-and-boxes | 2 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 2/4 vs boss (2x2: wins as A, 2–2 ranked as loss as B) |

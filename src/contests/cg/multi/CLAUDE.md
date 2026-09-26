@@ -193,3 +193,14 @@ even at cost 10; keep a gold reserve.
 Explosions resolved wave by wave (stop when the opponent owns nothing).
 Bot: negamax alpha-beta (depth ~5), eval = orbs + 2 per cell, a cell next to
 an enemy cell one orb from critical counts as lost. 4/4 vs the boss.
+
+## dice-duel
+
+Rules taken from the referee (github.com/eulerscheZahl/Dice-Duel): state =
+top, front, bottom, back, left, right; U = y+1 rotates top←front←bottom←back,
+R rotates top←left←bottom←right; paths are self-avoiding, cannot cross dice,
+may capture on the last step only; no legal move = loss, else more dice wins.
+**League 2 (Legend) only allows captures where the two tops sum to 7** (and
+filters the move list accordingly): flip `SEVEN_RULE` after the promotion.
+Bot: moves deduplicated by (end cell, orientation), 1-ply with a penalty when
+the opponent can capture back. 4/4 vs the boss.
