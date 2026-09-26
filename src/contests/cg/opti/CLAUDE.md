@@ -1056,3 +1056,84 @@ Next levers: several SA restarts or seeds, and keeping the best result. Also: pl
 with ball pushes (shortcuts), loops called from inside functions, and non-shortest
 corridors per switch-order class. The leaders average ~34 chars per level, against
 ~60 here.
+
+---
+
+## selenia-city (Fall Challenge 2024)
+
+20 months × 20 days. Each month: resources arrive (unspent resources earn 10%
+interest, floored), new buildings appear (landing pads with a fixed monthly crowd of
+typed astronauts, typed modules), and you output one line of `;`-separated
+actions. Actions: TUBE (floor(10·euclid) resources; no crossing; no building on
+the segment; at most 5 per building), UPGRADE (base cost × new capacity),
+TELEPORT (5000; one-way; each building can hold only one TP endpoint), POD (1000;
+route of at most 21 stops, loops if first == last), DESTROY (+750).
+**Score per arrival = (50 − day) + max(0, 50 − arrivals already at that module this
+month).** A teleport arrival on day d scores 50−d, a pod arrival 49−d. The criterion
+is the total over the 12 validators, which have the same names as the 12 visible
+tests ("similar to visible tests" per the statement).
+
+**Referee** = github.com/CodinGame/FallChallenge2024-SeleniaCity
+(`TravelManager.java`, `City.java`, `Referee.java`). Key semantics:
+- Distance = the minimum number of *tubes* to the nearest module of the type.
+  Teleporters are 0-cost and directed. Every tube counts, even one with no pod.
+- Each day: (1) an astronaut on a TP entrance teleports if dist(exit) ≤ dist(cur).
+  (2) Pods move in id order; the per-day tube capacity counts pods in both
+  directions. (3) Astronauts in id order (padId·1000 + index) board the
+  lowest-id pod leaving their building with a free seat (10 seats) that
+  strictly lowers the distance.
+- The month ends early when nothing moves. Pods reset to route[0] every month.
+  A loop pod [a,b,a] crosses its tube every day, alternating direction, so every
+  extra pod on a tube needs an UPGRADE.
+
+**Harness** (`selenia-city-tools/referee.mjs [idx,...]`, env `ERR=1` prints the
+solver's stderr): an independent JS port of the referee. It spawns the real .ts
+(Node type stripping + `readline-preload.cjs`) on the raw test inputs in `tests/`
+(downloaded from `static.codingame.com/servlet/fileservlet?id=<inputBinaryId>`).
+Setting `DBG=true` in the solver re-simulates the previous month from the input
+and prints it. The solver's month prediction matches the referee exactly.
+**Bug worth remembering:** per-building "pods leaving" lists were only cleared
+for the buildings touched *within* one simulate() call. Stale entries leaked into
+the next evaluation, and the prediction drifted from the referee by 1-5%.
+
+**Solver** (`selenia-city.ts`):
+- An exact inline month simulation. Distances use one 0-1 BFS per type on the
+  reverse graph. It takes about 0.5-1 ms per call for 800 astronauts.
+- Candidate bundles:
+  - A: a tube to one of the K=6 nearest valid partners + a loop pod. At least one
+    endpoint must be a pad or already connected.
+  - B: a path bundle per (pad, type). Dijkstra over existing tubes (cost 300 per
+    hop) and buildable tubes (build cost + 1000) finds a path to a module of that
+    type. Each new tube gets a loop pod whose start side alternates with the hop
+    parity, so riders don't have to wait.
+  - C: a teleporter from a pad to one of the 2 nearest free modules of each type
+    on that pad.
+  - D: an upgrade + an extra loop pod, in either orientation.
+- Gain = simulated score of this month − base. A lazy greedy picks by gain/cost.
+  A gain cache persists across turns and is re-validated lazily. When nothing is
+  positive, the oldest estimates are refreshed. Budget 750 ms on the first turn,
+  330 ms after.
+- Evaluating every candidate at every step was too slow for big maps (test 8
+  "Grid": 1450 candidates, one step per turn, 68k-111k resources left unspent,
+  score 0.75M). The lazy cache fixed it (test 8 → 1.27M).
+
+**Offline** (all 12 visible tests): TOTAL **6.01M**. By test: t1 54k, t2 128k,
+t3 249k, t4 255k, t5 325k, t6 204k, t7 670k, t8 1.29M, t9 745k, t10 663k,
+t11 746k, t12 686k.
+
+**Submitted (1 submission): 100% (12/12), criteriaScore 6,485,163, global rank
+21 / 1000 (solvedCount 992, top ~2%).** Board: #1 MSz 7,519,727; rank 250 (top 25%)
+≈ 4,644,216. The objective was reached, so I stopped. Labels claimed (optimization,
+graphs, resource management).
+
+The earlier variant with full re-evaluation at every step (no cache) scored 5.29M
+offline. It was better on low-budget tests (t6 266k vs 204k, t5 342k vs 325k)
+because the order of the greedy picks changes.
+
+Next levers:
+- The greedy is myopic: it maximises this month's gain / cost. On low-budget maps
+  (t6 "Villages", t5) it would help to save up for a teleporter, and to value
+  future months and interest.
+- Multi-stop pod routes (one pod along a whole path, cheaper than one pod per tube).
+- Teleporters to network hubs, not just pad → module.
+- DESTROY/re-route pods whose routes have gone stale.
