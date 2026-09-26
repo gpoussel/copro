@@ -7,7 +7,7 @@
 const FIRST_TURN_MS = 900
 const TURN_MS = 80
 const UCT_C = 0.5
-const MAX_NODES = 2_000_000
+const MAX_NODES = 5_000_000
 
 // --- 3x3 helpers ------------------------------------------------------------
 
@@ -88,6 +88,26 @@ class State {
     return -1
   }
 
+  // A uniformly random legal move, without listing them all.
+  randomMove(): number {
+    if (this.next >= 0) {
+      const b = this.next
+      return b * 9 + randomBit(~(this.cells[b] | this.cells[9 + b]) & 511)
+    }
+    let total = 0
+    for (let b = 0; b < 9; b++) {
+      if (!((this.closed >> b) & 1)) total += POPCOUNT[~(this.cells[b] | this.cells[9 + b]) & 511]
+    }
+    let k = random(total)
+    for (let b = 0; ; b++) {
+      if ((this.closed >> b) & 1) continue
+      const empty = ~(this.cells[b] | this.cells[9 + b]) & 511
+      const n = POPCOUNT[empty]
+      if (k < n) return b * 9 + nthBit(empty, k)
+      k -= n
+    }
+  }
+
   // Writes the legal moves into out, returns their count.
   moves(out: Uint8Array): number {
     let n = 0
@@ -124,7 +144,13 @@ const random = (n: number) => {
   return ((seed >>> 0) % n) | 0
 }
 
-const playoutMoves = new Uint8Array(81)
+// Index of the k-th set bit of mask (k < popcount).
+function nthBit(mask: number, k: number): number {
+  while (k--) mask &= mask - 1
+  return 31 - Math.clz32(mask & -mask)
+}
+const randomBit = (mask: number) => nthBit(mask, random(POPCOUNT[mask]))
+
 function playout(s: State): number {
   while (s.result < 0) {
     const win = s.decisive()
@@ -132,8 +158,7 @@ function playout(s: State): number {
       s.play(win)
       break
     }
-    const n = s.moves(playoutMoves)
-    s.play(playoutMoves[random(n)])
+    s.play(s.randomMove())
   }
   return s.result
 }
