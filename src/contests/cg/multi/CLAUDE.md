@@ -556,3 +556,9 @@ Grid is 13×13 with the castle in the middle, territory ≤ 7×7. Bot: best
 placement by resulting score (Σ zone size × crowns), pick the free tile with
 the best follow-up on our board. 4/4 vs the Bronze boss (~130 to 25).
 The same code should suit coders-of-the-realm (2–4 players): check the input.
+
+## coders-of-the-realm
+
+Kingdomino 2–4 players: same bot as the 1v1 with an init line (players,
+tiles per turn), 9×9 grids, 5×5 territory, one grid per player. Best score
+in 4/4 vs the Bronze boss.
