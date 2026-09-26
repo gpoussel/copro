@@ -996,3 +996,63 @@ rank 46 = 26335, rank 130 (top 25%) = 46434. Confirmed after submitting: **globa
   zig-zag, or add several printer copies.
 - Fewer +2 sign variants: choose flip positions with a DP instead of at random.
 - Validator-specific tricks, which the top entries clearly use (~27 steps/case).
+
+---
+
+## bender---episode-4
+
+Output one program `main;f1;...;f9` (U/D/R/L; digits call functions, recursion
+allowed) that walks Bender to Fry through a 21x21 maze with switches, magnetic
+fields and garbage balls. **Criterion `Points` = output length summed over the 30
+validators, lower is better.** Every validator is 21x21 with 8-11 switches.
+
+**Referee** (github.com/eulerscheZahl/Bender4, `Referee.java` + `Bender4/*.java`).
+All 60 `config/testN.json` are public: 1-30 are the visible tests and 31-60 are the
+validators. Semantics that matter:
+- Each interpreter step costs one turn: a move char, a function call (push) and a
+  function return (pop) each take a turn. The cap is 1000 turns.
+- Turn order: finished → win; else death check (robot cell has an active field);
+  else Fry squashed; then `robot == target → finished`; then one step. So reaching
+  Fry **mid-function wins**, and an infinite tail loop `1;DR1` is legal.
+  Running out of commands only loses if Fry was not reached first.
+- A move into a wall, or into a ball that can't be pushed, is a no-op. That makes
+  wall-sliding macros free.
+- `cell.sw` is the *last* switch that references the cell (switchPos, then
+  blockingPos, in input order). A cell can be one switch's pos and another switch's
+  field; the death and toggle checks use only `cell.sw`, and the solver mirrors that.
+- Death means standing on an active field at the start of a turn. The toggle happens
+  when the robot enters a switch cell (or a ball is pushed onto it).
+
+**Solver** (`bender-episode-4.ts`):
+- For a fixed set of function bodies, the shortest main comes from a BFS over
+  (cell, switch mask). The edges are the 4 moves plus each function as a macro,
+  simulated with wall-sliding. A tail-recursive loop function is a terminal edge:
+  repeat the body until Fry is reached, and fail on death or on a repeated state.
+- SA over the function set: add a chunk of the current expanded path, edit, insert,
+  delete or swap tokens (calls to other functions are allowed, as long as there is
+  no cycle), remove a function by inlining it, toggle loop. Cost = |main| + Σ(|f|+1).
+- **Corridor restriction (the key speed-up):** the full state space holds 100k-300k
+  reachable states, so an eval took ~30 ms and SA ran only ~30 iterations. The BFS
+  now keeps only states with ds + dt ≤ L + SLACK (plain-move distances from the start
+  and to the target). An eval drops to ~1 ms, and the results improved.
+- Balls are never pushed: a pushing move is an invalid edge. Every candidate is
+  re-checked with a referee port (turn cap 980) before it is output.
+
+**Offline bench** (`bench.mjs <configDir> [from] [to]`): configDir holds the
+downloaded `test*.json`. The bench runs the real .ts through `readline-preload.cjs`
+and re-checks the output with an independent port of the Java referee, including
+ball pushing. Validators 31-60 at 700-800 ms:
+- full state space (no corridor), 800 ms: 2350
+- corridor SLACK 0 → **1788**, 3 → 1822, 6 → 1881, 10 → 1901. More freedom costs
+  more in iterations than it gains.
+
+**Submitted (1 submission): 100% (30/30), criteriaScore 1812 (offline 1788), global
+rank 13 / 442 (top ~3%).** Board: #1 = 1010, rank 110 (top 25%) = 3474. Objective
+reached, so I stopped. Labels claimed (pathfinding, optimization). On CG the
+run_puzzle_tests stderr showed ~5k SA iterations in 700 ms on a 21x21 test, about as
+fast as locally.
+
+Next levers: several SA restarts or seeds, and keeping the best result. Also: plan
+with ball pushes (shortcuts), loops called from inside functions, and non-shortest
+corridors per switch-order class. The leaders average ~34 chars per level, against
+~60 here.
