@@ -296,3 +296,10 @@ pawn promotion, drops with pawn restrictions; a king capture ends a line),
 the root plays only moves from the referee's list (it handles check, pawn-drop
 mate, repetition). Negamax alpha-beta, material eval (hand ×0.9). 4/4.
 The same engine should carry over to dice-shogi.
+
+## dice-shogi
+
+Minishogi + a die choosing the destination file (extra input line). Same
+engine as minishogi.ts; the referee's list applies the die at the root, the
+search lets the opponent use any file (pessimistic). 4/4 vs the boss.
+Ideas: expectimax over the opponent's die.

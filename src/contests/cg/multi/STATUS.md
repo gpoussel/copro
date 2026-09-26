@@ -25,7 +25,7 @@ Surveyed 2026-09-26.
 | code-keeper---the-hero | 1 | Legend | 0 | — | 4 | |
 | connect-4 | 2 | **Legend** ✅ | 0 | TypeScript MCTS | 2 | Gold→Legend 2026-09-26 |
 | dice-duel | 2 | **Legend** ✅ | 0 | TypeScript 1-ply, SEVEN_RULE on, resubmitted | 2 | 1/4 vs Legend boss: dies of no moves, add own-mobility to eval |
-| dice-shogi | 1 | Legend | 0 | — | 2 | |
+| dice-shogi | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta (minishogi engine), submitted | 2 | 4/4 vs boss (single league) |
 | domain-expansion | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta Voronoi, submitted | 2 | 4/4 vs boss (single league) |
 | dots-and-boxes | 2 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 2/4 vs boss (2x2: wins as A, 2–2 ranked as loss as B) |
 | fireworks | 2 | Gold | 0 | — | 4 | |
