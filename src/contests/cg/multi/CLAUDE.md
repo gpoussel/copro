@@ -216,3 +216,14 @@ at the top; 0 = N (y−1), clockwise. Input = opponent's last move only.
 Bot: two-ply over whole turns (bounce chains enumerated with leaf caps), eval
 = distance of the ball to the target goal. 4/4 vs the boss.
 Ideas: deeper search with a better eval (dead ends, safe points), turn caching.
+
+## twixt-pp
+
+12×12 minus corners; `D6` = column D, row 6. First player joins rows 1/12,
+second columns A/L; links are automatic (knight moves not crossing enemy
+links; own links may cross). Input lists both sides' pegs and links.
+Bot: every candidate peg scored by 2·(opponent's holes-needed) − ours, from a
+0-1 BFS over knight links that cross no enemy link (crossings precomputed).
+The boss swaps a central first peg (F6), so the first peg is C4. 4/6 vs the
+boss: the distance eval misses bridge/edge templates. Ideas: MCTS with
+random-fill playouts like Hex, or a proper two-distance / template eval.

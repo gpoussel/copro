@@ -45,7 +45,7 @@ Surveyed 2026-09-26.
 | start-up | 1 | Legend | 0 | — | 4 | |
 | tower-dereference | 1 | Legend | 0 | — | 2 | |
 | tulips-and-daisies | 2 | **Gold** ✅ | 0 | TypeScript 2-ply spots, submitted | 2 | 4/4 vs boss (boss goes bankrupt) |
-| twixt-pp | 1 | Legend | 0 | — | 2 | |
+| twixt-pp | 1 | **Legend** ✅ | 0 | TypeScript distance eval, submitted | 2 | 4/6 vs boss (single league); weak, see notes |
 | vindinium | 2 | Gold | 0 | — | 4 | |
 | yavalath | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | yinsh | 1 | Legend | 0 | — | 2 | |
