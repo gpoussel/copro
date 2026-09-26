@@ -3,8 +3,8 @@
 
 const POOL_RADIUS = 500
 const MOUSE_SPEED = 10
-const OPPOSITE_TOLERANCE = 0.03
-const SAFE_ARC = 88 // arc left to the cat when the mouse reaches the border (chord >= 80)
+const OPPOSITE_TOLERANCE = 0.1
+const SAFE_ARC = 95 // arc left to the cat when the mouse reaches the border (chord >= 80)
 
 const catSpeed = Number(readline())
 const catAngularSpeed = catSpeed / POOL_RADIUS
@@ -27,20 +27,47 @@ function nextCatAngle(cat: number, mouse: number): number {
   return cat + Math.sign(d) * catAngularSpeed
 }
 
+/**
+ * Dash direction: away from the cat, with an angle to the radius whose sine is
+ * criticalRadius / r outside the critical circle, which maximizes the arc left
+ * between the cat and the exit point.
+ */
+function dashDirection(mx: number, my: number, catAngle: number): number {
+  const r = Math.hypot(mx, my)
+  const mouseAngle = r > 0 ? Math.atan2(my, mx) : catAngle + Math.PI
+  const side = wrap(mouseAngle - catAngle) >= 0 ? 1 : -1
+  // A slow cat is simply outrun with a straight radial dash. Inside the critical circle,
+  // keep the angular gap constant while gaining radius; outside, run at the optimal angle.
+  const ratio = Math.min(r / criticalRadius, criticalRadius / Math.max(r, 1e-9), 0.99)
+  const alpha = criticalRadius >= POOL_RADIUS ? 0 : Math.asin(ratio)
+  return mouseAngle + side * alpha
+}
+
+/** Simulates a full dash from the given state and returns the arc left to the cat at exit. */
+function dashMargin(mx: number, my: number, catAngle: number): number {
+  for (let turn = 0; turn < 400; turn++) {
+    const dir = dashDirection(mx, my, catAngle)
+    mx += Math.cos(dir) * MOUSE_SPEED
+    my += Math.sin(dir) * MOUSE_SPEED
+    const mouseAngle = Math.atan2(my, mx)
+    catAngle = nextCatAngle(catAngle, mouseAngle)
+    const catDist = Math.hypot(mx - Math.cos(catAngle) * POOL_RADIUS, my - Math.sin(catAngle) * POOL_RADIUS)
+    if (catDist < 80) return -1
+    if (Math.hypot(mx, my) >= POOL_RADIUS) return Math.abs(wrap(mouseAngle - catAngle)) * POOL_RADIUS
+  }
+  return -1
+}
+
 let dashing = false
 while (true) {
   const [mx, my, cx, cy] = readline().split(" ").map(Number)
-  const r = Math.hypot(mx, my)
-  const mouseAngle = Math.atan2(my, mx)
   const catAngle = Math.atan2(cy, cx)
-  const gap = Math.abs(wrap(mouseAngle - catAngle))
+  const gap = Math.abs(wrap(Math.atan2(my, mx) - catAngle))
 
-  // Straight dash to the border: arc left between the cat and the exit point
-  const dashMargin = gap * POOL_RADIUS - (catSpeed * (POOL_RADIUS - r)) / MOUSE_SPEED
-  if (dashing || dashMargin >= SAFE_ARC) {
+  if (dashing || dashMargin(mx, my, catAngle) >= SAFE_ARC) {
     dashing = true
-    const a = r > 0 ? mouseAngle : 0
-    console.log(`${Math.round(Math.cos(a) * 1000)} ${Math.round(Math.sin(a) * 1000)} Run!`)
+    const dir = dashDirection(mx, my, catAngle)
+    console.log(`${Math.round(mx + Math.cos(dir) * 1000)} ${Math.round(my + Math.sin(dir) * 1000)} Run!`)
     continue
   }
 
