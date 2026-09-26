@@ -341,3 +341,15 @@ nearest mine we do not own; drink at a tavern when HP < 40 or when the mine
 fight (−20 HP) would leave ≤ 15 (stay until 80 HP if already next to one);
 never step on another hero's spawn. Most gold in 3/4 games vs three bosses.
 Ideas: hunt weak heroes owning many mines, avoid adjacent stronger heroes.
+
+## fireworks
+
+Hanabi, 3 of 4 players per round (ids in the input are round ids; NEWGAME's
+id is ours). CARD lines repeat all knowledge each turn (ours with `?`).
+**Invalid actions found the hard way**: discarding with an empty deck (track
+it: 35 after the deal, −1 per PLAY/DISCARD/ERROR), and naming an empty slot
+(with an empty deck a played slot stays empty, letters do not shift).
+Policy: play a surely playable card, else hint a partner's playable card by
+level, else discard a useless / least-known card. Valid, but the lowest score
+of the table. Ideas: hint what the partner does not know yet (track our own
+hints), prefer colour hints for 5s, "chop" conventions.

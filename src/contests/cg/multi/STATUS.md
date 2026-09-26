@@ -28,7 +28,7 @@ Surveyed 2026-09-26.
 | dice-shogi | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta (minishogi engine), submitted | 2 | 4/4 vs boss (single league) |
 | domain-expansion | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta Voronoi, submitted | 2 | 4/4 vs boss (single league) |
 | dots-and-boxes | 2 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 2/4 vs boss (2x2: wins as A, 2–2 ranked as loss as B) |
-| fireworks | 2 | Gold | 0 | — | 4 | |
+| fireworks | 2 | **Gold** ✅ | 0 | TypeScript Hanabi rules, submitted | 4 | valid but lowest score vs bosses: improve hints |
 | hex | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | impasse | 1 | **Legend** ✅ | 0 | TypeScript 1-ply, submitted | 2 | **weak: 0/4 vs boss**, needs a real engine + search |
 | legends-of-code-magic-constructed | 1 | Legend | 0 | — | 2 | |
