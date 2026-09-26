@@ -43,7 +43,7 @@ Surveyed 2026-09-26.
 | platinum-rift-episode-2 | — | — | 0 | — | 2 | |
 | poker | 2 | Gold | 0 | — | 2–4 | |
 | start-up | 1 | Legend | 0 | — | 4 | |
-| tower-dereference | 1 | Legend | 0 | — | 2 | |
+| tower-dereference | 1 | **Legend** ✅ | 0 | TypeScript upgrade-first, submitted | 2 | 4/4 vs boss (single league) |
 | tulips-and-daisies | 2 | **Legend** ✅ | 0 | TypeScript 2-ply spots, submitted | 2 | 4/4 vs boss (boss goes bankrupt) |
 | twixt-pp | 1 | **Legend** ✅ | 0 | TypeScript distance eval, submitted | 2 | 4/6 vs boss (single league); weak, see notes |
 | vindinium | 2 | **Gold** ✅ | 0 | TypeScript heuristic, submitted | 4 | most gold in 3/4 games vs 3 bosses |

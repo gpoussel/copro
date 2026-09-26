@@ -371,3 +371,12 @@ attack the weakest orthogonal enemy, self-destruct when ≥ 3 enemies around,
 HP ≤ 4 and no ally near, guard when an enemy is within 2, else close in.
 1/4 vs the boss with close robot counts. Ideas: focus fire across robots,
 dodge predicted attacks, keep formation.
+
+## tower-dereference
+
+Single league, constants from the referee (github.com/eulerscheZahl/
+TowerDefense): gun 100 (dmg 5/8/15/30, range 3–6, reload 5/4/3/2), glue 70,
+upgrades 50/100/150 per property level. Building 6 plain gun towers lost 0/4
+(no lives left by turn ~150). Upgrades are the value: 3 gun towers + 1 glue on
+the plateau cells covering the most canyon (weight = closeness to our base²),
+then damage ×3, reload ×3, range ×3 on the best tower, then the next: 4/4.
