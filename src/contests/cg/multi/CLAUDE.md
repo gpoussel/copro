@@ -116,3 +116,11 @@ bottom. Neighbours (r±1 / c±1 plus (r-1,c+1) and (r+1,c-1)) confirmed by
 playout), ~13k iterations per 80 ms on CG; swap if red's first stone is 2+
 cells from every edge. Ideas: RAVE/AMAF (a big win in Hex), bridge patterns
 in playouts, tree reuse.
+
+## amazons
+
+8×8, a match = 2 games with colours swapped (colour re-read each turn). Rows
+top-first, `d8d1d7` = from, to, wall with chess ranks (confirmed: 4/4 wins).
+Bot: 1-ply search over all moves, territory eval from queen-move BFS
+distances (ties lean to the side to move). Ideas: 2-ply on the top-k moves,
+king-distance + mobility terms (the usual Amazons eval mix).
