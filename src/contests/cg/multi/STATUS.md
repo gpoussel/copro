@@ -24,7 +24,7 @@ Surveyed 2026-09-26.
 | clobber | 2 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss |
 | code-keeper---the-hero | 1 | Legend | 0 | — | 4 | |
 | connect-4 | 2 | **Legend** ✅ | 0 | TypeScript MCTS | 2 | Gold→Legend 2026-09-26 |
-| dice-duel | 2 | **Gold** ✅ | 0 | TypeScript 1-ply, submitted | 2 | 4/4 vs boss; **set SEVEN_RULE=true once in Legend** |
+| dice-duel | 2 | **Legend** ✅ | 0 | TypeScript 1-ply, SEVEN_RULE on, resubmitted | 2 | 1/4 vs Legend boss: dies of no moves, add own-mobility to eval |
 | dice-shogi | 1 | Legend | 0 | — | 2 | |
 | domain-expansion | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta Voronoi, submitted | 2 | 4/4 vs boss (single league) |
 | dots-and-boxes | 2 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 2/4 vs boss (2x2: wins as A, 2–2 ranked as loss as B) |
@@ -32,11 +32,11 @@ Surveyed 2026-09-26.
 | hex | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | impasse | 1 | **Legend** ✅ | 0 | TypeScript 1-ply, submitted | 2 | **weak: 0/4 vs boss**, needs a real engine + search |
 | legends-of-code-magic-constructed | 1 | Legend | 0 | — | 2 | |
-| lines-of-action | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
+| lines-of-action | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | mad-knights | 1 | **Legend** ✅ | 0 | TypeScript paranoid alpha-beta, submitted | 3 | 3/6 wins vs 2 bosses (single league) |
 | minishogi | 1 | Legend | 0 | — | 2 | |
-| nine-mens-morris | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
-| onitama | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
+| nine-mens-morris | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
+| onitama | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | othello-1 | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 3/4 vs boss; weak: improve (MCTS or deeper search) |
 | oware-abapa | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | paper-soccer | 1 | **Legend** ✅ | 0 | TypeScript 2-ply turns, submitted | 2 | 4/4 vs boss (single league) |
@@ -44,7 +44,7 @@ Surveyed 2026-09-26.
 | poker | 2 | Gold | 0 | — | 2–4 | |
 | start-up | 1 | Legend | 0 | — | 4 | |
 | tower-dereference | 1 | Legend | 0 | — | 2 | |
-| tulips-and-daisies | 2 | **Gold** ✅ | 0 | TypeScript 2-ply spots, submitted | 2 | 4/4 vs boss (boss goes bankrupt) |
+| tulips-and-daisies | 2 | **Legend** ✅ | 0 | TypeScript 2-ply spots, submitted | 2 | 4/4 vs boss (boss goes bankrupt) |
 | twixt-pp | 1 | **Legend** ✅ | 0 | TypeScript distance eval, submitted | 2 | 4/6 vs boss (single league); weak, see notes |
 | vindinium | 2 | Gold | 0 | — | 4 | |
 | yavalath | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |

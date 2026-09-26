@@ -274,3 +274,6 @@ index in the ORIGINAL shape's reading order. Greedy bot: 10·size + our
 corner cells − 1.5·each opponent's, centre pull for the first 6 moves.
 ~40% vs the boss with close scores (BLOCK weight 0.5 / 3 not better).
 Ideas: 2-ply (opponent's best greedy reply), keep big shapes placeable.
+Promoted to Legend 2026-09-26; `SEVEN_RULE` is now on. In Legend the bot
+loses mostly by having no legal move (the 7-rule filters moves): the eval
+must value our own mobility after the reply.

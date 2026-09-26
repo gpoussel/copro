@@ -10,7 +10,7 @@
 // right <- top. In league 2 (Legend) a capture needs top(after roll) + top of
 // the captured die = 7: set SEVEN_RULE when the bot reaches it.
 
-const SEVEN_RULE = false
+const SEVEN_RULE = true // Legend league (league 2) rule
 const TURN_MS = 40
 const FIRST_TURN_MS = 40
 
