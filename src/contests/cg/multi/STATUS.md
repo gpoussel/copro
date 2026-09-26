@@ -49,7 +49,7 @@ Surveyed 2026-09-26.
 | vindinium | 2 | **Gold** ✅ | 0 | TypeScript heuristic, submitted | 4 | most gold in 3/4 games vs 3 bosses |
 | yavalath | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | yinsh | 1 | **Legend** ✅ | 0 | TypeScript minimal (list-based), submitted | 2 | 2/2 vs boss; no engine yet |
-| beeminegame | 3 | Silver | 1 | TypeScript greedy hives, submitted | 2 | 4/4 vs Silver boss; awaiting promotion (levels/bees next) |
+| beeminegame | 3 | **Gold** ✅ | 0 | TypeScript greedy hives | 2 | Silver→Gold 2026-09-26 (levels/bees in Gold: bot ignores them) |
 | counting-tictactoe | 3 | **Gold** ✅ | 0 | TypeScript MCTS | 2 | Silver→Gold 2026-09-26 |
 | elemental-wars | 3 | Silver | 1 | TypeScript chase/flee, submitted | 3 | best score 4/6 vs 2 bosses; awaiting promotion (more elementals + freeing prisoners next) |
 | mad-pod-racing | 7 | **Gold** ✅ | 0 | TypeScript Gold 2-pod racer, submitted | 2 | 1/4 vs Gold boss; next: blocker pod + collisions (Magus) |
@@ -60,15 +60,15 @@ Surveyed 2026-09-26.
 | spring-challenge-2026-troll-farm | 6 | Silver | 1 | C++ 169/683 | 2 | |
 | tic-tac-toe | 5 | **Legend** ✅ | 0 | TypeScript MCTS v6 | 2 | Gold→Legend 2026-09-26 |
 | volcanoes | 3 | Silver | 1 | TypeScript 1-ply | 2 | stuck 82/125 in Silver: needs growth simulation / search |
-| atari-go | 4 | Bronze | 2 | TypeScript tactical 1.5-ply, submitted | 2 | 4/4 vs Bronze boss; board grows to 13/19 in later leagues |
-| atari-go-9x9 | 4 | Bronze | 2 | TypeScript tactical 1.5-ply, submitted | 2 | 4/4 vs Bronze boss |
+| atari-go | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
+| atari-go-9x9 | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
 | code4life | 6 | Bronze | 2 | Rust 1221/1535 | 2 | |
 | coders-of-the-realm | 4 | Bronze | 2 | — | 2–4 | |
 | coders-of-the-realm---1v1 | 4 | Bronze | 2 | — | 2 | |
 | cultist-wars | 4 | Bronze | 2 | TypeScript action scoring, submitted | 2 | 2/6 vs Bronze boss (loses as player 2): improve shooting duels |
 | game-of-life-or-death | 4 | Bronze | 2 | TypeScript pattern search, submitted | 2 | 4/4 vs Bronze boss (~590–1); awaiting promotions |
 | gargoyles-versus-santas | 4 | Bronze | 2 | TypeScript interception, submitted | 2 | 4/4 vs Bronze boss; awaiting promotions |
-| isola | 4 | Bronze | 2 | TypeScript alpha-beta, submitted | 2 | 4/4 vs Bronze boss; awaiting promotions |
+| isola | 4 | **Gold** ✅ | 0 | TypeScript alpha-beta | 2 | Bronze→Gold 2026-09-26 |
 | legends-of-code-magic | 7 | Bronze | 2 | TypeScript 518/1629 | 2 | |
 | seabed-security | 7 | Bronze | 2 | C++ 274/707 | 2 | |
 | spring-challenge-2021 | 6 | Bronze | 2 | Rust 255/3033 | 2 | |
