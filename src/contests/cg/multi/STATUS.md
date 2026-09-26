@@ -49,10 +49,10 @@ Surveyed 2026-09-26.
 | vindinium | 2 | **Gold** ✅ | 0 | TypeScript heuristic, submitted | 4 | most gold in 3/4 games vs 3 bosses |
 | yavalath | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | yinsh | 1 | **Legend** ✅ | 0 | TypeScript minimal (list-based), submitted | 2 | 2/2 vs boss; no engine yet |
-| beeminegame | 3 | Silver | 1 | — | 2 | |
+| beeminegame | 3 | Silver | 1 | TypeScript greedy hives, submitted | 2 | 4/4 vs Silver boss; awaiting promotion (levels/bees next) |
 | counting-tictactoe | 3 | Silver | 1 | TypeScript MCTS, submitted | 2 | 4/4 vs Silver boss; awaiting promotion |
 | elemental-wars | 3 | Silver | 1 | TypeScript chase/flee, submitted | 3 | best score 4/6 vs 2 bosses; awaiting promotion (more elementals + freeing prisoners next) |
-| mad-pod-racing | 7 | Silver | 1 | TypeScript sim bot, submitted 2026-09-26 | 2 | 8/8 vs Silver boss in IDE |
+| mad-pod-racing | 7 | **Gold** ✅ | 0 | TypeScript Silver sim bot (in Gold) | 2 | promoted 2026-09-26 23:1x; Gold protocol (2 pods) not handled yet: bot must be rewritten |
 | night-of-war | 3 | Silver | 1 | TypeScript rules, submitted | 2 | 4/4 vs Silver boss; awaiting promotion (league 2: 5×5, league 3: 8×8 + levels) |
 | penguins | 3 | Silver | 1 | TypeScript 1-ply Voronoi, submitted | 2–4 | 4/4 vs Silver boss but thin margins; awaiting promotion |
 | space-shooter | 3 | Silver | 1 | TypeScript steering, submitted | 2 | 4/4 vs Silver boss; awaiting promotion (missiles next league) |

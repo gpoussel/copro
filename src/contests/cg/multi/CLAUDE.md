@@ -54,7 +54,8 @@ Bot: random-restart + mutation search over 6-turn (rotation, thrust) plans,
 checkpoints learnt during lap 1, heading bonus in the evaluation. Opponent
 ignored (no collisions simulated, no SHIELD yet). 8/8 vs the Silver boss.
 
-Gold changes the protocol (2 pods each, full checkpoint list given up front):
+**Promoted to Gold on 2026-09-26.** Gold changes the protocol (2 pods each,
+full checkpoint list given up front), so the Silver bot plays badly there:
 rewrite the I/O, then add a blocker pod and collisions (Magus' post-mortem:
 http://files.magusgeek.com/csb/csb_en.html).
 
@@ -479,3 +480,10 @@ more elementals, rescuing prisoners and bigger maps later). Water > Fire >
 Plant > Water. Bot: per elemental, among stay + 4 neighbours, never end
 within 1 step of a predator, else get closest to a prey (all-pairs BFS on the
 static map). Best score in 4/6 games vs two bosses.
+
+## beeminegame
+
+3 leagues (Silver start; levels and bees unused in league 1). 19×9, one
+neutral square per turn next to our territory; each hive scores for the
+strictly closer territory. Greedy: most hives won, then closeness to hives
+still contested. 4/4 vs the Silver boss.
