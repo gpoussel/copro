@@ -431,3 +431,10 @@ enemy on turn 1). Bot: each group sends 1 pod to every unowned neighbour
 path to the enemy base; 2 pods stay home when enemies are adjacent; pods in a
 fight never retreat into enemy zones. 4/4 vs the boss (base taken in 13–19
 turns). Same pending-submit issue as back-to-the-code (MCP PR #7).
+
+## counting-tictactoe
+
+10×10, 3 leagues (Silver start). Board full ⇒ most 3-cell windows wins; two
+matches per game, colours swapped. Board tracked from the valid-move list
+(new match = the valid count goes back up). MCTS with random-fill playouts,
+reward 0.5 + 0.5·tanh(diff/4). 4/4 vs the Silver boss (≈ +40 windows).

@@ -50,7 +50,7 @@ Surveyed 2026-09-26.
 | yavalath | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | yinsh | 1 | **Legend** ✅ | 0 | TypeScript minimal (list-based), submitted | 2 | 2/2 vs boss; no engine yet |
 | beeminegame | 3 | Silver | 1 | — | 2 | |
-| counting-tictactoe | 3 | Silver | 1 | — | 2 | |
+| counting-tictactoe | 3 | Silver | 1 | TypeScript MCTS, submitted | 2 | 4/4 vs Silver boss; awaiting promotion |
 | elemental-wars | 3 | Silver | 1 | — | 3 | |
 | mad-pod-racing | 7 | Silver | 1 | TypeScript sim bot, submitted 2026-09-26 | 2 | 8/8 vs Silver boss in IDE |
 | night-of-war | 3 | Silver | 1 | — | 2 | |
