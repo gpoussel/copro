@@ -303,3 +303,14 @@ Minishogi + a die choosing the destination file (extra input line). Same
 engine as minishogi.ts; the referee's list applies the die at the root, the
 search lets the opponent use any file (pessimistic). 4/4 vs the boss.
 Ideas: expectimax over the opponent's die.
+
+## 6-nimmt-6-qui-prend-take-5
+
+4 players, single league. **Input order differs from the statement**: last
+played cards, 4 × (count, cards), scores, hand count, hand, then the phase
+(last). With an empty hand the empty hand line is still sent: read until the
+`CHOOSE_…` keyword. Output `PLAY card` / `PICK line` (0–3). Bot: Monte Carlo
+over the opponents' cards (sampled from unseen cards), play the card with
+the fewest expected cows; pick the cheapest line. Best score in 3/4 games vs
+three bosses. (The play result's `ranks` did not match the scores here: judge
+by `scores`.)

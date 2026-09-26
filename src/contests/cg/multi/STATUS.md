@@ -9,7 +9,7 @@ Surveyed 2026-09-26.
 
 | Game | Leagues | Current | To Gold | Agent | Players | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| 6-nimmt-6-qui-prend-take-5 | 1 | Legend | 0 | — | 4 | |
+| 6-nimmt-6-qui-prend-take-5 | 1 | **Legend** ✅ | 0 | TypeScript Monte Carlo, submitted | 4 | best score in 3/4 games vs 3 bosses (single league) |
 | abalone | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (6–0) |
 | amazons | 2 | **Legend** ✅ | 0 | TypeScript 1-ply territory, submitted | 2 | 4/4 matches vs boss |
 | ataxx | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 6/6 vs boss |
