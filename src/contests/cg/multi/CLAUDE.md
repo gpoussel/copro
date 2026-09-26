@@ -538,3 +538,12 @@ live cells per turn. Model (worked first try): set our column, then run
 generations. Bot: all column patterns within the mana (≤ 256), 6 generations
 simulated with empty future columns, score = goal-cell occupancy weighted
 towards sooner turns. 4/4 vs the Bronze boss (~590 to 1).
+
+## gargoyles-versus-santas
+
+4 leagues (Bronze start: 1 gargoyle, value-1 presents, no cooldown use).
+y = 0 is the ground; presents fall |vy| per turn; destroy within 30 at the
+end of a turn; fly ≤ 150. Bot: per gargoyle, the present interceptable
+soonest (penalty if the enemy reaches it first), fly to the interception
+point. 4/4 vs the Bronze boss. Later leagues: more gargoyles, values,
+cooldowns.

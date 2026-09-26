@@ -67,7 +67,7 @@ Surveyed 2026-09-26.
 | coders-of-the-realm---1v1 | 4 | Bronze | 2 | — | 2 | |
 | cultist-wars | 4 | Bronze | 2 | TypeScript action scoring, submitted | 2 | 2/6 vs Bronze boss (loses as player 2): improve shooting duels |
 | game-of-life-or-death | 4 | Bronze | 2 | TypeScript pattern search, submitted | 2 | 4/4 vs Bronze boss (~590–1); awaiting promotions |
-| gargoyles-versus-santas | 4 | Bronze | 2 | — | 2 | |
+| gargoyles-versus-santas | 4 | Bronze | 2 | TypeScript interception, submitted | 2 | 4/4 vs Bronze boss; awaiting promotions |
 | isola | 4 | Bronze | 2 | TypeScript alpha-beta, submitted | 2 | 4/4 vs Bronze boss; awaiting promotions |
 | legends-of-code-magic | 7 | Bronze | 2 | TypeScript 518/1629 | 2 | |
 | seabed-security | 7 | Bronze | 2 | C++ 274/707 | 2 | |
