@@ -471,3 +471,11 @@ statement says Ship/Bullet). League 1 bot: steering sum (walls, keep ~350
 from the enemy, flee bullets within 260, damping), fire when ready with a lead
 on the enemy's velocity, bullet velocity made relative to our ship. 4/4 vs the
 Silver boss. Next league adds missiles: re-read the statement.
+
+## elemental-wars
+
+3 players, 3 leagues (Silver start; 1 elemental per tribe on 11×11 here,
+more elementals, rescuing prisoners and bigger maps later). Water > Fire >
+Plant > Water. Bot: per elemental, among stay + 4 neighbours, never end
+within 1 step of a predator, else get closest to a prey (all-pairs BFS on the
+static map). Best score in 4/6 games vs two bosses.
