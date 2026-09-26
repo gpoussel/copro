@@ -149,3 +149,11 @@ user of each card, a played card goes to the centre negated. Orientation found
 on CG: `A1` is on the **last** input line and row delta = −dy. Actions are
 `cardId A2B3` or `cardId PASS`. Bot: negamax alpha-beta, eval = 100/student
 + master distance to the enemy shrine. 4/4 vs the boss (wins in 4–8 moves).
+
+## nine-mens-morris
+
+24 fields, adjacency given at start; mills derived from the coordinates
+(rows/columns, row 4 and column D split in two). Stones in hand tracked by
+turn count. 50 ms. Bot: negamax alpha-beta (100/stone incl. hand, ±15 per
+open two-in-a-mill), mill moves searched first; the engine's commands match
+the referee's (no desync). 4/4 vs the boss.

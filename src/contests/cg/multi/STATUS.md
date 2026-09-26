@@ -35,7 +35,7 @@ Surveyed 2026-09-26.
 | lines-of-action | 2 | Gold | 0 | — | 2 | |
 | mad-knights | 1 | Legend | 0 | — | 3 | |
 | minishogi | 1 | Legend | 0 | — | 2 | |
-| nine-mens-morris | 2 | Gold | 0 | — | 2 | |
+| nine-mens-morris | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | onitama | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | othello-1 | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 3/4 vs boss; weak: improve (MCTS or deeper search) |
 | oware-abapa | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
