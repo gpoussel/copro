@@ -519,3 +519,13 @@ leader kill), leader steps towards the nearest convertible unit minus the
 enemy fire on the destination, cultists close in on the enemy leader. 2/6 vs
 the Bronze boss: wins as player 1, loses as player 2 (units shot down).
 Ideas: 2-ply over actions, keep cultists out of enemy lines, read the source.
+
+## tryangle-catch (WIP, not submitted)
+
+4 leagues (Bronze start = league 1: spawn only). Input: houses, units per
+house, paths, triangles (owner, canCapture). First bug: reserving units on
+the corners of every capturable triangle left no spare units, the army never
+moved. After the fix the bot still loses 0/6: its units end surrounded
+(a unit dies when every neighbour house is enemy-held) and it runs out of
+units. Next: read the referee (github.com/eulerscheZahl/TryAngle-Catch),
+move in groups, grow from our own triangles outwards.
