@@ -244,3 +244,14 @@ block), then a wall on one side of the token. Bot: negamax alpha-beta over
 (cell, wall) moves, Voronoi eval, exact domain sizes once separated; walls
 rebuilt from the history after an interrupted search. 4/4 vs the boss
 (domains 42–48 vs 1–2).
+
+## impasse
+
+Single league. Legal moves listed (1–3 coords: move, transpose, impasse
+removal, + crown). An impasse-removal+crown move also has 2 coords like a
+slide: decide impasse on the whole list (no empty landing, no transpose).
+Current bot: 1-ply, apply the move with bear-off/crown, eval = fewer own
+checkers + progress. **Loses 0/4 to the boss.** Key insight not yet used:
+an impasse is a free removal for the side in it, so blocking the opponent
+helps *them*; tempo matters. TODO: full move generator (slides, transposes,
+impasse), alpha-beta with a checker-count/tempo eval.

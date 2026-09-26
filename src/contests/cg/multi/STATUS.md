@@ -30,7 +30,7 @@ Surveyed 2026-09-26.
 | dots-and-boxes | 2 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 2/4 vs boss (2x2: wins as A, 2–2 ranked as loss as B) |
 | fireworks | 2 | Gold | 0 | — | 4 | |
 | hex | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
-| impasse | 1 | Legend | 0 | — | 2 | |
+| impasse | 1 | **Legend** ✅ | 0 | TypeScript 1-ply, submitted | 2 | **weak: 0/4 vs boss**, needs a real engine + search |
 | legends-of-code-magic-constructed | 1 | Legend | 0 | — | 2 | |
 | lines-of-action | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | mad-knights | 1 | Legend | 0 | — | 3 | |
