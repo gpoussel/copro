@@ -865,3 +865,64 @@ Offline (2 s budget, local machine): A-n60..A-n80 + M set total gap 0.70%
 Next levers if ever needed: add intra-route 2-opt/or-opt polishing of the best,
 or restarts / multiple SA runs (the remaining 102 units are spread over the
 larger M-like validators).
+
+---
+
+## snake
+
+96x54 grid (x < 96, y < 54). The snake starts at (14,10)..(10,10), heading
+right, length 5. The N rabbits (50-70) are all given on turn 1. Each turn the
+bot reads the snake body (head first) and outputs the new head cell. Stepping on
+a rabbit catches it and the snake grows by 1. Leaving the map or hitting its own
+body ends the game. Limits: 600 turns, 50 ms/turn. The first-turn limit was not
+probed: run_puzzle_tests errored (tool error, no result) on 3 calls in a row,
+then worked again.
+
+**Scoring (the author posted the referee code on the forum,
+forum.codingame.com/t/community-puzzle-snake/202961).** A catch at turn t, with
+gap g = t - lastCatch (lastCatch starts at -10000):
+`combo = g <= 2 ? combo + 1 : 1`; `add = combo > 1 ? 15000 * combo : 0`;
+`pen = (not the first catch && g > 10) ? t * g : 0`;
+`SCORE += 10000 + add - pen`.
+- Combos grow quadratically along chains of rabbits spaced ≤ 2 apart.
+- Gaps of 10 or less are free. Later gaps cost more (the penalty is t × g).
+- Only one rabbit is caught per step (the loop breaks), so two rabbits on the
+  same cell need a leave-and-return (distance 2).
+- A rabbit can spawn under the initial snake. The bot drops a rabbit when it
+  stepped on it and the snake did not grow.
+- The score still counts when the snake dies (the probe died at turn 287 and
+  scored 288542).
+
+**Validators:** fixed tests plus random ones (50/60/70 rabbits). Forum: scores
+vary by ±500k between submissions because of the random validators, so a
+resubmit can change the score.
+
+**Solver** (`snake.ts`): SA over the order of the remaining rabbits, scored with
+the exact formula. The first leg uses the time-aware BFS distance from the head;
+the other legs use Manhattan distance. Moves are reverse, segment move (1-3) and
+swap. T goes from 20000 to 100, geometric over 3e6 iterations; the SA state
+persists across turns. Budget: 40 ms on turn 1, 30 ms after (40 ms gave a 52 ms
+worst turn offline). The move follows a time-aware BFS to the first planned
+rabbit. A body cell i counts as free after L-i+1 moves. Among shortest paths,
+the tie-break avoids other rabbits. A flood-fill check needs at least len+2
+reachable cells; otherwise the bot takes the roomiest neighbour.
+
+**Harness** (`snake-tools/sim.mjs [nGames] [seed0]`, env `ONLY=i,j`, `SN_*`
+knobs, `SN_DEBUG=1` prints the plan every 25 turns): an offline referee with the
+forum formula. It runs visible tests 1-2 plus random 50/60/70 games, spawning
+the real .ts through `readline-preload.cjs`. Offline, 5 games: TOTAL ~3.08-3.20M.
+Changing T0/T1 (2000/20) or a 3 s first turn gave no clear difference
+(±3%, noise). A 60-70 rabbit game often does not finish in 600 turns.
+Min-length open paths (2-opt/or-opt): 50 → 496, 60 → 579, 70 → ~580-595. The
+score-optimal plan is longer than the min-length one, because gaps ≤ 10 are
+free.
+
+**Submitted (1 submission): 100%, criteriaScore 6,628,463, global rank 7 / 369
+(top 1.9%).** #1 = 6,882,526; rank 92 (top 25%) ≈ 5.69M. Objective reached on
+the first submission, so I stopped. Labels claimed (pathfinding, distance, graph
+theory, travelling salesman).
+
+Next levers: a longer first-turn plan (probe the first-turn limit), path shaping
+so the executed path matches the plan (the plan end jumped +24 turns mid-game
+once, from a detour or an out-of-order catch), and resubmitting for luck on the
+random validators.
