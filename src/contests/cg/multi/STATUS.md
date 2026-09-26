@@ -42,7 +42,7 @@ Surveyed 2026-09-26.
 | paper-soccer | 1 | **Legend** ✅ | 0 | TypeScript 2-ply turns, submitted | 2 | 4/4 vs boss (single league) |
 | platinum-rift-episode-2 | — | — | 0 | — | 2 | |
 | poker | 2 | **Gold** ✅ | 0 | TypeScript Monte Carlo equity, submitted | 2–4 | 2/4 heads-up vs boss |
-| start-up | 1 | Legend | 0 | — | 4 | |
+| start-up | 1 | **Legend** ✅ | 0 | TypeScript rules, submitted | 4 | valid; 106–200‰ vs bosses 450–800‰ |
 | tower-dereference | 1 | **Legend** ✅ | 0 | TypeScript upgrade-first, submitted | 2 | 4/4 vs boss (single league) |
 | tulips-and-daisies | 2 | **Legend** ✅ | 0 | TypeScript 2-ply spots, submitted | 2 | 4/4 vs boss (boss goes bankrupt) |
 | twixt-pp | 1 | **Legend** ✅ | 0 | TypeScript distance eval, submitted | 2 | 4/6 vs boss (single league); weak, see notes |

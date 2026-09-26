@@ -400,3 +400,16 @@ clones tracked), red items on guards/threats, green on our best creature,
 blue to face, attacks: guards first, then kill-and-survive trades unless we
 have lethal, else face. 6/6 vs the boss. The battle code should carry over
 to legends-of-code-magic (draft variant).
+
+## start-up
+
+4 players, single league, **one input value per line** (the statement shows
+one line of 11). Reputation = 100·features / (3·bugs + fixed bugs), capped at
+2000; stealing share needs reputation ≥ the victim's, so bugs are fatal.
+Bot: devs 1/5 on features, 4/5 on tests (tests ≥ 4·features ⇒ no bugs), 20
+features then 2 devs; sellers from 8 features (unfilled market, competitive
+once the market is full); 1 manager per 4 employees; hires capped by a 4-turn
+cash reserve. First version (40% of devs on features) sat at ~10‰ share; now
+106–200‰ but the bosses reach 450–800‰. Ideas: faster ramp-up (more managers
+early), earlier sellers, target the leader with the focus rule.
+In 4-player IDE games, check `scores` rather than `outcome`.
