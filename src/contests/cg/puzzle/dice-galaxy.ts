@@ -4,7 +4,11 @@
 const w = +readline()
 const h = +readline()
 const grid: string[][] = []
-for (let i = 0; i < h; i++) grid.push(readline().padEnd(w, ".").split(""))
+for (let i = 0; i < h; i++) {
+  const row = readline().split("")
+  while (row.length < w) row.push(".")
+  grid.push(row)
+}
 
 // Die state: which label lies on each side [top, bottom, north, south, east, west]
 type Die = [string, string, string, string, string, string]
