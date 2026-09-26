@@ -255,3 +255,12 @@ checkers + progress. **Loses 0/4 to the boss.** Key insight not yet used:
 an impasse is a free removal for the side in it, so blocking the opponent
 helps *them*; tempo matters. TODO: full move generator (slides, transposes,
 impasse), alpha-beta with a checker-count/tempo eval.
+
+## mad-knights
+
+3-player knight isolation, single league, 100 ms; board rows rank 8 first,
+legal moves listed. Bot: paranoid alpha-beta (both opponents minimise our
+value), eval = 10·our mobility − 6·each opponent's. 3/6 wins vs two bosses,
+2nd otherwise. Ideas: max-n instead of paranoid, area (BFS) eval late game.
+(MCP note: in 3-player games the `events` names can show "me" for another
+seat — check `ranks` for the real outcome.)

@@ -33,7 +33,7 @@ Surveyed 2026-09-26.
 | impasse | 1 | **Legend** ✅ | 0 | TypeScript 1-ply, submitted | 2 | **weak: 0/4 vs boss**, needs a real engine + search |
 | legends-of-code-magic-constructed | 1 | Legend | 0 | — | 2 | |
 | lines-of-action | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
-| mad-knights | 1 | Legend | 0 | — | 3 | |
+| mad-knights | 1 | **Legend** ✅ | 0 | TypeScript paranoid alpha-beta, submitted | 3 | 3/6 wins vs 2 bosses (single league) |
 | minishogi | 1 | Legend | 0 | — | 2 | |
 | nine-mens-morris | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | onitama | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
