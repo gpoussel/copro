@@ -826,3 +826,42 @@ clearable groups, where each group is a merge tree ending in an equal
 subtraction. The forum mentions this exact-cover / sub-problem decomposition.
 Enumerate small clearable groups, then run DLX. Solve offline and embed the
 plans, keeping the start password within ~200 turns of the last level.
+
+---
+
+## vehicle-routing-problem
+
+Classic CVRP: depot 0, unlimited vehicles of capacity `c`, each customer once,
+`dist = round(euclid)`. Output routes (no depot) joined by `;`. Single-shot, 10 s.
+Leaderboard criterion = **total distance summed over the hidden validators**
+(lower is better). The statement says validators are CVRPLib sets A and M
+(some rescaled/renamed like the visible "Stars and Stripes", "Beer Delivery"...),
+"similar but different" from the tests. #1 (many ties) = **87904** = the sum of
+the optima. At the time of writing (349 players) top 25% (rank 87) was 91794,
+i.e. ~4.4% total gap: a decent metaheuristic clears it easily.
+
+**Solver**: SISR (Christiaens & Vanden Berghe 2020, "Slack Induction by String
+Removals") inside simulated annealing, wall-clock budget 8500 ms. Ruin: remove
+`ks` strings (or split strings, 50/50) from routes adjacent to a random seed
+customer (c̄=10, Lmax=10, split beta=0.01). Recreate: cheapest insertion with
+1% blinks, order by random/demand desc/far/close (4/4/2/1). T0/Tf = 2.0/0.02 ×
+mean nearest-neighbour edge (so the schedule is scale-free across instances).
+Starts from a pure recreate of all customers. No separate local search.
+
+**Harness**: `bench.mjs <instDir> <ms> [solver] [regex] [seed]` runs the solver
+(Node native type stripping + `readline-preload.cjs`) on CVRPLib `.vrp` files and
+prints per-instance gap. Instances: `https://galgos.inf.puc-rio.br/cvrplib/en/download/instance/<id>`
+and `.../download/bks/<id>` (ids 4..~60 cover A, B, E, F, M, P sets as single
+files; set archives are .7z and there is no 7z tool here). The X set with .sol
+is also on GitHub at `PyVRP/Instances/CVRP`.
+
+Offline (2 s budget, local machine): A-n60..A-n80 + M set total gap 0.70%
+(M-n200-k16 2.6%, M-n151 1.7%, most A at 0-1%). On CG (8.5 s) M-n200-k17 -> 1281
+(0.4% gap) with 385k iterations: CG is at least as fast as local.
+
+**Submissions**: v1 (above, 1 submission) -> 100% validators, labels claimed,
+**criteriaScore 88006** (0.12% above the 87904 optimum sum), **rank 11 / 350
+(top 3.1%)**. Objective (top 25%) reached on the first submission; stopped.
+Next levers if ever needed: add intra-route 2-opt/or-opt polishing of the best,
+or restarts / multiple SA runs (the remaining 102 units are spread over the
+larger M-like validators).
