@@ -18,12 +18,12 @@ Surveyed 2026-09-26.
 | blocking | 2 | Gold | 0 | — | 2–4 | |
 | breakthrough | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | chain-reaction-1 | 1 | Legend | 0 | — | 2 | |
-| checkers | 1 | Legend | 0 | — | 2 | |
+| checkers | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | chess | 2 | Gold | 0 | — | 2 | |
 | clash-of-bots | 1 | Legend | 0 | — | 2 | |
 | clobber | 2 | **Gold** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss |
 | code-keeper---the-hero | 1 | Legend | 0 | — | 4 | |
-| connect-4 | 2 | **Gold** ✅ | 0 | TypeScript MCTS, submitted | 2 | 6/6 vs boss in IDE |
+| connect-4 | 2 | **Legend** ✅ | 0 | TypeScript MCTS | 2 | Gold→Legend 2026-09-26 |
 | dice-duel | 2 | Gold | 0 | — | 2 | |
 | dice-shogi | 1 | Legend | 0 | — | 2 | |
 | domain-expansion | 1 | Legend | 0 | — | 2 | |
@@ -58,7 +58,7 @@ Surveyed 2026-09-26.
 | space-shooter | 3 | Silver | 1 | — | 2 | |
 | spring-challenge-2022 | 6 | Silver | 1 | Rust 1526/2401 | 2 | |
 | spring-challenge-2026-troll-farm | 6 | Silver | 1 | C++ 169/683 | 2 | |
-| tic-tac-toe | 5 | **Gold** ✅ | 0 | TypeScript MCTS v6, submitted in Gold | 2 | promoted 2026-09-26 |
+| tic-tac-toe | 5 | **Legend** ✅ | 0 | TypeScript MCTS v6 | 2 | Gold→Legend 2026-09-26 |
 | volcanoes | 3 | Silver | 1 | — | 2 | |
 | atari-go | 4 | Bronze | 2 | — | 2 | |
 | atari-go-9x9 | 4 | Bronze | 2 | — | 2 | |

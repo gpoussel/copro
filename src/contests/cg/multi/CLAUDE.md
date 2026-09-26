@@ -3,6 +3,13 @@
 Per-game notes: rules learnt, what beat which boss, what did not work. See the
 `codingame-multi` skill for the general play/replay/submit loop.
 
+**Trust the referee, not the statement.** Several statements are wrong about
+the input (Ataxx row order, Checkers colour letter). When the referee lists the
+legal moves, have the engine regenerate them and compare the *sets* (a
+mirrored board has the same move count), and derive orientation/colour from
+them. A crash shows up only as "timeout" with no stderr: replay the first
+input locally (`tic-tac-toe-tools/shim.mjs` runs a bot on piped input).
+
 ## tic-tac-toe (Ultimate Tic-Tac-Toe)
 
 Referee source: https://github.com/CodinGame/game-ultimate-tictactoe (checked):
@@ -124,3 +131,13 @@ top-first, `d8d1d7` = from, to, wall with chess ranks (confirmed: 4/4 wins).
 Bot: 1-ply search over all moves, territory eval from queen-move BFS
 distances (ties lean to the side to move). Ideas: 2-ply on the top-k moves,
 king-distance + mobility terms (the usual Amazons eval mix).
+
+## checkers
+
+8×8 American-style (men forward only, one-step kings, mandatory chained
+captures, a man reaching the far row stops). **The colour line may be `w`
+although the statement says `r`/`b`**; the rank numbering and direction are not
+stated either. The bot derives its colour from the piece on the first legal
+move's start square, then picks the orientation (rank 8 on top or bottom ×
+forward direction) that reproduces the referee's move list exactly. Negamax
+alpha-beta (man 100 + 3·advance, king 160) with a capture quiescence. 4/4.
