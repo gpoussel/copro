@@ -362,3 +362,12 @@ monsters, bow dangerous ones (gargoyle/orc/vampire) in range, potion when
 HP ≤ 10, exit when seen, else items, else nearest frontier. Scores close to
 the bosses; in the tests nobody found the exit. Ideas: explore by
 information gain, avoid fights, hammer/scythe on groups.
+
+## clash-of-bots
+
+Single league, torus arena, 5×5 minimap per robot (health values, enemies
+negative), actions resolved moves → attacks → self-destructions. Rule bot:
+attack the weakest orthogonal enemy, self-destruct when ≥ 3 enemies around,
+HP ≤ 4 and no ally near, guard when an enemy is within 2, else close in.
+1/4 vs the boss with close robot counts. Ideas: focus fire across robots,
+dodge predicted attacks, keep formation.

@@ -20,7 +20,7 @@ Surveyed 2026-09-26.
 | chain-reaction-1 | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | checkers | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | chess | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 matches vs boss |
-| clash-of-bots | 1 | Legend | 0 | — | 2 | |
+| clash-of-bots | 1 | **Legend** ✅ | 0 | TypeScript rules, submitted | 2 | 1/4 vs boss, close counts |
 | clobber | 2 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss |
 | code-keeper---the-hero | 1 | **Legend** ✅ | 0 | TypeScript explorer, submitted | 4 | 1/4, scores close to bosses; nobody reaches the exit |
 | connect-4 | 2 | **Legend** ✅ | 0 | TypeScript MCTS | 2 | Gold→Legend 2026-09-26 |
