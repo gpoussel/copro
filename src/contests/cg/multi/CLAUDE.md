@@ -277,3 +277,13 @@ Ideas: 2-ply (opponent's best greedy reply), keep big shapes placeable.
 Promoted to Legend 2026-09-26; `SEVEN_RULE` is now on. In Legend the bot
 loses mostly by having no legal move (the 7-rule filters moves): the eval
 must value our own mobility after the reply.
+
+## abalone
+
+Hex side 5, 75 ms. Moves are `a b c d dir`; the coordinate order and the
+direction labels are only in an image, so they were fitted by trying all
+2 × 720 mappings against the referee's list (every game agreed): pairs are
+(index, row), label k = axial direction [(1,0),(0,−1),(1,−1),(−1,0),(−1,1),
+(0,1)][k] with axial r = row − 4, q = index − 4 + max(0, 4 − row). Doing that
+search every turn timed out: it is hard-coded now. Bot: negamax alpha-beta
+(depth ~2), eval = 1000/marble off + centrality + cohesion. 4/4 (6–0).
