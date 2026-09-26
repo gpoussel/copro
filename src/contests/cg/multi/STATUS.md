@@ -32,7 +32,7 @@ Surveyed 2026-09-26.
 | hex | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | impasse | 1 | Legend | 0 | — | 2 | |
 | legends-of-code-magic-constructed | 1 | Legend | 0 | — | 2 | |
-| lines-of-action | 2 | Gold | 0 | — | 2 | |
+| lines-of-action | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | mad-knights | 1 | Legend | 0 | — | 3 | |
 | minishogi | 1 | Legend | 0 | — | 2 | |
 | nine-mens-morris | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |

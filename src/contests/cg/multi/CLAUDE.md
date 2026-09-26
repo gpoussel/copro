@@ -166,3 +166,12 @@ arrives as `x y` on one line** (the statement lists two lines): found with
 a = x + max(0, y − 4) gives line directions (1,0), (0,1), (1,1). Bot: MCTS,
 playouts retry suicidal (3-making) moves up to 4 times, move outcomes stored
 in the nodes. No steal. 4/4 vs the boss.
+
+## lines-of-action
+
+8×8, 150 ms, first input line = rank 8, legal moves listed (engine matches).
+Bot: negamax alpha-beta; eval = 20·(groups diff) + 40·(concentration diff) +
+centre table; captures and centre-bound moves searched first; the opponent's
+connection is only tested after a capture. First version (no centre term,
+full terminal test) lost 0/4 to the boss; this one wins 4/4 in ~13 moves.
+Ideas: quads/Euler number, mobility, MCTS-Solver (Winands).
