@@ -2,7 +2,7 @@ import chalk from "chalk"
 import { Contest } from "../../types/contest.js"
 import { writeTemplateIfNecessary } from "./tools/file-generator.js"
 
-const CATEGORIES = ["golf", "puzzle", "opti"] as const
+const CATEGORIES = ["golf", "puzzle", "opti", "multi"] as const
 type Category = (typeof CATEGORIES)[number]
 
 function slugify(raw: string): string {

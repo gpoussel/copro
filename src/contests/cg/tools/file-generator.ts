@@ -6,6 +6,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   golf: "Code Golf",
   puzzle: "Puzzle",
   opti: "Optimization",
+  multi: "Multiplayer",
 }
 
 export async function writeTemplateIfNecessary(
@@ -23,7 +24,7 @@ export async function writeTemplateIfNecessary(
   const created = !(await fs.pathExists(solutionFile))
   if (created) {
     // golf files are byte-minimized and excluded from typecheck, so they keep
-    // @ts-nocheck; puzzle/opti are type-checked (readline() is declared ambiently).
+    // @ts-nocheck; puzzle/opti/multi are type-checked (readline() is declared ambiently).
     const header = category === "golf" ? `// @ts-nocheck\n` : ""
     await fs.writeFile(
       solutionFile,
