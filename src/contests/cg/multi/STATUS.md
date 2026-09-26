@@ -1,0 +1,108 @@
+# CodinGame multiplayer — league status
+
+Goal: at least **Gold** on every multi (an agent submitted in Gold or Legend).
+Refresh with `get_arena_status`; notes and ideas per game live in `CLAUDE.md`.
+`to Gold` = promotions still needed; 1- and 2-league games start in Legend / Gold,
+so a submitted bot is enough there.
+
+Surveyed 2026-09-26.
+
+| Game | Leagues | Current | To Gold | Agent | Players | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| 6-nimmt-6-qui-prend-take-5 | 1 | Legend | 0 | — | 4 | |
+| abalone | 2 | Gold | 0 | — | 2 | |
+| amazons | 2 | Gold | 0 | — | 2 | |
+| ataxx | 2 | Gold | 0 | — | 2 | |
+| back-to-the-code | — | — | 0 | — | 2–4 | |
+| bandas | 1 | Legend | 0 | — | 2 | |
+| blocking | 2 | Gold | 0 | — | 2–4 | |
+| breakthrough | 1 | Legend | 0 | — | 2 | |
+| chain-reaction-1 | 1 | Legend | 0 | — | 2 | |
+| checkers | 1 | Legend | 0 | — | 2 | |
+| chess | 2 | Gold | 0 | — | 2 | |
+| clash-of-bots | 1 | Legend | 0 | — | 2 | |
+| clobber | 2 | Gold | 0 | — | 2 | |
+| code-keeper---the-hero | 1 | Legend | 0 | — | 4 | |
+| connect-4 | 2 | Gold | 0 | — | 2 | |
+| dice-duel | 2 | Gold | 0 | — | 2 | |
+| dice-shogi | 1 | Legend | 0 | — | 2 | |
+| domain-expansion | 1 | Legend | 0 | — | 2 | |
+| dots-and-boxes | 2 | Gold | 0 | — | 2 | |
+| fireworks | 2 | Gold | 0 | — | 4 | |
+| hex | 1 | Legend | 0 | — | 2 | |
+| impasse | 1 | Legend | 0 | — | 2 | |
+| legends-of-code-magic-constructed | 1 | Legend | 0 | — | 2 | |
+| lines-of-action | 2 | Gold | 0 | — | 2 | |
+| mad-knights | 1 | Legend | 0 | — | 3 | |
+| minishogi | 1 | Legend | 0 | — | 2 | |
+| nine-mens-morris | 2 | Gold | 0 | — | 2 | |
+| onitama | 2 | Gold | 0 | — | 2 | |
+| othello-1 | 2 | Gold | 0 | — | 2 | |
+| oware-abapa | 2 | Gold | 0 | — | 2 | |
+| paper-soccer | 1 | Legend | 0 | — | 2 | |
+| platinum-rift-episode-2 | — | — | 0 | — | 2 | |
+| poker | 2 | Gold | 0 | — | 2–4 | |
+| start-up | 1 | Legend | 0 | — | 4 | |
+| tower-dereference | 1 | Legend | 0 | — | 2 | |
+| tulips-and-daisies | 2 | Gold | 0 | — | 2 | |
+| twixt-pp | 1 | Legend | 0 | — | 2 | |
+| vindinium | 2 | Gold | 0 | — | 4 | |
+| yavalath | 1 | Legend | 0 | — | 2 | |
+| yinsh | 1 | Legend | 0 | — | 2 | |
+| beeminegame | 3 | Silver | 1 | — | 2 | |
+| counting-tictactoe | 3 | Silver | 1 | — | 2 | |
+| elemental-wars | 3 | Silver | 1 | — | 3 | |
+| mad-pod-racing | 7 | Silver | 1 | Rust 6988/63887 | 2 | |
+| night-of-war | 3 | Silver | 1 | — | 2 | |
+| penguins | 3 | Silver | 1 | — | 2–4 | |
+| space-shooter | 3 | Silver | 1 | — | 2 | |
+| spring-challenge-2022 | 6 | Silver | 1 | Rust 1526/2401 | 2 | |
+| spring-challenge-2026-troll-farm | 6 | Silver | 1 | C++ 169/683 | 2 | |
+| tic-tac-toe | 5 | Silver | 1 | TypeScript 1/1201 | 2 | MCTS, eligible for Gold; v6 ready to submit in Gold |
+| volcanoes | 3 | Silver | 1 | — | 2 | |
+| atari-go | 4 | Bronze | 2 | — | 2 | |
+| atari-go-9x9 | 4 | Bronze | 2 | — | 2 | |
+| code4life | 6 | Bronze | 2 | Rust 1221/1535 | 2 | |
+| coders-of-the-realm | 4 | Bronze | 2 | — | 2–4 | |
+| coders-of-the-realm---1v1 | 4 | Bronze | 2 | — | 2 | |
+| cultist-wars | 4 | Bronze | 2 | — | 2 | |
+| game-of-life-or-death | 4 | Bronze | 2 | — | 2 | |
+| gargoyles-versus-santas | 4 | Bronze | 2 | — | 2 | |
+| isola | 4 | Bronze | 2 | — | 2 | |
+| legends-of-code-magic | 7 | Bronze | 2 | TypeScript 518/1629 | 2 | |
+| seabed-security | 7 | Bronze | 2 | C++ 274/707 | 2 | |
+| spring-challenge-2021 | 6 | Bronze | 2 | Rust 255/3033 | 2 | |
+| tryangle-catch | 4 | Bronze | 2 | — | 2 | |
+| winter-challenge-2026-snakebyte | 4 | Bronze | 2 | — | 2 | |
+| bit-runner-2048 | 5 | Wood 1 | 3 | — | 2 | |
+| crystal-rush | 5 | Wood 1 | 3 | — | 2 | |
+| git-patchwork | 5 | Wood 1 | 3 | — | 2 | |
+| keep-off-the-grass-fall-challenge-2022 | 5 | Wood 1 | 3 | — | 2 | |
+| langton-s-ant | 5 | Wood 1 | 3 | — | 2 | |
+| codebusters | 6 | Wood 2 | 4 | — | 2 | |
+| fall-challenge-2020 | 6 | Wood 2 | 4 | — | 2 | |
+| fantastic-bits | 6 | Wood 2 | 4 | — | 2 | |
+| game-of-drones | 6 | Wood 2 | 4 | — | 2 | |
+| great-escape | 6 | Wood 2 | 4 | — | 2 | |
+| green-circle | 6 | Wood 2 | 4 | C++ 250/544 | 2 | |
+| ocean-of-code | 6 | Wood 2 | 4 | — | 2 | |
+| platinum-rift-episode-1 | 6 | Wood 2 | 4 | — | 2 | |
+| poker-chip-race | 6 | Wood 2 | 4 | — | 2 | |
+| smash-the-code | 6 | Wood 2 | 4 | — | 2 | |
+| spring-challenge-2020 | 6 | Wood 2 | 4 | — | 2 | |
+| spring-challenge-2023-ants | 6 | Wood 2 | 4 | — | 2 | |
+| summer-challenge-2024-olymbits | 6 | Wood 2 | 4 | — | 3 | |
+| tron-battle | 6 | Wood 2 | 4 | — | 2 | |
+| xmas-rush | 6 | Wood 2 | 4 | — | 2 | |
+| a-code-of-ice-and-fire | 7 | Wood 3 | 5 | — | 2 | |
+| code-a-la-mode | 7 | Wood 3 | 5 | — | 3 | |
+| code-of-kutulu | 7 | Wood 3 | 5 | — | 4 | |
+| code-royale | 7 | Wood 3 | 5 | — | 2 | |
+| coders-of-the-caribbean | 7 | Wood 3 | 5 | — | 2 | |
+| ghost-in-the-cell | 7 | Wood 3 | 5 | — | 2 | |
+| hypersonic | 7 | Wood 3 | 5 | — | 2 | |
+| mean-max | 7 | Wood 3 | 5 | — | 3 | |
+| winter-challenge-2024 | 8 | Wood 3 | 5 | TypeScript 104/1145 | 2 | |
+| wondev-woman | 7 | Wood 3 | 5 | — | 2 | |
+| soak-overflow | 8 | Wood 4 | 6 | — | 2 | |
+| botters-of-the-galaxy | 10 | Wood 6 | 8 | — | 2 | |
