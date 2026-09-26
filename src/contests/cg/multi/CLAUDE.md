@@ -572,3 +572,12 @@ heads, BFS distance to the nearest energy (gravity ignored), +3 when the head
 stays supported. 2/4 vs the Bronze boss. Ideas: simulate falls exactly (the
 referee source is on GitHub once published), plan short paths that stay
 supported.
+
+## tron-battle
+
+30×20 light cycles, 2–4 players by league (6 leagues, Wood 2 start). Only
+tails and heads are sent each turn, so trails are accumulated (a dead
+player's trail is cleared). Bot: per safe move, Voronoi (our reach vs the
+opponents' next heads) while in contact, else reachable area with wall
+hugging. 4/4 vs the Wood boss. Ideas: minimax/articulation points (the
+classic Tron AI), better endgame filling.

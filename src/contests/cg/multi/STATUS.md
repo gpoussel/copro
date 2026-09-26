@@ -92,7 +92,7 @@ Surveyed 2026-09-26.
 | spring-challenge-2020 | 6 | Wood 2 | 4 | — | 2 | |
 | spring-challenge-2023-ants | 6 | Wood 2 | 4 | — | 2 | |
 | summer-challenge-2024-olymbits | 6 | Wood 2 | 4 | — | 3 | |
-| tron-battle | 6 | Wood 2 | 4 | — | 2 | |
+| tron-battle | 6 | Wood 2 | 4 | TypeScript Voronoi, submitted | 2 | 4/4 vs Wood boss; 2–4 players supported |
 | xmas-rush | 6 | Wood 2 | 4 | — | 2 | |
 | a-code-of-ice-and-fire | 7 | Wood 3 | 5 | — | 2 | |
 | code-a-la-mode | 7 | Wood 3 | 5 | — | 3 | |
