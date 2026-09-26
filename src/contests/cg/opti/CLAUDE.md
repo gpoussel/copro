@@ -1137,3 +1137,71 @@ Next levers:
 - Multi-stop pod routes (one pod along a whole path, cheaper than one pod per tube).
 - Teleporters to network hubs, not just pad → module.
 - DESTROY/re-route pods whose routes have gone stale.
+
+---
+
+## flames-extinguisher
+
+Port of the Bolgrot fight ("Extinction des feux", Dofus). 35x34 map (always the same
+walls, start (17,15)), 40 HP, 10 AP per cycle, 2 jumps per cycle. **Score = HP left at
+victory** (all flames out, no glyph left), 0 on death. Criterion = sum over **50
+validators** (10 fixed + 40 random, forum), max 2000.
+
+**Rules as implemented (calibrated: zero DESYNC on the real runner, tests 1 and 2):**
+- Cycles 0..5 spawn 6 glyphs at cycle start; PASS turns each glyph into a flame unless
+  the character or a flame is on that cell. From cycle 6 on, every PASS costs 1 HP
+  (first loss shows at cycle 7's input). So finishing inside cycle 6 is free.
+- Glyph positions are deterministic except for the region pick: 4 regions, each with 4
+  fixed triples in a fixed rank order (identical on every test); each cycle picks 2
+  distinct regions and emits their next triple (table in `bench.mjs` `REGIONS`).
+- MOVE/JUMP: −1 HP (death at 0 before the refund), refund if the destination is a
+  flame. On extinguish: every 8-neighbour flame of the destination is pushed 1 cell
+  away; blocked (wall/flame, or a diagonal push with a non-free orthogonal) = death.
+  Then every flame is attracted 1 step toward the character, ordered by Manhattan
+  distance then clockwise from North (ring index key), dominant-axis / exact-diagonal
+  step, diagonal needs both orthogonals free; a flame reaching the character = death.
+  So a non-extinguishing move next to a flame is death.
+- IMMO: −5 HP, 1 AP, attraction toward a diagonal cell, character cell acts as a wall.
+- A cycle can span many turns (100 ms each): the bot plays **one action per turn**
+  to get 100 ms of search per action.
+- Death mechanics make dense clumps deadly: a line of 3 flames cannot be eaten from
+  its end, and flames tend to arrive diagonally (dominant-axis then diagonal), which
+  cannot be stepped on directly.
+
+**Solver** (`flames-extinguisher.ts`): beam search over time layers (t = cycle·10 +
+spent AP; a PASS jumps to the next cycle), width 100, horizon 30 AP, 60 ms per
+turn, commit the first action, replan every turn. Unknown future glyphs ignored
+(only counted). Eval ≈ estimated final HP:
+`hp − wait − bleed − 0.2·flames − 0.6·adjacentFlamePairs − 0.002·Σdist`, with
+wait = max_i(d_i − i) over sorted Chebyshev distances (diagonal-adjacent counts 3),
+bleed = max(0, flames+glyphs+6·futureCycles+wait − 0.7·freeAP)/10. A PASS at full AP
+in cycle ≥ 6 is forbidden (identical state, −1 HP) — without it the bot stalled forever.
+
+**Harness** `flames-extinguisher-tools/bench.mjs [n|tests] [seed]` — independent JS
+referee + in-process run of the real .ts (Node type stripping, readline/console.log
+override, one fresh import per game). `FE_*` env overrides the tunables, `FE_VERBOSE=1`
+per game, `FE_DEBUG=1/2/3` trace / board dumps / root action evals.
+
+**Tuning (offline, visible 10 test picks / 20 random games):**
+- first eval (no flame/clump terms): stalls, many 0s. Adding the PASS rule: wins at
+  32-37 but ~50% traps.
+- W_FLAME 0.2 / 0.5 / 1.0 → mean 27.9 / 16.8 / 13.1 (tests).
+- W_ADJ (with W_FLAME 0.2): 0.1 → 31.0, 0.3 → 30.7, **0.6 → 33.4** (tests); on 20
+  random: 0.6 → 30.1 (2 zeros), 1.0 → 18.1, 1.5 → 9.8.
+- RATE 1 / 0.8 / 0.6 before the clump term: noise.
+- The zeros are traps: flames packed around the character so every move dies; the
+  bot then bleeds 1 HP per cycle.
+
+**Submissions:** see the header of the .ts.
+
+**Submitted (1 submission): 100% (50/50), criteriaScore 1101 (avg 22/validator vs
+offline ~27-30 → some traps/zeros on CG, slower hardware at 60 ms), global rank
+4 / 49 (top ~8%).** Board: #1 1755, #3 1260, #4 1100, rank 12 (top-25% cutoff) = 240.
+Objective reached on the first submission, so I stopped. Labels claimed (BFS, DFS,
+optimization, simulation).
+
+Next levers: kill the trap cases (a mobility/"eatable" term in the eval, or a
+recovery search that allows IMMO), plan persistence across turns (keep the best
+full-game plan once cycle 5's glyphs are known — the rest is deterministic),
+expectation over the 6 possible region picks for future glyphs, a faster
+allocation-free simulator for a wider beam.
