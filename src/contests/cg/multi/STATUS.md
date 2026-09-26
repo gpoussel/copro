@@ -54,7 +54,7 @@ Surveyed 2026-09-26.
 | elemental-wars | 3 | Silver | 1 | — | 3 | |
 | mad-pod-racing | 7 | Silver | 1 | TypeScript sim bot, submitted 2026-09-26 | 2 | 8/8 vs Silver boss in IDE |
 | night-of-war | 3 | Silver | 1 | — | 2 | |
-| penguins | 3 | Silver | 1 | — | 2–4 | |
+| penguins | 3 | Silver | 1 | TypeScript 1-ply Voronoi, submitted | 2–4 | 4/4 vs Silver boss but thin margins; awaiting promotion |
 | space-shooter | 3 | Silver | 1 | — | 2 | |
 | spring-challenge-2022 | 6 | Silver | 1 | Rust 1526/2401 | 2 | |
 | spring-challenge-2026-troll-farm | 6 | Silver | 1 | C++ 169/683 | 2 | |

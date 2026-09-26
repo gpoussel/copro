@@ -446,3 +446,12 @@ S_k. Bot: 1-ply over valid moves with eruptions simulated (level 4 → dormant,
 spreads to empty/own neighbours, destroys enemy ones, cascades), eval =
 Hex-like 0-1 BFS distance per opposite pair for both sides. Growth phases not
 simulated. 3/4 vs the Silver boss. Ideas: simulate growth, 2-ply.
+
+## penguins
+
+Hey That's My Fish, 3 leagues (Silver start), moves listed. Rows of 7 and 8,
+row 1 has 7: even-r offset (odd-numbered rows shifted right), axial
+q = c − (r + (r&1))/2 with 0-based r (checked on the statement's F4
+example). Bot: 1-ply, 3·fish eaten + fish-weighted Voronoi from slide-move
+BFS distances − 8 per isolated penguin; placements scored the same. 4/4 vs
+the Silver boss but by 5–100 points. Ideas: 2-ply / paranoid search late.
