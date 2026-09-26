@@ -562,3 +562,13 @@ The same code should suit coders-of-the-realm (2–4 players): check the input.
 Kingdomino 2–4 players: same bot as the 1v1 with an init line (players,
 tiles per turn), 9×9 grids, 5×5 territory, one grid per player. Best score
 in 4/4 vs the Bronze boss.
+
+## winter-challenge-2026-snakebyte
+
+Gravity snake game, 4 leagues (Bronze start). Body given as `x,y:x,y:...`
+head first; directions persist until changed. Greedy bot: avoid neck,
+platforms and bodies (energy is solid but edible), avoid cells next to enemy
+heads, BFS distance to the nearest energy (gravity ignored), +3 when the head
+stays supported. 2/4 vs the Bronze boss. Ideas: simulate falls exactly (the
+referee source is on GitHub once published), plan short paths that stay
+supported.

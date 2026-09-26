@@ -73,7 +73,7 @@ Surveyed 2026-09-26.
 | seabed-security | 7 | Bronze | 2 | C++ 274/707 | 2 | |
 | spring-challenge-2021 | 6 | Bronze | 2 | Rust 255/3033 | 2 | |
 | tryangle-catch | 4 | Bronze | 2 | TypeScript WIP, **not submitted** (0/6) | 2 | units get surrounded; study the referee before retrying |
-| winter-challenge-2026-snakebyte | 4 | Bronze | 2 | — | 2 | |
+| winter-challenge-2026-snakebyte | 4 | Bronze | 2 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
 | bit-runner-2048 | 5 | Wood 1 | 3 | — | 2 | |
 | crystal-rush | 5 | Wood 1 | 3 | — | 2 | |
 | git-patchwork | 5 | Wood 1 | 3 | — | 2 | |
