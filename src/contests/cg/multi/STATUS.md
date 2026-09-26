@@ -40,7 +40,7 @@ Surveyed 2026-09-26.
 | othello-1 | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 3/4 vs boss; weak: improve (MCTS or deeper search) |
 | oware-abapa | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | paper-soccer | 1 | **Legend** ✅ | 0 | TypeScript 2-ply turns, submitted | 2 | 4/4 vs boss (single league) |
-| platinum-rift-episode-2 | — | — | 0 | — | 2 | |
+| platinum-rift-episode-2 | — | ready (no league) | 1 | TypeScript spread+rush, **not submitted yet** (needs MCP PR #7 + reconnect) | 2 | 4/4 vs boss (base taken in 13–19 turns) |
 | poker | 2 | **Gold** ✅ | 0 | TypeScript Monte Carlo equity, submitted | 2–4 | 2/4 heads-up vs boss |
 | start-up | 1 | **Legend** ✅ | 0 | TypeScript rules, submitted | 4 | valid; 106–200‰ vs bosses 450–800‰ |
 | tower-dereference | 1 | **Legend** ✅ | 0 | TypeScript upgrade-first, submitted | 2 | 4/4 vs boss (single league) |

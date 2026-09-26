@@ -422,3 +422,12 @@ enemy cell inside, walk it corner to corner, replan when an enemy cell shows
 up in it (prefix sums make each rectangle O(1)). 4/4 vs the boss (~2.5× its
 cells). **Submitting failed**: the MCP's pre-submit ranking call errors on
 league-less puzzles (fixed in codingame-mcp PR #7).
+
+## platinum-rift-episode-2
+
+League-less, zone graph under fog, enemy base always visible (owned by the
+enemy on turn 1). Bot: each group sends 1 pod to every unowned neighbour
+(platinum first, then towards the enemy base), the rest walks the shortest
+path to the enemy base; 2 pods stay home when enemies are adjacent; pods in a
+fight never retreat into enemy zones. 4/4 vs the boss (base taken in 13–19
+turns). Same pending-submit issue as back-to-the-code (MCP PR #7).
