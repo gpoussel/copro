@@ -23,7 +23,7 @@ Surveyed 2026-09-26.
 | clash-of-bots | 1 | Legend | 0 | — | 2 | |
 | clobber | 2 | Gold | 0 | — | 2 | |
 | code-keeper---the-hero | 1 | Legend | 0 | — | 4 | |
-| connect-4 | 2 | Gold | 0 | — | 2 | |
+| connect-4 | 2 | Gold (entry) | 0 | TypeScript MCTS ready, **not submitted** (submit blocked by permissions) | 2 | 6/6 vs boss in IDE |
 | dice-duel | 2 | Gold | 0 | — | 2 | |
 | dice-shogi | 1 | Legend | 0 | — | 2 | |
 | domain-expansion | 1 | Legend | 0 | — | 2 | |

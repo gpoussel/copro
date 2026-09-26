@@ -50,3 +50,10 @@ ignored (no collisions simulated, no SHIELD yet). 8/8 vs the Silver boss.
 Gold changes the protocol (2 pods each, full checkpoint list given up front):
 rewrite the I/O, then add a blocker pod and collisions (Magus' post-mortem:
 http://files.magusgeek.com/csb/csb_en.html).
+
+## connect-4
+
+7 rows × 9 columns, STEAL available to the second player on its first turn.
+Full board given each turn. Bot: MCTS (c = 0.5, decisive-move playouts, no
+tree reuse), STEAL when the first chip is in columns 2–6. The boss is weak
+(6/6, wins in 4 moves). Next: tree reuse, threat-aware evaluation.
