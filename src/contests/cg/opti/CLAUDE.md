@@ -711,3 +711,40 @@ Next levers: the weakest maps are t2 (~800; houses are worth 3700 and burn fast)
 t8 (~2k, random map) and t4 (a 47x47 open map, ~5.2k). Ideas: a smarter move that
 closes the wall where the fire escapes (the first burnt cell adjacent to a saved
 region), a faster incremental eval, and restarts.
+
+---
+
+## bulls-and-cows-2
+
+Interactive Bulls & Cows: secret of `numberLength` (1..10) distinct digits, no leading 0.
+Each turn output a guess, read `bulls cows` (`-1 -1` on turn 1). 50 ms/turn, 300 turns.
+**Score = total number of guesses over all validators (lower is better)**; the winning
+guess counts.
+
+**Validators: 46 games** — 1x length 1 and 5x each of lengths 2..10 (names seen in the
+submission result). Visible tests are one per length, so they are only a smoke test.
+
+Leaderboard (2026-09-26): 770 players, not capped. #1 = 290, rank 192 (top 25%) = 491.
+
+**Solver** (`bulls-and-cows-2.ts`): always guess a code consistent with every previous
+answer. A DFS over positions with pruning per past answer (partial bulls and common-digit
+count vs. target, both upper and lower bounds with the remaining positions) finds
+consistent codes. If the full consistent set enumerates within `ENUM_CAP = 3000` codes
+(and 40% of the time budget), choose the candidate minimising Σ(partition size)² over
+the set; otherwise random-restart DFS samples (up to 400, random start digit per node)
+and choose the sample that best splits the sample set. First guess fixed `1234567890`
+prefix. `TIME_BUDGET = 30` ms.
+
+**Offline bench** (`bulls-and-cows-2-tools/bench.mjs [gamesPerLen] [seed]`): transpiles
+the real .ts with `typescript` and runs it in-process with a fake `readline()` that
+answers the last guess. Means per length (20 games): 5.65 / 5.10 / 5.20 / 4.95 / 5.60 /
+6.70 / 7.10 / 8.55 / 9.45 / 11.05 → predicted ≈ 5.5 + 5 × 63.7 ≈ 324 on the validators.
+Worst turn ~50-70 ms locally at budget 38 (GC blips), hence 30 ms.
+
+**Submitted (1 submission): 100% (46/46), criteriaScore 319, global rank 79 / 770
+(top ~10%).** Objective reached, stopped. Label claimed (combinatorics).
+
+Next levers: allow non-candidate guesses when the set is small (better splits), use
+entropy / max-partition tie-breaks, precompute an optimal opening per length
+(2nd guess by first answer), and for length 10 (only bulls carry information) a
+dedicated permutation strategy — n=9/10 games cost the most (9.5 / 11 guesses).
