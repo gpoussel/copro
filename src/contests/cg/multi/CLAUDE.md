@@ -314,3 +314,14 @@ over the opponents' cards (sampled from unseen cards), play the card with
 the fewest expected cows; pick the cheapest line. Best score in 3/4 games vs
 three bosses. (The play result's `ranks` did not match the scores here: judge
 by `scores`.)
+
+## chess
+
+Chess960, a match = 2 games, 50 ms per move (1 s only for the constants
+turn, where the bot answers `fen moves`). Root = referee's legal UCI moves
+(castling = king onto its rook; en passant handled when applying); search =
+pseudo-legal generator (no castling/e.p., queen promotions, king capture
+ends a line), alpha-beta + capture quiescence + MVV-LVA, material + small
+piece-square eval. **Timeouts on the first real moves** until: time checked
+every 128 nodes, 30 ms budget, and a 400 ms JIT warm-up search during the
+constants turn. 4/4 matches vs the boss.

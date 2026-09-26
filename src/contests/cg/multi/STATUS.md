@@ -19,7 +19,7 @@ Surveyed 2026-09-26.
 | breakthrough | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | chain-reaction-1 | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | checkers | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
-| chess | 2 | Gold | 0 | — | 2 | |
+| chess | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 matches vs boss |
 | clash-of-bots | 1 | Legend | 0 | — | 2 | |
 | clobber | 2 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss |
 | code-keeper---the-hero | 1 | Legend | 0 | — | 4 | |
