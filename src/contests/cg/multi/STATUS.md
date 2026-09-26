@@ -11,8 +11,8 @@ Surveyed 2026-09-26.
 | --- | --- | --- | --- | --- | --- | --- |
 | 6-nimmt-6-qui-prend-take-5 | 1 | Legend | 0 | — | 4 | |
 | abalone | 2 | Gold | 0 | — | 2 | |
-| amazons | 2 | **Gold** ✅ | 0 | TypeScript 1-ply territory, submitted | 2 | 4/4 matches vs boss |
-| ataxx | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 6/6 vs boss |
+| amazons | 2 | **Legend** ✅ | 0 | TypeScript 1-ply territory, submitted | 2 | 4/4 matches vs boss |
+| ataxx | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 6/6 vs boss |
 | back-to-the-code | — | — | 0 | — | 2–4 | |
 | bandas | 1 | Legend | 0 | — | 2 | |
 | blocking | 2 | Gold | 0 | — | 2–4 | |
@@ -21,13 +21,13 @@ Surveyed 2026-09-26.
 | checkers | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | chess | 2 | Gold | 0 | — | 2 | |
 | clash-of-bots | 1 | Legend | 0 | — | 2 | |
-| clobber | 2 | **Gold** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss |
+| clobber | 2 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss |
 | code-keeper---the-hero | 1 | Legend | 0 | — | 4 | |
 | connect-4 | 2 | **Legend** ✅ | 0 | TypeScript MCTS | 2 | Gold→Legend 2026-09-26 |
 | dice-duel | 2 | Gold | 0 | — | 2 | |
 | dice-shogi | 1 | Legend | 0 | — | 2 | |
 | domain-expansion | 1 | Legend | 0 | — | 2 | |
-| dots-and-boxes | 2 | **Gold** ✅ | 0 | TypeScript MCTS, submitted | 2 | 2/4 vs boss (2x2: wins as A, 2–2 ranked as loss as B) |
+| dots-and-boxes | 2 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 2/4 vs boss (2x2: wins as A, 2–2 ranked as loss as B) |
 | fireworks | 2 | Gold | 0 | — | 4 | |
 | hex | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | impasse | 1 | Legend | 0 | — | 2 | |
@@ -37,8 +37,8 @@ Surveyed 2026-09-26.
 | minishogi | 1 | Legend | 0 | — | 2 | |
 | nine-mens-morris | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | onitama | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
-| othello-1 | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 3/4 vs boss; weak: improve (MCTS or deeper search) |
-| oware-abapa | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
+| othello-1 | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 3/4 vs boss; weak: improve (MCTS or deeper search) |
+| oware-abapa | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | paper-soccer | 1 | Legend | 0 | — | 2 | |
 | platinum-rift-episode-2 | — | — | 0 | — | 2 | |
 | poker | 2 | Gold | 0 | — | 2–4 | |
