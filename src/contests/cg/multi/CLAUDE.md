@@ -97,3 +97,13 @@ checks that every referee move exists in its own move list and flips the rows
 otherwise. Bot: negamax alpha-beta, eval = piece difference (incremental
 counts, leaves return before move generation), spawns searched first.
 0/4 before the row fix, 6/6 vs the boss after.
+
+## dots-and-boxes
+
+Gold entry league plays on 2×2. Input lists the boxes that still have free
+sides (box name `A1` = column A, row 1 from the bottom; sides L/T/R/B).
+Closing a box gives another move, so MCTS nodes store their mover. Playouts:
+capture if possible, else a side that gives no 3-sided box, else random.
+Wins every game as A; as B the 2×2 ends 2–2 and the referee ranks that as a
+loss (tie-break not in the statement: read the referee before optimizing).
+Next: check the referee's tie rule; chain/long-chain rule for bigger boards.

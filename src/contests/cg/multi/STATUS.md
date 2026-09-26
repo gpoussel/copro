@@ -27,7 +27,7 @@ Surveyed 2026-09-26.
 | dice-duel | 2 | Gold | 0 | — | 2 | |
 | dice-shogi | 1 | Legend | 0 | — | 2 | |
 | domain-expansion | 1 | Legend | 0 | — | 2 | |
-| dots-and-boxes | 2 | Gold | 0 | — | 2 | |
+| dots-and-boxes | 2 | **Gold** ✅ | 0 | TypeScript MCTS, submitted | 2 | 2/4 vs boss (2x2: wins as A, 2–2 ranked as loss as B) |
 | fireworks | 2 | Gold | 0 | — | 4 | |
 | hex | 1 | Legend | 0 | — | 2 | |
 | impasse | 1 | Legend | 0 | — | 2 | |
