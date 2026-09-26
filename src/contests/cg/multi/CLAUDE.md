@@ -487,3 +487,8 @@ static map). Best score in 4/6 games vs two bosses.
 neutral square per turn next to our territory; each hive scores for the
 strictly closer territory. Greedy: most hives won, then closeness to hives
 still contested. 4/4 vs the Silver boss.
+Gold bot (submitted right after the promotion): both pods race with the same
+6-turn plan search (known checkpoints, exact speeds/angles), one BOOST on a
+> 5000 straight. No collisions, no blocker: 1/4 vs the Gold boss. Next: a
+blocker pod that intercepts the leading enemy pod, collision simulation and
+SHIELD, then Legend.
