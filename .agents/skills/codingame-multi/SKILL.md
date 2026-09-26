@@ -85,6 +85,9 @@ leaderboard id is `coders-strike-back`: the tools resolve that themselves).
   count), and derive orientation/colour from them on the first turn.
 - The CodinGame TypeScript judge compiles as a script: top-level names like
   `name`, `open`, `status`, `close` clash with globals. Prefix them.
+- Tight first moves: when the first real turn has little time (the 1 s
+  budget sometimes goes to a setup turn), warm the JIT up with a throwaway
+  search during the setup turn, and check the clock every ~128 nodes.
 - Long games (100+ turns) take a while per IDE game: series of 4–8 games are
   enough to beat a boss; save longer series for comparing close versions.
 - `play_arena_games` saves the code as the puzzle's IDE draft (like a test

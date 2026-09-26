@@ -48,7 +48,7 @@ Surveyed 2026-09-26.
 | twixt-pp | 1 | **Legend** ✅ | 0 | TypeScript distance eval, submitted | 2 | 4/6 vs boss (single league); weak, see notes |
 | vindinium | 2 | Gold | 0 | — | 4 | |
 | yavalath | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
-| yinsh | 1 | Legend | 0 | — | 2 | |
+| yinsh | 1 | **Legend** ✅ | 0 | TypeScript minimal (list-based), submitted | 2 | 2/2 vs boss; no engine yet |
 | beeminegame | 3 | Silver | 1 | — | 2 | |
 | counting-tictactoe | 3 | Silver | 1 | — | 2 | |
 | elemental-wars | 3 | Silver | 1 | — | 3 | |

@@ -325,3 +325,11 @@ ends a line), alpha-beta + capture quiescence + MVV-LVA, material + small
 piece-square eval. **Timeouts on the first real moves** until: time checked
 every 128 nodes, 30 ms budget, and a 400 ms JIT warm-up search during the
 constants turn. 4/4 matches vs the boss.
+
+## yinsh
+
+Single league. First turn: answer `yes` to receive legal moves. Input per
+turn: row count, grid rows, action count, actions (`c6`, `STEAL`, `f2-f5`,
+`h7-c7;xh5-h9xi9`…). Minimal bot: central ring placement, else the move with
+the most `x` removals (each = a row + one of our rings), else random. Beats
+the boss 2/2. TODO: engine (ring moves, flips, rows) + search.
