@@ -53,7 +53,7 @@ Surveyed 2026-09-26.
 | counting-tictactoe | 3 | Silver | 1 | TypeScript MCTS, submitted | 2 | 4/4 vs Silver boss; awaiting promotion |
 | elemental-wars | 3 | Silver | 1 | — | 3 | |
 | mad-pod-racing | 7 | Silver | 1 | TypeScript sim bot, submitted 2026-09-26 | 2 | 8/8 vs Silver boss in IDE |
-| night-of-war | 3 | Silver | 1 | — | 2 | |
+| night-of-war | 3 | Silver | 1 | TypeScript rules, submitted | 2 | 4/4 vs Silver boss; awaiting promotion (league 2: 5×5, league 3: 8×8 + levels) |
 | penguins | 3 | Silver | 1 | TypeScript 1-ply Voronoi, submitted | 2–4 | 4/4 vs Silver boss but thin margins; awaiting promotion |
 | space-shooter | 3 | Silver | 1 | — | 2 | |
 | spring-challenge-2022 | 6 | Silver | 1 | Rust 1526/2401 | 2 | |

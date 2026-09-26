@@ -455,3 +455,11 @@ q = c − (r + (r&1))/2 with 0-based r (checked on the statement's F4
 example). Bot: 1-ply, 3·fish eaten + fish-weighted Voronoi from slide-move
 BFS distances − 8 per isolated penguin; placements scored the same. 4/4 vs
 the Silver boss but by 5–100 points. Ideas: 2-ply / paranoid search late.
+
+## night-of-war
+
+3 leagues (map 4, 5, 8; levels/upgrades later). One action per turn. Attack
+= target within Manhattan 2 and not behind the attacker's facing, level ≥
+target, 35 bucks. Bot: attack whenever possible, else the move taking an
+unowned block without ending where an enemy could attack. 4/4 vs the Silver
+boss (wins in 6 turns). Re-read the statement after promotion (new rules).
