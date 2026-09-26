@@ -46,7 +46,7 @@ Surveyed 2026-09-26.
 | tower-dereference | 1 | Legend | 0 | — | 2 | |
 | tulips-and-daisies | 2 | **Legend** ✅ | 0 | TypeScript 2-ply spots, submitted | 2 | 4/4 vs boss (boss goes bankrupt) |
 | twixt-pp | 1 | **Legend** ✅ | 0 | TypeScript distance eval, submitted | 2 | 4/6 vs boss (single league); weak, see notes |
-| vindinium | 2 | Gold | 0 | — | 4 | |
+| vindinium | 2 | **Gold** ✅ | 0 | TypeScript heuristic, submitted | 4 | most gold in 3/4 games vs 3 bosses |
 | yavalath | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | yinsh | 1 | **Legend** ✅ | 0 | TypeScript minimal (list-based), submitted | 2 | 2/2 vs boss; no engine yet |
 | beeminegame | 3 | Silver | 1 | — | 2 | |

@@ -333,3 +333,11 @@ turn: row count, grid rows, action count, actions (`c6`, `STEAL`, `f2-f5`,
 `h7-c7;xh5-h9xi9`…). Minimal bot: central ring placement, else the move with
 the most `x` removals (each = a row + one of our rings), else random. Beats
 the boss 2/2. TODO: engine (ring moves, flips, rows) + search.
+
+## vindinium
+
+4 heroes, 150 turns; x = column, y = row, NORTH = y−1. Heuristic: BFS to the
+nearest mine we do not own; drink at a tavern when HP < 40 or when the mine
+fight (−20 HP) would leave ≤ 15 (stay until 80 HP if already next to one);
+never step on another hero's spawn. Most gold in 3/4 games vs three bosses.
+Ideas: hunt weak heroes owning many mines, avoid adjacent stronger heroes.
