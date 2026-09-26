@@ -389,3 +389,14 @@ not folded this hand (FOLDs tracked from the action log); raise the pot at
 equity > 0.75, call when equity beats pot odds + 5%, else check/fold. 2/4
 heads-up vs the boss. Ideas: position, stack-aware shoving as blinds grow,
 opponent modelling from showdowns.
+
+## legends-of-code-magic-constructed
+
+Single league. Constructed turn: 120 cards, answer 30 `CHOOSE n` where **n is
+the card's base number (cardNumber), not the instance id**, ≤ 2 copies per
+number. Deck: value-per-cost score with a mana curve cap (≤ 10 items).
+Battle: greedy summons (lane under pressure / less full, Lane1/Lane2 area
+clones tracked), red items on guards/threats, green on our best creature,
+blue to face, attacks: guards first, then kill-and-survive trades unless we
+have lethal, else face. 6/6 vs the boss. The battle code should carry over
+to legends-of-code-magic (draft variant).

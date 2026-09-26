@@ -31,7 +31,7 @@ Surveyed 2026-09-26.
 | fireworks | 2 | **Gold** ✅ | 0 | TypeScript Hanabi rules, submitted | 4 | valid but lowest score vs bosses: improve hints |
 | hex | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | impasse | 1 | **Legend** ✅ | 0 | TypeScript 1-ply, submitted | 2 | **weak: 0/4 vs boss**, needs a real engine + search |
-| legends-of-code-magic-constructed | 1 | Legend | 0 | — | 2 | |
+| legends-of-code-magic-constructed | 1 | **Legend** ✅ | 0 | TypeScript heuristic, submitted | 2 | 6/6 vs boss (single league) |
 | lines-of-action | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | mad-knights | 1 | **Legend** ✅ | 0 | TypeScript paranoid alpha-beta, submitted | 3 | 3/6 wins vs 2 bosses (single league) |
 | minishogi | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
