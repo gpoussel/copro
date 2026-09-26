@@ -581,3 +581,13 @@ player's trail is cleared). Bot: per safe move, Voronoi (our reach vs the
 opponents' next heads) while in contact, else reachable area with wall
 hugging. 4/4 vs the Wood boss. Ideas: minimax/articulation points (the
 classic Tron AI), better endgame filling.
+
+## great-escape
+
+Quoridor 9×9, 2–3 players (6 leagues, Wood 2 start). **Init values come on
+one line** (the statement lists four lines). Walls: H at (x,y) blocks
+(x,y−1)↔(x,y) and (x+1,y−1)↔(x+1,y); V at (x,y) blocks (x−1,y)↔(x,y) and
+(x−1,y+1)↔(x,y+1); overlaps and crossings (H(x,y) × V(x+1,y−1)) rejected;
+every player must keep a path. Bot: walk the BFS shortest path; when an
+opponent would arrive first, place the wall with the best (their extra
+length − ours). 4/4 vs the Wood boss.
