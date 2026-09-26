@@ -529,3 +529,12 @@ moved. After the fix the bot still loses 0/6: its units end surrounded
 (a unit dies when every neighbour house is enemy-held) and it runs out of
 units. Next: read the referee (github.com/eulerscheZahl/TryAngle-Catch),
 move in groups, grow from our own triangles outwards.
+
+## game-of-life-or-death
+
+8×8 Life, rows wrap vertically, each player evolves alone, clashes cancel;
+we always control the leftmost column (input mirrored for player 2), ≤ mana
+live cells per turn. Model (worked first try): set our column, then run
+generations. Bot: all column patterns within the mana (≤ 256), 6 generations
+simulated with empty future columns, score = goal-cell occupancy weighted
+towards sooner turns. 4/4 vs the Bronze boss (~590 to 1).
