@@ -141,3 +141,11 @@ stated either. The bot derives its colour from the piece on the first legal
 move's start square, then picks the orientation (rank 8 on top or bottom ×
 forward direction) that reproduces the referee's move list exactly. Negamax
 alpha-beta (man 100 + 3·advance, king 160) with a capture quiescence. 4/4.
+
+## onitama
+
+5×5, 50 ms. Cards: 2 per player + centre; the given vectors are for the next
+user of each card, a played card goes to the centre negated. Orientation found
+on CG: `A1` is on the **last** input line and row delta = −dy. Actions are
+`cardId A2B3` or `cardId PASS`. Bot: negamax alpha-beta, eval = 100/student
++ master distance to the enemy shrine. 4/4 vs the boss (wins in 4–8 moves).
