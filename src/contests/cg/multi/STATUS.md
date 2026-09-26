@@ -23,7 +23,7 @@ Surveyed 2026-09-26.
 | clash-of-bots | 1 | Legend | 0 | — | 2 | |
 | clobber | 2 | Gold | 0 | — | 2 | |
 | code-keeper---the-hero | 1 | Legend | 0 | — | 4 | |
-| connect-4 | 2 | Gold (entry) | 0 | TypeScript MCTS ready, **not submitted** (submit blocked by permissions) | 2 | 6/6 vs boss in IDE |
+| connect-4 | 2 | **Gold** ✅ | 0 | TypeScript MCTS, submitted | 2 | 6/6 vs boss in IDE |
 | dice-duel | 2 | Gold | 0 | — | 2 | |
 | dice-shogi | 1 | Legend | 0 | — | 2 | |
 | domain-expansion | 1 | Legend | 0 | — | 2 | |
@@ -37,7 +37,7 @@ Surveyed 2026-09-26.
 | minishogi | 1 | Legend | 0 | — | 2 | |
 | nine-mens-morris | 2 | Gold | 0 | — | 2 | |
 | onitama | 2 | Gold | 0 | — | 2 | |
-| othello-1 | 2 | Gold | 0 | — | 2 | |
+| othello-1 | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 3/4 vs boss; weak: improve (MCTS or deeper search) |
 | oware-abapa | 2 | Gold | 0 | — | 2 | |
 | paper-soccer | 1 | Legend | 0 | — | 2 | |
 | platinum-rift-episode-2 | — | — | 0 | — | 2 | |
@@ -58,7 +58,7 @@ Surveyed 2026-09-26.
 | space-shooter | 3 | Silver | 1 | — | 2 | |
 | spring-challenge-2022 | 6 | Silver | 1 | Rust 1526/2401 | 2 | |
 | spring-challenge-2026-troll-farm | 6 | Silver | 1 | C++ 169/683 | 2 | |
-| tic-tac-toe | 5 | **Gold** ✅ | 0 | TypeScript (v1 agent) | 2 | promoted 2026-09-26; v6 (stronger) not yet submitted: submit blocked by permissions |
+| tic-tac-toe | 5 | **Gold** ✅ | 0 | TypeScript MCTS v6, submitted in Gold | 2 | promoted 2026-09-26 |
 | volcanoes | 3 | Silver | 1 | — | 2 | |
 | atari-go | 4 | Bronze | 2 | — | 2 | |
 | atari-go-9x9 | 4 | Bronze | 2 | — | 2 | |

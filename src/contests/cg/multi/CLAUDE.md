@@ -57,3 +57,11 @@ http://files.magusgeek.com/csb/csb_en.html).
 Full board given each turn. Bot: MCTS (c = 0.5, decisive-move playouts, no
 tree reuse), STEAL when the first chip is in columns 2–6. The boss is weak
 (6/6, wins in 4 moves). Next: tree reuse, threat-aware evaluation.
+
+## othello-1
+
+8×8, 150 ms per turn (2 s first), legal moves given as `d3` (column letter,
+row from the top). Bot: negamax alpha-beta, iterative deepening, classic
+square weights + 8·mobility, exact disc count at game end. 3/4 vs the boss
+(Gold entry league). Ideas: bitboards (two 32-bit halves) for depth, better
+eval (frontier discs, stability, parity), endgame solver at ~14 empties.
