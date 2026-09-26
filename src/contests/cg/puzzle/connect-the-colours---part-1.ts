@@ -113,7 +113,7 @@ const feasible = (): boolean => {
     }
     return out
   }
-  // servedBy[r]: colours whose both ends touch region r
+  // served[r][c]: both ends of colour c touch region r
   const served: boolean[][] = []
   for (let r = 0; r < regions; r++) served.push(new Array(colours).fill(false))
   const regionHasColour = new Array(regions).fill(false)
