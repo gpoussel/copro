@@ -1,0 +1,17 @@
+// 🎮 CodinGame Optimization - cgfunge-prime
+// https://www.codingame.com/training/optim/cgfunge-prime
+//
+// Print a CGFunge program (<= 30 lines x 40 cols) that says PRIME / NOT PRIME for the
+// N (1..10000) initially on the stack. Score = executed steps (referee Points = turn-1),
+// summed over the 100 validators (public in eulerscheZahl/CGFunge-Prime config/*.json).
+//
+// Approach: unrolled trial division by the 25 primes < 100, one block per grid column,
+// laid out as a vertical zig-zag (down column, up column, ...). ':' turns right on >0 and
+// left on <0, so a down column must continue on a negative value and an up column on a
+// positive one: the stack holds +N or -N (flip = "01X-") and each test uses either
+// "DD p/p*-:" (sign of N mod p follows N) or "DD p/p*1X-:" (opposite sign). The zero
+// case (p | N) goes straight into an exit route. Cutoffs "N < p^2 -> PRIME" are "D c/:"
+// or "D0 c-/:". Numbers are pushed as one unicode char in string mode ("<char>").
+// Exits are routed (Dijkstra, S-skips to cross the main path) to one NOT PRIME and one
+// PRIME printer on the last row. The grid is generated offline by
+// cgfunge-prime-tools/build.mjs and emitted by emit.mjs; this program only prints it.

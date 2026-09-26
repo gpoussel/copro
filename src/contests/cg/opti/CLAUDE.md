@@ -926,3 +926,73 @@ Next levers: a longer first-turn plan (probe the first-turn limit), path shaping
 so the executed path matches the plan (the plan end jumped +24 turns mid-game
 once, from a detour or an out-of-order catch), and resubmitting for luck on the
 random validators.
+
+---
+
+## cgfunge-prime
+
+Print a CGFunge program (≤ 30 lines × 40 cols) that prints `PRIME` / `NOT PRIME` for the
+N (1..10000) initially on the stack. **Criterion = executed steps (referee `Points` =
+turn − 1), summed over the validators; lower is better.**
+
+**Referee** (github.com/eulerscheZahl/CGFunge-Prime, `Interpreter.java` + `Referee.java`,
+ported in `build.mjs` `run()`):
+- Every cell visited costs one step, spaces and arrows included; an `S`-skipped cell
+  also costs one step.
+- After `E` the pointer still moves one cell, and the out-of-range check runs **before**
+  the finished check. So a trailing `E` at the grid edge **loses**. Leave a cell after it.
+- `:` pops v: v < 0 → turn left (dir+3), v > 0 → turn right (dir+1), 0 → straight.
+  Heading down, "right" is west and "left" is east.
+- `-` is second − top, `/` truncates toward zero (Java int), `*` wraps (int32).
+- **Any 16-bit char works in string mode** (probe: `"\x13ᆉ\xc8"` pushed 19, 4489,
+  200). So any number < 65536 is a 3-cell push `"<char>"`. Avoid 10, 13 (line breaks)
+  and 34 (`"`); 13 is pushed as `94+`.
+- **Validators = the 100 `isValidator` cases in the repo `config/test*.json`**: 1, 2, 3,
+  small primes, prime squares and products of two big primes (max N 9991). The submit
+  result listed 100 validators, and the offline total matched the real score exactly.
+
+**Solver** (`cgfunge-prime.ts` just prints a grid generated offline by
+`cgfunge-prime-tools/build.mjs`, emitted with `emit.mjs`):
+- Unrolled trial division by the 25 primes < 100. A test is `DD p/p*-:`, 12 cells (8
+  for p < 10). It leaves N and pops N mod p. Zero (p | N) goes straight into an exit,
+  nonzero turns.
+- Cutoffs "N < p² → PRIME" before tests 5 and 11 are required (the second one stops
+  N = p for p ≤ 97). Optional ones cost more than they save on these validators; the
+  best layout uses {5, 11, 67}. `N<4` is handled first (`D04-/:`), then `11X-:` splits
+  1 (NOT) from 2 and 3 (PRIME).
+- **Layout = vertical zig-zag, one block per column**. A ':' can only turn right on
+  > 0, so a horizontal stair needs an arrow per block and one row per block, which
+  doesn't fit 30 blocks in 30 rows. Vertical columns shift the path one column per
+  block with no arrow drift problem: a down column must continue on a *negative* value
+  (turn east) and an up column on a *positive* one. The stack holds +N or −N (`01X-`
+  flips the sign, 4 cells). With −N, `DD p/p*-` gives −(N mod p). The variant
+  `DD p/p*1X-` (+2 cells) gives the opposite sign. Cutoffs are `D c/:` or `D0 c-/:`
+  (N/(−c)). Columns get space padding so the next column stays within rows [minTop, maxY].
+- **Exits** are routed by a Dijkstra (`route()`) to one NOT PRIME printer
+  (`"EMIRP TON"CCCCCCCCCE`) and one PRIME printer, both on the last row. The router can
+  put arrows, cross another route's space cell straight, **cross the main path with an
+  `S` skip**, and merge into an existing route of the same type (turning a space into
+  that route's arrow when no one else crosses it).
+- Random search over cutoff sets, flip positions, top padding and maxY: 400 attempts
+  take a few seconds, and 25805 is the best of seed 1.
+
+**Harness** (`cgfunge-prime-tools/`):
+- `node build.mjs [attempts] [seed]` prints the best total and grid, checks all
+  N in 1..10000, and writes `out/best.json`.
+- `node emit.mjs` rewrites `../cgfunge-prime.ts`. The source stays pure ASCII:
+  non-printables and `"` are written as `` `hhhh `` and decoded at runtime. `\uXXXX`
+  escapes got decoded by the MCP transport into raw quotes, which broke the TS.
+- `node --experimental-strip-types ../cgfunge-prime.ts | node check.mjs` checks the
+  real program's output on all N and prints the validator total.
+
+**Submitted (1 submission): 100% (100/100), criteriaScore 25805 (offline prediction
+25805, exact).** Board before submitting: 521 players, not capped, #1 = 2693 (27
+steps/case, which must be a hash of the known validator set), rank 45 = 25771,
+rank 46 = 26335, rank 130 (top 25%) = 46434. Confirmed after submitting: **global rank 46 / 522
+(top 8.8%)**. The objective was reached, so I stopped. Labels claimed (Primes, CG Funge).
+
+**Next levers:**
+- Cheaper exits: the average exit route is ~30-40 steps. Put the printers next to the
+  zig-zag, or add several printer copies.
+- Fewer +2 sign variants: choose flip positions with a DP instead of at random.
+- Validator-specific tricks, which the top entries clearly use (~27 steps/case).
