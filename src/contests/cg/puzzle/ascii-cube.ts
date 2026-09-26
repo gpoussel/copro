@@ -24,8 +24,34 @@ for (let r = 0; r < rows; r++) {
 }
 
 // Solid obliques win over everything, hidden obliques win over horizontal edges
-const PRIORITY: { [ch: string]: number } = { "/": 4, "\\": 4, "⠌": 3, "⠡": 3, _: 2, ".": 1 }
+const HIDDEN_DEPTH = String.fromCharCode(0x280c) // ⠌
+const HIDDEN_HEIGHT = String.fromCharCode(0x2821) // ⠡
+const PRIORITY: { [ch: string]: number } = { "/": 4, "\\": 4, [HIDDEN_DEPTH]: 3, [HIDDEN_HEIGHT]: 3, _: 2, ".": 1 }
+// Visible faces as parallelograms (corner, side u, side v), with whether they are thin
+const F: Point = [0, d + 1] // front top left corner
+const faces: [Point, Point, Point, boolean][] = [
+  [F, W, H, w === 1 || h === 1], // front
+  [F, W, D, w === 1 || d === 1], // top
+  [add(F, W), H, D, h === 1 || d === 1], // right
+]
+
+/** A hidden edge is not drawn where it lies behind a face of thickness 1. */
+function behindThinFace(row: number, col: number): boolean {
+  const px = col + 0.5
+  const py = row + 0.5
+  return faces.some(([[ox, oy], [ux, uy], [vx, vy], thin]) => {
+    if (!thin) return false
+    // Solve (px, py) = o + a * u + b * v
+    const det = ux * vy - uy * vx
+    const a = ((px - ox) * vy - (py - oy) * vx) / det
+    const b = (ux * (py - oy) - uy * (px - ox)) / det
+    return a >= 0 && a <= 1 && b >= 0 && b <= 1
+  })
+}
+
 function put(row: number, col: number, ch: string): void {
+  const hidden = ch === "." || ch === HIDDEN_DEPTH || ch === HIDDEN_HEIGHT
+  if (hidden && behindThinFace(row, col)) return
   if (PRIORITY[ch] > priority[row][col]) {
     canvas[row][col] = ch
     priority[row][col] = PRIORITY[ch]
@@ -42,7 +68,6 @@ function depthEdge([x, y]: Point, ch: string): void {
   for (let k = 0; k < d; k++) put(y - 1 - k, x + k, ch)
 }
 
-const F: Point = [0, d + 1] // front top left corner
 // Front face
 widthEdge(F, "_")
 widthEdge(add(F, H), "_")
@@ -58,9 +83,9 @@ depthEdge(add(add(F, W), H), "/")
 // Hidden edges, unless the cube is too thin to show them
 const thinDimensions = [w, h, d].filter(v => v === 1).length
 if (thinDimensions < 2) {
-  heightEdge(add(F, D), "⠡")
+  heightEdge(add(F, D), HIDDEN_HEIGHT)
   widthEdge(add(add(F, D), H), ".")
-  depthEdge(add(F, H), "⠌")
+  depthEdge(add(F, H), HIDDEN_DEPTH)
 }
 
 for (const line of canvas) console.log(line.join("").replace(/\s+$/, ""))
