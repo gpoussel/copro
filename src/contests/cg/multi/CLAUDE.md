@@ -65,3 +65,11 @@ row from the top). Bot: negamax alpha-beta, iterative deepening, classic
 square weights + 8·mobility, exact disc count at game end. 3/4 vs the boss
 (Gold entry league). Ideas: bitboards (two 32-bit halves) for depth, better
 eval (frontier discs, stability, parity), endgame solver at ~14 empties.
+
+## oware-abapa
+
+12 houses, only the seeds are given (no scores): our captures are tracked from
+our own moves, the opponent's = 48 − seeds on board − ours. 50 ms per turn.
+Abapa rules implemented: 12+ seeds skip the starting house, grand slam cancels
+the capture, a move must leave the opponent seeds (else the mover takes all).
+Bot: negamax alpha-beta, eval = capture difference. 4/4 vs the boss.
