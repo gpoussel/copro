@@ -235,3 +235,12 @@ random-fill playouts like Hex, or a proper two-distance / template eval.
 outer empty lines/columns turn into holes, 200 turns then pawn count. Bot:
 negamax alpha-beta (depth 5–9), eval = 100/pawn + up to 12 for distance from
 the live area's border. 4/4 vs the boss.
+
+## domain-expansion
+
+7×7, single league. Input: sizes and both tokens at start, then only the
+opponent's last action `x y D`. Move ≤ 3 steps (walls and the enemy token
+block), then a wall on one side of the token. Bot: negamax alpha-beta over
+(cell, wall) moves, Voronoi eval, exact domain sizes once separated; walls
+rebuilt from the history after an interrupted search. 4/4 vs the boss
+(domains 42–48 vs 1–2).
