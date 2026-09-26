@@ -657,3 +657,57 @@ preload; `SG_BUDGET` ms, `SG_WC` weight; args = test indexes), tests 6-10 total:
 Next levers: better eval (e.g. penalise isolated
 cells, pick one tabu color); NMCS/NRPA, which the leaders use (puzzle label
 "NRPA"); keep refining the tail of the plan during the 50 ms turns.
+
+---
+
+## block-the-spreading-fire
+
+**Rules / referee (confirmed with a stderr-echo probe through run_puzzle_tests):**
+- Each turn: the cut (if any) is applied first, then every burning cell's
+  fireProgress += 1; a cell reaching fireDuration ignites its `-1` neighbours at 0
+  (chained within the same turn when the neighbour's fireDuration is 0). Newly lit
+  cells are not incremented in the turn they ignite.
+- The start cell shows progress 0 on turn 0 → "ignition turn" -1. A cell ignited at
+  turn t lights its neighbours at t + fireDuration.
+- Cutting a cell sets it safe immediately (blocks the fire in the same turn) and sets
+  cooldown = cutDuration; the next turn shows cutDuration-1; you can cut again at turn
+  s + cutDuration (s + 1 when cutDuration is 0).
+- Cutting a burning cell or cutting during cooldown ends the bot (fire runs out).
+- The game ends when no cell is burning. Score = value of cells neither burnt nor cut.
+- Coni63's Rust repo (github.com/Coni63/cg_fire) has a local referee `src/bin/referee.rs`
+  that matches these semantics, plus the 8 visible tests.
+
+**Validators:** 8, apparently the same maps as the 8 visible tests: the first
+submission scored 43326, while the offline visible total is ~42.6-43.1k. #1 = 62940
+(8 players tied).
+Top-25% cutoff (rank ~201 / 806) ≈ 26.5k.
+
+**Solver** (`block-the-spreading-fire.ts`): plans everything on turn 1, replays.
+- Evaluator = exact event simulation: min-heap of (ignition turn, cell), with the
+  cuts of an ordered list interleaved (a cut at turn s is processed before any
+  ignition event with turn >= s; if the cell is already ignited it is skipped at no
+  time cost, and the replay skips it the same way). It records the executed cuts, so
+  the replay never issues a cut after the evaluator's fire died out.
+- SA over the cut set: add (a neighbour within 2 of a plan cell, or a random cell),
+  remove, shift a cut to a nearby cell, nudge a cell's order key ±1..4. The order is
+  sorted by key, and the initial key is the uncut fire-arrival turn (EDF). T goes from
+  0.004·totalValue down to 0.3, geometric in time. Budget 4000 ms.
+- Seeds: every "ring" {arrival > R, adjacent to arrival <= R} and every full
+  row/column; the best one starts the SA.
+- **Bug hit:** saving `bestCells` and re-sorting them at the end with the *mutated*
+  keys changes the order → the replay diverged from the plan (test 5: predicted
+  6680, got 120). Fix: store the sorted order (`bestOrd`) whenever a new best is found.
+
+**Offline** (`block-the-spreading-fire-tools/referee.mjs [idx,...]`, env
+`BF_BUDGET` ms; it spawns the real .ts via `readline-preload.cjs`, tests in
+`tests.json`). Results @2 s: t1 9500, t2 700-800, t3 6400, t4 ~5200, t5 ~6700,
+t6 6280, t7 ~6050, t8 ~1800-2100 → TOTAL ~42.6-43.1k.
+Plan score == referee score on every test after the bestOrd fix.
+
+**Submitted:** 1 submission, 100%, **43326, global rank 123 / 806 (top ~15%)**.
+The objective was reached, so I stopped there. Labels claimed.
+
+Next levers: the weakest maps are t2 (~800; houses are worth 3700 and burn fast),
+t8 (~2k, random map) and t4 (a 47x47 open map, ~5.2k). Ideas: a smarter move that
+closes the wall where the fire escapes (the first burnt cell adjacent to a saved
+region), a faster incremental eval, and restarts.
