@@ -107,3 +107,12 @@ capture if possible, else a side that gives no 3-sided box, else random.
 Wins every game as A; as B the 2×2 ends 2–2 and the referee ranks that as a
 loss (tie-break not in the statement: read the referee before optimizing).
 Next: check the referee's tie rule; chain/long-chain rule for bigger boards.
+
+## hex
+
+11×11, single league; `d4` = column d, row 4, a1 top-left; red joins top and
+bottom. Neighbours (r±1 / c±1 plus (r-1,c+1) and (r+1,c-1)) confirmed by
+4/4 wins vs the boss. Bot: MCTS with random-fill playouts (one flood fill per
+playout), ~13k iterations per 80 ms on CG; swap if red's first stone is 2+
+cells from every edge. Ideas: RAVE/AMAF (a big win in Hex), bridge patterns
+in playouts, tree reuse.
