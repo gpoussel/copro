@@ -55,7 +55,7 @@ Surveyed 2026-09-26.
 | mad-pod-racing | 7 | Silver | 1 | TypeScript sim bot, submitted 2026-09-26 | 2 | 8/8 vs Silver boss in IDE |
 | night-of-war | 3 | Silver | 1 | TypeScript rules, submitted | 2 | 4/4 vs Silver boss; awaiting promotion (league 2: 5×5, league 3: 8×8 + levels) |
 | penguins | 3 | Silver | 1 | TypeScript 1-ply Voronoi, submitted | 2–4 | 4/4 vs Silver boss but thin margins; awaiting promotion |
-| space-shooter | 3 | Silver | 1 | — | 2 | |
+| space-shooter | 3 | Silver | 1 | TypeScript steering, submitted | 2 | 4/4 vs Silver boss; awaiting promotion (missiles next league) |
 | spring-challenge-2022 | 6 | Silver | 1 | Rust 1526/2401 | 2 | |
 | spring-challenge-2026-troll-farm | 6 | Silver | 1 | C++ 169/683 | 2 | |
 | tic-tac-toe | 5 | **Legend** ✅ | 0 | TypeScript MCTS v6 | 2 | Gold→Legend 2026-09-26 |

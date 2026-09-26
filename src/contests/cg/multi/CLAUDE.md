@@ -463,3 +463,11 @@ the Silver boss but by 5–100 points. Ideas: 2-ply / paranoid search late.
 target, 35 bucks. Bot: attack whenever possible, else the move taking an
 unowned block without ending where an enemy could attack. 4/4 vs the Silver
 boss (wins in 6 turns). Re-read the statement after promotion (new rules).
+
+## space-shooter
+
+3 leagues. **Unit types arrive as letters** (`S` ship, `B` bullet; the
+statement says Ship/Bullet). League 1 bot: steering sum (walls, keep ~350
+from the enemy, flee bullets within 260, damping), fire when ready with a lead
+on the enemy's velocity, bullet velocity made relative to our ship. 4/4 vs the
+Silver boss. Next league adds missiles: re-read the statement.
