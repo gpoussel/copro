@@ -17,7 +17,7 @@ Surveyed 2026-09-26.
 | bandas | 1 | Legend | 0 | — | 2 | |
 | blocking | 2 | Gold | 0 | — | 2–4 | |
 | breakthrough | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
-| chain-reaction-1 | 1 | Legend | 0 | — | 2 | |
+| chain-reaction-1 | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | checkers | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | chess | 2 | Gold | 0 | — | 2 | |
 | clash-of-bots | 1 | Legend | 0 | — | 2 | |

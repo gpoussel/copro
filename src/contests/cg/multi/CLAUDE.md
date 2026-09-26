@@ -186,3 +186,10 @@ profit (harvest applied) + 0.7·(our best next spot + ½ second) − the
 opponent's best next spot: 4/4, the boss runs out of gold.
 Ideas: value spots that cross two lines; plant on the opponent's big spot
 even at cost 10; keep a gold reserve.
+
+## chain-reaction-1
+
+6×6, single league, 100 ms. Rows arrive rank 6 first, 2 chars per cell.
+Explosions resolved wave by wave (stop when the opponent owns nothing).
+Bot: negamax alpha-beta (depth ~5), eval = orbs + 2 per cell, a cell next to
+an enemy cell one orb from critical counts as lost. 4/4 vs the boss.
