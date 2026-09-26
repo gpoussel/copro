@@ -287,3 +287,12 @@ direction labels are only in an image, so they were fitted by trying all
 (0,1)][k] with axial r = row − 4, q = index − 4 + max(0, 4 − row). Doing that
 search every turn timed out: it is hard-coded now. Bot: negamax alpha-beta
 (depth ~2), eval = 1000/marble off + centrality + cohesion. 4/4 (6–0).
+
+## minishogi
+
+5×5, single league. Coordinates: column 5 = left file, row 1 = top line;
+`5544`, `1425+`, `G*33`. Pseudo-legal engine (moves, promotions with forced
+pawn promotion, drops with pawn restrictions; a king capture ends a line),
+the root plays only moves from the referee's list (it handles check, pawn-drop
+mate, repetition). Negamax alpha-beta, material eval (hand ×0.9). 4/4.
+The same engine should carry over to dice-shogi.

@@ -34,7 +34,7 @@ Surveyed 2026-09-26.
 | legends-of-code-magic-constructed | 1 | Legend | 0 | — | 2 | |
 | lines-of-action | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | mad-knights | 1 | **Legend** ✅ | 0 | TypeScript paranoid alpha-beta, submitted | 3 | 3/6 wins vs 2 bosses (single league) |
-| minishogi | 1 | Legend | 0 | — | 2 | |
+| minishogi | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | nine-mens-morris | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | onitama | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | othello-1 | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 3/4 vs boss; weak: improve (MCTS or deeper search) |
