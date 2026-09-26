@@ -59,7 +59,7 @@ Surveyed 2026-09-26.
 | spring-challenge-2022 | 6 | Silver | 1 | Rust 1526/2401 | 2 | |
 | spring-challenge-2026-troll-farm | 6 | Silver | 1 | C++ 169/683 | 2 | |
 | tic-tac-toe | 5 | **Legend** ✅ | 0 | TypeScript MCTS v6 | 2 | Gold→Legend 2026-09-26 |
-| volcanoes | 3 | Silver | 1 | — | 2 | |
+| volcanoes | 3 | Silver | 1 | TypeScript 1-ply connection eval, submitted | 2 | 3/4 vs Silver boss; awaiting promotion |
 | atari-go | 4 | Bronze | 2 | — | 2 | |
 | atari-go-9x9 | 4 | Bronze | 2 | — | 2 | |
 | code4life | 6 | Bronze | 2 | Rust 1221/1535 | 2 | |

@@ -438,3 +438,11 @@ turns). Same pending-submit issue as back-to-the-code (MCP PR #7).
 matches per game, colours swapped. Board tracked from the valid-move list
 (new match = the valid count goes back up). MCTS with random-fill playouts,
 reward 0.5 + 0.5·tanh(diff/4). 4/4 vs the Silver boss (≈ +40 windows).
+
+## volcanoes
+
+80-tile sphere (neighbours given), 3 leagues (Silver start). Connect N_k to
+S_k. Bot: 1-ply over valid moves with eruptions simulated (level 4 → dormant,
+spreads to empty/own neighbours, destroys enemy ones, cascades), eval =
+Hex-like 0-1 BFS distance per opposite pair for both sides. Growth phases not
+simulated. 3/4 vs the Silver boss. Ideas: simulate growth, 2-ply.
