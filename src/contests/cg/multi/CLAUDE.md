@@ -175,3 +175,14 @@ centre table; captures and centre-bound moves searched first; the opponent's
 connection is only tested after a capture. First version (no centre term,
 full terminal test) lost 0/4 to the boss; this one wins 4/4 in ~13 moves.
 Ideas: quads/Euler number, mobility, MCTS-Solver (Winands).
+
+## tulips-and-daisies
+
+Width × height up to 16, 256 turns, 50 ms. Harvest pays FibSum(N) for the N
+flowers taken in one move (all directions together), so big simultaneous
+harvests dominate (`XXX_XXX` = 33). A greedy "harvest now + line potential −
+opponent's reply" bot lost 0/4 (~170 vs ~450 gold). Current bot: per move,
+profit (harvest applied) + 0.7·(our best next spot + ½ second) − the
+opponent's best next spot: 4/4, the boss runs out of gold.
+Ideas: value spots that cross two lines; plant on the opponent's big spot
+even at cost 10; keep a gold reserve.
