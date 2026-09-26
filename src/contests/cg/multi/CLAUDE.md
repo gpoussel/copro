@@ -547,3 +547,12 @@ end of a turn; fly ≤ 150. Bot: per gargoyle, the present interceptable
 soonest (penalty if the enemy reaches it first), fly to the interception
 point. 4/4 vs the Bronze boss. Later leagues: more gargoyles, values,
 cooldowns.
+
+## coders-of-the-realm---1v1
+
+Kingdomino for 2 (4 leagues, Bronze start); each player plays two
+PUT+PICK series per round (the `current` flag marks the tile to place now).
+Grid is 13×13 with the castle in the middle, territory ≤ 7×7. Bot: best
+placement by resulting score (Σ zone size × crowns), pick the free tile with
+the best follow-up on our board. 4/4 vs the Bronze boss (~130 to 25).
+The same code should suit coders-of-the-realm (2–4 players): check the input.

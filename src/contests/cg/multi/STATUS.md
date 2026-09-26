@@ -64,7 +64,7 @@ Surveyed 2026-09-26.
 | atari-go-9x9 | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
 | code4life | 6 | Bronze | 2 | Rust 1221/1535 | 2 | |
 | coders-of-the-realm | 4 | Bronze | 2 | — | 2–4 | |
-| coders-of-the-realm---1v1 | 4 | Bronze | 2 | — | 2 | |
+| coders-of-the-realm---1v1 | 4 | Bronze | 2 | TypeScript greedy placement, submitted | 2 | 4/4 vs Bronze boss (~130–25); awaiting promotions |
 | cultist-wars | 4 | Bronze | 2 | TypeScript action scoring, submitted | 2 | 2/6 vs Bronze boss (loses as player 2): improve shooting duels |
 | game-of-life-or-death | 4 | Bronze | 2 | TypeScript pattern search, submitted | 2 | 4/4 vs Bronze boss (~590–1); awaiting promotions |
 | gargoyles-versus-santas | 4 | Bronze | 2 | TypeScript interception, submitted | 2 | 4/4 vs Bronze boss; awaiting promotions |
