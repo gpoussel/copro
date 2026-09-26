@@ -73,3 +73,11 @@ our own moves, the opponent's = 48 − seeds on board − ours. 50 ms per turn.
 Abapa rules implemented: 12+ seeds skip the starting house, grand slam cancels
 the capture, a move must leave the opponent seeds (else the mover takes all).
 Bot: negamax alpha-beta, eval = capture difference. 4/4 vs the boss.
+
+## breakthrough
+
+8×8, single league. Input: opponent's last move (`None` = we are White) and
+the legal moves; the board is tracked from the moves. Bot: negamax
+alpha-beta, eval = 100/pawn + 3·advancement² + 200 on the 7th rank, immediate
+win detection. 4/4 vs the boss. Ideas: MCTS (strong in Breakthrough per the
+literature), better eval (defended pawns, holes in the home row).
