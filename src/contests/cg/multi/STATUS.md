@@ -13,7 +13,7 @@ Surveyed 2026-09-26.
 | abalone | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (6–0) |
 | amazons | 2 | **Legend** ✅ | 0 | TypeScript 1-ply territory, submitted | 2 | 4/4 matches vs boss |
 | ataxx | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 6/6 vs boss |
-| back-to-the-code | — | — | 0 | — | 2–4 | |
+| back-to-the-code | — | ready (no league) | 1 | TypeScript rectangles, **not submitted yet** (needs MCP PR #7 + reconnect) | 2–4 | 4/4 vs boss (~2.5× its cells) |
 | bandas | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | blocking | 2 | **Gold** ✅ | 0 | TypeScript greedy, submitted | 2–4 | ~40% vs boss (close scores) |
 | breakthrough | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |

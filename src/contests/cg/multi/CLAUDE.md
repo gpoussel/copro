@@ -413,3 +413,12 @@ cash reserve. First version (40% of devs on features) sat at ~10‰ share; now
 106–200‰ but the bosses reach 450–800‰. Ideas: faster ramp-up (more managers
 early), earlier sellers, target the leader with the focus rule.
 In 4-player IDE games, check `scores` rather than `outcome`.
+
+## back-to-the-code
+
+League-less (old BOT_PROGRAMMING), 35×20. Bot: best rectangle by neutral
+cells gained / (distance to nearest corner + perimeter cells to claim), no
+enemy cell inside, walk it corner to corner, replan when an enemy cell shows
+up in it (prefix sums make each rectangle O(1)). 4/4 vs the boss (~2.5× its
+cells). **Submitting failed**: the MCP's pre-submit ranking call errors on
+league-less puzzles (fixed in codingame-mcp PR #7).
