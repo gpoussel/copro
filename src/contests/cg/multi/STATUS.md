@@ -21,7 +21,7 @@ Surveyed 2026-09-26.
 | checkers | 1 | Legend | 0 | — | 2 | |
 | chess | 2 | Gold | 0 | — | 2 | |
 | clash-of-bots | 1 | Legend | 0 | — | 2 | |
-| clobber | 2 | Gold | 0 | — | 2 | |
+| clobber | 2 | **Gold** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss |
 | code-keeper---the-hero | 1 | Legend | 0 | — | 4 | |
 | connect-4 | 2 | **Gold** ✅ | 0 | TypeScript MCTS, submitted | 2 | 6/6 vs boss in IDE |
 | dice-duel | 2 | Gold | 0 | — | 2 | |

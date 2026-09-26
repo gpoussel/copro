@@ -81,3 +81,10 @@ the legal moves; the board is tracked from the moves. Bot: negamax
 alpha-beta, eval = 100/pawn + 3·advancement² + 200 on the 7th rank, immediate
 win detection. 4/4 vs the boss. Ideas: MCTS (strong in Breakthrough per the
 literature), better eval (defended pawns, holes in the home row).
+
+## clobber
+
+8×8, board given each turn (only the move count, not the list). Normal play:
+no move = loss. Bot: MCTS (c = 0.5), uniform random playouts. 4/4 vs the
+boss. Ideas: tree reuse, combinatorial-game decomposition of the endgame
+(independent regions), MCTS-Solver.
