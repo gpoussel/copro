@@ -353,3 +353,12 @@ Policy: play a surely playable card, else hint a partner's playable card by
 level, else discard a useless / least-known card. Valid, but the lowest score
 of the table. Ideas: hint what the partner does not know yet (track our own
 hints), prefer colour hints for 5s, "chop" conventions.
+
+## code-keeper---the-hero
+
+Single league, each player plays its own maze (16×12, fog range 3, 150
+turns): exit +10000, death −1000. Explorer bot: map memory, sword adjacent
+monsters, bow dangerous ones (gargoyle/orc/vampire) in range, potion when
+HP ≤ 10, exit when seen, else items, else nearest frontier. Scores close to
+the bosses; in the tests nobody found the exit. Ideas: explore by
+information gain, avoid fights, hammer/scythe on groups.

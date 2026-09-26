@@ -22,7 +22,7 @@ Surveyed 2026-09-26.
 | chess | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 matches vs boss |
 | clash-of-bots | 1 | Legend | 0 | — | 2 | |
 | clobber | 2 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss |
-| code-keeper---the-hero | 1 | Legend | 0 | — | 4 | |
+| code-keeper---the-hero | 1 | **Legend** ✅ | 0 | TypeScript explorer, submitted | 4 | 1/4, scores close to bosses; nobody reaches the exit |
 | connect-4 | 2 | **Legend** ✅ | 0 | TypeScript MCTS | 2 | Gold→Legend 2026-09-26 |
 | dice-duel | 2 | **Legend** ✅ | 0 | TypeScript 1-ply, SEVEN_RULE on, resubmitted | 2 | 1/4 vs Legend boss: dies of no moves, add own-mobility to eval |
 | dice-shogi | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta (minishogi engine), submitted | 2 | 4/4 vs boss (single league) |
