@@ -52,13 +52,13 @@ Surveyed 2026-09-26.
 | beeminegame | 3 | Silver | 1 | — | 2 | |
 | counting-tictactoe | 3 | Silver | 1 | — | 2 | |
 | elemental-wars | 3 | Silver | 1 | — | 3 | |
-| mad-pod-racing | 7 | Silver | 1 | Rust 6988/63887 | 2 | |
+| mad-pod-racing | 7 | Silver | 1 | TypeScript sim bot, submitted 2026-09-26 | 2 | 8/8 vs Silver boss in IDE |
 | night-of-war | 3 | Silver | 1 | — | 2 | |
 | penguins | 3 | Silver | 1 | — | 2–4 | |
 | space-shooter | 3 | Silver | 1 | — | 2 | |
 | spring-challenge-2022 | 6 | Silver | 1 | Rust 1526/2401 | 2 | |
 | spring-challenge-2026-troll-farm | 6 | Silver | 1 | C++ 169/683 | 2 | |
-| tic-tac-toe | 5 | Silver | 1 | TypeScript 1/1201 | 2 | MCTS, eligible for Gold; v6 ready to submit in Gold |
+| tic-tac-toe | 5 | **Gold** ✅ | 0 | TypeScript (v1 agent) | 2 | promoted 2026-09-26; v6 (stronger) not yet submitted: submit blocked by permissions |
 | volcanoes | 3 | Silver | 1 | — | 2 | |
 | atari-go | 4 | Bronze | 2 | — | 2 | |
 | atari-go-9x9 | 4 | Bronze | 2 | — | 2 | |

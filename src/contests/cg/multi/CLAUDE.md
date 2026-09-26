@@ -34,3 +34,19 @@ On CodinGame the v4 bot (c = 0.5 + solver) beat the first submitted version
 
 Forum hints (Legend): c ≈ 0.5, draws 0.5, win/block in playouts, solver;
 legend bots run 100k+ rollouts per turn in C++.
+
+## mad-pod-racing (Coders Strike Back)
+
+Silver = one pod each, inputs: own pos, next checkpoint, its distance and
+angle; opponent pos. Physics (verified: predicted position error 0-1 unit):
+facing = atan2(cp - pos) - nextCheckpointAngle (degrees, y down); rotate by
+≤ 18°, v += thrust·dir, pos += v, v = trunc(0.85·v), pos rounded; BOOST = 650.
+The seed string also carries the map (`map=x y x y ...`), handy to replay.
+
+Bot: random-restart + mutation search over 6-turn (rotation, thrust) plans,
+checkpoints learnt during lap 1, heading bonus in the evaluation. Opponent
+ignored (no collisions simulated, no SHIELD yet). 8/8 vs the Silver boss.
+
+Gold changes the protocol (2 pods each, full checkpoint list given up front):
+rewrite the I/O, then add a blocker pod and collisions (Magus' post-mortem:
+http://files.magusgeek.com/csb/csb_en.html).
