@@ -68,7 +68,7 @@ Surveyed 2026-09-26.
 | cultist-wars | 4 | Bronze | 2 | — | 2 | |
 | game-of-life-or-death | 4 | Bronze | 2 | — | 2 | |
 | gargoyles-versus-santas | 4 | Bronze | 2 | — | 2 | |
-| isola | 4 | Bronze | 2 | — | 2 | |
+| isola | 4 | Bronze | 2 | TypeScript alpha-beta, submitted | 2 | 4/4 vs Bronze boss; awaiting promotions |
 | legends-of-code-magic | 7 | Bronze | 2 | TypeScript 518/1629 | 2 | |
 | seabed-security | 7 | Bronze | 2 | C++ 274/707 | 2 | |
 | spring-challenge-2021 | 6 | Bronze | 2 | Rust 255/3033 | 2 | |

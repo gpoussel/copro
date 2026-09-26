@@ -492,3 +492,11 @@ Gold bot (submitted right after the promotion): both pods race with the same
 > 5000 straight. No collisions, no blocker: 1/4 vs the Gold boss. Next: a
 blocker pod that intercepts the leading enemy pod, collision simulation and
 SHIELD, then Legend.
+
+## isola
+
+9×9, 4 leagues (Bronze start). Input: opponent position + its removed tile
+(one value per line). Bot: negamax alpha-beta, removals limited to tiles
+within 2 of the opponent, eval = 3·our mobility − 6·theirs + Voronoi
+territory; the removal map is snapshotted each turn to undo a search cut
+by the timeout. 4/4 vs the Bronze boss.
