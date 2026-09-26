@@ -500,3 +500,12 @@ SHIELD, then Legend.
 within 2 of the opponent, eval = 3·our mobility − 6·theirs + Voronoi
 territory; the removal map is snapshotted each turn to undo a search cut
 by the timeout. 4/4 vs the Bronze boss.
+
+## atari-go / atari-go-9x9
+
+Captures only, 80 turns, no suicide, ko = cannot recreate the board as it was
+after our previous move; ties go to more stones played (never pass). x =
+column. Same bot for both: every legal move scored by captures (×30), the
+opponent's best immediate capture afterwards (×−25), group liberties (atari
+heavily penalised), slight centre pull. 4/4 vs both Bronze bosses (e.g. 16–1,
+34–0). atari-go's later leagues use 13×13 and 19×19 boards.
