@@ -88,3 +88,12 @@ literature), better eval (defended pawns, holes in the home row).
 no move = loss. Bot: MCTS (c = 0.5), uniform random playouts. 4/4 vs the
 boss. Ideas: tree reuse, combinatorial-game decomposition of the endgame
 (independent regions), MCTS-Solver.
+
+## ataxx
+
+7×7 with walls, 100 ms. **The statement says rows come bottom-to-top, but they
+come top-to-bottom**: a mirrored board has the same move count, so the bot
+checks that every referee move exists in its own move list and flips the rows
+otherwise. Bot: negamax alpha-beta, eval = piece difference (incremental
+counts, leaves return before move generation), spawns searched first.
+0/4 before the row fix, 6/6 vs the boss after.
