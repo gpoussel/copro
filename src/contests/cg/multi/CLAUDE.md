@@ -204,3 +204,15 @@ may capture on the last step only; no legal move = loss, else more dice wins.
 filters the move list accordingly): flip `SEVEN_RULE` after the promotion.
 Bot: moves deduplicated by (end cell, orientation), 1-ply with a penalty when
 the opponent can capture back. 4/4 vs the boss.
+
+## paper-soccer
+
+Geometry from the referee (github.com/jdermont/CodinGame-paper-soccer):
+points x 0..8, y 0..10, goals y = −1 / 11 at x 3..5; borders pre-drawn except
+the mouths (3,0)–(5,0) / (3,10)–(5,10); goal posts drawn; the diagonals from
+goal corners outwards ((3,−1)–(2,0) …) do not exist. Arriving on a point that
+already has a line bounces; a stuck ball loses for the mover. Player 0 scores
+at the top; 0 = N (y−1), clockwise. Input = opponent's last move only.
+Bot: two-ply over whole turns (bounce chains enumerated with leaf caps), eval
+= distance of the ball to the target goal. 4/4 vs the boss.
+Ideas: deeper search with a better eval (dead ends, safe points), turn caching.

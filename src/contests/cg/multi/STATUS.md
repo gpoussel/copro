@@ -39,7 +39,7 @@ Surveyed 2026-09-26.
 | onitama | 2 | **Gold** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | othello-1 | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 3/4 vs boss; weak: improve (MCTS or deeper search) |
 | oware-abapa | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
-| paper-soccer | 1 | Legend | 0 | — | 2 | |
+| paper-soccer | 1 | **Legend** ✅ | 0 | TypeScript 2-ply turns, submitted | 2 | 4/4 vs boss (single league) |
 | platinum-rift-episode-2 | — | — | 0 | — | 2 | |
 | poker | 2 | Gold | 0 | — | 2–4 | |
 | start-up | 1 | Legend | 0 | — | 4 | |
