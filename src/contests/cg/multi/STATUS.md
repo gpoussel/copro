@@ -65,7 +65,7 @@ Surveyed 2026-09-26.
 | code4life | 6 | Bronze | 2 | Rust 1221/1535 | 2 | |
 | coders-of-the-realm | 4 | Bronze | 2 | — | 2–4 | |
 | coders-of-the-realm---1v1 | 4 | Bronze | 2 | — | 2 | |
-| cultist-wars | 4 | Bronze | 2 | — | 2 | |
+| cultist-wars | 4 | Bronze | 2 | TypeScript action scoring, submitted | 2 | 2/6 vs Bronze boss (loses as player 2): improve shooting duels |
 | game-of-life-or-death | 4 | Bronze | 2 | — | 2 | |
 | gargoyles-versus-santas | 4 | Bronze | 2 | — | 2 | |
 | isola | 4 | Bronze | 2 | TypeScript alpha-beta, submitted | 2 | 4/4 vs Bronze boss; awaiting promotions |

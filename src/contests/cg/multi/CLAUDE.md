@@ -509,3 +509,13 @@ column. Same bot for both: every legal move scored by captures (×30), the
 opponent's best immediate capture afterwards (×−25), group liberties (atari
 heavily penalised), slight centre pull. 4/4 vs both Bronze bosses (e.g. 16–1,
 34–0). atari-go's later leagues use 13×13 and 19×19 boards.
+
+## cultist-wars
+
+13×7, 4 leagues (Bronze start), one action per turn. Bresenham line from the
+lower y (as the statement says) for shot blocking. Bot: score every action —
+conversions (neutral 8, enemy cultist 12), shots (damage, +10 kill, +100
+leader kill), leader steps towards the nearest convertible unit minus the
+enemy fire on the destination, cultists close in on the enemy leader. 2/6 vs
+the Bronze boss: wins as player 1, loses as player 2 (units shot down).
+Ideas: 2-ply over actions, keep cultists out of enemy lines, read the source.
