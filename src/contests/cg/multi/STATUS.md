@@ -50,16 +50,16 @@ Surveyed 2026-09-26.
 | yavalath | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | yinsh | 1 | **Legend** ✅ | 0 | TypeScript minimal (list-based), submitted | 2 | 2/2 vs boss; no engine yet |
 | beeminegame | 3 | Silver | 1 | TypeScript greedy hives, submitted | 2 | 4/4 vs Silver boss; awaiting promotion (levels/bees next) |
-| counting-tictactoe | 3 | Silver | 1 | TypeScript MCTS, submitted | 2 | 4/4 vs Silver boss; awaiting promotion |
+| counting-tictactoe | 3 | **Gold** ✅ | 0 | TypeScript MCTS | 2 | Silver→Gold 2026-09-26 |
 | elemental-wars | 3 | Silver | 1 | TypeScript chase/flee, submitted | 3 | best score 4/6 vs 2 bosses; awaiting promotion (more elementals + freeing prisoners next) |
 | mad-pod-racing | 7 | **Gold** ✅ | 0 | TypeScript Gold 2-pod racer, submitted | 2 | 1/4 vs Gold boss; next: blocker pod + collisions (Magus) |
-| night-of-war | 3 | Silver | 1 | TypeScript rules, submitted | 2 | 4/4 vs Silver boss; awaiting promotion (league 2: 5×5, league 3: 8×8 + levels) |
-| penguins | 3 | Silver | 1 | TypeScript 1-ply Voronoi, submitted | 2–4 | 4/4 vs Silver boss but thin margins; awaiting promotion |
-| space-shooter | 3 | Silver | 1 | TypeScript steering, submitted | 2 | 4/4 vs Silver boss; awaiting promotion (missiles next league) |
+| night-of-war | 3 | **Gold** ✅ | 0 | TypeScript rules | 2 | Silver→Gold 2026-09-26 (Gold rules: 5×5? re-read) |
+| penguins | 3 | **Legend** ✅ | 0 | TypeScript Voronoi | 2–4 | Silver→Legend 2026-09-26 |
+| space-shooter | 3 | **Gold** ✅ | 0 | TypeScript steering | 2 | Silver→Gold 2026-09-26 (missiles in this league: bot ignores them) |
 | spring-challenge-2022 | 6 | Silver | 1 | Rust 1526/2401 | 2 | |
 | spring-challenge-2026-troll-farm | 6 | Silver | 1 | C++ 169/683 | 2 | |
 | tic-tac-toe | 5 | **Legend** ✅ | 0 | TypeScript MCTS v6 | 2 | Gold→Legend 2026-09-26 |
-| volcanoes | 3 | Silver | 1 | TypeScript 1-ply connection eval, submitted | 2 | 3/4 vs Silver boss; awaiting promotion |
+| volcanoes | 3 | Silver | 1 | TypeScript 1-ply | 2 | stuck 82/125 in Silver: needs growth simulation / search |
 | atari-go | 4 | Bronze | 2 | TypeScript tactical 1.5-ply, submitted | 2 | 4/4 vs Bronze boss; board grows to 13/19 in later leagues |
 | atari-go-9x9 | 4 | Bronze | 2 | TypeScript tactical 1.5-ply, submitted | 2 | 4/4 vs Bronze boss |
 | code4life | 6 | Bronze | 2 | Rust 1221/1535 | 2 | |
