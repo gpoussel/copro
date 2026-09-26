@@ -15,7 +15,7 @@ Surveyed 2026-09-26.
 | ataxx | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 6/6 vs boss |
 | back-to-the-code | — | — | 0 | — | 2–4 | |
 | bandas | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
-| blocking | 2 | Gold | 0 | — | 2–4 | |
+| blocking | 2 | **Gold** ✅ | 0 | TypeScript greedy, submitted | 2–4 | ~40% vs boss (close scores) |
 | breakthrough | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | chain-reaction-1 | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | checkers | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |

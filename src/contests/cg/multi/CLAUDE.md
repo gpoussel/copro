@@ -264,3 +264,13 @@ value), eval = 10·our mobility − 6·each opponent's. 3/6 wins vs two bosses,
 2nd otherwise. Ideas: max-n instead of paranoid, area (BFS) eval late game.
 (MCP note: in 3-player games the `events` names can show "me" for another
 seat — check `ranks` for the real outcome.)
+
+## blocking
+
+Blokus-like, 13×13, valid moves listed as `col row Xfrn`. **Geometry fitted
+on a real move list (48/48), the statement is vague**: flip = transpose
+(x,y)→(y,x), then r clockwise rotations (x,y)→(−y,x), and n is the square's
+index in the ORIGINAL shape's reading order. Greedy bot: 10·size + our
+corner cells − 1.5·each opponent's, centre pull for the first 6 moves.
+~40% vs the boss with close scores (BLOCK weight 0.5 / 3 not better).
+Ideas: 2-ply (opponent's best greedy reply), keep big shapes placeable.
