@@ -227,3 +227,11 @@ Bot: every candidate peg scored by 2·(opponent's holes-needed) − ours, from a
 The boss swaps a central first peg (F6), so the first peg is C4. 4/6 vs the
 boss: the distance eval misses bridge/edge templates. Ideas: MCTS with
 random-fill playouts like Hex, or a proper two-distance / template eval.
+
+## bandas
+
+8×8, single league, 100 ms. Move code ported from the referee
+(github.com/Oli8/CG-bandas): recursive pushes, death off-grid or in holes,
+outer empty lines/columns turn into holes, 200 turns then pawn count. Bot:
+negamax alpha-beta (depth 5–9), eval = 100/pawn + up to 12 for distance from
+the live area's border. 4/4 vs the boss.
