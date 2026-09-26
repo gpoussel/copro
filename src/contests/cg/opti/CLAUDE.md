@@ -748,3 +748,81 @@ Next levers: allow non-candidate guesses when the set is small (better splits), 
 entropy / max-partition tie-breaks, precompute an optimal opening per length
 (2nd guess by first answer), and for length 10 (only bulls carry information) a
 dedicated permutation strategy — n=9/10 games cost the most (9.5 / 11 guesses).
+
+---
+
+## number-shifting
+
+Grid of numbers. A move pushes a number v exactly v cells U/D/L/R onto another
+non-zero number, which becomes a+v or |a-v|. Clear the board to finish a level.
+The program prints a level password first ("first_level" = level 0), then plays.
+**Criterion = "Level" metadata = (0-based index of the last level solved) + 1.**
+After a solve the referee sends the next level in the same run, so one run can
+chain many levels.
+
+**Referee** (github.com/eulerscheZahl/NumberShifting, `Referee.java` +
+`NumberShifting.java`), ported in `gen.mjs`:
+- The test input is the seed: comma-separated signed bytes
+  (`-99,12,87,19,...`). Passwords come from `SecureRandom("SHA1PRNG")` seeded with
+  it (32 letters each via `nextInt(26)`). Level n seeds another SHA1PRNG with
+  `seed[0] ^= n & 0xff; seed[1] ^= n >> 8`. `spawns = 3 + n/2` (n > 150:
+  `3 + n - 75`), 8x5 grid, which grows (height+1, width = h*16/9) while
+  `w*h < 2*spawns` (spawns -= 2 each time).
+- `gen.mjs` has a from-scratch SHA1PRNG (sun.security.provider.SecureRandom:
+  state = SHA1(seed), output = SHA1(state), state += output + 1 bytewise) and
+  `java.util.Random.next/nextInt/nextBoolean` on top of it. **Bit-exact**: level 0
+  matches the stub example, and the level passwords and maps match the game
+  summaries of a real run_puzzle_tests (level 1 = `pmkhklcg...`, level 20 =
+  `yhabewqs...`).
+- **The validator uses the same seed as the visible test.** A submission that
+  starts from the level-20 password computed offline scored 100%. That's also how
+  the #1 players reach 999.
+- Timing: 800 ms for the first move of a level, then 50 ms per move, 600 turns,
+  one move per turn. You can print the whole plan at once; the extra lines are
+  consumed on the following turns.
+- **Hidden limit: "Total game duration too long (>30000ms)".** The CG runner
+  costs about 130 ms per turn, so a run can't go past about 225 turns. A run from
+  `first_level` reaches level 27 in about 250 turns, so it was killed. That was
+  submission 1 (score 0). The run has to start from a late password.
+
+**Solver** (`number-shifting.ts`): DFS over moves. Equal-value subtractions come
+first (they remove 2 numbers), then other subtractions, then additions. It uses a
+Zobrist transposition set and one prune: a number with no other number in its row
+or column is dead. The DFS restarts with a node limit (3000, x1.3 each restart)
+and a random tie-break inside each move class (NOISE 0.9). Restarts were the big
+win: without them level 20 (18 numbers) failed at 650 ms, and level 24
+(20 numbers) failed at 20 s. With them, levels 20-26 solve in 0.05-0.5 s each
+offline. Level 27 (20 numbers) is not solved in 40 s with 3 different seeds.
+
+**Harness:** run everything from `number-shifting-tools/`.
+- `node gen.mjs <level>` prints the password, the map and the generator's
+  reference solution.
+- `NS_BUDGET=ms node sim.mjs <startLevel>` is the offline referee. It runs the
+  real .ts through a readline/console.log shim, chains levels and counts turns.
+- `NS_DUMP=out/plans.json` saves the plans. `node embed.mjs 15` rewrites the
+  `PLANS` table in the .ts. The key is a hash of the map text. A plan is used only
+  if it replays to an empty board; otherwise the level is solved live.
+- Env knobs: `NS_NOISE`, `NS_RN`, `NS_RG`, `NS_SEED`, `NS_START` (the starting
+  password).
+
+**Submissions (2):**
+1. Start from `first_level`, live solve: **score 0**. The run went over the 30 s
+   game-duration limit.
+2. Start from the level-20 password, with embedded plans for levels 20-26 and
+   level 27 solved live (it fails): **100%, criteriaScore 27, global rank
+   184 / 959 (top ~19%)**. The top-25% cutoff is rank ~239, which is level 22
+   (level 21 is rank 234+). Level 24 is ~rank 196, and #1 is 999. The objective
+   was reached, so I stopped. The puzzle has no labels to claim.
+
+**Failed experiment:** replacing the row/column-isolation prune with a full
+row/column union-find prune was slower overall at the same budget. That prune
+checks that each component has at least 2 cells and an even sum, since a+b and
+|a-b| keep parity. Reverted.
+
+**Next lever** (to go past 27): the moves split into independent groups. A set of
+cells that can be cleared by moves inside the set never needs anything outside
+it, because moves jump over cells. So a level is an exact cover of the cells by
+clearable groups, where each group is a merge tree ending in an equal
+subtraction. The forum mentions this exact-cover / sub-problem decomposition.
+Enumerate small clearable groups, then run DLX. Solve offline and embed the
+plans, keeping the start password within ~200 turns of the last level.
