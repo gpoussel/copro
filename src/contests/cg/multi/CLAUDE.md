@@ -720,7 +720,7 @@ for a fixed lattice while known safe ore < 2 per live robot; the others dig
 the nearest known ore with capacity left (ore − robots sent, slight bias to
 the HQ), else blind-dig fresh cells from column 3. Holes that appear without
 us, and holes next to an enemy robot that stood still outside the HQ, count
-as possibly trapped and are skipped. 4/4 vs the Wood 2 boss (~105 to 1).
+as possibly trapped and are skipped. 4/4 vs the Wood 1 boss (~105 to 1).
 Ideas: our own traps, trap chain kills, radar spots by expected value.
 
 ## keep-off-the-grass-fall-challenge-2022
@@ -730,7 +730,7 @@ an adjacent enemy stack outnumbers, up to 3 economy recyclers in the first 12
 turns (most scrap in range, not next to another recycler), every unit to the
 nearest unowned walkable cell (BFS; claimed targets cost more, enemy cells
 preferred), spawns on own frontier cells closest to the enemy. Cells in a
-recycler's range with 1 scrap count as grass. 4/4 vs the Wood 2 boss.
+recycler's range with 1 scrap count as grass. 4/4 vs the Wood 1 boss.
 Ideas: the referee's MOVE pathing prefers the centre; frontier defence by
 unit counts; recyclers to cut the map.
 
@@ -741,5 +741,5 @@ CSB-like physics, 2 cars each, community game with wood leagues as tiers
 carries, a free car rams it (strong impacts swap the prisoner); chasers are
 paired with prisoners by estimated distance, aiming ahead of the prisoner;
 targets corrected by −3·velocity; thrust 200 / 120 / 20 by heading error.
-3/4 vs the Wood 2 boss. Ideas: simulate (referee on GitHub), block the
+3/4 vs the Wood 1 boss. Ideas: simulate (referee on GitHub), block the
 enemy carrier's path at the manhole.
