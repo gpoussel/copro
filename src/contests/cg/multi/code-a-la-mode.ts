@@ -69,7 +69,21 @@ while (true) {
       }
     return best
   }
-  const best = orders.slice().sort((a, b) => b.award - a.award)[0]
+  // Target order: best award per estimated work (items already on a table
+  // or in the oven cost nothing; a tart is the longest chain).
+  const work = (d: string) => {
+    if (CRATE[d] || onTable(d) || ovenItem === d) return 1
+    if (d === "CHOPPED_STRAWBERRIES") return 4
+    if (d === "CROISSANT") return 13
+    if (d === "TART") return onTable("RAW_TART") || ovenItem === "RAW_TART" ? 8 : 16
+    return 3
+  }
+  const carriedPlate = item.startsWith("DISH") ? item.split("-").filter(s => s !== "DISH") : []
+  const orderValue = (o: { items: string[]; award: number }) =>
+    carriedPlate.every(d => o.items.includes(d))
+      ? o.award / (3 + o.items.filter(d => !carriedPlate.includes(d)).reduce((t, d) => t + work(d), 0))
+      : 0
+  const best = orders.slice().sort((a, b) => orderValue(b) - orderValue(a))[0]
   const needChopped = best?.items.includes("CHOPPED_STRAWBERRIES") && !onTable("CHOPPED_STRAWBERRIES")
   // Croissants: dough (H) baked 10 turns in the oven (O), ready for 10 more.
   const croissantReady = ovenItem === "CROISSANT" || ovenItem === "TART" // anything baked: take it
@@ -77,14 +91,14 @@ while (true) {
   // → oven (TART).
   const needTart =
     OVEN[0] >= 0 &&
-    orders.some(o => o.items.includes("TART")) &&
+    !!best?.items.includes("TART") &&
     !onTable("TART") &&
     !onTable("RAW_TART") &&
     ovenItem !== "RAW_TART" &&
     ovenItem !== "TART"
   const needCroissant =
     OVEN[0] >= 0 &&
-    orders.some(o => o.items.includes("CROISSANT")) &&
+    !!best?.items.includes("CROISSANT") &&
     !onTable("CROISSANT") &&
     ovenItem === "NONE"
   let action: string
@@ -116,7 +130,7 @@ while (true) {
     }
   } else {
     const onPlate = carried.filter(s => s !== "DISH")
-    const fits = orders.filter(o => onPlate.every(d => o.items.includes(d))).sort((a, b) => b.award - a.award)
+    const fits = orders.filter(o => onPlate.every(d => o.items.includes(d))).sort((a, b) => orderValue(b) - orderValue(a))
     const target = fits[0]
     if (!target) action = use(DISHWASHER)
     else {

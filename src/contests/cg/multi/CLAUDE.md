@@ -1138,6 +1138,13 @@ oven = TART): dough goes to the board when a tart is wanted (and no
 croissant is, or the oven is busy); RAW_TART into the oven when empty else
 onto a table (picked up later); anything baked is taken at once. Best total
 2/3 (third within 1 point). Arena was 13.1 vs boss 23.9 before this.
+Arena 18.5 vs boss 23.9. The boss (`config/Boss.kt` in
+github.com/csj/code-a-la-mode) is naive: first customer, builds every item
+onto tables then plates them, WAITs every third turn. Ours now targets
+the order with the best award / estimated work (crate or ready item 1,
+strawberries 4, croissant 13, tart 16 or 8 with a raw tart ready; the
+carried plate must fit) and only bakes/chops for that order. 2/3 with
+higher totals (13–14k).
 
 ## soak-overflow
 
