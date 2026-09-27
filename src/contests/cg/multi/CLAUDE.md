@@ -1212,6 +1212,25 @@ mines, 2nd barracks, towers to 8) on the search base with 160 bursts.
 23.3: economy now matches opponents (5–8 mines, 5–6 towers, 9–14 trains)
 without a score gain. Heuristics plateau at 22–27.5; next: exact referee
 port + beam search over queen actions (RoboStac's approach).
+**Engine + planner** (`code-royale-tools/`): `engine.ts` = exact port of
+the referee turn (checked by `harness.ts` on a replay: 160/160 turns with
+the hidden info, 155/160 from our input only). The live game differs from
+the GitHub source: knights spawn with 25 HP (not 30); collision order p0
+creeps, p0 queen, p1 creeps, p1 queen, sites; creep i spawns at site +
+(1,−1)/(−1,1)/(1,1)/(−1,−1) then 30 towards the enemy queen; tower damage
+uses the distance to the site centre; all towers act, dead creeps go, then
+barracks, then mines. `bot.ts` (bundled into `code-royale.ts` by
+`build.mjs`): beam search (width 8, ≤ 12 turns, 32 ms) over 8 compass
+moves + the builds on the touched site, enemy queen idle (repairs a tower
+it touches), no training in the search; eval 100·our HP − 10·enemy HP +
+30·income + towers (30 + 40·hp/800, less beyond 6) + knight barracks
+(0 → −400, 2 → +30, > 2 → −300, −0.03·distance to the enemy queen) − 150
+if towers < mines < … (RoboStac's balance rule) − 25 per enemy mine /
+barracks − Agade's knight threat 1000·max(0, hp/d − 0.02) − 0.05·distance
+to the nearest free site out of enemy tower range; accumulated with 0.7
+decay. Training: knights whenever possible for 50 turns and after 210,
+else 8-knight bursts. 3/4 vs the boss, every win by killing its queen.
+The heuristic bot is in `legacy/code-royale-heuristic.ts`.
 
 ## hypersonic
 
