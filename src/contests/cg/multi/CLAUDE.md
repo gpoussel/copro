@@ -1144,6 +1144,8 @@ starting gold, then mines, many towers, a queen always moving; they win
 by killing the boss queen. Barracks-first order: 2/4 but arena 21.2:
 reverted. (A submit reply shows the previous agent; the new one ranks
 under a new agentId.)
+Forward knight barracks (free area site nearest the enemy corner): 0/4,
+the queen dies walking out there early.
 
 ## hypersonic
 
