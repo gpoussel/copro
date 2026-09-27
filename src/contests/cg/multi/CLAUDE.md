@@ -58,6 +58,11 @@ ignored (no collisions simulated, no SHIELD yet). 8/8 vs the Silver boss.
 full checkpoint list given up front), so the Silver bot plays badly there:
 rewrite the I/O, then add a blocker pod and collisions (Magus' post-mortem:
 http://files.magusgeek.com/csb/csb_en.html).
+Gold bot (submitted right after the promotion): both pods race with the same
+6-turn plan search (known checkpoints, exact speeds/angles), one BOOST on a
+> 5000 straight. No collisions, no blocker: 1/4 vs the Gold boss. Next: a
+blocker pod that intercepts the leading enemy pod, collision simulation and
+SHIELD, then Legend.
 
 ## connect-4
 
@@ -205,6 +210,9 @@ may capture on the last step only; no legal move = loss, else more dice wins.
 filters the move list accordingly): flip `SEVEN_RULE` after the promotion.
 Bot: moves deduplicated by (end cell, orientation), 1-ply with a penalty when
 the opponent can capture back. 4/4 vs the boss.
+Promoted to Legend 2026-09-26; `SEVEN_RULE` is now on. In Legend the bot
+loses mostly by having no legal move (the 7-rule filters moves): the eval
+must value our own mobility after the reply.
 
 ## paper-soccer
 
@@ -275,9 +283,6 @@ index in the ORIGINAL shape's reading order. Greedy bot: 10·size + our
 corner cells − 1.5·each opponent's, centre pull for the first 6 moves.
 ~40% vs the boss with close scores (BLOCK weight 0.5 / 3 not better).
 Ideas: 2-ply (opponent's best greedy reply), keep big shapes placeable.
-Promoted to Legend 2026-09-26; `SEVEN_RULE` is now on. In Legend the bot
-loses mostly by having no legal move (the 7-rule filters moves): the eval
-must value our own mobility after the reply.
 
 ## abalone
 
@@ -487,11 +492,6 @@ static map). Best score in 4/6 games vs two bosses.
 neutral square per turn next to our territory; each hive scores for the
 strictly closer territory. Greedy: most hives won, then closeness to hives
 still contested. 4/4 vs the Silver boss.
-Gold bot (submitted right after the promotion): both pods race with the same
-6-turn plan search (known checkpoints, exact speeds/angles), one BOOST on a
-> 5000 straight. No collisions, no blocker: 1/4 vs the Gold boss. Next: a
-blocker pod that intercepts the leading enemy pod, collision simulation and
-SHIELD, then Legend.
 
 ## isola
 
@@ -538,6 +538,10 @@ live cells per turn. Model (worked first try): set our column, then run
 generations. Bot: all column patterns within the mana (≤ 256), 6 generations
 simulated with empty future columns, score = goal-cell occupancy weighted
 towards sooner turns. 4/4 vs the Bronze boss (~590 to 1).
+Silver (league 2) is 16×16 with 8 goal cells and 12 mana: the exhaustive
+search timed out on turn 2. Now: time-bounded random column patterns
+(often compact blocks), 16 generations, + a bonus for our cells advancing to
+the centre columns. 4/4 vs the Silver boss (~780 to 0).
 
 ## gargoyles-versus-santas
 
@@ -614,10 +618,6 @@ own zones. Bot: buy on the richest neutral zones, then on our zones touching
 enemies; each group sends 1 pod per unowned neighbour it outnumbers
 (platinum first), the rest steps towards the nearest unowned zone. 4/4 vs the
 Wood boss.
-Silver (league 2) is 16×16 with 8 goal cells and 12 mana: the exhaustive
-search timed out on turn 2. Now: time-bounded random column patterns
-(often compact blocks), 16 generations, + a bonus for our cells advancing to
-the centre columns. 4/4 vs the Silver boss (~780 to 0).
 
 ## smash-the-code
 
