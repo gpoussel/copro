@@ -642,6 +642,10 @@ carried or missing within 2000), step back when a ghost is closer than 900
 near the enemy base once exploration is done. 4/6 vs the Wood 1 boss, close
 scores. Ideas: escort carriers, ghost stamina (next league), symmetry of the
 initial ghost layout.
+Bronze: ghosts have stamina 3 / 15 / 40 (ghost `state`; −1 per BUST per
+buster; buster state 3 = busting). Busters now gang up (≤ 3 per ghost),
+bust the weakest ghost in range, and approach by distance + 150·stamina
+(+6000 for 40-stamina ghosts before turn 60). 4/4 vs the Bronze boss (close).
 
 ## fantastic-bits
 

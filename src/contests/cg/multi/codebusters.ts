@@ -8,6 +8,9 @@
 // League 2: STUN (range 1760, 20-turn reload, target drops its ghost): stun
 // an enemy carrier, or any active enemy near a buster of ours that carries
 // or busts; our reload is tracked per buster.
+// League 3: ghosts have stamina (3 / 15 / 40, −1 per BUST per buster, caught
+// at 0): busters gang up (up to 3 per ghost), prefer weak ghosts, and leave
+// 40-stamina ghosts for later unless they are close.
 
 const perPlayer = parseInt(readline())
 readline() // ghost count
@@ -16,7 +19,7 @@ const BASE: [number, number] = team === 0 ? [0, 0] : [16000, 9000]
 const waypoints: [number, number][] = []
 for (let x = 1500; x <= 14500; x += 2600) for (let y = 1500; y <= 7500; y += 3000) waypoints.push([x, y])
 const assigned = new Map<number, number>() // buster id -> waypoint index
-const known = new Map<number, [number, number]>() // ghost id -> last seen position
+const known = new Map<number, [number, number, number]>() // ghost id -> x, y, stamina
 const reloadUntil = new Map<number, number>() // buster id -> turn it can stun again
 let turn = 0
 
@@ -27,23 +30,26 @@ while (true) {
   const n = parseInt(readline())
   const busters: { id: number; x: number; y: number; state: number; value: number }[] = []
   const enemies: { id: number; x: number; y: number; state: number; value: number }[] = []
-  const ghosts: { id: number; x: number; y: number }[] = []
+  const ghosts: { id: number; x: number; y: number; stamina: number }[] = []
   for (let i = 0; i < n; i++) {
     const [id, x, y, type, state, value] = readline().split(" ").map(Number)
     if (type === team) busters.push({ id, x, y, state, value })
     else if (type >= 0) enemies.push({ id, x, y, state, value })
-    else if (type === -1) ghosts.push({ id, x, y })
+    else if (type === -1) ghosts.push({ id, x, y, stamina: state })
   }
   busters.sort((a, b) => a.id - b.id)
   // Ghost memory: forget the ones carried, or missing where we look.
-  for (const g of ghosts) known.set(g.id, [g.x, g.y])
+  for (const g of ghosts) known.set(g.id, [g.x, g.y, g.stamina])
   for (const e of [...enemies, ...busters]) if (e.state === 1) known.delete(e.value)
   for (const [id, p] of known)
-    if (!ghosts.some(g => g.id === id) && busters.some(b => dist([b.x, b.y], p) < 2000)) known.delete(id)
+    if (!ghosts.some(g => g.id === id) && busters.some(b => dist([b.x, b.y], [p[0], p[1]]) < 2000)) known.delete(id)
   // Drop waypoints we have seen.
   for (let w = waypoints.length - 1; w >= 0; w--)
     if (busters.some(b => dist([b.x, b.y], waypoints[w]) < 1800)) waypoints.splice(w, 1)
   const targeted = new Set<number>()
+  const gang = new Map<number, number>() // ghost id -> our busters on it
+  const cost = (pos: [number, number], g: { x: number; y: number; stamina: number }) =>
+    dist(pos, [g.x, g.y]) + g.stamina * 150 + (g.stamina >= 40 && turn < 60 ? 6000 : 0)
   const stunned = new Set<number>()
   const out: string[] = []
   for (const b of busters.slice(0, perPlayer)) {
@@ -71,12 +77,13 @@ while (true) {
       out.push(dist(pos, BASE) < 1550 ? "RELEASE" : `MOVE ${BASE[0]} ${BASE[1]}`)
       continue
     }
-    const inRange = ghosts.filter(
-      g => !targeted.has(g.id) && dist(pos, [g.x, g.y]) > 900 && dist(pos, [g.x, g.y]) < 1760
-    )
+    const inRange = ghosts
+      .filter(g => dist(pos, [g.x, g.y]) > 900 && dist(pos, [g.x, g.y]) < 1760)
+      .sort((g, h) => g.stamina - h.stamina)
     if (inRange.length) {
-      targeted.add(inRange[0].id)
-      out.push(`BUST ${inRange[0].id}`)
+      const g = inRange[0]
+      gang.set(g.id, (gang.get(g.id) ?? 0) + 1)
+      out.push(`BUST ${g.id}`)
       continue
     }
     // Intercept an enemy carrier on its straight way home (800 per turn,
@@ -104,11 +111,11 @@ while (true) {
       }
     }
     const seen = [...known]
-      .map(([id, [x, y]]) => ({ id, x, y }))
-      .filter(g => !targeted.has(g.id))
-      .sort((g, h) => dist(pos, [g.x, g.y]) - dist(pos, [h.x, h.y]))[0]
+      .map(([id, [x, y, stamina]]) => ({ id, x, y, stamina }))
+      .filter(g => (gang.get(g.id) ?? 0) < (g.stamina > 3 ? 3 : 1))
+      .sort((g, h) => cost(pos, g) - cost(pos, h))[0]
     if (seen) {
-      targeted.add(seen.id)
+      gang.set(seen.id, (gang.get(seen.id) ?? 0) + 1)
       // Stop ~1300 away, between the ghost and us.
       // (Too close to bust: step back, along the ghost-to-us line.)
       const d = dist(pos, [seen.x, seen.y]) || 1
