@@ -1131,6 +1131,8 @@ towers and obstacles between builds, adds a giant barracks and mines
 later. Kiting added: enemy knights within 450 → best of 16 steps by
 nearest-knight distance +150 inside our tower cover +100 with a site
 between that knight and us, −2/unit closer than 150 to a wall. 3/4.
+Arena 25.4 (from 22). Then up to 4 mines once 3 towers stand at ≥ 500
+HP (morph grows mines all game): 3/4, arena A/B.
 
 ## hypersonic
 
