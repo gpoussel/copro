@@ -1000,6 +1000,14 @@ Arena 22.85 vs boss 27.57. Tried and reverted (IDE vs the Bronze boss):
 moving rear leftovers to the front factory (0/4), Agade's postmortem
 scoring value / (d² × need), enemy value / (d² × 8), INC at 1/10^1.6 (1/4).
 Postmortem: github.com/Agade09/Agade-Ghost-in-the-Cell-Postmortem.
+Timeline version (A/B in the arena from 22.85; old file kept in git
+history, commit before 5070c10): each factory is simulated turn by turn
+(produce, arrivals fight each other, survivors fight the garrison);
+spare = min garrison over 20 turns, a falling factory gets exactly what
+it lacks in time, attacks send the target's garrison at arrival + 1
+(one attack per target per turn); INC is only held back on our two most
+productive factories while an enemy bomb flies (the boss INCs from turn 4
+and launches bombs early, which froze our INC). 2/4 in IDE, as before.
 
 ## code-royale
 
