@@ -324,12 +324,17 @@ function enemyMove(s: State) {
         ty = b.y + b.vy
       }
     }
-    if (best === Infinity)
-      for (const o of s.cars)
-        if (o.owner === 0 && o.ball >= 0) {
+    // Ramming a carrier (a hard hit swaps what they carry) is preferred
+    // when about as close.
+    for (const o of s.cars)
+      if (o.owner === 0 && o.ball >= 0) {
+        const d = dist(c.x, c.y, o.x, o.y) * 0.8
+        if (d < best) {
+          best = d
           tx = o.x + o.vx
           ty = o.y + o.vy
         }
+      }
     target(c, Math.round(tx), Math.round(ty), 200)
   }
 }
@@ -339,7 +344,10 @@ function evaluate(s: State): number {
   const mine = s.cars.filter(c => c.owner === 0)
   const foes = s.cars.filter(c => c.owner === 1)
   for (const c of mine) {
-    if (c.ball >= 0) v += 3000 - dist(c.x, c.y, 0, 0)
+    if (c.ball < 0) continue
+    v += 3000 - dist(c.x, c.y, 0, 0)
+    // Enemy free cars close to our carrier can steal it.
+    for (const f of foes) if (f.ball < 0) v -= Math.max(0, 1500 - dist(f.x, f.y, c.x, c.y)) * 0.5
   }
   for (const f of foes) {
     if (f.ball < 0) continue

@@ -950,6 +950,10 @@ car's distance ×0.4, free cars' distance to prisoners ×0.5. 3/4 vs the
 Bronze boss (the heuristic bot 1/4).
 An enemy-first two-phase search (1/3 of the time on the enemy plan vs our
 heuristic) went 2/4 with far fewer sims: not kept.
+Arena 30.5 vs 32.4 with the first search. Enemy model now also rams: a
+free enemy car targets our carrier when it is closer than 1.25× the
+nearest prisoner; the eval penalises enemy free cars within 1500 of our
+carrier (0.5 per unit). 4/4 vs the Bronze boss.
 
 ## git-patchwork
 
