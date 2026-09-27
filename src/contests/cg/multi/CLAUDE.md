@@ -908,6 +908,12 @@ moves, 10·min(6, BFS distance to the nearest minion, spawn delay added)
 − 50 if ≤ 1, +15 near another explorer (else drift towards the closest).
 Best (surviving) score in 4/4 games vs 3 bosses, by small margins.
 Later leagues: slashers, shelters, PLAN / LIGHT / YELL.
+Wood 1 (slashers, PLAN, LIGHT, YELL, shelters): the wood bot mostly
+WAITed alone and lost. Now: −30/−60 for cells in a slasher's row/column
+sight (−60 when stalking/rushing), PLAN when sanity < 200 with company and
+no minion within 2, LIGHT when a wanderer targeting us is within 3, +12 on
+a shelter with energy, +25 with company else −2 per maze step to the
+closest explorer. Best score in 2/3 games vs 3 bosses.
 
 ## mean-max
 

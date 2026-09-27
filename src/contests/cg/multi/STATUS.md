@@ -96,7 +96,7 @@ Surveyed 2026-09-26.
 | xmas-rush | 6 | Silver | 1 | TypeScript push-search, submitted | 2 | 4/4 vs Wood boss; multi-quest later |
 | a-code-of-ice-and-fire | 7 | Wood 2 | 4 | TypeScript expand + train, submitted | 2 | 4/4 vs Wood 3 boss |
 | code-a-la-mode | 7 | Wood 3 | 5 | TypeScript plate loop, submitted | 3 | best total 3/3 vs 2 bosses |
-| code-of-kutulu | 7 | Wood 1 | 3 | TypeScript flee + group, submitted | 4 | best 4/4 vs 3 bosses (close) |
+| code-of-kutulu | 7 | Wood 1 | 3 | TypeScript flee + group + effects, submitted | 4 | best 2/3 vs Wood 1 bosses |
 | code-royale | 7 | Wood 2 | 4 | TypeScript barracks + towers, submitted | 2 | 4/4 vs Wood 2 boss |
 | coders-of-the-caribbean | 7 | Wood 2 | 4 | TypeScript barrels + leading shots, submitted | 2 | 4/4 vs Wood 2 boss |
 | ghost-in-the-cell | 7 | Bronze | 2 | TypeScript greedy + bombs/evacuation, submitted | 2 | 3/4 vs Bronze boss |
