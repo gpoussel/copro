@@ -8,15 +8,17 @@
 // Wood 2 (LEAGUE = 3): move next to the best cover (against the enemies),
 // then shoot the enemy in range with the least cover (MOVE;SHOOT).
 
-const LEAGUE: number = 4
+const LEAGUE: number = 5
 const myId = parseInt(readline())
 const agentDataCount = parseInt(readline())
 const owner = new Map<number, number>()
 const optimal = new Map<number, number>()
+const power = new Map<number, number>()
 for (let i = 0; i < agentDataCount; i++) {
-  const [id, player, , range] = readline().split(" ").map(Number)
+  const [id, player, , range, soak] = readline().split(" ").map(Number)
   owner.set(id, player)
   optimal.set(id, range)
+  power.set(id, soak)
 }
 const [W, H] = readline().split(" ").map(Number)
 // Tiles: one line per row with `x y type` triples (not one line per cell).
@@ -55,11 +57,11 @@ let bunkerMode = false
 let bomberId = -1
 while (true) {
   const n = parseInt(readline())
-  const mine: { id: number; x: number; y: number; bombs: number }[] = []
+  const mine: { id: number; x: number; y: number; bombs: number; cd: number; wet: number }[] = []
   const foes: { id: number; x: number; y: number; wet: number }[] = []
   for (let i = 0; i < n; i++) {
-    const [id, x, y, , bombs, wet] = readline().split(" ").map(Number)
-    if (owner.get(id) === myId) mine.push({ id, x, y, bombs })
+    const [id, x, y, cd, bombs, wet] = readline().split(" ").map(Number)
+    if (owner.get(id) === myId) mine.push({ id, x, y, bombs, cd, wet })
     else foes.push({ id, x, y, wet })
   }
   readline() // my agent count
@@ -119,7 +121,7 @@ while (true) {
   // Wood 1 (bunkers): 4 walled 3×3 bunkers; one traps our second agent.
   // Splash the other three (centre throw = the whole interior, 30 each,
   // range 4 Manhattan) with our bomber; never shoot, never hit our agent.
-  if (mine.some(a => a.bombs >= 2) && foes.length > 6) bunkerMode = true
+  if (LEAGUE === 4 && mine.some(a => a.bombs >= 2) && foes.length > 6) bunkerMode = true
   if (LEAGUE === 4 || bunkerMode) {
     out.length = 0
     const centres = [
@@ -161,6 +163,88 @@ while (true) {
           }
         out.push(`${a.id};MOVE ${best[0]} ${best[1]}`)
       }
+    }
+  }
+  // Full game (Bronze+): territory = cells closer to our agents (scored
+  // each turn), shots 16-32 soak (half beyond optimal range, none beyond
+  // twice), bombs 30 in a 3×3 within 4, cover and hunkering reduce damage.
+  if (LEAGUE === 5) {
+    out.length = 0
+    const occupied = new Set([...mine, ...foes].map(a => a.y * W + a.x))
+    const taken = new Set<number>()
+    const cx = (W - 1) / 2
+    const cy = (H - 1) / 2
+    for (const a of mine) {
+      const range = optimal.get(a.id) ?? 4
+      const soak = power.get(a.id) ?? 16
+      // Move: cover against the enemies, within reach of one, towards the
+      // centre (territory).
+      let best = [a.x, a.y]
+      let bestV = -Infinity
+      for (const [dx, dy] of [
+        [0, 0],
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1],
+      ]) {
+        const x = a.x + dx
+        const y = a.y + dy
+        const c = y * W + x
+        if (tileAt(x, y) !== 0 || taken.has(c) || (occupied.has(c) && (dx || dy))) continue
+        let v = 0
+        let nearest = 99
+        for (const f of foes) {
+          const d = Math.abs(f.x - x) + Math.abs(f.y - y)
+          nearest = Math.min(nearest, d)
+          if (d <= 12) v += (1 - modifier(x, y, f.x, f.y)) * 6
+        }
+        v -= Math.abs(nearest - range) * 1.5
+        v -= (Math.abs(x - cx) + Math.abs(y - cy)) * 0.3
+        if (v > bestV) {
+          bestV = v
+          best = [x, y]
+        }
+      }
+      taken.add(best[1] * W + best[0])
+      let cmd = `${a.id};MOVE ${best[0]} ${best[1]}`
+      const [px, py] = best
+      // Bomb: a centre within 4 hitting ≥ 2 enemies and none of ours.
+      let bomb: [number, number] | null = null
+      if (a.bombs > 0) {
+        let bestHits = 1
+        for (const f of foes)
+          for (let ox = -1; ox <= 1; ox++)
+            for (let oy = -1; oy <= 1; oy++) {
+              const tx = f.x + ox
+              const ty = f.y + oy
+              if (tx < 0 || ty < 0 || tx >= W || ty >= H || Math.abs(tx - px) + Math.abs(ty - py) > 4) continue
+              const inBlast = (u: { x: number; y: number }) => Math.abs(u.x - tx) <= 1 && Math.abs(u.y - ty) <= 1
+              if (mine.some(m => inBlast(m.id === a.id ? { x: px, y: py } : m))) continue
+              const hits = foes.filter(inBlast).length
+              if (hits > bestHits) {
+                bestHits = hits
+                bomb = [tx, ty]
+              }
+            }
+      }
+      if (bomb) cmd += `;THROW ${bomb[0]} ${bomb[1]}`
+      else if (a.cd === 0) {
+        let target: (typeof foes)[number] | null = null
+        let bestDmg = 0
+        for (const f of foes) {
+          const d = Math.abs(f.x - px) + Math.abs(f.y - py)
+          if (d > 2 * range) continue
+          let dmg = soak * (d <= range ? 1 : 0.5) * modifier(f.x, f.y, px, py)
+          if (f.wet + dmg >= 100) dmg += 50 // a kill
+          if (dmg > bestDmg) {
+            bestDmg = dmg
+            target = f
+          }
+        }
+        cmd += target ? `;SHOOT ${target.id}` : ";HUNKER_DOWN"
+      } else cmd += ";HUNKER_DOWN"
+      out.push(cmd)
     }
   }
   console.log(out.join("\n"))

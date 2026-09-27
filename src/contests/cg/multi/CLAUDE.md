@@ -1119,6 +1119,13 @@ bunkers (3×3 inside a high-cover ring), one traps our second agent; the
 bomber (most bombs, fixed at the start — the trapped agent once became
 "bomber" and bombed itself) throws at each other bunker's centre (splash
 covers the interior, range 4 Manhattan), never shooting. Checks pass 2/2.
+Bronze = the full game (`LEAGUE = 5`; boss code redacted): per agent,
+move (stay / 4 steps) to the cell maximising cover against enemies within
+12 − |distance to nearest enemy − optimal range| − distance to the centre;
+THROW at a 3×3 hitting ≥ 2 enemies and none of ours, else SHOOT the best
+expected damage (kills +50) within 2× range, else HUNKER_DOWN. Scoring:
+each turn +(our zone − theirs) when positive, zone = cells strictly closer
+(Manhattan × distance multiplier) to our agents. 4/4 vs the Bronze boss.
 
 ## botters-of-the-galaxy
 
