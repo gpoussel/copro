@@ -15,6 +15,7 @@ for (let i = 0; i < numSites; i++) {
   sites[id] = { id, x, y, r }
 }
 let home: [number, number] | null = null
+const TOWERS = true
 
 while (true) {
   // **gold and touchedSite come on one line** (the statement lists two).
@@ -39,14 +40,30 @@ while (true) {
   const archerBarracks = mine.filter(s => state[s.id].type === 2 && state[s.id].kind === 1)
   const threat = enemyKnights.some(k => Math.hypot(k.x - queen.x, k.y - queen.y) < 300)
 
+  const towers = mine.filter(s => state[s.id].type === 1)
+  const giantBarracks = mine.filter(s => state[s.id].type === 2 && state[s.id].kind === 2)
+  const enemyTowers = sites.filter(s => state[s.id].owner === 1 && state[s.id].type === 1).length
   let action = "WAIT"
-  const want = knightBarracks.length < 2 ? "KNIGHT" : archerBarracks.length < 1 ? "ARCHER" : ""
+  // Build order: knights, towers around home, second knights, giants if
+  // the enemy turtles behind towers (TOWERS = false before Wood 2).
+  let want = ""
+  if (knightBarracks.length < 1) want = "BARRACKS-KNIGHT"
+  else if (TOWERS && towers.length < 3) want = "TOWER"
+  else if (knightBarracks.length < 2) want = "BARRACKS-KNIGHT"
+  else if (TOWERS && enemyTowers >= 2 && giantBarracks.length < 1) want = "BARRACKS-GIANT"
+  else if (!TOWERS && archerBarracks.length < 1) want = "BARRACKS-ARCHER"
+  else if (TOWERS && towers.length < 5) want = "TOWER"
   if (want && !threat) {
     // Nearest free site, preferring our half of the map.
     const free = sites
       .filter(s => state[s.id].type === -1)
       .sort((a, b) => dq(a) + Math.abs(a.x - home![0]) * 0.3 - (dq(b) + Math.abs(b.x - home![0]) * 0.3))[0]
-    if (free) action = `BUILD ${free.id} BARRACKS-${want}`
+    if (free) action = `BUILD ${free.id} ${want}`
+  }
+  // Idle: repair / grow the weakest tower (tower param1 = its HP).
+  if (action === "WAIT" && TOWERS && towers.length) {
+    const weakest = towers.sort((a, b) => state[a.id].cooldown - state[b.id].cooldown)[0]
+    if (state[weakest.id].cooldown < 700) action = `BUILD ${weakest.id} TOWER`
   }
   if (action === "WAIT") {
     // Stay back, away from enemy knights.
@@ -70,6 +87,11 @@ while (true) {
         train.push(s.id)
         g -= 100
       }
+  for (const s of giantBarracks)
+    if (state[s.id].cooldown === 0 && g >= 140) {
+      train.push(s.id)
+      g -= 140
+    }
   for (const s of knightBarracks)
     if (state[s.id].cooldown === 0 && g >= 80) {
       train.push(s.id)

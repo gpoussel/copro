@@ -851,6 +851,10 @@ first version timed out on turn 1. Wood bot: build the nearest free sites
 knights when affordable (archers when > 2 enemy knights), queen stays in
 our corner and steps away from knights within 400. 4/4 vs the Wood boss.
 Later leagues: mines (gold income), towers, giants.
+Wood 2 (towers, giants): build order knights → 3 towers → knights →
+giants if the enemy has ≥ 2 towers → up to 5 towers; idle queen repairs
+the weakest tower (param1 = tower HP) when < 700. 1/2 → 4/4 vs the Wood 2
+boss. Next: mines (gold), queen positioning behind towers.
 
 ## hypersonic
 
