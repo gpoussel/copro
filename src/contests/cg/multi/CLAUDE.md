@@ -1222,6 +1222,11 @@ root → harvester facing the source → BASIC growth. Our spore landed ON the
 source (eaten); spore targets now skip sources and prefer a cell whose
 free neighbour touches an unharvested source: 3/3 (13–12). Bronze = full
 game next.
+Silver (full game): 3/4 vs the boss, but one loss spent every protein on
+early spores then WAITed 90 turns. A fix (spore only with reserves,
+grow towards sources, eat sources when short) went 1/4: reverted. Arena
+17.6 vs boss 19.7. Needs a real economy plan (harvesters first, spores
+only near rich sources) and tentacle defence.
 
 ## spring-challenge-2021
 
