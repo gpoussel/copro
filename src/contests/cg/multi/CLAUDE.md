@@ -743,3 +743,12 @@ paired with prisoners by estimated distance, aiming ahead of the prisoner;
 targets corrected by −3·velocity; thrust 200 / 120 / 20 by heading error.
 3/4 vs the Wood 1 boss. Ideas: simulate (referee on GitHub), block the
 enemy carrier's path at the manhole.
+
+## git-patchwork
+
+Patchwork, 9×9 quilt, 19 time points in league 1 (no rotation, no income).
+**Init is 4 lines**: the empty event lists are still sent as empty lines.
+Bot: value = 2·squares − price − min(time, time left); play the best of the
+first 3 patches if the value is > 0 (else SKIP), at the position whose
+squares touch the most filled cells / borders. 4/4 vs the Wood 1 boss.
+Later leagues: income events, special patches, rotations/flips.

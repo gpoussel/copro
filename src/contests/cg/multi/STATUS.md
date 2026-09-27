@@ -76,7 +76,7 @@ Surveyed 2026-09-26.
 | winter-challenge-2026-snakebyte | 4 | Bronze | 2 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
 | bit-runner-2048 | 5 | Wood 1 | 3 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
 | crystal-rush | 5 | Wood 1 | 3 | TypeScript radar lattice + miners, submitted | 2 | 4/4 vs Wood 1 boss (~105 to 1) |
-| git-patchwork | 5 | Wood 1 | 3 | — | 2 | |
+| git-patchwork | 5 | Wood 1 | 3 | TypeScript greedy value, submitted | 2 | 4/4 vs Wood 1 boss |
 | keep-off-the-grass-fall-challenge-2022 | 5 | Wood 1 | 3 | TypeScript greedy expand, submitted | 2 | 4/4 vs Wood 1 boss |
 | langton-s-ant | 5 | Wood 1 | 3 | — | 2 | |
 | codebusters | 6 | Wood 1 | 3 | TypeScript rules+STUN, submitted | 2 | 4/6 vs Wood 1 boss (close) |
