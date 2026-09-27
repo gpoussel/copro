@@ -1172,6 +1172,10 @@ arena only. Arena A/B: second barracks forward (free area site nearest
 the enemy corner): 21.6, reverted.
 **Arena samples are noisy too**: the identical burst version scored 27.5
 then 22.9. Compare variants over several samples / win rates.
+Towers inside our cover: 24.3 (26W 14L). Losses: the first tower was
+grown to 790 (~12 turns) before the second was placed, and kiting still
+ended pinned on walls. Now 3 towers placed before growing, wall penalty
+from 250 at 3/unit.
 
 ## hypersonic
 
