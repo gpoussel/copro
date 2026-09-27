@@ -97,7 +97,7 @@ Surveyed 2026-09-26.
 | a-code-of-ice-and-fire | 7 | Wood 3 | 5 | — | 2 | |
 | code-a-la-mode | 7 | Wood 3 | 5 | — | 3 | |
 | code-of-kutulu | 7 | Wood 3 | 5 | — | 4 | |
-| code-royale | 7 | Wood 3 | 5 | — | 2 | |
+| code-royale | 7 | Wood 3 | 5 | TypeScript barracks + knights, submitted | 2 | 4/4 vs Wood 3 boss |
 | coders-of-the-caribbean | 7 | Wood 3 | 5 | — | 2 | |
 | ghost-in-the-cell | 7 | Wood 3 | 5 | TypeScript greedy targets, submitted | 2 | 4/4 vs Wood 3 boss |
 | hypersonic | 7 | Wood 3 | 5 | — | 2 | |

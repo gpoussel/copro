@@ -1,0 +1,80 @@
+// 🎮 CodinGame Multiplayer - code-royale
+// https://www.codingame.com/multiplayer/bot-programming/code-royale
+//
+// Queen builds on sites by touching them; barracks train knights (80 gold,
+// 4 units, go for the enemy queen) or archers (100 gold, 2 units, defend).
+// +10 gold per turn in the wood leagues. Bot: build the nearest free sites
+// until we own 2 knight barracks and 1 archer barracks, train knights
+// whenever affordable (archers when enemy knights are around), and keep
+// the queen away from enemy knights, near our start corner.
+
+const numSites = parseInt(readline())
+const sites: { id: number; x: number; y: number; r: number }[] = []
+for (let i = 0; i < numSites; i++) {
+  const [id, x, y, r] = readline().split(" ").map(Number)
+  sites[id] = { id, x, y, r }
+}
+let home: [number, number] | null = null
+
+while (true) {
+  // **gold and touchedSite come on one line** (the statement lists two).
+  const [gold] = readline().split(" ").map(Number)
+  const state: { type: number; owner: number; cooldown: number; kind: number }[] = []
+  for (let i = 0; i < numSites; i++) {
+    const [id, , , type, owner, p1, p2] = readline().split(" ").map(Number)
+    state[id] = { type, owner, cooldown: p1, kind: p2 }
+  }
+  const numUnits = parseInt(readline())
+  let queen = { x: 0, y: 0 }
+  const enemyKnights: { x: number; y: number }[] = []
+  for (let i = 0; i < numUnits; i++) {
+    const [x, y, owner, type] = readline().split(" ").map(Number)
+    if (owner === 0 && type === -1) queen = { x, y }
+    if (owner === 1 && type === 0) enemyKnights.push({ x, y })
+  }
+  if (!home) home = [queen.x < 960 ? 0 : 1920, queen.y < 500 ? 0 : 1000]
+  const dq = (s: { x: number; y: number }) => Math.hypot(s.x - queen.x, s.y - queen.y)
+  const mine = sites.filter(s => state[s.id].owner === 0)
+  const knightBarracks = mine.filter(s => state[s.id].type === 2 && state[s.id].kind === 0)
+  const archerBarracks = mine.filter(s => state[s.id].type === 2 && state[s.id].kind === 1)
+  const threat = enemyKnights.some(k => Math.hypot(k.x - queen.x, k.y - queen.y) < 300)
+
+  let action = "WAIT"
+  const want = knightBarracks.length < 2 ? "KNIGHT" : archerBarracks.length < 1 ? "ARCHER" : ""
+  if (want && !threat) {
+    // Nearest free site, preferring our half of the map.
+    const free = sites
+      .filter(s => state[s.id].type === -1)
+      .sort((a, b) => dq(a) + Math.abs(a.x - home![0]) * 0.3 - (dq(b) + Math.abs(b.x - home![0]) * 0.3))[0]
+    if (free) action = `BUILD ${free.id} BARRACKS-${want}`
+  }
+  if (action === "WAIT") {
+    // Stay back, away from enemy knights.
+    let tx = home[0] === 0 ? 100 : 1820
+    let ty = home[1] === 0 ? 100 : 900
+    for (const k of enemyKnights) {
+      const d = Math.hypot(k.x - queen.x, k.y - queen.y)
+      if (d < 400) {
+        tx += ((queen.x - k.x) / (d || 1)) * 300
+        ty += ((queen.y - k.y) / (d || 1)) * 300
+      }
+    }
+    action = `MOVE ${Math.round(Math.max(30, Math.min(1890, tx)))} ${Math.round(Math.max(30, Math.min(970, ty)))}`
+  }
+  // Training: archers when knights threaten, else knights.
+  const train: number[] = []
+  let g = gold
+  if (enemyKnights.length > 2)
+    for (const s of archerBarracks)
+      if (state[s.id].cooldown === 0 && g >= 100) {
+        train.push(s.id)
+        g -= 100
+      }
+  for (const s of knightBarracks)
+    if (state[s.id].cooldown === 0 && g >= 80) {
+      train.push(s.id)
+      g -= 80
+    }
+  console.log(action)
+  console.log(train.length ? `TRAIN ${train.join(" ")}` : "TRAIN")
+}

@@ -831,3 +831,12 @@ production); options scored value / (distance + need / 4), value =
 production (+0.5 enemy, +2 for saving an own factory), need = defenders +
 enemy production until arrival + enemy troops − ours + 1. 4/4 vs the
 Wood 3 boss. Next leagues: several commands, BOMB, INC.
+
+## code-royale
+
+**`gold touchedSite` arrive on one line** (the statement lists two): the
+first version timed out on turn 1. Wood bot: build the nearest free sites
+(biased to our half) until 2 knight barracks + 1 archer barracks, train
+knights when affordable (archers when > 2 enemy knights), queen stays in
+our corner and steps away from knights within 400. 4/4 vs the Wood boss.
+Later leagues: mines (gold income), towers, giants.
