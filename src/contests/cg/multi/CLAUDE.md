@@ -549,6 +549,14 @@ distance map from the free cells next to convertible units (danger ×0.5
 as tie-break), and while neutrals remain that walk (4.5) beats chip
 shots (kills and conversions still first). 3/4 vs the Bronze boss (arena
 was 17.2 vs 28.9).
+That version: arena 22.6. The boss focuses our leader (SHOOT 0 five times
+in a row). Next version (A/B via the arena, IDE 1/4 and 2/4 = noise):
+referee-exact firing line (legacy trace), lethal squares weigh ×5 in the
+leader's walk, the leader flees a lethal square first (9), shots on
+cultists that can hit our leader +3. Tried and reverted: cultists
+advancing on the nearest enemy when not ahead (walked into fire one by
+one, 0–1 wipe-out). **`get_arena_battles` outcomes are unreliable here**
+(one "loss" had ranks [1, 0] = our win): read `ranks` in the replay.
 
 ## tryangle-catch
 
