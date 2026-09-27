@@ -752,3 +752,14 @@ Bot: value = 2·squares − price − min(time, time left); play the best of the
 first 3 patches if the value is > 0 (else SKIP), at the position whose
 squares touch the most filled cells / borders. 4/4 vs the Wood 1 boss.
 Later leagues: income events, special patches, rotations/flips.
+
+## langton-s-ant
+
+15×15, 20 picks each, ant walks 150 steps from the centre facing up with
+the first player's colour (coloured cell: turn left, take its colour, cell
+turns white; white cell: turn right, paint it). Two rounds, `-1 -1` = we
+start a round, `-2 -2` = round change (answer ignored, we are second next).
+League 1: separate grids (`SHARED = false`). Greedy: each pick maximises our
+final count in a full ant simulation. 4/4 vs the Wood 1 boss (~46 to 27).
+Shared-grid leagues: set `SHARED = true` (score = ours − theirs), and
+consider a 2-ply search over the opponent's reply.

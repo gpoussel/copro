@@ -78,7 +78,7 @@ Surveyed 2026-09-26.
 | crystal-rush | 5 | Wood 1 | 3 | TypeScript radar lattice + miners, submitted | 2 | 4/4 vs Wood 1 boss (~105 to 1) |
 | git-patchwork | 5 | Wood 1 | 3 | TypeScript greedy value, submitted | 2 | 4/4 vs Wood 1 boss |
 | keep-off-the-grass-fall-challenge-2022 | 5 | Wood 1 | 3 | TypeScript greedy expand, submitted | 2 | 4/4 vs Wood 1 boss |
-| langton-s-ant | 5 | Wood 1 | 3 | — | 2 | |
+| langton-s-ant | 5 | Wood 1 | 3 | TypeScript greedy simulation, submitted | 2 | 4/4 vs Wood 1 boss |
 | codebusters | 6 | Wood 1 | 3 | TypeScript rules+STUN, submitted | 2 | 4/6 vs Wood 1 boss (close) |
 | fall-challenge-2020 | 6 | Wood 1 | 3 | TypeScript BFS over casts, submitted | 2 | 4/4 vs Wood 1 boss |
 | fantastic-bits | 6 | Bronze | 2 | TypeScript chase+throw, submitted | 2 | 4/4 vs Wood boss; spells (magic) later |
