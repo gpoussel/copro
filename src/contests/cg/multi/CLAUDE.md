@@ -900,3 +900,10 @@ order the plate can still become (USE on a crate with a plate adds it) →
 window; a plate matching no order goes back to D. Best total in 3/3.
 Later: strawberries (chop at C), croissants (dough H + oven), tarts;
 cooperate with the partner via tables.
+
+## soak-overflow
+
+Summer 2025. Wood leagues are tutorials with one fixed goal each (3 of 5
+successes vs the boss). **Tiles come one line per row** (`x y type`
+triples), not one line per cell. Wood 4 (`LEAGUE = 1`): agents to (6,1)
+and (6,3). Read each new league's goal and bump `LEAGUE`.
