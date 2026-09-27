@@ -753,6 +753,8 @@ item) and ends on the tile closest to the remaining ones; pushes score
 −100 per quest item made reachable, then the gap. 2/4 vs the Silver boss.
 Next: pushes that also hurt the opponent, predicting its push (same
 row/column pushes cancel).
+Pushes are now scored by the items the next MOVE can collect (same greedy
+20-step chain), then the gap to the rest. 2/4 (arena 15.4 vs boss 21.6).
 
 ## ocean-of-code
 

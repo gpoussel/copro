@@ -88,16 +88,40 @@ function reach(s: State): { dist: Int32Array; path: string[][] } {
 // Push value: quest items reachable after it (×100), else how far our
 // reachable area is from the nearest one.
 function gap(s: State): number {
-  const { dist } = reach(s)
-  let reachable = 0
+  // Items collectable by one 20-step MOVE (greedy nearest-first chain),
+  // then how close the reachable area gets to the rest.
+  let cur = s
+  let steps = 0
+  let collected = 0
+  const left = s.items.filter(([ix]) => ix >= 0).map(p => p.slice() as [number, number])
+  for (;;) {
+    const { dist } = reach(cur)
+    let target = -1
+    let bestD = Infinity
+    for (const [ix, iy] of left) {
+      const c = iy * N + ix
+      if (dist[c] >= 0 && dist[c] < bestD && steps + dist[c] <= 20) {
+        bestD = dist[c]
+        target = c
+      }
+    }
+    if (target < 0) break
+    steps += bestD
+    collected++
+    const tx = target % N
+    const ty = Math.floor(target / N)
+    left.splice(
+      left.findIndex(([ix, iy]) => ix === tx && iy === ty),
+      1,
+    )
+    cur = { ...cur, me: [tx, ty] }
+  }
+  const { dist } = reach(cur)
   let best = 99
-  for (const [ix, iy] of s.items) {
-    if (ix < 0) continue
-    if (dist[iy * N + ix] >= 0) reachable++
+  for (const [ix, iy] of left)
     for (let c = 0; c < N * N; c++)
       if (dist[c] >= 0) best = Math.min(best, Math.abs((c % N) - ix) + Math.abs(Math.floor(c / N) - iy))
-  }
-  return best - reachable * 100
+  return best - collected * 100
 }
 
 while (true) {
