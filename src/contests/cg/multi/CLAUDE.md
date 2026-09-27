@@ -741,6 +741,16 @@ preferred), spawns on own frontier cells closest to the enemy. Cells in a
 recycler's range with 1 scrap count as grass. 4/4 vs the Wood 1 boss.
 Ideas: the referee's MOVE pathing prefers the centre; frontier defence by
 unit counts; recyclers to cut the map.
+Bronze (bigger maps): the first bot walled itself in with "defensive"
+recyclers built whenever any enemy touched an empty own cell (lost 9–22 on
+a stable field). Now: reinforce by spawning (units hold against the stack
+they face), block with a recycler only against ≥ 3 units we cannot match;
+economy recyclers every 3 turns until turn 20 (≈ 1 per 40 cells, ≥ 3 steps
+from the enemy, −8 per neighbour that would turn to grass); neutral targets
+before enemy ones (forum: ndc, BlitzProg). Still ~1–2/4 vs the Bronze boss
+with huge swings (17–102, 143–7): the boss out-produces us. Next: count
+matter per turn in replays, Voronoi-based front line, spawn stacks at the
+front instead of 1-unit trickles.
 
 ## bit-runner-2048
 

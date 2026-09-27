@@ -75,11 +75,11 @@ Surveyed 2026-09-26.
 | tryangle-catch | 4 | Bronze | 2 | TypeScript WIP, **not submitted** (0/6) | 2 | units get surrounded; study the referee before retrying |
 | winter-challenge-2026-snakebyte | 4 | Bronze | 2 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
 | bit-runner-2048 | 5 | Wood 1 | 3 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
-| crystal-rush | 5 | Wood 1 | 3 | TypeScript radar lattice + miners, submitted | 2 | 4/4 vs Wood 1 boss (~105 to 1) |
+| crystal-rush | 5 | Bronze | 2 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |
 | git-patchwork | 5 | Wood 1 | 3 | TypeScript greedy value, submitted | 2 | 4/4 vs Wood 1 boss |
-| keep-off-the-grass-fall-challenge-2022 | 5 | Wood 1 | 3 | TypeScript greedy expand, submitted | 2 | 4/4 vs Wood 1 boss |
+| keep-off-the-grass-fall-challenge-2022 | 5 | Bronze | 2 | TypeScript expand + recyclers, submitted | 2 | 1-2/4 vs Bronze boss, big swings |
 | langton-s-ant | 5 | Wood 1 | 3 | TypeScript greedy simulation, submitted | 2 | 4/4 vs Wood 1 boss |
-| codebusters | 6 | Wood 1 | 3 | TypeScript rules+STUN, submitted | 2 | 4/6 vs Wood 1 boss (close) |
+| codebusters | 6 | Bronze | 2 | TypeScript rules+STUN+stamina, submitted | 2 | 4/4 vs Bronze boss (close) |
 | fall-challenge-2020 | 6 | Wood 1 | 3 | TypeScript BFS over casts, submitted | 2 | 4/4 vs Wood 1 boss |
 | fantastic-bits | 6 | Bronze | 2 | TypeScript chase+throw, submitted | 2 | 4/4 vs Wood boss; spells (magic) later |
 | game-of-drones | 6 | Bronze | 2 | TypeScript greedy allocation, submitted | 2 | 4/4 vs Wood boss (~3× its score) |
