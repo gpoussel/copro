@@ -1133,6 +1133,10 @@ nearest-knight distance +150 inside our tower cover +100 with a site
 between that knight and us, −2/unit closer than 150 to a wall. 3/4.
 Arena 25.4 (from 22). Then up to 4 mines once 3 towers stand at ≥ 500
 HP (morph grows mines all game): 3/4 but arena 22.5: reverted.
+Kite version samples 25.4 / 24.4; all 16 losses in 40 games = our queen
+killed, e.g. kiting 70 turns with a single tower against a knight-every-
+turn trainer. Now kiting starts at 250, or at 450 only once 3 towers
+stand (the base keeps being built under pressure). 3/4.
 
 ## hypersonic
 

@@ -66,7 +66,12 @@ while (true) {
   // towers' cover and with an obstacle between it and us (sites block).
   const knightDist = (x: number, y: number) => knights.reduce((m, k) => Math.min(m, Math.hypot(k.x - x, k.y - y)), Infinity)
   const nearK = knights.slice().sort((a, b) => Math.hypot(a.x - queen.x, a.y - queen.y) - Math.hypot(b.x - queen.x, b.y - queen.y))[0]
-  if (nearK && knightDist(queen.x, queen.y) < 450) {
+  // Kiting must not starve the base: against a steady knight stream a queen
+  // kited 70 turns with one tower. Far knights (250-450) only once 3
+  // towers stand.
+  const ownTowers = sites.filter(q => mine(q) && st[q.id].type === 1).length
+  const kd = nearK ? knightDist(queen.x, queen.y) : Infinity
+  if (nearK && (kd < 250 || (kd < 450 && ownTowers >= 3))) {
     let bestV = -Infinity
     for (let k = 0; k < 16; k++) {
       const ang = (k * Math.PI) / 8
