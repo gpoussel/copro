@@ -77,7 +77,7 @@ Surveyed 2026-09-26.
 | bit-runner-2048 | 5 | Wood 1 | 3 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
 | crystal-rush | 5 | Bronze | 2 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |
 | git-patchwork | 5 | Wood 1 | 3 | TypeScript greedy value, submitted | 2 | 4/4 vs Wood 1 boss |
-| keep-off-the-grass-fall-challenge-2022 | 5 | Bronze | 2 | TypeScript expand + recyclers, submitted | 2 | 1-2/4 vs Bronze boss, big swings |
+| keep-off-the-grass-fall-challenge-2022 | 5 | Silver | 1 | TypeScript expand + recyclers, submitted | 2 | old bot reached rank 1 in Silver; resubmitted by mistake (1-2/4 vs Silver boss) |
 | langton-s-ant | 5 | Wood 1 | 3 | TypeScript greedy simulation, submitted | 2 | 4/4 vs Wood 1 boss |
 | codebusters | 6 | Bronze | 2 | TypeScript rules+STUN+stamina, submitted | 2 | 4/4 vs Bronze boss (close) |
 | fall-challenge-2020 | 6 | Wood 1 | 3 | TypeScript BFS over casts, submitted | 2 | 4/4 vs Wood 1 boss |
