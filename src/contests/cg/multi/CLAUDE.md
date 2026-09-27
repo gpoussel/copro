@@ -1137,6 +1137,11 @@ Kite version samples 25.4 / 24.4; all 16 losses in 40 games = our queen
 killed, e.g. kiting 70 turns with a single tower against a knight-every-
 turn trainer. Now kiting starts at 250, or at 450 only once 3 towers
 stand (the base keeps being built under pressure). 3/4.
+Arena 25.7 / 24.9. Tried (IDE, not kept): 3 mines 2/4, giants 1/4,
+pack-average kiting 1/4, 5 towers 1/4. KaZede (12/13 vs the boss) and
+GasaiYuno build the knight barracks on turn 1–2 and train with the 100
+starting gold, then mines, many towers, a queen always moving; they win
+by killing the boss queen. Barracks-first order: 2/4, arena A/B.
 
 ## hypersonic
 
