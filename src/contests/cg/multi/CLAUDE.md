@@ -1238,6 +1238,7 @@ income ×60, towers 50 base, −0.2·distance to the nearest free site, wall
 (< 200) and corner (< 400) penalties ×2, 2nd knight barracks +100, a
 giant barracks vs ≥ 5 enemy towers (option + eval); training spends all
 gold (a giant first vs ≥ 5 towers when none alive, then knights).
+Arena 29.4, rank 3 (boss 30.0).
 
 ## hypersonic
 
