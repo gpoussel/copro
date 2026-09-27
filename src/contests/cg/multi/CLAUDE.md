@@ -944,6 +944,10 @@ flight). The boss bombs our start factory on turn 2: enemy bombs (target
 unknown) now evacuate every own factory they could reach next turn (age
 tracked from first sight), and we bomb the enemy's best factory on turn 1
 and again after turn 30 (production ≥ 2). 1/4 → 3/4 vs the Bronze boss.
+Arena 22.85 vs boss 27.57. Tried and reverted (IDE vs the Bronze boss):
+moving rear leftovers to the front factory (0/4), Agade's postmortem
+scoring value / (d² × need), enemy value / (d² × 8), INC at 1/10^1.6 (1/4).
+Postmortem: github.com/Agade09/Agade-Ghost-in-the-Cell-Postmortem.
 
 ## code-royale
 
