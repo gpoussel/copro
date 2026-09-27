@@ -78,7 +78,7 @@ Surveyed 2026-09-26.
 | crystal-rush | 5 | Bronze | 2 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |
 | git-patchwork | 5 | **Legend** ✅ | 0 | TypeScript greedy + rotations, submitted | 2 | 4/4 vs Bronze boss |
 | keep-off-the-grass-fall-challenge-2022 | 5 | **Gold** ✅ | 0 | TypeScript expand + recyclers, submitted | 2 | old bot reached rank 1 in Silver; resubmitted by mistake (1-2/4 vs Silver boss) |
-| langton-s-ant | 5 | Bronze | 2 | TypeScript greedy simulation, submitted | 2 | 4/4 vs Wood 1 boss |
+| langton-s-ant | 5 | Bronze | 2 | TypeScript planned picks, submitted | 2 | 4/4 vs Bronze boss |
 | codebusters | 6 | **Gold** ✅ | 0 | TypeScript rules+STUN+stamina, submitted | 2 | 4/4 vs Bronze boss (close) |
 | fall-challenge-2020 | 6 | Silver | 1 | TypeScript BFS over casts, submitted | 2 | 4/4 vs Wood 1 boss |
 | fantastic-bits | 6 | Silver | 1 | TypeScript chase+throw+flipendo, submitted | 2 | 2/4 vs Silver boss |

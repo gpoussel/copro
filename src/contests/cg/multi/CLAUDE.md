@@ -808,6 +808,12 @@ League 1: separate grids (`SHARED = false`). Greedy: each pick maximises our
 final count in a full ant simulation. 4/4 vs the Wood 1 boss (~46 to 27).
 Shared-grid leagues: set `SHARED = true` (score = ours − theirs), and
 consider a 2-ply search over the opponent's reply.
+Bronze (still separate grids): **on its own grid the ant carries our
+colour** in both rounds (the statement's "first player's colour" is wrong
+there): the old model lost every game as second player. Picks are now
+planned as a set (greedy seed + hill climbing on the remaining picks,
+700 ms first turn, 200 ms after), playing the plan's most important cell.
+Old greedy 0/4, planned 2/4, planned + colour fix 4/4 vs the Bronze boss.
 
 ## summer-challenge-2024-olymbits
 
