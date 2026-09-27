@@ -1189,7 +1189,9 @@ and hit 1 in contact, our towers shoot the nearest knight, enemy towers
 hit our queen; score = −100·damage − 0.05·distance left to the plan
 target − wall penalty.
 Arena 22.6 (25W 1D 14L) with 2 of our own timeouts at the 35 ms budget:
-now 25 ms, checked every 16 sequences.
+now 25 ms, checked every 16 sequences.: 27.1 (rank 15, 27W 13L). Search
+score now also +0.1·room (distance to the nearest surviving knight, ≤ 400),
+wall penalty from 200 and corner penalty from 350 (×1.5).
 
 ## hypersonic
 
