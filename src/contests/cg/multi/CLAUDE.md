@@ -591,3 +591,11 @@ one line** (the statement lists four lines). Walls: H at (x,y) blocks
 every player must keep a path. Bot: walk the BFS shortest path; when an
 opponent would arrive first, place the wall with the best (their extra
 length − ours). 4/4 vs the Wood boss.
+
+## poker-chip-race (WIP, not submitted)
+
+Counts on two separate lines (stub). Greedy chase/flee bot (neutral drops
+bigger than us are threats too, flee on time-to-contact < 6, skip guarded
+prey, accelerate only when the heading is off) survives longer but still
+loses 0/6 to the Wood boss. Needs the physics (bounces, ejection, absorption
+momentum) simulated to plan safe moves.

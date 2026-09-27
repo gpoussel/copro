@@ -87,7 +87,7 @@ Surveyed 2026-09-26.
 | green-circle | 6 | Wood 2 | 4 | C++ 250/544 | 2 | |
 | ocean-of-code | 6 | Wood 2 | 4 | — | 2 | |
 | platinum-rift-episode-1 | 6 | Wood 2 | 4 | — | 2 | |
-| poker-chip-race | 6 | Wood 2 | 4 | — | 2 | |
+| poker-chip-race | 6 | Wood 2 | 4 | TypeScript WIP, **not submitted** (0/6) | 2 | gets eaten; needs physics simulation |
 | smash-the-code | 6 | Wood 2 | 4 | — | 2 | |
 | spring-challenge-2020 | 6 | Wood 2 | 4 | — | 2 | |
 | spring-challenge-2023-ants | 6 | Wood 2 | 4 | — | 2 | |
