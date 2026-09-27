@@ -14,8 +14,9 @@
 // - LABORATORY: produce every completable medicine, then molecules again or
 //   samples.
 
-const projects = parseInt(readline())
-for (let i = 0; i < projects; i++) readline()
+const projectCount = parseInt(readline())
+const projects: number[][] = []
+for (let i = 0; i < projectCount; i++) projects.push(readline().split(" ").map(Number))
 const TYPES = "ABCDE"
 
 const uploaded = new Set<number>() // never download these back
@@ -41,6 +42,15 @@ while (true) {
     continue
   }
   const carried = samples.filter(s => s.by === 0)
+  // Expertise still missing for the science projects nobody completed yet
+  // (+50 each): samples giving those types are worth more.
+  const projNeed = [0, 0, 0, 0, 0]
+  for (const pr of projects) {
+    const done = robots.some(r => pr.every((v, k) => r.expertise[k] >= v))
+    if (done) continue
+    pr.forEach((v, k) => (projNeed[k] += Math.max(0, v - me.expertise[k])))
+  }
+  const gainValue = (s: Sample) => (TYPES.includes(s.gain) ? projNeed[TYPES.indexOf(s.gain)] * 4 : 0)
   const diagnosed = (s: Sample) => s.cost[0] >= 0
   const need = (s: Sample) => s.cost.map((c, k) => Math.max(0, c - me.expertise[k]))
   const totalNeed = (s: Sample) => need(s).reduce((a, b) => a + b, 0)
@@ -49,7 +59,7 @@ while (true) {
   const plan = () => {
     const alloc = [0, 0, 0, 0, 0]
     const ok: Sample[] = []
-    for (const s of carried.filter(diagnosed).sort((a, b) => totalNeed(a) - totalNeed(b))) {
+    for (const s of carried.filter(diagnosed).sort((a, b) => totalNeed(a) - gainValue(a) / 4 - (totalNeed(b) - gainValue(b) / 4))) {
       const nd = need(s)
       const next = alloc.map((a, k) => a + nd[k])
       const extra = next.reduce((t, a, k) => t + Math.max(0, a - me.storage[k]), 0)
@@ -75,7 +85,7 @@ while (true) {
     const bad = carried.find(s => diagnosed(s) && !ok.includes(s))
     const cloud = samples
       .filter(s => s.by === -1 && !uploaded.has(s.id) && totalNeed(s) <= 10 && need(s).every((c, k) => c <= available[k] + me.storage[k]))
-      .sort((a, b) => b.health / (totalNeed(b) + 1) - a.health / (totalNeed(a) + 1))[0]
+      .sort((a, b) => (b.health + gainValue(b)) / (totalNeed(b) + 1) - (a.health + gainValue(a)) / (totalNeed(a) + 1))[0]
     if (undiag) out = `CONNECT ${undiag.id}`
     else if (bad) {
       out = `CONNECT ${bad.id}` // upload to the cloud

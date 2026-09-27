@@ -1144,6 +1144,9 @@ need, first samples first) → LABORATORY. ~2/4 vs the Bronze boss (close
 scores); rank thresholds 2/6 did worse (0/4), 4/10 similar. Replaces the
 user's Rust agent (`legacy/code4life.rs`). Ideas: science projects, block
 the enemy's molecules, better sample mix.
+Science projects (+50) now weigh in: missing expertise of projects nobody
+completed raises the value of samples with that gain (plan order, cloud
+downloads). Arena was 30.85 vs boss 32.87.
 
 ## green-circle
 
