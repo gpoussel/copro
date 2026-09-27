@@ -28,28 +28,29 @@ for (let y = 0; y < H; y++) {
   tile.push(row)
 }
 const tileAt = (x: number, y: number) => (x < 0 || y < 0 || x >= W || y >= H ? -1 : tile[y][x])
-// Protection (0, 0.5, 0.75) of an agent at (x, y) against a shot from (sx, sy):
-// an orthogonally adjacent cover whose side faces the shooter.
-function cover(x: number, y: number, sx: number, sy: number): number {
-  let best = 0
-  for (const [dx, dy] of [
-    [1, 0],
-    [-1, 0],
-    [0, 1],
-    [0, -1],
+// Damage modifier (1 none, 0.5 low cover, 0.25 high cover) for a shot from
+// (sx, sy) at (x, y), exactly as the referee computes it: for each axis
+// where the shooter is more than 1 away, the tile next to the target on the
+// shooter's side counts unless that tile touches the shooter (Chebyshev 1);
+// the best cover wins.
+function modifier(x: number, y: number, sx: number, sy: number): number {
+  const dx = x - sx
+  const dy = y - sy
+  let best = 1
+  for (const [ax, ay] of [
+    [dx, 0],
+    [0, dy],
   ]) {
-    const t = tileAt(x + dx, y + dy)
-    if (t <= 0) continue
-    const cx = x + dx
-    const cy = y + dy
-    const facing = (dx !== 0 && Math.sign(sx - cx) === dx) || (dy !== 0 && Math.sign(sy - cy) === dy)
-    // Ignored when the shooter touches the same cover.
-    const shooterAdjacent = Math.abs(sx - cx) + Math.abs(sy - cy) === 1
-    if (facing && !shooterAdjacent) best = Math.max(best, t === 2 ? 0.75 : 0.5)
+    if (Math.abs(ax) <= 1 && Math.abs(ay) <= 1) continue
+    const cx = x - Math.sign(ax)
+    const cy = y - Math.sign(ay)
+    if (Math.max(Math.abs(cx - sx), Math.abs(cy - sy)) <= 1) continue
+    const t = tileAt(cx, cy)
+    best = Math.min(best, t === 2 ? 0.25 : t === 1 ? 0.5 : 1)
   }
   return best
 }
-
+const cover = (x: number, y: number, sx: number, sy: number) => 1 - modifier(x, y, sx, sy)
 while (true) {
   const n = parseInt(readline())
   const mine: { id: number; x: number; y: number }[] = []
@@ -103,9 +104,13 @@ while (true) {
       const inRange = foes.filter(f => Math.abs(f.x - bestCell[0]) + Math.abs(f.y - bestCell[1]) <= range)
       // Least covered, then closest (the goal is the enemy facing us).
       const d = (f: { x: number; y: number }) => Math.abs(f.x - bestCell[0]) + Math.abs(f.y - bestCell[1])
-      const target = inRange.sort(
-        (f, g) => cover(f.x, f.y, bestCell[0], bestCell[1]) - cover(g.x, g.y, bestCell[0], bestCell[1]) || d(f) - d(g),
-      )[0]
+      // The tutorial checker compares only the cover between us and the
+      // enemy on the x axis (the tile next to it on our side): use that.
+      const xCover = (f: { x: number; y: number }) => {
+        const t = tileAt(f.x - Math.sign(f.x - bestCell[0]), f.y)
+        return t === 2 ? 2 : t === 1 ? 1 : 0
+      }
+      const target = inRange.sort((f, g) => d(f) - d(g)).slice(0, 2).sort((f, g) => xCover(f) - xCover(g) || d(f) - d(g))[0]
       out.push(`${a.id};MOVE ${bestCell[0]} ${bestCell[1]}` + (target ? `;SHOOT ${target.id}` : ";HUNKER_DOWN"))
     }
   }

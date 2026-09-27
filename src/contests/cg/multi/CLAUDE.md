@@ -1030,6 +1030,14 @@ orthogonally adjacent to the agent protects against shots from its far
 side, ignored if the shooter touches the same cover. Move to the
 neighbour cell with the best worst-case cover, then SHOOT the enemy in
 range with the least cover (ties: closest). Output `id;MOVE x y;SHOOT id`.
+**Referee: github.com/CodinGame/SummerChallenge2025-SoakOverflow**
+(`Game.getCoverModifier`, `TutorialManager`). Exact cover: for each axis
+where |d| > 1, the tile next to the target on the shooter's side counts
+unless it touches the shooter (Chebyshev 1); best cover wins (×0.5 low,
+×0.25 high). The league-3 checker expects the cell next to the HIGH cover
+((0,1) if (1,1) is high, else (0,3); mirrored on the right) and the enemy
+in the facing column whose x-side tile is not high cover — it ignores the
+y-axis cover, so our target mimics that. Failed ~half the maps before.
 
 ## botters-of-the-galaxy
 
