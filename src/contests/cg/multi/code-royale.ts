@@ -123,14 +123,6 @@ while (true) {
         action = `BUILD ${t.id} TOWER`
       }
     }
-    // Base up (3 towers): more mines for more knights, as the bots that beat
-    // this boss do (4-6 mines by the end).
-    if (action === "WAIT" && towers.length >= 3 && towers.every(t => st[t.id].p1 >= 500)) {
-      const allMines = sites.filter(s => mine(s) && st[s.id].type === 0)
-      const growing = area.filter(s => mine(s) && st[s.id].type === 0 && st[s.id].p1 < st[s.id].maxSize)
-      const t = closest(growing) ?? (allMines.length < 4 ? closest(free.filter(s => st[s.id].gold !== 0 && st[s.id].maxSize !== 0)) : undefined)
-      if (t) action = `BUILD ${t.id} MINE`
-    }
     if (action === "WAIT") {
       // Grow the weakest tower to 790, else rest in the corner.
       if (!(improving >= 0 && st[improving].p1 < 790)) {
