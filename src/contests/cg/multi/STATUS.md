@@ -84,7 +84,7 @@ Surveyed 2026-09-26.
 | fantastic-bits | 6 | Silver | 1 | TypeScript chase+throw+flipendo, submitted | 2 | 2/4 vs Silver boss |
 | game-of-drones | 6 | **Gold** ✅ | 0 | TypeScript greedy allocation, submitted | 2 | 4/4 vs Wood boss (~3× its score) |
 | great-escape | 6 | Silver | 1 | TypeScript path+walls | 2 | Wood 2→Wood 1 |
-| green-circle | 6 | Bronze | 2 | TypeScript desk choice, submitted | 2 | 2/4 vs Wood 2 boss |
+| green-circle | 6 | Silver | 1 | TypeScript desk choice, submitted | 2 | 2/4 vs Wood 2 boss |
 | ocean-of-code | 6 | Silver | 1 | TypeScript path tracking+silence, submitted | 2 | 1/4 vs Silver boss; old bot 9/690 |
 | platinum-rift-episode-1 | 6 | Silver | 1 | TypeScript spread+buy, cluster opening, submitted | 2 | best 3/3 in 4p vs bosses |
 | poker-chip-race | 6 | Bronze | 2 | TypeScript rare pushes + predictions, submitted | 2 | 4/4 vs Wood 2 boss |
@@ -104,5 +104,5 @@ Surveyed 2026-09-26.
 | mean-max | 7 | Silver | 1 | TypeScript 3 units + oil, submitted | 3 | first to 50 in 2/3 vs Wood 1 bosses |
 | winter-challenge-2024 | 8 | Silver | 1 | TypeScript harvest + grow + spore, submitted | 2 | 3/3 Wood 1 scenario |
 | wondev-woman | 7 | **Gold** ✅ | 0 | TypeScript 1-ply state eval, submitted | 2 | 4/4 vs Bronze boss |
-| soak-overflow | 8 | Bronze | 2 | TypeScript full-game heuristic, submitted | 2 | 4/4 vs Bronze boss |
+| soak-overflow | 8 | Silver | 1 | TypeScript full-game heuristic, submitted | 2 | 4/4 vs Bronze boss |
 | botters-of-the-galaxy | 10 | Wood 6 | 8 | TypeScript Hulk brawler, submitted | 2 | 4/4 vs Wood 6 boss |
