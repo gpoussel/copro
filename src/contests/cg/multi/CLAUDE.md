@@ -995,3 +995,12 @@ stood still or kited (kiting got cornered at the map edge). HULK fighting
 the enemy hero within 400 next to our tower wins 4/4. Otherwise: stay
 behind our frontmost creep, last-hit, weakest creep in range. Later:
 items, last hit/deny, neutrals (GROOT), bushes, 2nd hero, skills.
+
+## legends-of-code-magic
+
+Draft variant (30 × PICK of 3, one board, ≤ 6 creatures; player lines have
+5 ints: health mana deck rune draw; cards have 11 fields). Derived from
+the constructed bot: pick by value-per-cost with a −3 penalty when the
+cost bucket / item quota is full; battle = greedy summons, items, guards,
+favourable trades unless lethal, face. 3/4 vs the Bronze boss. Replaces
+the user's old agent (kept in `legacy/legends-of-code-magic.ts`).
