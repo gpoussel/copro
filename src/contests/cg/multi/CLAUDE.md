@@ -580,6 +580,12 @@ on CG. Iterative-deepening alpha-beta (depth 2–6, or even depths only)
 went 2W 1D 1L, then timed out at depth 4 (0–1/4): reverted to 2-ply.
 An arena loss (1–7) showed our cultists never shooting (chip damage was
 worth 0.3/hp and kills need 2 shots): hp now counts 1 per point. 3/4.
+Arena samples 28.4, 26.2, 28.3, 26.5 (boss ~29; 14W 3D 3L in 20 games).
+A loss showed our leader waiting while the opponent converted neutral
+after neutral: each neutral now counts ±3 for the leader reaching it
+first (BFS maps from both leaders). 2W 2D vs the boss. Note: CONVERT /
+SHOOT on a far target make the unit walk towards it (referee
+getFinalAction).
 
 ## tryangle-catch
 

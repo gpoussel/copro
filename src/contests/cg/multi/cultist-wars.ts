@@ -142,6 +142,38 @@ function pathTo(units: Unit[], x0: number, y0: number, targets: Unit[]): number 
   }
   return 99
 }
+// BFS distance map from (x0, y0) through free floor (units block).
+function distMap(units: Unit[], x0: number, y0: number): Int16Array {
+  const block = new Uint8Array(W * H)
+  for (const u of units) if (u.hp > 0) block[u.y * W + u.x] = 1
+  const dist = new Int16Array(W * H).fill(-1)
+  const q = [y0 * W + x0]
+  dist[q[0]] = 0
+  for (let h = 0; h < q.length; h++) {
+    const c = q[h]
+    for (const [dx, dy] of DIRS) {
+      const x = (c % W) + dx
+      const y = Math.floor(c / W) + dy
+      const n = y * W + x
+      if (!floor(x, y) || block[n] || dist[n] >= 0) continue
+      dist[n] = dist[c] + 1
+      q.push(n)
+    }
+  }
+  return dist
+}
+// Steps for a leader (distance map) to stand next to u; 99 unreachable.
+function reach(dist: Int16Array, u: Unit): number {
+  let best = 99
+  for (const [dx, dy] of DIRS) {
+    const x = u.x + dx
+    const y = u.y + dy
+    if (!floor(x, y)) continue
+    const d = dist[y * W + x]
+    if (d >= 0 && d < best) best = d
+  }
+  return best
+}
 // Damage the enemy's cultists could deal to u with one shot each.
 function danger(units: Unit[], u: Unit): number {
   let d = 0
@@ -170,6 +202,19 @@ function evaluate(units: Unit[], me: number): number {
     s -= sign * Math.min(d, 20) * (neutrals.length ? 2.5 : 1)
     // Leader exposure (the boss focuses leaders).
     s -= sign * danger(units, leader) * (side === me ? 1.5 : 1)
+  }
+  // Neutral race: each neutral is worth 3 to the leader reaching it first.
+  const mineL = units.find(u => u.owner === me && u.type === 1 && u.hp > 0)
+  const theirL = units.find(u => u.owner === 1 - me && u.type === 1 && u.hp > 0)
+  if (neutrals.length && (mineL || theirL)) {
+    const dm = mineL ? distMap(units, mineL.x, mineL.y) : null
+    const dt = theirL ? distMap(units, theirL.x, theirL.y) : null
+    for (const n of neutrals) {
+      const a = dm ? reach(dm, n) : 99
+      const b = dt ? reach(dt, n) : 99
+      if (a < b) s += 3
+      else if (b < a) s -= 3
+    }
   }
   return s
 }
