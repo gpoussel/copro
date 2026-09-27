@@ -106,24 +106,47 @@ while (true) {
       board[y * N + x] = ch === "." ? 0 : ch === myColor ? ME : OPP
     }
   }
+  // Candidates for a side: legal moves ranked by the 1-ply heuristic.
+  const centre = (N - 1) / 2
+  const candidates = (bd: Uint8Array, side: number, prev: Uint8Array | null, k: number) => {
+    const list: { i: number; b: Uint8Array; captured: number; s: number }[] = []
+    for (let i = 0; i < N * N; i++) {
+      if (bd[i] !== 0) continue
+      const b = new Uint8Array(bd)
+      const captured = play(b, i, side)
+      if (captured < 0) continue
+      if (prev && b.every((v, q) => v === prev[q])) continue
+      const x = i % N
+      const y = Math.floor(i / N)
+      const threat = bestCapture(b, 3 - side)
+      const e = side === ME ? evaluate(b) : -evaluate(b)
+      list.push({ i, b, captured, s: captured * 30 - threat * 25 + e - (Math.abs(x - centre) + Math.abs(y - centre)) * 0.2 })
+    }
+    list.sort((p, q) => q.s - p.s)
+    return list.slice(0, k)
+  }
+  // 2-ply: our move, then the opponent's best reply among its top moves.
   let best = -1
   let bestScore = -Infinity
-  const centre = (N - 1) / 2
-  for (let i = 0; i < N * N; i++) {
-    if (board[i] !== 0) continue
-    const b = new Uint8Array(board)
-    const captured = play(b, i, ME)
-    if (captured < 0) continue
-    // Ko: a move may not recreate the board as it was after our last move.
-    if (b.every((v, k) => v === previous[k])) continue
-    const threat = bestCapture(b, OPP)
-    const x = i % N
-    const y = Math.floor(i / N)
-    const s = captured * 30 - threat * 25 + evaluate(b) - (Math.abs(x - centre) + Math.abs(y - centre)) * 0.2
-    if (s > bestScore) {
-      bestScore = s
-      best = i
+  const deadline = Date.now() + 80
+  for (const c of candidates(board, ME, previous, 10)) {
+    let worst = Infinity
+    for (const r of candidates(c.b, OPP, null, 7)) {
+      // Our best follow-up (3rd ply), while time allows.
+      let follow = bestCapture(r.b, ME) * 12 + evaluate(r.b)
+      if (Date.now() < deadline - 20)
+        for (const f of candidates(r.b, ME, null, 5))
+          follow = Math.max(follow, f.captured * 30 - bestCapture(f.b, OPP) * 25 + evaluate(f.b))
+      const v = (c.captured - r.captured) * 30 + follow
+      if (v < worst) worst = v
+      if (worst <= bestScore) break
     }
+    if (worst === Infinity) worst = c.captured * 30 + evaluate(c.b)
+    if (worst > bestScore) {
+      bestScore = worst
+      best = c.i
+    }
+    if (Date.now() > deadline) break
   }
   if (best < 0) {
     console.log("PASS")

@@ -521,6 +521,9 @@ Silver (200 turns): crushed 0/4 (23–86, 11–97 captured stones): the boss
 reads ladders / nets. Needs real capture reading (ladder search for
 2-liberty groups, defend by extension only when it gains liberties) or
 MCTS with capture-aware playouts.
+atari-go.ts now searches 3 plies (our top 10 moves, its top 7 replies, our
+top 5 follow-ups, each ranked by the 1-ply heuristic, 80 ms): 1/4 on 13×13
+(scores closer), still 0/4 on 9×9 (atari-go-9x9.ts kept on the 1-ply bot).
 
 ## cultist-wars
 
