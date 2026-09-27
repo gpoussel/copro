@@ -711,3 +711,14 @@ Wood 1 (4 base spells, 3 potions end the game): BFS over CAST/REST states
 fastest sequence per order, play the first action of the best
 price / (turns + 1); LEARN free tome spells in the opening once LEARN
 exists. 4/4 vs the Wood 1 boss.
+
+## crystal-rush
+
+30×15, HQ = column 0, 5 robots, 200 turns; the statement already describes
+radars and traps (league 1 boss barely digs). Bot: one robot fetches radars
+for a fixed lattice while known safe ore < 2 per live robot; the others dig
+the nearest known ore with capacity left (ore − robots sent, slight bias to
+the HQ), else blind-dig fresh cells from column 3. Holes that appear without
+us, and holes next to an enemy robot that stood still outside the HQ, count
+as possibly trapped and are skipped. 4/4 vs the Wood 2 boss (~105 to 1).
+Ideas: our own traps, trap chain kills, radar spots by expected value.
