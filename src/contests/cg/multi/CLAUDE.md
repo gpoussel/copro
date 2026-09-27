@@ -523,6 +523,15 @@ leader kill), leader steps towards the nearest convertible unit minus the
 enemy fire on the destination, cultists close in on the enemy leader. 2/6 vs
 the Bronze boss: wins as player 1, loses as player 2 (units shot down).
 Ideas: 2-ply over actions, keep cultists out of enemy lines, read the source.
+Referee: github.com/kgeilmann/cultist-wars-referee. Exact rules: damage
+7 − Manhattan distance to the unit actually hit (hp 10), range 6; the
+bullet line is traced from the shooter when shooter.y < target.y, else
+from the target (the hit is then the blocker closest to the shooter),
+Bresenham with `e2 > -dy` / `e2 < dx` (our old line differs on ties);
+friendly fire; score = units at round 150; players alternate turns. A
+2-ply search on an exact simulation (`legacy/cultist-wars-2ply.ts`) went
+0–1/4 (too passive: waits while the boss converts the neutrals): the old
+rule bot stays submitted. Next: race for neutrals first, then fight.
 
 ## tryangle-catch
 
