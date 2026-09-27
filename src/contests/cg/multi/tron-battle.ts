@@ -57,29 +57,14 @@ function voronoi(a: number, b: number): number {
   let sa = 0
   let sb = 0
   let contact = false
-  // Checkerboard counts of each side's reachable cells (a path alternates
-  // colours, so a region fills at most 2·min + 1 cells).
-  const ca = [0, 0]
-  const cb = [0, 0]
   for (let i = 0; i < W * H; i++) {
     if (owner[i] >= 0 && i !== a && i !== b) continue
     if (dA[i] < dB[i]) sa++
     else if (dB[i] < dA[i]) sb++
     if (dA[i] < 10000 && dB[i] < 10000) contact = true
-    const col = ((i % W) + Math.floor(i / W)) & 1
-    if (dA[i] < 10000 && i !== a) ca[col]++
-    if (dB[i] < 10000 && i !== b) cb[col]++
   }
-  if (contact) return sa - sb
-  const fill = (c: number[], h: number) => {
-    const hc = ((h % W) + Math.floor(h / W)) & 1
-    // Moves alternate starting with the colour opposite to the head.
-    const first = c[1 - hc]
-    const second = c[hc]
-    return Math.min(first, second + 1) + Math.min(second, first)
-  }
-  // Separated: the side that can fill more cells wins outright.
-  return (fill(ca, a) - fill(cb, b)) * 4
+  // Separated: the bigger region wins outright (weight it heavily).
+  return contact ? sa - sb : (sa - sb) * 4
 }
 function moves(h: number): number[] {
   const x = h % W

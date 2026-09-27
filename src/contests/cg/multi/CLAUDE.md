@@ -634,6 +634,7 @@ separated endgame.
 Separated positions now score the fillable cells (checkerboard parity:
 moves alternate colours, first the colour opposite the head, so a region
 fills ≤ 2·min + 1). 3/4 again; arena 29.48 vs boss 30.90 before it.
+It ranked lower (27.3): reverted to the plain alpha-beta version.
 
 ## great-escape
 
