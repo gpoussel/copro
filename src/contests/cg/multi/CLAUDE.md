@@ -932,6 +932,18 @@ losses probably come from collisions (steals): simulate car-car impacts.
 Referee (`Unit.bounce`): a car-car impact above BALL_LOSE_MIN_IMPULSE
 swaps the prisoners. A "carrier dodges cars predicted within 850 in 3
 turns" rule went 0/4 (reverted). Arena 23.3 vs boss 32.6.
+The Bronze boss is a search bot (far-away targets = headings, thrust 0 /
+200). New bot: exact port of the referee physics (`bit-runner-tools/
+engine.ts`, checked with `harness.ts` on a replay: 181/189 turns exact,
+the rest = new-prisoner ids and the game-ending turn; **use Math.sqrt
+like Java, not Math.hypot**: the last-bit difference made an instant
+car-car collision repeat forever). Evolutionary search (38 ms, depth 6,
+EXPERT rot thrust for both cars, shift the previous best, mutate 1–3
+genes), enemies = heuristic (carrier to the centre, others to the
+nearest prisoner / our carrier), eval = goals ×100000 (0.9^t), carrier
+3000 − distance to centre, enemy carrier the opposite + our nearest free
+car's distance ×0.4, free cars' distance to prisoners ×0.5. 3/4 vs the
+Bronze boss (the heuristic bot 1/4).
 
 ## git-patchwork
 
