@@ -589,6 +589,11 @@ player's trail is cleared). Bot: per safe move, Voronoi (our reach vs the
 opponents' next heads) while in contact, else reachable area with wall
 hugging. 4/4 vs the Wood boss. Ideas: minimax/articulation points (the
 classic Tron AI), better endgame filling.
+Silver: with exactly two players alive, iterative-deepening alpha-beta
+(our move then theirs, head-on = 0, no move = loss) on the Voronoi
+difference (×4 once separated), 70 ms. Old 1-ply bot 1/4, alpha-beta 3/4
+vs the Silver boss. Ideas: articulation points / tree of chambers for the
+separated endgame.
 
 ## great-escape
 

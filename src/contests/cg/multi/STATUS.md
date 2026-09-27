@@ -92,7 +92,7 @@ Surveyed 2026-09-26.
 | spring-challenge-2020 | 6 | Silver | 1 | TypeScript beam paths, types, abilities | 2 | Silver boss ~2/6; collection efficiency and deaths |
 | spring-challenge-2023-ants | 6 | Wood 2 | 4 | TypeScript LINE chains, submitted | 2 | 4/4 vs Wood boss; eggs/multiple bases later |
 | summer-challenge-2024-olymbits | 6 | **Gold** ✅ | 0 | TypeScript 4 mini-games, submitted | 3 | best ~4/5 vs Bronze bosses |
-| tron-battle | 6 | Silver | 1 | TypeScript Voronoi | 2 | Wood 2→Wood 1 |
+| tron-battle | 6 | Silver | 1 | TypeScript Voronoi + 1v1 alpha-beta, submitted | 2 | 3/4 vs Silver boss |
 | xmas-rush | 6 | Silver | 1 | TypeScript push-search, submitted | 2 | 4/4 vs Wood boss; multi-quest later |
 | a-code-of-ice-and-fire | 7 | Silver | 1 | TypeScript expand + train, submitted | 2 | 4/4 vs Wood 3 boss |
 | code-a-la-mode | 7 | Wood 1 | 3 | TypeScript plate loop + strawberries, submitted | 3 | best total 3/3 |

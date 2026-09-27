@@ -104,6 +104,10 @@ while (true) {
 
   const empty = new Set<number>()
   const enemyDist = enemies.map((e) => ({ e, d: bfs(e.x, e.y, empty), fresh: e.turn === turn }))
+  // Nearest known enemy distance per cell (Voronoi: pellets the enemy
+  // reaches first are worth less).
+  const enemyNear = new Int32Array(W * H).fill(999)
+  for (const o of enemyDist) for (let c = 0; c < W * H; c++) if (o.d[c] >= 0 && o.d[c] < enemyNear[c]) enemyNear[c] = o.d[c]
   const claimed = new Set<number>()
   const taken = new Set<number>() // cells our pacs move to this turn
   const out: string[] = []
@@ -161,7 +165,7 @@ while (true) {
           let gain = 0
           const v = maybe.get(m)
           if (v !== undefined && !claimed.has(m) && !node.path.includes(m))
-            gain = (visible.has(m) ? v : v * 0.6) * Math.pow(0.9, depth)
+            gain = (visible.has(m) ? v : v * 0.6) * Math.pow(0.85, depth) * (enemyNear[m] < depth ? 0.5 : 1)
           const score = node.score + gain
           const old = next.get(m)
           if (!old || old.score < score) next.set(m, { cell: m, prev: node.cell, path: [...node.path, m], score })
