@@ -667,7 +667,15 @@ candidate cells filtered by its orders (MOVE shifts, SURFACE sector, TORPEDO
 within water distance 4 of the target), torpedo when ≤ 20 candidates and
 expected damage ≥ 0.5 without hitting us, move towards the most unvisited
 reachable water, SURFACE when stuck. Start in the most open central area.
-4/4 vs the Wood boss. Later: SONAR, SILENCE, MINE/TRIGGER.
+4/4 vs the Wood boss. Bronze has everything (SONAR, SILENCE, MINE/TRIGGER).
+Bronze bot: SILENCE expands the candidates (0–4 cells per direction), our
+sonar answer and the enemy's life loss after our blasts (when it did not
+surface/fire itself) filter them (both applied *before* its new orders);
+fire torpedo or trigger a mine when the expected damage is ≥ 0.5 / 0.6 and
+we are out of the blast; drop a mine whenever charged; SILENCE one step
+after a blast within 3 of us; sonar the likeliest sector when > 30
+candidates; drift to distance ~3 of the candidates' centre when the torpedo
+is ready. 6/6 vs the Bronze boss (it never hit us).
 
 ## spring-challenge-2020
 
