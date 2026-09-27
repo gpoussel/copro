@@ -524,15 +524,23 @@ enemy fire on the destination, cultists close in on the enemy leader. 2/6 vs
 the Bronze boss: wins as player 1, loses as player 2 (units shot down).
 Ideas: 2-ply over actions, keep cultists out of enemy lines, read the source.
 
-## tryangle-catch (WIP, not submitted)
+## tryangle-catch
 
-4 leagues (Bronze start = league 1: spawn only). Input: houses, units per
-house, paths, triangles (owner, canCapture). First bug: reserving units on
-the corners of every capturable triangle left no spare units, the army never
-moved. After the fix the bot still loses 0/6: its units end surrounded
-(a unit dies when every neighbour house is enemy-held) and it runs out of
-units. Next: read the referee (github.com/eulerscheZahl/TryAngle-Catch),
-move in groups, grow from our own triangles outwards.
+4 leagues (Bronze start = league 1: MOVE + SPAWN). Rules from the referee
+(github.com/eulerscheZahl/TryAngle-Catch, `Board`, `Triangle`, `Node`):
+a node belongs to the side with more units, or to a side with a majority
+on every neighbour (surround); a triangle captured by owning its 3 nodes
+STAYS ours (+1 point per turn) until the enemy captures it, even after we
+leave; SPAWN uses a triangle owned since last turn: +1 unit, the triangle
+is lost and cannot be recaptured until our units leave its nodes; units on
+a node whose neighbours all have an enemy majority die. The first WIP
+spawned all game long (killing its own income) and lost 0/6.
+Bot: teams of 3 — each capturable triangle is priced by the distance of
+its 3 nearest free units (+ enemy units on it), cheapest first, units step
+along shortest paths avoiding death traps; spawns only while army < 6
+before turn 40 (army < 10 / turn 80 did worse). 1/4 vs the Bronze boss:
+we end up eliminated (units picked off one by one). Next: keep teams
+together, stop walking next to enemy majorities.
 
 ## game-of-life-or-death
 

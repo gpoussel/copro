@@ -72,7 +72,7 @@ Surveyed 2026-09-26.
 | legends-of-code-magic | 7 | Silver | 1 | TypeScript ClosetAI draft + greedy battle, submitted | 2 | 1/4 vs Silver boss |
 | seabed-security | 7 | Silver | 1 | TypeScript dive/surface, submitted | 2 | 2/4 vs Bronze boss |
 | spring-challenge-2021 | 6 | **Gold** ✅ | 0 | TypeScript rules bot, submitted | 2 | 4/4 vs Bronze boss |
-| tryangle-catch | 4 | Bronze | 2 | TypeScript WIP, **not submitted** (0/6) | 2 | units get surrounded; study the referee before retrying |
+| tryangle-catch | 4 | Bronze | 2 | TypeScript capture teams, submitted | 2 | 1/4 vs Bronze boss |
 | winter-challenge-2026-snakebyte | 4 | Bronze | 2 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
 | bit-runner-2048 | 5 | Bronze | 2 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
 | crystal-rush | 5 | Bronze | 2 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |

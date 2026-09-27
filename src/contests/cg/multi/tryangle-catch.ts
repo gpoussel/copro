@@ -2,18 +2,24 @@
 // https://www.codingame.com/multiplayer/bot-programming/tryangle-catch
 // Referee: https://github.com/eulerscheZahl/TryAngle-Catch
 //
-// Houses joined by paths; a house is ours with strictly more units; owning
-// the 3 corners of a triangle captures it (1 point per turn), and using one
-// spawns a unit. Plan: hold the corners of our triangles, send spare units
-// (BFS over paths) to the corners of capturable triangles we do not hold yet
-// (houses shared by several triangles first), and spawn while the army is
-// small.
+// Rules (from the referee): a node is owned by the side with more units on
+// it, or by a side holding a majority on every neighbour (surround); a
+// triangle is captured when one side owns its 3 nodes and it then STAYS
+// captured (+1 point per turn) until the other side captures it, even after
+// the units leave. SPAWN uses a triangle owned since last turn: +1 unit, but
+// the triangle is lost and cannot be recaptured until we leave its nodes.
+// Units on a node whose neighbours all have an enemy majority die.
+// Bot: units work in teams of 3: each capturable triangle we do not own is
+// priced by the distance of its 3 nearest free units; the cheapest is taken
+// first, each unit steps along its shortest path to its corner. Spawn a few
+// units early on (army < 6, before turn 40) from triangles we own.
 
 const houseCount = parseInt(readline())
 for (let i = 0; i < houseCount; i++) readline()
-const SPAWN_BELOW = 30
+let turn = 0
 
 while (true) {
+  turn++
   readline() // scores
   const mine = new Int32Array(houseCount)
   const theirs = new Int32Array(houseCount)
@@ -38,53 +44,87 @@ while (true) {
   const lc = parseInt(readline())
   for (let i = 0; i < lc; i++) readline()
 
-  const commands: string[] = []
-  // Units kept on each house: enough to keep the corners of our triangles.
-  const need = new Int32Array(houseCount)
-  const wanted = new Float64Array(houseCount) // attraction of a house
-  const held = (h: number) => mine[h] > theirs[h]
-  for (const t of triangles) {
-    if (t.owner === 0) for (const h of t.corners) need[h] = Math.max(need[h], theirs[h] + 1)
-    else if (t.canCapture) {
-      // Triangles close to completion pull harder.
-      const done = t.corners.filter(held).length
-      for (const h of t.corners) if (!held(h)) wanted[h] += 1 + 2 * done
-    }
+  // All-pairs BFS (≤ 50 nodes).
+  const dist: Int32Array[] = []
+  for (let s = 0; s < houseCount; s++) {
+    const d = new Int32Array(houseCount).fill(999)
+    d[s] = 0
+    const q = [s]
+    for (let h = 0; h < q.length; h++)
+      for (const m of adj[q[h]])
+        if (d[m] === 999) {
+          d[m] = d[q[h]] + 1
+          q.push(m)
+        }
+    dist.push(d)
   }
-  // A house whose neighbours are all enemy-held kills the units sent there.
-  const enemyHeld = (h: number) => theirs[h] > mine[h]
-  const deathTrap = (h: number) => adj[h].length > 0 && adj[h].every(enemyHeld)
-  // Spawns from our triangles, on the corner that needs units the most.
-  let army = mine.reduce((a, b) => a + b, 0)
+  const enemyMajority = (h: number) => theirs[h] > mine[h]
+  const deathTrap = (h: number) => adj[h].length > 0 && adj[h].every(enemyMajority)
+  // Our units as a list of positions.
+  const units: number[] = []
+  for (let h = 0; h < houseCount; h++) for (let k = 0; k < mine[h]; k++) units.push(h)
+  const commands: string[] = []
+
+  // Early spawns from triangles we own (costs the triangle's income).
+  let army = units.length
   for (const t of triangles) {
-    if (t.owner !== 0 || army >= SPAWN_BELOW) continue
-    const [a, b, c] = t.corners.slice().sort((x, y) => theirs[y] - mine[y] - (theirs[x] - mine[x]))
+    if (t.owner !== 0 || army >= 6 || turn > 40) continue
+    const [a, b, c] = t.corners
     commands.push(`SPAWN ${a} ${b} ${c}`)
     army++
   }
-  // Move spare units towards the most wanted houses (nearest first).
-  for (let h = 0; h < houseCount; h++) {
-    let spare = mine[h] - need[h]
-    if (spare <= 0) continue
-    const dist = new Int32Array(houseCount).fill(-1)
-    dist[h] = 0
-    const q = [h]
-    for (let i = 0; i < q.length; i++)
-      for (const n of adj[q[i]])
-        if (dist[n] < 0) {
-          dist[n] = dist[q[i]] + 1
-          q.push(n)
+
+  // Team assignment.
+  const free = units.slice()
+  const goal: number[] = new Array(units.length).fill(-1) // target node per unit (index in free)
+  const targets = triangles.filter(t => t.owner !== 0 && t.canCapture && !t.corners.some(deathTrap))
+  const moves: [number, number][] = [] // [from, targetNode]
+  const taken = new Set<number>()
+  for (;;) {
+    const avail = free.map((_, i) => i).filter(i => goal[i] < 0)
+    if (avail.length === 0) break
+    let best: { t: number; pick: number[]; cost: number } | null = null
+    targets.forEach((t, ti) => {
+      if (taken.has(ti)) return
+      const used = new Set<number>()
+      const pick: number[] = []
+      let cost = 0
+      for (const corner of t.corners) {
+        // Already held by more of our units than theirs: no unit needed.
+        let bi = -1
+        for (const i of avail)
+          if (!used.has(i) && (bi < 0 || dist[free[i]][corner] < dist[free[bi]][corner])) bi = i
+        if (bi < 0) {
+          cost += 50
+          continue
         }
-    const targets = [...Array(houseCount).keys()]
-      .filter(x => x !== h && dist[x] > 0 && wanted[x] > 0 && !deathTrap(x))
-      .sort((x, y) => wanted[y] / dist[y] - wanted[x] / dist[x])
-    for (const tgt of targets) {
-      if (spare <= 0) break
-      const send = Math.min(spare, Math.max(1, theirs[tgt] + 1 - mine[tgt]))
-      commands.push(`MOVE ${h} ${tgt} ${send}`)
-      wanted[tgt] = Math.max(0, wanted[tgt] - 0.5)
-      spare -= send
+        used.add(bi)
+        pick.push(bi, corner)
+        cost += dist[free[bi]][corner]
+      }
+      cost += theirs[t.corners[0]] + theirs[t.corners[1]] + theirs[t.corners[2]]
+      if (!best || cost < best.cost) best = { t: ti, pick, cost }
+    })
+    if (!best) break
+    const b = best as { t: number; pick: number[]; cost: number }
+    taken.add(b.t)
+    for (let k = 0; k < b.pick.length; k += 2) {
+      goal[b.pick[k]] = b.pick[k + 1]
+      moves.push([free[b.pick[k]], b.pick[k + 1]])
     }
+    if (b.pick.length === 0) break
   }
-  console.log(commands.length ? commands.join(";") : `MOVE 0 0 0`)
+  // One step along a shortest path for each unit (skip death traps).
+  const step = new Map<string, number>()
+  for (const [from, to] of moves) {
+    if (from === to) continue
+    let next = -1
+    for (const m of adj[from])
+      if (dist[m][to] === dist[from][to] - 1 && !deathTrap(m) && (next < 0 || theirs[m] < theirs[next])) next = m
+    if (next < 0) continue
+    const key = `${from} ${next}`
+    step.set(key, (step.get(key) ?? 0) + 1)
+  }
+  for (const [key, amount] of step) commands.push(`MOVE ${key} ${amount}`)
+  console.log(commands.length ? commands.join(";") : "WAIT")
 }
