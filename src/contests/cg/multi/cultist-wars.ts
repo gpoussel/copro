@@ -108,12 +108,8 @@ while (true) {
       // Cultists that can shoot our leader are the first to go.
       const threatens =
         !!leader && tgt.type === 0 && manhattan(tgt, leader) <= 6 && clearShot(tgt.x, tgt.y, leader.x, leader.y)
-      // Return fire: a cultist shooting at any of ours (it took 8 free shots
-      // at one of ours while our leader walked to neutrals).
-      const shootsUs =
-        tgt.type === 0 && mine.some(u => u !== leader && manhattan(tgt, u) <= 6 && clearShot(tgt.x, tgt.y, u.x, u.y))
       consider(
-        damage + (kill ? (tgt.type === 1 ? 100 : 10) : 0) + (tgt.type === 1 ? 3 : 0) + (threatens ? 3 : shootsUs ? 2 : 0),
+        damage + (kill ? (tgt.type === 1 ? 100 : 10) : 0) + (tgt.type === 1 ? 3 : 0) + (threatens ? 3 : 0),
         `${s.id} SHOOT ${tgt.id}`
       )
     }
