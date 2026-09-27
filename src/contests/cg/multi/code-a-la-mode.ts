@@ -27,6 +27,8 @@ const DISHWASHER = find("D")
 const WINDOW = find("W")
 const STRAWBERRY = find("S")
 const BOARD = find("C")
+const DOUGH = find("H")
+const OVEN = find("O")
 const use = (p: [number, number]) => `USE ${p[0]} ${p[1]}`
 
 while (true) {
@@ -41,7 +43,7 @@ while (true) {
     const [x, y, it] = readline().trim().split(" ")
     tables.push({ x: +x, y: +y, item: it })
   }
-  readline() // oven
+  const [ovenItem] = readline().trim().split(" ")
   const nc = parseInt(readline())
   const orders: { items: string[]; award: number }[] = []
   for (let i = 0; i < nc; i++) {
@@ -69,11 +71,21 @@ while (true) {
   }
   const best = orders.slice().sort((a, b) => b.award - a.award)[0]
   const needChopped = best?.items.includes("CHOPPED_STRAWBERRIES") && !onTable("CHOPPED_STRAWBERRIES")
+  // Croissants: dough (H) baked 10 turns in the oven (O), ready for 10 more.
+  const croissantReady = ovenItem === "CROISSANT"
+  const needCroissant =
+    OVEN[0] >= 0 &&
+    orders.some(o => o.items.includes("CROISSANT")) &&
+    !onTable("CROISSANT") &&
+    ovenItem === "NONE"
   let action: string
   if (carried[0] === "STRAWBERRIES") action = use(BOARD)
-  else if (carried[0] === "CHOPPED_STRAWBERRIES") action = use(freeTable())
+  else if (carried[0] === "DOUGH") action = use(OVEN)
+  else if (carried[0] === "CHOPPED_STRAWBERRIES" || carried[0] === "CROISSANT") action = use(freeTable())
   else if (!carried.includes("DISH")) {
     if (carried.length) action = use(freeTable()) // drop anything else
+    else if (croissantReady) action = use(OVEN) // take it before it burns
+    else if (needCroissant && DOUGH[0] >= 0) action = use(DOUGH)
     else if (needChopped && STRAWBERRY[0] >= 0) action = use(STRAWBERRY)
     else {
       // A plate: prefer a plate already on a table that still fits an order.
@@ -95,7 +107,8 @@ while (true) {
       const missing = target.items.filter(d => !onPlate.includes(d))
       const fromCrate = missing.find(d => CRATE[d])
       const fromTable = missing.map(d => onTable(d)).find(t => t)
-      if (fromCrate) action = use(CRATE[fromCrate])
+      if (missing.includes("CROISSANT") && croissantReady) action = use(OVEN)
+      else if (fromCrate) action = use(CRATE[fromCrate])
       else if (fromTable) action = `USE ${fromTable.x} ${fromTable.y}`
       else if (!missing.length) action = use(WINDOW)
       else action = use(freeTable()) // park the plate, go chop

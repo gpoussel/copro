@@ -1022,6 +1022,10 @@ chef holds one thing): chop first when the best order needs some and none
 lies on a table; plates on tables that still fit an order are reused;
 missing desserts from crates or tables; a plate waiting on strawberries is
 parked on a table. Best total in 3/3.
+Wood 1 (CROISSANT: dough H baked 10 turns in oven O, burns 10 turns after
+ready; oven line `contents timer`): bake when an order wants a croissant,
+none lies on a table and the oven is empty; take a ready croissant at once
+(onto the plate if holding one, else to a table). Best total in 3/3.
 
 ## soak-overflow
 
