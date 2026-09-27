@@ -128,6 +128,15 @@ while (true) {
         action = `BUILD ${t.id} TOWER`
       }
     }
+    // The boss itself turtles behind ~9 towers: up to 5 once the first 3
+    // are grown (each new tower only when all are ≥ 600 HP).
+    if (action === "WAIT" && towers.length >= 3 && towers.length < 5 && towers.every(t => st[t.id].p1 >= 600)) {
+      const t = closest(free)
+      if (t) {
+        improving = t.id
+        action = `BUILD ${t.id} TOWER`
+      }
+    }
     if (action === "WAIT") {
       // Grow the weakest tower to 790, else rest in the corner.
       if (!(improving >= 0 && st[improving].p1 < 790)) {
