@@ -91,7 +91,7 @@ Surveyed 2026-09-26.
 | smash-the-code | 6 | Bronze | 2 | TypeScript 3-ply sim, submitted | 2 | 4/4 vs Wood boss; later leagues add rotations/different colours |
 | spring-challenge-2020 | 6 | Silver | 1 | TypeScript beam paths, types, abilities | 2 | Silver boss ~2/6; collection efficiency and deaths |
 | spring-challenge-2023-ants | 6 | Wood 2 | 4 | TypeScript LINE chains, submitted | 2 | 4/4 vs Wood boss; eggs/multiple bases later |
-| summer-challenge-2024-olymbits | 6 | Wood 2 | 4 | — | 3 | |
+| summer-challenge-2024-olymbits | 6 | Wood 2 | 4 | TypeScript hurdle DP, submitted | 3 | gold 3/3 vs 2 bosses |
 | tron-battle | 6 | Silver | 1 | TypeScript Voronoi | 2 | Wood 2→Wood 1 |
 | xmas-rush | 6 | Bronze | 2 | TypeScript push-search, submitted | 2 | 4/4 vs Wood boss; multi-quest later |
 | a-code-of-ice-and-fire | 7 | Wood 3 | 5 | — | 2 | |

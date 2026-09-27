@@ -763,3 +763,13 @@ League 1: separate grids (`SHARED = false`). Greedy: each pick maximises our
 final count in a full ant simulation. 4/4 vs the Wood 1 boss (~46 to 27).
 Shared-grid leagues: set `SHARED = true` (score = ours − theirs), and
 consider a 2-ply search over the opponent's reply.
+
+## summer-challenge-2024-olymbits
+
+3 players, one shared input per mini-game (GPU string + 7 registers).
+League 1 = one hurdle race (30 cells, LEFT 1 / DOWN 2 / RIGHT 3 / UP jumps
+2 over the next cell, a hit stuns 3 turns). Bot: backwards DP of the
+minimum turns to the finish (runner stops on the hurdle it hits), play the
+best first move. Gold medal in 3/3 games (21 vs 7 / 7). Later leagues run 4
+mini-games at once (archery, roller, diving): one move for all, so weigh
+each game's gain by our medal needs (the classic approach).
