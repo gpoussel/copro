@@ -1206,6 +1206,13 @@ our tower would fall first): 4/4, games over by turn 24. Wood 5 adds
 items (boss: DOCTOR_STRANGE, cheapest item, hits the nearest tower); the
 bot now buys the best affordable non-potion item (15·damage + maxHealth
 + 2·speed) while it has < 4. Wood 4 adds creeps (last hits/denies = gold).
+**itemsOwned is field 21 of the unit line** (read as 24 at first: NaN,
+so nothing was ever bought and a bladed IRONMAN out-traded us). Duel
+mode now runs while the enemy tower deals ≤ 1 damage (Wood 6–4) and
+fights back whenever the enemy hero can hit us. Lane mode (Wood 3+):
+stay out of the enemy tower's range + 40, last-hit / deny (own creeps
+≤ 40 % HP), duel the hero away from its tower when we have more HP,
+retreat under 30 % HP.
 
 ## legends-of-code-magic
 

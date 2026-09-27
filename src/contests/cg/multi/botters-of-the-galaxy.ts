@@ -33,7 +33,7 @@ while (true) {
   const units: U[] = []
   for (let i = 0; i < n; i++) {
     const p = readline().trim().split(" ")
-    units.push({ id: +p[0], team: +p[1], type: p[2], x: +p[3], y: +p[4], range: +p[5], hp: +p[6], maxHp: +p[7], dmg: +p[9], items: +p[24] })
+    units.push({ id: +p[0], team: +p[1], type: p[2], x: +p[3], y: +p[4], range: +p[5], hp: +p[6], maxHp: +p[7], dmg: +p[9], items: +p[21] })
   }
   if (roundType < 0) {
     console.log(picks++ === 0 ? "HULK" : "DOCTOR_STRANGE")
@@ -64,7 +64,9 @@ while (true) {
       let target = foe ?? foeTower
       if (foe && foeTower) {
         const oursFalls = Math.hypot(foe.x - tower.x, foe.y - tower.y) <= foe.range + 50 ? tower.hp / Math.max(1, foe.dmg) : Infinity
-        target = eta(foe) <= eta(foeTower) || oursFalls < eta(foeTower) ? foe : foeTower
+        // Fight back when it can hit us: its kiting would win the race.
+        const hitsUs = d(foe) <= foe.range + 50
+        target = hitsUs || eta(foe) <= eta(foeTower) || oursFalls < eta(foeTower) ? foe : foeTower
       }
       out.push(h.id === bought ? `BUY ${buy!.name}` : target ? `ATTACK ${target.id}` : "WAIT")
     }
