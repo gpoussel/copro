@@ -88,7 +88,7 @@ Surveyed 2026-09-26.
 | ocean-of-code | 6 | Wood 2 | 4 | — | 2 | |
 | platinum-rift-episode-1 | 6 | Wood 2 | 4 | TypeScript spread+buy, submitted | 2 | 4/4 vs Wood boss (eliminated ~turn 25) |
 | poker-chip-race | 6 | Wood 2 | 4 | TypeScript WIP, **not submitted** (0/6) | 2 | gets eaten; needs physics simulation |
-| smash-the-code | 6 | Wood 2 | 4 | — | 2 | |
+| smash-the-code | 6 | Wood 2 | 4 | TypeScript 3-ply sim, submitted | 2 | 4/4 vs Wood boss; later leagues add rotations/different colours |
 | spring-challenge-2020 | 6 | Wood 2 | 4 | — | 2 | |
 | spring-challenge-2023-ants | 6 | Wood 2 | 4 | — | 2 | |
 | summer-challenge-2024-olymbits | 6 | Wood 2 | 4 | — | 3 | |

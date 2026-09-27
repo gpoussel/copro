@@ -618,3 +618,11 @@ Silver (league 2) is 16×16 with 8 goal cells and 12 mana: the exhaustive
 search timed out on turn 2. Now: time-bounded random column patterns
 (often compact blocks), 16 generations, + a bonus for our cells advancing to
 the centre columns. 4/4 vs the Silver boss (~780 to 0).
+
+## smash-the-code
+
+6 leagues (Wood 2 start). League 1: vertical same-colour pairs, output a
+column. Bot: drop/chain/skull simulation, 3-ply exhaustive over the known
+pairs, eval = cleared blocks × chain² + same-colour contacts − height.
+4/4 vs the Wood boss. Later leagues: two colours per pair and rotations
+(output `x rotation`), nuisance — extend the search then.
