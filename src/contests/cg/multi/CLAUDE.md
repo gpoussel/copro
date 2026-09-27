@@ -1059,6 +1059,13 @@ its queen, trains later. Also tried (all 0/4, reverted): 4 reserved
 home-corner tower sites; knight barracks first (queen HP race, the boss
 ended at 11–37 HP); mines until income ≥ 12 (buildings are free, only
 units cost gold). Our knights (1 batch per ~8 turns) melt on its towers.
+Referee facts: score = queen HP at turn 200 (higher wins); creeps lose
+1 HP per turn (knights ≤ 30 turns); knights 100 vs queen 60 speed; towers
+hit creeps for 3 + (range − distance)/200, melt 4 HP/turn, +100 per BUILD.
+A debug run showed the IDE boss flooding 12–17 live knights by turn 35:
+a fleeing queen (best of 16 steps by nearest-knight distance) got
+cornered and died (0/4, reverted). Needs a dense home tower cluster
+(towers are free, ~5 of them out-damage the flood) plus giants.
 
 ## hypersonic
 
