@@ -30,6 +30,7 @@ let sameBuild = 0
 
 while (true) {
   const [gold, touched] = readline().split(" ").map(Number)
+  const start = Date.now()
   void touched
   const st: SiteState[] = []
   for (let i = 0; i < numSites; i++) {
@@ -61,100 +62,93 @@ while (true) {
   if (improving >= 0 && !(mine(sites[improving]) && st[improving].type === 1)) improving = -1
 
   let action = "WAIT"
-  // Kite (as a bot that beat this boss 8 times in a row does): with enemy
-  // knights close, step to where the nearest knight is farthest, inside our
-  // towers' cover and with an obstacle between it and us (sites block).
+  // Nearest enemy knight (the tactical search below runs when it is close).
   const knightDist = (x: number, y: number) =>
     knights.reduce((m, k) => Math.min(m, Math.hypot(k.x - x, k.y - y)), Infinity)
   const nearK = knights
     .slice()
     .sort((a, b) => Math.hypot(a.x - queen.x, a.y - queen.y) - Math.hypot(b.x - queen.x, b.y - queen.y))[0]
-  // Kiting must not starve the base: against a steady knight stream a queen
-  // kited 70 turns with one tower. Far knights (250-450) only once 3
-  // towers stand.
-  const ownTowers = sites.filter(q => mine(q) && st[q.id].type === 1).length
   const kd = nearK ? knightDist(queen.x, queen.y) : Infinity
-  // Damage our queen takes over 6 turns running in direction ang: knights
-  // close in at 100 (contact 50), age 1 HP per turn, hit 1 each; each of our
-  // towers shoots the nearest knight in range for 3 + (range - d) / 200.
   const ourTowers = sites.filter(q => mine(q) && st[q.id].type === 1)
-  const rollout = (ang: number) => {
-    let qx = queen.x
-    let qy = queen.y
-    const ks = knights.map(k => ({ ...k }))
-    let dmg = 0
-    for (let t = 0; t < 6; t++) {
-      if (!Number.isNaN(ang)) {
-        qx = Math.max(30, Math.min(1890, qx + Math.cos(ang) * 60))
-        qy = Math.max(30, Math.min(970, qy + Math.sin(ang) * 60))
+  const enemyTowerList = sites.filter(q => st[q.id].owner === 1 && st[q.id].type === 1)
+  // Move (x, y) by up to `step` towards (tx, ty), sliding out of sites.
+  const slide = (x: number, y: number, tx: number, ty: number, step: number, rad: number): [number, number] => {
+    const d = Math.hypot(tx - x, ty - y)
+    if (d > 0) {
+      const k = Math.min(1, step / d)
+      x += (tx - x) * k
+      y += (ty - y) * k
+    }
+    for (const q of sites) {
+      const e = Math.hypot(x - q.x, y - q.y)
+      if (e < q.r + rad && e > 0) {
+        x = q.x + ((x - q.x) / e) * (q.r + rad)
+        y = q.y + ((y - q.y) / e) * (q.r + rad)
       }
-      for (const k of ks) {
-        if (k.hp <= 0) continue
-        const d = Math.hypot(qx - k.x, qy - k.y)
-        const step = Math.min(100, Math.max(0, d - 50))
-        if (d > 0) {
-          k.x += ((qx - k.x) / d) * step
-          k.y += ((qy - k.y) / d) * step
+    }
+    return [Math.max(30, Math.min(1890, x)), Math.max(30, Math.min(970, y))]
+  }
+  // Index of the best first direction (0-7), or -1 to follow the plan.
+  const search = (q0: { x: number; y: number }, plan: { x: number; y: number; r: number }): number => {
+    let bestScore = -Infinity
+    let bestFirst = -1
+    const seq = [0, 0, 0, 0]
+    const total = 9 ** 4
+    const deadline = start + 35
+    for (let n = 0; n < total; n++) {
+      if ((n & 63) === 0 && Date.now() > deadline) break
+      let m = n
+      for (let i = 0; i < 4; i++) {
+        seq[i] = m % 9
+        m = Math.floor(m / 9)
+      }
+      let qx = q0.x
+      let qy = q0.y
+      const ks = knights.map(k => ({ x: k.x, y: k.y, hp: k.hp }))
+      let dmg = 0
+      for (let t = 0; t < 4; t++) {
+        const o = seq[t]
+        if (o === 8) {
+          if (Math.hypot(plan.x - qx, plan.y - qy) > plan.r) [qx, qy] = slide(qx, qy, plan.x, plan.y, 60, 30)
+        } else {
+          const ang = (o * Math.PI) / 4
+          ;[qx, qy] = slide(qx, qy, qx + Math.cos(ang) * 60, qy + Math.sin(ang) * 60, 60, 30)
         }
-        if (Math.hypot(qx - k.x, qy - k.y) <= 55) dmg++
-        k.hp--
+        for (const k of ks) {
+          if (k.hp <= 0) continue
+          const d = Math.hypot(qx - k.x, qy - k.y)
+          if (d > 50) [k.x, k.y] = slide(k.x, k.y, qx, qy, Math.min(100, d - 50), 20)
+          if (Math.hypot(qx - k.x, qy - k.y) < 55) dmg++
+          k.hp--
+        }
+        for (const tw of ourTowers) {
+          let bk: { x: number; y: number; hp: number } | null = null
+          let bd = st[tw.id].p2
+          for (const k of ks)
+            if (k.hp > 0) {
+              const d = Math.hypot(tw.x - k.x, tw.y - k.y)
+              if (d < bd) ((bd = d), (bk = k))
+            }
+          if (bk) bk.hp -= 3 + Math.floor((st[tw.id].p2 - bd) / 200)
+        }
+        for (const tw of enemyTowerList) {
+          const d = Math.hypot(tw.x - qx, tw.y - qy)
+          if (d < st[tw.id].p2) dmg += 1 + Math.floor((st[tw.id].p2 - d) / 200)
+        }
       }
-      for (const tw of ourTowers) {
-        let best: (typeof ks)[number] | null = null
-        let bd = st[tw.id].p2
-        for (const k of ks)
-          if (k.hp > 0) {
-            const d = Math.hypot(tw.x - k.x, tw.y - k.y)
-            if (d < bd) ((bd = d), (best = k))
-          }
-        if (best) best.hp -= 3 + Math.floor((st[tw.id].p2 - bd) / 200)
-      }
-    }
-    return dmg
-  }
-  let kiteMove = ""
-  let kiteHurt = Infinity
-  if (nearK && kd < 600) {
-    let bestV = -Infinity
-    for (let k = 0; k < 16; k++) {
-      const ang = (k * Math.PI) / 8
-      const x = Math.round(queen.x + Math.cos(ang) * 60)
-      const y = Math.round(queen.y + Math.sin(ang) * 60)
-      if (x < 30 || y < 30 || x > 1890 || y > 970) continue
-      if (sites.some(q => Math.hypot(q.x - x, q.y - y) < q.r + 30)) continue
-      const covered = sites.some(q => mine(q) && st[q.id].type === 1 && Math.hypot(q.x - x, q.y - y) < st[q.id].p2)
-      // Obstacle on the segment knight -> point.
-      const shielded = sites.some(q => {
-        const dx = x - nearK.x
-        const dy = y - nearK.y
-        const l2 = dx * dx + dy * dy || 1
-        const t = Math.max(0, Math.min(1, ((q.x - nearK.x) * dx + (q.y - nearK.y) * dy) / l2))
-        return Math.hypot(nearK.x + t * dx - q.x, nearK.y + t * dy - q.y) < q.r
-      })
-      const edge = Math.min(x, y, 1920 - x, 1000 - y)
-      const corner = Math.min(
-        Math.hypot(x, y),
-        Math.hypot(1920 - x, y),
-        Math.hypot(x, 1000 - y),
-        Math.hypot(1920 - x, 1000 - y)
-      )
-      const hurt = rollout(ang)
-      const v =
-        knightDist(x, y) +
-        (covered ? 150 : 0) +
-        (shielded ? 100 : 0) -
-        (edge < 250 ? (250 - edge) * 3 : 0) -
-        (corner < 350 ? (350 - corner) * 2 : 0) -
-        150 * hurt
-      if (v > bestV) {
-        bestV = v
-        kiteMove = `MOVE ${x} ${y}`
-        kiteHurt = hurt
+      const edge = Math.min(qx, qy, 1920 - qx, 1000 - qy)
+      const score =
+        -100 * dmg -
+        0.05 * Math.max(0, Math.hypot(plan.x - qx, plan.y - qy) - plan.r) -
+        (edge < 150 ? 150 - edge : 0) +
+        (seq[0] === 8 ? 1 : 0)
+      if (score > bestScore) {
+        bestScore = score
+        bestFirst = seq[0] === 8 ? -1 : seq[0]
       }
     }
+    return bestFirst
   }
-  // Close knights: kite outright; farther ones only once the base stands.
-  if (kiteMove && (kd < 250 || (kd < 450 && ownTowers >= 3))) action = kiteMove
   const attacked = enemies.some(e => Math.hypot(e.x - queen.x, e.y - queen.y) < 200)
   if (attacked && action === "WAIT") {
     if (improving >= 0 && st[improving].p1 < 790) action = `BUILD ${improving} TOWER`
@@ -195,40 +189,11 @@ while (true) {
         action = `BUILD ${t.id} TOWER`
       }
     }
-    // Expansion, as the bots that beat this boss play (4-10 mines, 6-8
-    // towers, 2 knight barracks over a game): keep building on the nearest
-    // free site of our half that no enemy tower covers — mines while the
-    // income is under 8, towers while fewer than mines, a second knight
-    // barracks (8-knight bursts), then towers. Repairs come first.
-    if (action === "WAIT" && barracks.length >= 1 && towers.length >= 3 && towers.every(t => st[t.id].p1 >= 400)) {
-      const ec = { x: 1920 - c.x, y: 1000 - c.y }
-      const ours = (q: Site) => Math.hypot(q.x - c.x, q.y - c.y) < Math.hypot(q.x - ec.x, q.y - ec.y)
-      const enemyCover = (q: Site) =>
-        sites.some(
-          e => st[e.id].owner === 1 && st[e.id].type === 1 && Math.hypot(e.x - q.x, e.y - q.y) < st[e.id].p2 + 30
-        )
-      const open = sites.filter(
-        q => st[q.id].type === -1 && st[q.id].owner === -1 && !banned.has(q.id) && ours(q) && !enemyCover(q)
-      )
-      const mines = sites.filter(q => mine(q) && st[q.id].type === 0)
-      const income = mines.reduce((a, q) => a + st[q.id].p1, 0)
-      const growing = mines.filter(q => st[q.id].p1 < st[q.id].maxSize && dq(q) < 400)
-      const kb = barracks.filter(q => st[q.id].p2 === 0)
-      const next = closest(open)
-      if (growing.length && income < 8) action = `BUILD ${closest(growing)!.id} MINE`
-      else if (next) {
-        const kind =
-          income < 8 && st[next.id].gold !== 0 && st[next.id].maxSize !== 0
-            ? "MINE"
-            : towers.length < mines.length
-              ? "TOWER"
-              : kb.length < 2
-                ? "BARRACKS-KNIGHT"
-                : towers.length < 8
-                  ? "TOWER"
-                  : ""
-        if (kind) action = `BUILD ${next.id} ${kind}`
-      }
+    // A second knight barracks once the base stands: waves of 8 knights
+    // (forum: save gold, then train in bursts) get through towers.
+    if (action === "WAIT" && towers.length >= 3 && towers.every(t => st[t.id].p1 >= 500) && barracks.length < 2) {
+      const t = closest(free)
+      if (t) action = `BUILD ${t.id} BARRACKS-KNIGHT`
     }
     if (action === "WAIT") {
       // Grow the weakest tower to 790, else rest in the corner.
@@ -243,8 +208,24 @@ while (true) {
       action = improving >= 0 ? `BUILD ${improving} TOWER` : `MOVE ${rx} ${ry}`
     }
   }
-  // Staying put (build / repair) when the rollout says running takes less.
-  if (kiteMove && !action.startsWith("MOVE") && rollout(NaN) > kiteHurt) action = kiteMove
+  // Tactical search (forum: Silver/Gold bots search the queen's moves over a
+  // few turns): with knights near, try every 4-turn sequence of 8
+  // directions or "follow the plan", on a small simulation — the queen (60)
+  // and knights (100) slide around sites, knights age 1 HP and hit 1 in
+  // contact, our towers shoot the nearest knight, enemy towers our queen.
+  if (kd < 700) {
+    const planM = action.match(/^(?:MOVE (\d+) (\d+)|BUILD (\d+))/)
+    const plan = planM
+      ? planM[3] !== undefined
+        ? { x: sites[+planM[3]].x, y: sites[+planM[3]].y, r: sites[+planM[3]].r + 30 }
+        : { x: +planM[1], y: +planM[2], r: 0 }
+      : { x: queen.x, y: queen.y, r: 0 }
+    const best = search(queen, plan)
+    if (best >= 0) {
+      const ang = (best * Math.PI) / 4
+      action = `MOVE ${Math.round(queen.x + Math.cos(ang) * 60)} ${Math.round(queen.y + Math.sin(ang) * 60)}`
+    }
+  }
   // A BUILD on a touched site that stays unbuilt for 6 turns: ban it.
   const bm = action.match(/^BUILD (\d+) /)
   const touching = bm ? Math.hypot(sites[+bm[1]].x - queen.x, sites[+bm[1]].y - queen.y) < sites[+bm[1]].r + 40 : false

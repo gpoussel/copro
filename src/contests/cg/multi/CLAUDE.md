@@ -1181,6 +1181,13 @@ tower sites and 2 knight barracks per game; we used 2 / 2–3 / 1. New
 expansion phase after the base: nearest free site of our half not under
 an enemy tower — mine while income < 8, tower while towers < mines,
 second knight barracks, towers up to 8; repairs first (towers ≥ 400).
+Arena 21.2 (27W 13L): reverted to the cluster base. **Tactical search**
+replaces the kiting heuristics: with an enemy knight within 700, every
+4-turn sequence of 8 directions or "follow the plan" (9^4, 35 ms guard)
+is simulated — queen 60 / knights 100 sliding around sites, knights age
+and hit 1 in contact, our towers shoot the nearest knight, enemy towers
+hit our queen; score = −100·damage − 0.05·distance left to the plan
+target − wall penalty.
 
 ## hypersonic
 
