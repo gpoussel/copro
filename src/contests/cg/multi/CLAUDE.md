@@ -1086,6 +1086,8 @@ site farthest from the queen; otherwise keep growing the weakest tower to
 790, else rest in the corner; every ready barracks trains. 2/4 vs the
 Bronze boss (every earlier version 0/4). The old builder bot is in
 `legacy/code-royale-builder.ts`.
+Arena 22.3 (from 18.7). Variants 0/4 each: 3 mines + 4 towers (towers
+come too late), towers before the barracks (early deaths).
 
 ## hypersonic
 
