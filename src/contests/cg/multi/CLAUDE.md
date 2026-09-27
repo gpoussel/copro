@@ -1175,7 +1175,12 @@ then 22.9. Compare variants over several samples / win rates.
 Towers inside our cover: 24.3 (26W 14L). Losses: the first tower was
 grown to 790 (~12 turns) before the second was placed, and kiting still
 ended pinned on walls. Now 3 towers placed before growing, wall penalty
-from 250 at 3/unit.
+from 250 at 3/unit.: 22.6.
+Winners' replays (KaZede, GasaiYuno, morph) use 4–10 mine sites, 6–8
+tower sites and 2 knight barracks per game; we used 2 / 2–3 / 1. New
+expansion phase after the base: nearest free site of our half not under
+an enemy tower — mine while income < 8, tower while towers < mines,
+second knight barracks, towers up to 8; repairs first (towers ≥ 400).
 
 ## hypersonic
 
