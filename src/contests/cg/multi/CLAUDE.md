@@ -1205,6 +1205,12 @@ next to the opponent; card play REFACTORING (with debt) > DAILY_ROUTINE >
 ARCHITECTURE_STUDY > CODE_REVIEW > CONTINUOUS_INTEGRATION > TRAINING;
 release when clean or ≤ 2 botched tasks before the 5th; give/throw bonus
 first. 3/4 vs the Bronze boss (the Wood bot lost 0/3).
+Silver boss (5 apps in ~18 turns): 0/4. Fixes: the referee only offers
+feasible releases, so before the 5th any offered one is taken (least
+debt); CONTINUOUS_INTEGRATION automates BONUS first (automated cards count
+on every release, forum tip) and CODE_REVIEW feeds bonuses; desks 5/6 get
+a small bonus early but **never at the cost of wrapping past desk 0** (a
+5↔6 shuttle wrapped every other turn and threw 2 cards each time). 2/4.
 
 ## winter-challenge-2024
 

@@ -59,10 +59,13 @@ while (true) {
       const z = (myLoc + step) % 8
       if (!has(`MOVE ${z}`)) continue
       const avail = 2 * owned[z] + bonus
-      if (!apps.some(app => app.need[z] > avail)) continue
+      if (!apps.some(app => app.need[z] > avail) && !((z === 6 || z === 5) && automated[BONUS] < 4 && z > myLoc)) continue
       const wraps = myLoc >= 0 && z < myLoc
       const near = oppLoc >= 0 && (Math.abs(oppLoc - z) <= 1 || Math.abs(oppLoc - z) === 7)
-      const key = step + (wraps ? 6 : 0) + (near ? 3 : 0)
+      // Early on, CODE_REVIEW (6) and CONTINUOUS_INTEGRATION (5) build the
+      // bonus engine.
+      const engine = (z === 6 || z === 5) && automated[BONUS] < 4 && !(myLoc >= 0 && z < myLoc) ? -2 : 0
+      const key = step + (wraps ? 6 : 0) + (near ? 3 : 0) + engine
       if (key < bestKey) {
         bestKey = key
         best = z
@@ -71,14 +74,18 @@ while (true) {
     if (best < 0) best = (myLoc + 1) % 8
     out = has(`MOVE ${best}`) ? `MOVE ${best}` : (moves.find(m => m.startsWith("MOVE")) ?? out)
   } else if (phase === "PLAY_CARD") {
+    // Engine: automated BONUS cards count on every release, so automate
+    // bonuses (CONTINUOUS_INTEGRATION 8) and get more (CODE_REVIEW).
     let pick: string | undefined
     if (hand[7] > 0 && hand[DEBT] > 0) pick = has("REFACTORING")
-    pick = pick ?? (hand[2] > 0 ? has("DAILY_ROUTINE") : undefined)
-    pick = pick ?? (hand[4] > 0 ? has("ARCHITECTURE_STUDY") : undefined)
+    if (!pick && hand[5] > 0 && hand[BONUS] > 0) pick = has(`CONTINUOUS_INTEGRATION ${BONUS}`)
     pick = pick ?? (hand[6] > 0 ? has("CODE_REVIEW") : undefined)
+    pick = pick ?? (hand[4] > 0 ? has("ARCHITECTURE_STUDY") : undefined)
+    pick = pick ?? (hand[2] > 0 ? has("DAILY_ROUTINE") : undefined)
     if (!pick && hand[5] > 0) {
-      for (let k = 0; k < 9 && !pick; k++)
-        if ((k === 5 && hand[k] > 1) || (k !== 5 && hand[k] > 0)) pick = has(`CONTINUOUS_INTEGRATION ${k}`)
+      // Automate the skill the open apps need most.
+      const order = [...Array(SKILLS).keys()].sort((a, b) => totalNeed[b] - totalNeed[a])
+      for (const k of order) if (!pick && ((k === 5 && hand[k] > 1) || (k !== 5 && hand[k] > 0))) pick = has(`CONTINUOUS_INTEGRATION ${k}`)
     }
     pick = pick ?? (hand[0] > 0 ? has("TRAINING") : undefined)
     out = pick ?? has("WAIT") ?? "WAIT"
@@ -96,7 +103,8 @@ while (true) {
         spare += Math.max(0, cap - app.need[k])
       }
       const clean = missing <= bonus
-      const ok = clean || (myScore < 4 && missing <= spare && missing - bonus <= 2)
+      // The referee only offers feasible releases: before the 5th take any.
+      const ok = clean || myScore < 4
       if (ok && missing < bestMissing) {
         bestMissing = missing
         choice = `RELEASE ${app.id}`
