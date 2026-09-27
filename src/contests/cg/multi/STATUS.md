@@ -97,7 +97,7 @@ Surveyed 2026-09-26.
 | a-code-of-ice-and-fire | 7 | Bronze | 2 | TypeScript expand + train, submitted | 2 | 4/4 vs Wood 3 boss |
 | code-a-la-mode | 7 | Wood 2 | 4 | TypeScript plate loop + strawberries, submitted | 3 | best total 3/3 |
 | code-of-kutulu | 7 | Bronze | 2 | TypeScript flee + group + effects, submitted | 4 | best 2/3 vs Wood 1 bosses |
-| code-royale | 7 | Wood 1 | 3 | TypeScript barracks + towers, submitted | 2 | 4/4 vs Wood 2 boss |
+| code-royale | 7 | Wood 1 | 3 | TypeScript mines + towers + knights, submitted | 2 | 4/4 vs Wood 1 boss |
 | coders-of-the-caribbean | 7 | Wood 1 | 3 | TypeScript barrels + leading shots, submitted | 2 | 4/4 vs Wood 2 boss |
 | ghost-in-the-cell | 7 | Bronze | 2 | TypeScript greedy + bombs/evacuation, submitted | 2 | 3/4 vs Bronze boss |
 | hypersonic | 7 | Bronze | 2 | TypeScript greedy + escape check, submitted | 2 | 4/4 vs Bronze boss |

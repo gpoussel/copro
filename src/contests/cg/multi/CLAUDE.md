@@ -855,6 +855,12 @@ Wood 2 (towers, giants): build order knights → 3 towers → knights →
 giants if the enemy has ≥ 2 towers → up to 5 towers; idle queen repairs
 the weakest tower (param1 = tower HP) when < 700. 1/2 → 4/4 vs the Wood 2
 boss. Next: mines (gold), queen positioning behind towers.
+Wood 1 (mines; `goldRemaining maxMineSize` replace the ignored fields,
+no free income): order mines ×3 → tower → knights → mine → towers ×3 →
+knights → giants (enemy ≥ 2 towers) → mines ×6 → towers ×5; the touched
+own mine is grown to its max rate first; with knights near the queen it
+shelters at (and repairs) its nearest tower, or raises one (hiding in the
+corner let knights raze the mines). 2/4 → 4/4 vs the Wood 1 boss.
 
 ## hypersonic
 

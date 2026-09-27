@@ -16,14 +16,15 @@ for (let i = 0; i < numSites; i++) {
 }
 let home: [number, number] | null = null
 const TOWERS = true
+const MINES = true
 
 while (true) {
   // **gold and touchedSite come on one line** (the statement lists two).
-  const [gold] = readline().split(" ").map(Number)
-  const state: { type: number; owner: number; cooldown: number; kind: number }[] = []
+  const [gold, touched] = readline().split(" ").map(Number)
+  const state: { type: number; owner: number; cooldown: number; kind: number; left: number; maxRate: number }[] = []
   for (let i = 0; i < numSites; i++) {
-    const [id, , , type, owner, p1, p2] = readline().split(" ").map(Number)
-    state[id] = { type, owner, cooldown: p1, kind: p2 }
+    const [id, left, maxRate, type, owner, p1, p2] = readline().split(" ").map(Number)
+    state[id] = { type, owner, cooldown: p1, kind: p2, left, maxRate }
   }
   const numUnits = parseInt(readline())
   let queen = { x: 0, y: 0 }
@@ -46,17 +47,36 @@ while (true) {
   let action = "WAIT"
   // Build order: knights, towers around home, second knights, giants if
   // the enemy turtles behind towers (TOWERS = false before Wood 2).
+  const mines = mine.filter(s => state[s.id].type === 0)
   let want = ""
-  if (knightBarracks.length < 1) want = "BARRACKS-KNIGHT"
+  if (MINES && mines.length < 3) want = "MINE"
+  else if (TOWERS && towers.length < 1) want = "TOWER"
+  else if (knightBarracks.length < 1) want = "BARRACKS-KNIGHT"
+  else if (MINES && mines.length < 4) want = "MINE"
   else if (TOWERS && towers.length < 3) want = "TOWER"
   else if (knightBarracks.length < 2) want = "BARRACKS-KNIGHT"
   else if (TOWERS && enemyTowers >= 2 && giantBarracks.length < 1) want = "BARRACKS-GIANT"
   else if (!TOWERS && archerBarracks.length < 1) want = "BARRACKS-ARCHER"
+  else if (MINES && mines.length < 6) want = "MINE"
   else if (TOWERS && towers.length < 5) want = "TOWER"
-  if (want && !threat) {
+  // Knights on us: shelter at (and repair) our nearest tower, or raise one.
+  if (threat && TOWERS) {
+    const refuge = towers.sort((a, b) => dq(a) - dq(b))[0]
+    if (refuge) action = `BUILD ${refuge.id} TOWER`
+    else {
+      const free = sites.filter(s => state[s.id].type === -1).sort((a, b) => dq(a) - dq(b))[0]
+      if (free) action = `BUILD ${free.id} TOWER`
+    }
+  }
+  // Grow the mine we touch up to its maximum rate first.
+  const t = touched >= 0 ? state[touched] : null
+  if (action !== "WAIT") {
+    // (threat handled above)
+  } else if (MINES && t && t.owner === 0 && t.type === 0 && t.cooldown < t.maxRate) action = `BUILD ${touched} MINE`
+  else if (want && !threat) {
     // Nearest free site, preferring our half of the map.
     const free = sites
-      .filter(s => state[s.id].type === -1)
+      .filter(s => state[s.id].type === -1 && (want !== "MINE" || state[s.id].left !== 0))
       .sort((a, b) => dq(a) + Math.abs(a.x - home![0]) * 0.3 - (dq(b) + Math.abs(b.x - home![0]) * 0.3))[0]
     if (free) action = `BUILD ${free.id} ${want}`
   }
