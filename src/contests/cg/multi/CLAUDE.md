@@ -946,6 +946,11 @@ order the plate can still become (USE on a crate with a plate adds it) →
 window; a plate matching no order goes back to D. Best total in 3/3.
 Later: strawberries (chop at C), croissants (dough H + oven), tarts;
 cooperate with the partner via tables.
+Wood 2 (CHOPPED_STRAWBERRIES: crate S → board C → a free table, since a
+chef holds one thing): chop first when the best order needs some and none
+lies on a table; plates on tables that still fit an order are reused;
+missing desserts from crates or tables; a plate waiting on strawberries is
+parked on a table. Best total in 3/3.
 
 ## soak-overflow
 
