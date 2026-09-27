@@ -1238,7 +1238,10 @@ income ×60, towers 50 base, −0.2·distance to the nearest free site, wall
 (< 200) and corner (< 400) penalties ×2, 2nd knight barracks +100, a
 giant barracks vs ≥ 5 enemy towers (option + eval); training spends all
 gold (a giant first vs ≥ 5 towers when none alive, then knights).
-Arena 29.4, rank 3 (boss 30.0).
+Arena 29.4, rank 3; 29.1, rank 2 (boss 30.2). Lost to the boss by its
+final knight flood (it trains every turn from ~197); we trained 7–9 times
+(saving for the giant blocked knights). A/B: giant only from surplus
+(≥ 220), income ×90, towers +40 after turn 180.
 
 ## hypersonic
 

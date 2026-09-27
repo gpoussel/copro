@@ -82,14 +82,14 @@ function evaluate(s: State): number {
         mines++
       } else if (st.type === TOWER) {
         towers++
-        v += (towers <= 6 ? 50 : 10) + (40 * st.hp) / 800
+        v += (towers <= 6 ? 50 : 10) + (40 * st.hp) / 800 + (turn > 180 ? 40 : 0) // the boss floods knights at the end
       } else if (st.type === BARRACKS && st.ctype === KNIGHT) {
         kb++
         kbDist = Math.min(kbDist, dist(map[i].x, map[i].y, eq.x, eq.y))
       }
     } else if (st.owner === en) v -= st.type === TOWER ? 10 : 25
   }
-  v += 60 * income
+  v += 90 * income
   if (kb === 0) v -= 400
   else if (kb === 2) v += 100
   else if (kb > 2) v -= 300
@@ -237,8 +237,8 @@ function training(s: State): number[] {
   let g = s.gold[me]
   const out: number[] = []
   const giantAlive = s.creeps[me].some(c => c.type === GIANT)
-  if (giantB >= 0 && enemyTowers >= 5 && !giantAlive) {
-    if (g < C_COST[GIANT]) return out // save for it
+  // (Saving for the giant starved the knights: 7-9 trainings a game.)
+  if (giantB >= 0 && enemyTowers >= 5 && !giantAlive && g >= C_COST[GIANT] + C_COST[KNIGHT]) {
     out.push(giantB)
     g -= C_COST[GIANT]
   }
