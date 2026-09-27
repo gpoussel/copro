@@ -71,14 +71,14 @@ Surveyed 2026-09-26.
 | isola | 4 | **Gold** ✅ | 0 | TypeScript alpha-beta | 2 | Bronze→Gold 2026-09-26 |
 | legends-of-code-magic | 7 | Bronze | 2 | TypeScript draft + greedy battle, submitted | 2 | 3/4 vs Bronze boss |
 | seabed-security | 7 | Bronze | 2 | TypeScript dive/surface, submitted | 2 | 2/4 vs Bronze boss |
-| spring-challenge-2021 | 6 | Bronze | 2 | TypeScript rules bot, submitted | 2 | 4/4 vs Bronze boss |
+| spring-challenge-2021 | 6 | Silver | 1 | TypeScript rules bot, submitted | 2 | 4/4 vs Bronze boss |
 | tryangle-catch | 4 | Bronze | 2 | TypeScript WIP, **not submitted** (0/6) | 2 | units get surrounded; study the referee before retrying |
 | winter-challenge-2026-snakebyte | 4 | Bronze | 2 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
 | bit-runner-2048 | 5 | Bronze | 2 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
 | crystal-rush | 5 | Bronze | 2 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |
 | git-patchwork | 5 | **Legend** ✅ | 0 | TypeScript greedy + rotations, submitted | 2 | 4/4 vs Bronze boss |
 | keep-off-the-grass-fall-challenge-2022 | 5 | **Gold** ✅ | 0 | TypeScript expand + recyclers, submitted | 2 | old bot reached rank 1 in Silver; resubmitted by mistake (1-2/4 vs Silver boss) |
-| langton-s-ant | 5 | Bronze | 2 | TypeScript planned picks, submitted | 2 | 4/4 vs Bronze boss |
+| langton-s-ant | 5 | Silver | 1 | TypeScript planned picks, submitted | 2 | 4/4 vs Bronze boss |
 | codebusters | 6 | **Gold** ✅ | 0 | TypeScript rules+STUN+stamina, submitted | 2 | 4/4 vs Bronze boss (close) |
 | fall-challenge-2020 | 6 | Silver | 1 | TypeScript BFS over casts, submitted | 2 | 4/4 vs Wood 1 boss |
 | fantastic-bits | 6 | Silver | 1 | TypeScript chase+throw+flipendo, submitted | 2 | 2/4 vs Silver boss |
@@ -91,18 +91,18 @@ Surveyed 2026-09-26.
 | smash-the-code | 6 | Silver | 1 | TypeScript 3-ply sim, submitted | 2 | 4/4 vs Wood boss; later leagues add rotations/different colours |
 | spring-challenge-2020 | 6 | Silver | 1 | TypeScript beam paths, types, abilities | 2 | Silver boss ~2/6; collection efficiency and deaths |
 | spring-challenge-2023-ants | 6 | Wood 2 | 4 | TypeScript LINE chains, submitted | 2 | 4/4 vs Wood boss; eggs/multiple bases later |
-| summer-challenge-2024-olymbits | 6 | Bronze | 2 | TypeScript 4 mini-games, submitted | 3 | best ~4/5 vs Bronze bosses |
+| summer-challenge-2024-olymbits | 6 | **Gold** ✅ | 0 | TypeScript 4 mini-games, submitted | 3 | best ~4/5 vs Bronze bosses |
 | tron-battle | 6 | Silver | 1 | TypeScript Voronoi | 2 | Wood 2→Wood 1 |
 | xmas-rush | 6 | Silver | 1 | TypeScript push-search, submitted | 2 | 4/4 vs Wood boss; multi-quest later |
-| a-code-of-ice-and-fire | 7 | Bronze | 2 | TypeScript expand + train, submitted | 2 | 4/4 vs Wood 3 boss |
-| code-a-la-mode | 7 | Wood 2 | 4 | TypeScript plate loop + strawberries, submitted | 3 | best total 3/3 |
+| a-code-of-ice-and-fire | 7 | Silver | 1 | TypeScript expand + train, submitted | 2 | 4/4 vs Wood 3 boss |
+| code-a-la-mode | 7 | Wood 1 | 3 | TypeScript plate loop + strawberries, submitted | 3 | best total 3/3 |
 | code-of-kutulu | 7 | Bronze | 2 | TypeScript flee + group + effects, submitted | 4 | best 2/3 vs Wood 1 bosses |
-| code-royale | 7 | Wood 1 | 3 | TypeScript mines + towers + knights, submitted | 2 | 4/4 vs Wood 1 boss |
-| coders-of-the-caribbean | 7 | Wood 1 | 3 | TypeScript barrels + leading shots, submitted | 2 | 4/4 vs Wood 2 boss |
+| code-royale | 7 | Bronze | 2 | TypeScript mines + towers + knights, submitted | 2 | 4/4 vs Wood 1 boss |
+| coders-of-the-caribbean | 7 | Bronze | 2 | TypeScript barrels + leading shots, submitted | 2 | 4/4 vs Wood 2 boss |
 | ghost-in-the-cell | 7 | Bronze | 2 | TypeScript greedy + bombs/evacuation, submitted | 2 | 3/4 vs Bronze boss |
 | hypersonic | 7 | Bronze | 2 | TypeScript greedy + escape check, submitted | 2 | 4/4 vs Bronze boss |
-| mean-max | 7 | Bronze | 2 | TypeScript 3 units + oil, submitted | 3 | first to 50 in 2/3 vs Wood 1 bosses |
-| winter-challenge-2024 | 8 | Wood 3 | 5 | TypeScript harvest + grow, submitted | 2 | 3/3 Wood 3 scenarios (harvester) |
+| mean-max | 7 | Silver | 1 | TypeScript 3 units + oil, submitted | 3 | first to 50 in 2/3 vs Wood 1 bosses |
+| winter-challenge-2024 | 8 | Wood 1 | 3 | TypeScript harvest + grow, submitted | 2 | 3/3 Wood 3 scenarios (harvester) |
 | wondev-woman | 7 | Bronze | 2 | TypeScript 1-ply state eval, submitted | 2 | 4/4 vs Bronze boss |
 | soak-overflow | 8 | Wood 2 | 4 | TypeScript tutorial goals, submitted | 2 | Wood 2 goal (cover) |
 | botters-of-the-galaxy | 10 | Wood 6 | 8 | TypeScript Hulk brawler, submitted | 2 | 4/4 vs Wood 6 boss |
