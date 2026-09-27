@@ -128,10 +128,22 @@ while (true) {
         let best = -1
         let bestV = -1
         cells.forEach((c, k) => {
+          if (sources.has(c)) return // a root on a source eats it
           const cx = c % W
           const cy = Math.floor(c / W)
           const nearSource = DIRS.some(([ex, ey]) => sources.has((cy + ey) * W + cx + ex))
-          const v = k + (nearSource ? 10 : 0)
+          // Best: a free neighbour touching an unharvested source, where a
+          // harvester can then face it.
+          const harvestSpot = DIRS.some(([ex, ey]) => {
+            const mx = cx + ex
+            const my = cy + ey
+            if (!free(mx, my) || sources.has(my * W + mx)) return false
+            return DIRS.some(([fx, fy]) => {
+              const t = (my + fy) * W + mx + fx
+              return sources.has(t) && !harvested.has(t)
+            })
+          })
+          const v = k + (harvestSpot ? 20 : nearSource ? 10 : 0)
           if (k >= 2 && v > bestV) {
             bestV = v
             best = c

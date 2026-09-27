@@ -1114,8 +1114,14 @@ Wood 1 (tentacle, sporer): TENTACLE (B+C) on a free cell facing an
 adjacent enemy organ; SPORER (B+D, when A, C and 2 B / 2 D are in stock)
 facing the longest free line, then `SPORE id x y` far along it (next to a
 source if possible) with one protein of each type. 2/3 in the scenario
-(ends when proteins run out). Next: new roots should harvest (not eat) a
-source, tentacle fights, Bronze = full game.
+(ends when proteins run out). Referee:
+github.com/CodinGame/WinterChallenge2024-Cellularena (`GridMaker.
+initTutorialGrid`): the Wood 1 scenario is a 3-row corridor per player with
+one A source 15–17 cells away and exactly A6 B2 C2 D3: sporer → spore a
+root → harvester facing the source → BASIC growth. Our spore landed ON the
+source (eaten); spore targets now skip sources and prefer a cell whose
+free neighbour touches an unharvested source: 3/3 (13–12). Bronze = full
+game next.
 
 ## spring-challenge-2021
 
