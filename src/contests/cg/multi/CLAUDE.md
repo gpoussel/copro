@@ -1241,7 +1241,8 @@ gold (a giant first vs ≥ 5 towers when none alive, then knights).
 Arena 29.4, rank 3; 29.1, rank 2 (boss 30.2). Lost to the boss by its
 final knight flood (it trains every turn from ~197); we trained 7–9 times
 (saving for the giant blocked knights). A/B: giant only from surplus
-(≥ 220), income ×90, towers +40 after turn 180.
+(≥ 220), income ×90, towers +40 after turn 180.: **30.4, rank 1, above the
+boss (30.2)**, eligible for promotion.
 
 ## hypersonic
 
