@@ -195,6 +195,14 @@ while (true) {
       const t = closest(free)
       if (t) action = `BUILD ${t.id} BARRACKS-KNIGHT`
     }
+    // With the search guarding the queen: grow the cluster to 5 towers
+    // (the bots that beat this boss use 6-8), each new one only when all
+    // are ≥ 600 HP.
+    if (action === "WAIT" && towers.length >= 3 && towers.length < 5 && towers.every(t => st[t.id].p1 >= 600)) {
+      const cover = (q: Site) => towers.filter(tw => Math.hypot(tw.x - q.x, tw.y - q.y) < st[tw.id].p2).length
+      const t = free.slice().sort((a, b) => cover(b) - cover(a) || dq(a) - dq(b))[0]
+      if (t) action = `BUILD ${t.id} TOWER`
+    }
     if (action === "WAIT") {
       // Grow the weakest tower to 790, else rest in the corner.
       if (!(improving >= 0 && st[improving].p1 < 790)) {

@@ -1193,6 +1193,8 @@ now 25 ms, checked every 16 sequences.: 27.1 (rank 15, 27W 13L). Search
 score now also +0.1·room (distance to the nearest surviving knight, ≤ 400),
 wall penalty from 200 and corner penalty from 350 (×1.5).: 24.5, reverted
 (samples vary ±2.5: judge variants on ≥ 2 samples).
+25 ms search base samples: 27.1, 24.5 (mean 25.8). Next A/B: cluster up
+to 5 towers (each when all ≥ 600 HP).
 
 ## hypersonic
 
