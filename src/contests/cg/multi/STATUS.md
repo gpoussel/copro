@@ -74,7 +74,7 @@ Surveyed 2026-09-26.
 | spring-challenge-2021 | 6 | **Gold** ✅ | 0 | TypeScript rules bot, submitted | 2 | 4/4 vs Bronze boss |
 | tryangle-catch | 4 | **Gold** ✅ | 0 | TypeScript capture teams + spawning, submitted | 2 | promoted to Gold |
 | winter-challenge-2026-snakebyte | 4 | Silver | 1 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
-| bit-runner-2048 | 5 | Bronze | 2 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
+| bit-runner-2048 | 5 | Silver | 1 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
 | crystal-rush | 5 | **Gold** ✅ | 0 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |
 | git-patchwork | 5 | **Legend** ✅ | 0 | TypeScript greedy + rotations, submitted | 2 | 4/4 vs Bronze boss |
 | keep-off-the-grass-fall-challenge-2022 | 5 | **Gold** ✅ | 0 | TypeScript expand + recyclers, submitted | 2 | old bot reached rank 1 in Silver; resubmitted by mistake (1-2/4 vs Silver boss) |
