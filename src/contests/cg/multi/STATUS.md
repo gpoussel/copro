@@ -75,7 +75,7 @@ Surveyed 2026-09-26.
 | tryangle-catch | 4 | **Gold** ✅ | 0 | TypeScript capture teams + spawning, submitted | 2 | promoted to Gold |
 | winter-challenge-2026-snakebyte | 4 | Silver | 1 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
 | bit-runner-2048 | 5 | Bronze | 2 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
-| crystal-rush | 5 | Bronze | 2 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |
+| crystal-rush | 5 | Silver | 1 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |
 | git-patchwork | 5 | **Legend** ✅ | 0 | TypeScript greedy + rotations, submitted | 2 | 4/4 vs Bronze boss |
 | keep-off-the-grass-fall-challenge-2022 | 5 | **Gold** ✅ | 0 | TypeScript expand + recyclers, submitted | 2 | old bot reached rank 1 in Silver; resubmitted by mistake (1-2/4 vs Silver boss) |
 | langton-s-ant | 5 | **Gold** ✅ | 0 | TypeScript planned picks (shared grid), submitted | 2 | 4/4 vs Silver boss |
@@ -87,7 +87,7 @@ Surveyed 2026-09-26.
 | green-circle | 6 | Silver | 1 | TypeScript desk choice, submitted | 2 | 2/4 vs Wood 2 boss |
 | ocean-of-code | 6 | Silver | 1 | TypeScript path tracking+silence, submitted | 2 | 1/4 vs Silver boss; old bot 9/690 |
 | platinum-rift-episode-1 | 6 | Silver | 1 | TypeScript spread+buy, cluster opening, submitted | 2 | best 3/3 in 4p vs bosses |
-| poker-chip-race | 6 | Bronze | 2 | TypeScript rare pushes + predictions, submitted | 2 | 4/4 vs Wood 2 boss |
+| poker-chip-race | 6 | Silver | 1 | TypeScript rare pushes + predictions, submitted | 2 | 4/4 vs Wood 2 boss |
 | smash-the-code | 6 | Silver | 1 | TypeScript 3-ply sim, submitted | 2 | 4/4 vs Wood boss; later leagues add rotations/different colours |
 | spring-challenge-2020 | 6 | Silver | 1 | TypeScript beam paths, types, abilities | 2 | Silver boss ~2/6; collection efficiency and deaths |
 | spring-challenge-2023-ants | 6 | Silver | 1 | TypeScript harvesting tree, submitted | 2 | 2/4 vs Silver boss |

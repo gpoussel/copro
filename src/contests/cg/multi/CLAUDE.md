@@ -1182,6 +1182,17 @@ stood still or kited (kiting got cornered at the map edge). HULK fighting
 the enemy hero within 400 next to our tower wins 4/4. Otherwise: stay
 behind our frontmost creep, last-hit, weakest creep in range. Later:
 items, last hit/deny, neutrals (GROOT), bushes, 2nd hero, skills.
+Referee + every league boss: github.com/Illedan/BOTG-Refree (`config/
+levelN/Boss.java`, `Referee.setupLeague` — its switch falls through, so
+each league keeps the later cases' settings). Wood 6 = no creeps, towers
+1500 HP dealing 1 damage, no items; win = kill the hero or tower, else
+the tie-break at turn 200 is creep kills + denies (0–0 → draw). The old
+bot waited at its tower (draws: 8.4 vs boss 17.1). Duel mode (no UNIT on
+the map): attack whichever of enemy hero / tower dies sooner (hero if
+our tower would fall first): 4/4, games over by turn 24. Wood 5 adds
+items (boss: DOCTOR_STRANGE, cheapest item, hits the nearest tower); the
+bot now buys the best affordable non-potion item (15·damage + maxHealth
++ 2·speed) while it has < 4. Wood 4 adds creeps (last hits/denies = gold).
 
 ## legends-of-code-magic
 
