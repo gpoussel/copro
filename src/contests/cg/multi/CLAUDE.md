@@ -1157,6 +1157,9 @@ Arena 25.3 (25W 15L: losing HP races, opponents train 2–3× more). Near-
 cover extra mines: 1/4, dropped. Now with knights within 600, a build or
 repair is replaced by the best escape step whenever the 6-turn rollout of
 staying takes more damage: 4/4 with 67–82 HP left.
+Arena 25.2: most losses were queens trapped jittering in the corner (the
+idle queen rested there by design). She now rests at our towers' centroid
+and kiting steps pay 2/unit closer than 350 to any corner. 4/4.
 
 ## hypersonic
 

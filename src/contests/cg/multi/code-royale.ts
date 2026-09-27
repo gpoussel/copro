@@ -64,8 +64,11 @@ while (true) {
   // Kite (as a bot that beat this boss 8 times in a row does): with enemy
   // knights close, step to where the nearest knight is farthest, inside our
   // towers' cover and with an obstacle between it and us (sites block).
-  const knightDist = (x: number, y: number) => knights.reduce((m, k) => Math.min(m, Math.hypot(k.x - x, k.y - y)), Infinity)
-  const nearK = knights.slice().sort((a, b) => Math.hypot(a.x - queen.x, a.y - queen.y) - Math.hypot(b.x - queen.x, b.y - queen.y))[0]
+  const knightDist = (x: number, y: number) =>
+    knights.reduce((m, k) => Math.min(m, Math.hypot(k.x - x, k.y - y)), Infinity)
+  const nearK = knights
+    .slice()
+    .sort((a, b) => Math.hypot(a.x - queen.x, a.y - queen.y) - Math.hypot(b.x - queen.x, b.y - queen.y))[0]
   // Kiting must not starve the base: against a steady knight stream a queen
   // kited 70 turns with one tower. Far knights (250-450) only once 3
   // towers stand.
@@ -102,7 +105,7 @@ while (true) {
         for (const k of ks)
           if (k.hp > 0) {
             const d = Math.hypot(tw.x - k.x, tw.y - k.y)
-            if (d < bd) (bd = d), (best = k)
+            if (d < bd) ((bd = d), (best = k))
           }
         if (best) best.hp -= 3 + Math.floor((st[tw.id].p2 - bd) / 200)
       }
@@ -129,9 +132,20 @@ while (true) {
         return Math.hypot(nearK.x + t * dx - q.x, nearK.y + t * dy - q.y) < q.r
       })
       const edge = Math.min(x, y, 1920 - x, 1000 - y)
+      const corner = Math.min(
+        Math.hypot(x, y),
+        Math.hypot(1920 - x, y),
+        Math.hypot(x, 1000 - y),
+        Math.hypot(1920 - x, 1000 - y)
+      )
       const hurt = rollout(ang)
       const v =
-        knightDist(x, y) + (covered ? 150 : 0) + (shielded ? 100 : 0) - (edge < 150 ? (150 - edge) * 2 : 0) - 150 * hurt
+        knightDist(x, y) +
+        (covered ? 150 : 0) +
+        (shielded ? 100 : 0) -
+        (edge < 150 ? (150 - edge) * 2 : 0) -
+        (corner < 350 ? (350 - corner) * 2 : 0) -
+        150 * hurt
       if (v > bestV) {
         bestV = v
         kiteMove = `MOVE ${x} ${y}`
@@ -179,7 +193,11 @@ while (true) {
         const weakest = towers.slice().sort((a, b) => st[a.id].p1 - st[b.id].p1)[0]
         improving = weakest ? weakest.id : -1
       }
-      action = improving >= 0 ? `BUILD ${improving} TOWER` : `MOVE ${c.x} ${c.y}`
+      // Rest among our towers, never in the corner (knights trap a queen
+      // there: several arena deaths were a queen jittering at x, y < 100).
+      const rx = towers.length ? Math.round(towers.reduce((a, t) => a + t.x, 0) / towers.length) : Math.abs(c.x - 300)
+      const ry = towers.length ? Math.round(towers.reduce((a, t) => a + t.y, 0) / towers.length) : Math.abs(c.y - 300)
+      action = improving >= 0 ? `BUILD ${improving} TOWER` : `MOVE ${rx} ${ry}`
     }
   }
   // Staying put (build / repair) when the rollout says running takes less.
