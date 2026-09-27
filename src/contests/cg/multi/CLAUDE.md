@@ -706,3 +706,8 @@ affordable order; fallback for later leagues: CAST the castable spell that
 reduces the tier-weighted missing ingredients of the best order (≤ 10 in
 inventory), else REST. 4/4 vs the Wood boss. Gold-level bots use a BFS/beam
 over CAST/REST/LEARN sequences.
+Wood 1 (4 base spells, 3 potions end the game): BFS over CAST/REST states
+(inventory, castable mask; repeatable casts up to ×4 for later leagues),
+fastest sequence per order, play the first action of the best
+price / (turns + 1); LEARN free tome spells in the opening once LEARN
+exists. 4/4 vs the Wood 1 boss.
