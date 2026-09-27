@@ -30,6 +30,9 @@ const BOARD = find("C")
 const DOUGH = find("H")
 const OVEN = find("O")
 const use = (p: [number, number]) => `USE ${p[0]} ${p[1]}`
+let lastAction = ""
+let lastItem = ""
+let stuck = 0
 
 while (true) {
   readline() // turns remaining
@@ -116,7 +119,15 @@ while (true) {
     ovenItem === "NONE"
   let action: string
   if (carried[0] === "STRAWBERRIES") action = use(BOARD)
-  else if (carried[0] === "DOUGH") action = needTart && (!needCroissant || ovenItem !== "NONE") ? use(BOARD) : use(OVEN)
+  else if (carried[0] === "DOUGH")
+    // Never wait on a busy oven with dough in hand (a ready croissant there
+    // could not be taken: a whole round was lost that way).
+    action =
+      needTart && (!needCroissant || ovenItem !== "NONE")
+        ? use(BOARD)
+        : ovenItem === "NONE"
+          ? use(OVEN)
+          : use(freeTable())
   else if (carried[0] === "CHOPPED_DOUGH") action = use(CRATE.BLUEBERRIES)
   else if (carried[0] === "RAW_TART") action = ovenItem === "NONE" ? use(OVEN) : use(freeTable())
   else if (carried[0] === "CHOPPED_STRAWBERRIES" || carried[0] === "CROISSANT" || carried[0] === "TART")
@@ -156,6 +167,15 @@ while (true) {
       else if (!missing.length) action = use(WINDOW)
       else action = use(freeTable()) // park the plate, go chop
     }
+  }
+  // Stuck (same action, same hands for 6 turns): put the item down.
+  if (action === lastAction && item === lastItem && item !== "NONE") stuck++
+  else stuck = 0
+  lastAction = action
+  lastItem = item
+  if (stuck >= 6) {
+    action = use(freeTable())
+    stuck = 0
   }
   console.log(action)
 }

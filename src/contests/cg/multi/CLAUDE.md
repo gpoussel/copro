@@ -1202,6 +1202,11 @@ Arena 22.2 with that. Partner coordination added: the order the
 partner's plate fits is left to it, and chopping / baking is skipped when
 the partner already carries that chain (strawberries, dough, raw tart).
 Best total in 2/3 (close second in the third).
+Arena 21.9. An arena game at 2037 vs ~6850 showed `USE 7 0` repeated ~70
+turns in every round: holding dough in front of a busy oven (a ready
+croissant there cannot be taken with full hands). Dough now goes to the
+oven only when it is empty (else the board for a tart, else a table), and
+6 identical turns with something in hand drop it on a free table.
 
 ## soak-overflow
 
