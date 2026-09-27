@@ -1038,3 +1038,13 @@ a source we harvest (other sources are eaten for +3). Won 3/3 Wood 3
 (harvester) scenarios by one cell. Replaces the user's TS agent
 (`legacy/winter-challenge-2024.ts`). Later: tentacles (attack), sporers
 (new roots).
+
+## spring-challenge-2021
+
+Photosynthesis, 24 days, possible actions listed. Rules bot: COMPLETE
+(richest first) from day 19 or with ≥ 4 big trees from day 11; GROW the
+biggest affordable tree unless it cannot pay off (seed→1 ≤ day 20, 1→2 ≤ 21,
+2→3 ≤ 22); SEED only when free (no seed of ours) before day 19, richest
+cell not adjacent to our trees; else WAIT. 4/4 vs the Bronze boss
+(~160 to 70). Replaces the user's Rust agent (`legacy/spring-challenge-2021.rs`).
+Ideas: shadow simulation for the sun points, day-by-day sun planning.
