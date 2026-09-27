@@ -20,6 +20,7 @@ for (let i = 0; i < projectCount; i++) projects.push(readline().split(" ").map(N
 const TYPES = "ABCDE"
 
 const uploaded = new Set<number>() // never download these back
+let waited = 0 // turns spent waiting at MOLECULES
 type Sample = { id: number; by: number; rank: number; gain: string; health: number; cost: number[] }
 
 while (true) {
@@ -82,7 +83,10 @@ while (true) {
   } else if (at === "DIAGNOSIS") {
     const undiag = carried.find(s => !diagnosed(s))
     const { ok } = plan()
-    const bad = carried.find(s => diagnosed(s) && !ok.includes(s))
+    // Keep a sample that fits on its own: it is done on a second
+    // LABORATORY → MOLECULES pass once the first ones are produced.
+    const alone = (s: Sample) => totalNeed(s) <= 10 && need(s).every((c, k) => c <= me.storage[k] + available[k])
+    const bad = carried.find(s => diagnosed(s) && !ok.includes(s) && !alone(s))
     const cloud = samples
       .filter(s => s.by === -1 && !uploaded.has(s.id) && totalNeed(s) <= 10 && need(s).every((c, k) => c <= available[k] + me.storage[k]))
       .sort((a, b) => (b.health + gainValue(b)) / (totalNeed(b) + 1) - (a.health + gainValue(a)) / (totalNeed(a) + 1))[0]
@@ -103,6 +107,7 @@ while (true) {
     if (take >= 0) out = `CONNECT ${TYPES[take]}`
     else if (ok.some(complete)) out = "GOTO LABORATORY"
     else if (!ok.length) out = "GOTO DIAGNOSIS"
+    else if (waited >= 4) out = "GOTO DIAGNOSIS"
     else out = "WAIT" // waiting for the pool to refill
   } else if (at === "LABORATORY") {
     const done = carried.filter(diagnosed).find(complete)
@@ -110,5 +115,6 @@ while (true) {
     else if (plan().ok.length) out = "GOTO MOLECULES"
     else out = carried.length ? "GOTO DIAGNOSIS" : "GOTO SAMPLES"
   } else out = "GOTO SAMPLES"
+  waited = out === "WAIT" && at === "MOLECULES" ? waited + 1 : 0
   console.log(out)
 }

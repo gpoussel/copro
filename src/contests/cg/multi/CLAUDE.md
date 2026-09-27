@@ -1194,6 +1194,12 @@ the enemy's molecules, better sample mix.
 Science projects (+50) now weigh in: missing expertise of projects nobody
 completed raises the value of samples with that gain (plan order, cloud
 downloads). Arena was 30.85 vs boss 32.87.
+Arena 30.7 vs 33.1. Replays showed rank-3 trips uploading 2 of 3 samples
+(they did not fit one molecule load together) for a single medicine per
+~20-turn cycle. Now a sample that fits on its own (≤ 10 needed, enough in
+pool + storage) is kept and done on a second LABORATORY → MOLECULES pass;
+waiting at MOLECULES is capped at 4 turns (then DIAGNOSIS uploads what
+the pool cannot serve). 3/4 vs the Bronze boss with higher scores.
 
 ## green-circle
 
