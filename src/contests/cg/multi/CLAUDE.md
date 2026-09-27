@@ -750,6 +750,13 @@ the nearest own base to the closest resources, adding targets while the ants
 can keep ~2 per chain cell (eggs preferred during the first 40 turns).
 4/4 vs the Wood boss. Ideas: weighted beacons per chain, compete for shared
 resources, the classic "minimum spanning tree of targets" approach.
+**From Bronze each turn starts with a `myScore oppScore` line** (the Wood
+bot read every cell one line off and sat at 1070/1072 in Silver). Now:
+a harvesting tree grown each turn from our bases, attaching the resource
+closest to the current tree (eggs −2 while eggs remain before turn 30,
+last turn's targets first for stability) along its shortest path, while
+≥ 2 ants per tree cell; BEACON strength 1 on every tree cell. 2/4 vs the
+Silver boss (close); 1.5 ants/cell + egg bonus 3 went 0/4.
 
 ## fall-challenge-2020
 
