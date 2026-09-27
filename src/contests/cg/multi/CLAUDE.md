@@ -633,3 +633,11 @@ pairs, eval = cleared blocks × chain² + same-colour contacts − height.
 of the base, BUST a ghost at 900–1760, else approach a seen ghost to ~1300,
 else explore a waypoint grid (seen waypoints dropped). 4/4 vs the Wood boss.
 Later leagues add STUN, ghost stamina, etc.
+
+## fantastic-bits
+
+6 leagues (Wood 2 start). League 1 bot: THROW at the enemy goal at 500 when
+holding, else chase the nearest free snaffle (different targets per wizard),
+aiming at its next position minus our momentum. 4/4 vs the Wood boss.
+Later leagues: bludgers, spells (OBLIVIATE/PETRIFICUS/ACCIO/FLIPENDO) with
+magic points.
