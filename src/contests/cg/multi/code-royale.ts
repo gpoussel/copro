@@ -143,7 +143,7 @@ while (true) {
         knightDist(x, y) +
         (covered ? 150 : 0) +
         (shielded ? 100 : 0) -
-        (edge < 150 ? (150 - edge) * 2 : 0) -
+        (edge < 250 ? (250 - edge) * 3 : 0) -
         (corner < 350 ? (350 - corner) * 2 : 0) -
         150 * hurt
       if (v > bestV) {
@@ -189,7 +189,9 @@ while (true) {
       const spot = free
         .filter(q => !underEnemy(q))
         .sort((a, b) => cover(b) - cover(a) || dq(a) - dq(b))[0]
-      const t = improving >= 0 && st[improving].p1 < 790 ? sites[improving] : (spot ?? closest(free))
+      // Place all 3 towers first, grow them after (growing the first to 790
+      // took ~12 turns while the knights came).
+      const t = spot ?? closest(free)
       if (t) {
         improving = t.id
         action = `BUILD ${t.id} TOWER`
