@@ -575,6 +575,9 @@ BFS path distance (walls and units block) to the nearest neutral ×2.5
 win the neutral race; the path-distance race fixes it: 4/4 vs the Bronze
 boss (rule bot arena 25.8). A 70 ms budget timed out in the arena (turn
 48): now 45 ms, deadline also checked inside the reply scan.
+Arena 23.8 (below the rule bot's 26.1) although the 2-ply scan completes
+on CG. Iterative-deepening alpha-beta (depth 2–6, or even depths only)
+went 2W 1D 1L, then timed out at depth 4 (0–1/4): reverted to 2-ply.
 
 ## tryangle-catch
 
