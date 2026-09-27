@@ -56,7 +56,7 @@ Surveyed 2026-09-26.
 | night-of-war | 3 | **Legend** ✅ | 0 | TypeScript rules | 2 | Silver→Gold 2026-09-26 (Gold rules: 5×5? re-read) |
 | penguins | 3 | **Legend** ✅ | 0 | TypeScript Voronoi | 2–4 | Silver→Legend 2026-09-26 |
 | space-shooter | 3 | **Gold** ✅ | 0 | TypeScript steering | 2 | Silver→Gold 2026-09-26 (missiles in this league: bot ignores them) |
-| spring-challenge-2022 | 6 | Silver | 1 | Rust 1526/2401 | 2 | |
+| spring-challenge-2022 | 6 | Silver | 1 | TypeScript 2 defenders + attacker, submitted | 2 | 4/4 vs Silver boss |
 | spring-challenge-2026-troll-farm | 6 | Silver | 1 | C++ 169/683 | 2 | |
 | tic-tac-toe | 5 | **Legend** ✅ | 0 | TypeScript MCTS v6 | 2 | Gold→Legend 2026-09-26 |
 | volcanoes | 3 | Silver | 1 | TypeScript 1-ply | 2 | stuck 82/125 in Silver: needs growth simulation / search |

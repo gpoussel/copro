@@ -1059,3 +1059,14 @@ light every 2nd turn below 2000 with no monster in sight; heading search
 visible monster's next position. 2/4 vs the Bronze boss (the user's C++
 agent, `legacy/seabed-security.cpp`, scored 0 in the same test). The boss
 saves ~96 points by turn 70: our avoidance zig-zags too much on the way up.
+
+## spring-challenge-2022
+
+Entity line: id type x y shield controlled health vx vy nearBase threatFor.
+Bot: 2 defenders at posts ~4500 from our base intercept the threats to us
+(soonest first, WIND towards the enemy base when one is < 2500 from our
+base and within 1280); otherwise farm near their post. The attacker farms
+mid-map until turn 70, then prowls ~4300 from the enemy base: WIND (mana
+≥ 20) monsters within 6500 of that base, SHIELD (mana ≥ 50) monsters
+already heading there. 4/4 vs the Silver boss. Replaces the user's Rust
+agent (`legacy/spring-challenge-2022.rs`).
