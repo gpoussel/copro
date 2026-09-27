@@ -79,52 +79,79 @@ while (true) {
   const alive = (p: number) => players[p][0] >= 0
   const [mx, my, wallsLeft] = players[myId]
   const [myDist, myMove] = path(myId, mx, my, blocked)
-  // Opponents' distances, and who would arrive first (they play after us).
+  // Opponents' distances, and who would arrive first.
   let threat = -1
   let threatDist = Infinity
   for (let p = 0; p < playerCount; p++) {
     if (p === myId || !alive(p)) continue
     const [d] = path(p, players[p][0], players[p][1], blocked)
-    const before = (p - myId + playerCount) % playerCount // turns until p plays
-    if (d + (before > 0 ? 0 : 1) <= myDist && d < threatDist) {
+    // Everybody else moves after us this round: we win distance ties.
+    if (d < myDist && d < threatDist) {
       threat = p
       threatDist = d
     }
   }
+  const overlaps = (x: number, y: number, o: string) =>
+    walls.some(([wx, wy, wo]) =>
+      wo === o
+        ? o === "H"
+          ? wy === y && Math.abs(wx - x) <= 1
+          : wx === x && Math.abs(wy - y) <= 1
+        : o === "H"
+          ? wx === x + 1 && wy === y - 1
+          : wx === x - 1 && wy === y + 1
+    )
+  // Every wall that fits (legality of paths checked by the callers).
+  const candidates: [number, number, string][] = []
+  for (const o of ["H", "V"])
+    for (let y = 0; y < H; y++)
+      for (let x = 0; x < W; x++) {
+        if (o === "H" && (x > W - 2 || y < 1)) continue
+        if (o === "V" && (x < 1 || y > H - 2)) continue
+        if (!overlaps(x, y, o)) candidates.push([x, y, o])
+      }
   let action = myMove || "RIGHT"
+  // Among shortest-path steps, the one a single enemy wall hurts least.
+  const enemyWalls = players.some((pl, p) => p !== myId && alive(p) && pl[2] > 0)
+  if (enemyWalls && myDist < Infinity) {
+    let bestWorst = Infinity
+    for (const [name, dx, dy] of DIRS) {
+      const nx = mx + dx
+      const ny = my + dy
+      if (nx < 0 || ny < 0 || nx >= W || ny >= H || blocked.has(cell(mx, my) * 128 + cell(nx, ny))) continue
+      const [d] = path(myId, nx, ny, blocked)
+      if (d !== myDist - 1) continue
+      let worst = d
+      for (const [x, y, o] of candidates) {
+        const next = new Set(blocked)
+        addWall(next, x, y, o)
+        const d2 = path(myId, nx, ny, next)[0]
+        if (d2 !== Infinity && d2 > worst) worst = d2
+      }
+      if (worst < bestWorst) {
+        bestWorst = worst
+        action = name
+      }
+    }
+  }
   if (threat >= 0 && wallsLeft > 0) {
-    const overlaps = (x: number, y: number, o: string) =>
-      walls.some(([wx, wy, wo]) =>
-        wo === o
-          ? o === "H"
-            ? wy === y && Math.abs(wx - x) <= 1
-            : wx === x && Math.abs(wy - y) <= 1
-          : o === "H"
-            ? wx === x + 1 && wy === y - 1
-            : wx === x - 1 && wy === y + 1
-      )
     let bestGain = 0
-    for (const o of ["H", "V"]) {
-      for (let y = 0; y < H; y++) {
-        for (let x = 0; x < W; x++) {
-          if (o === "H" && (x > W - 2 || y < 1)) continue
-          if (o === "V" && (x < 1 || y > H - 2)) continue
-          if (overlaps(x, y, o)) continue
-          const next = new Set(blocked)
-          addWall(next, x, y, o)
-          let ok = true
-          for (let p = 0; p < playerCount && ok; p++)
-            if (alive(p) && path(p, players[p][0], players[p][1], next)[0] === Infinity) ok = false
-          if (!ok) continue
-          const gain =
-            path(threat, players[threat][0], players[threat][1], next)[0] -
-            threatDist -
-            (path(myId, mx, my, next)[0] - myDist)
-          if (gain > bestGain) {
-            bestGain = gain
-            action = `${x} ${y} ${o}`
-          }
-        }
+    for (const [x, y, o] of candidates) {
+      const next = new Set(blocked)
+      addWall(next, x, y, o)
+      let ok = true
+      for (let p = 0; p < playerCount && ok; p++)
+        if (alive(p) && path(p, players[p][0], players[p][1], next)[0] === Infinity) ok = false
+      if (!ok) continue
+      const gain =
+        path(threat, players[threat][0], players[threat][1], next)[0] -
+        threatDist -
+        (path(myId, mx, my, next)[0] - myDist)
+      // Walls are scarce: spend them close to the threat's goal (it cannot
+      // route around any more) unless the gain is big.
+      if (gain > bestGain && (threatDist <= 3 || gain >= 3)) {
+        bestGain = gain
+        action = `${x} ${y} ${o}`
       }
     }
   }

@@ -658,6 +658,13 @@ Silver: 2/4 vs the boss (KommanBoss walls us early). A 2-ply 1v1 search
 per wall kept) never placed a wall and lost 1/4: reverted. Next: value
 walls by the race margin *after* they are spent, save walls for when the
 opponent is 2-3 moves from its goal.
+Replays: the threat test counted distance ties as lost, but whoever is
+to move wins a tie (everybody else plays after us), so it walled from
+turn 1; as seat 1 it spent 8 walls in 8 turns for +1 each and was walled
+back. Now: threat only when strictly shorter, walls only when the threat
+is ≤ 3 from its goal or the wall gains ≥ 3, and moves pick the
+shortest-path step a single enemy wall lengthens least. 4/6 vs the
+Silver boss (arena was 24.2 vs 26.5).
 
 ## poker-chip-race
 
