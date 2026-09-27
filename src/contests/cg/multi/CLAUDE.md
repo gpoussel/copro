@@ -1153,6 +1153,10 @@ Kiting now also rolls each direction out 6 turns (knights close at 100,
 age 1/turn, hit 1 each in contact; our towers shoot the nearest knight
 for 3 + (range − d)/200) and subtracts 150 per damage point: 4/4 vs
 the boss (first time).
+Arena 25.3 (25W 15L: losing HP races, opponents train 2–3× more). Near-
+cover extra mines: 1/4, dropped. Now with knights within 600, a build or
+repair is replaced by the best escape step whenever the 6-turn rollout of
+staying takes more damage: 4/4 with 67–82 HP left.
 
 ## hypersonic
 

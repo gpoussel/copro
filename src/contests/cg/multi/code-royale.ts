@@ -81,8 +81,10 @@ while (true) {
     const ks = knights.map(k => ({ ...k }))
     let dmg = 0
     for (let t = 0; t < 6; t++) {
-      qx = Math.max(30, Math.min(1890, qx + Math.cos(ang) * 60))
-      qy = Math.max(30, Math.min(970, qy + Math.sin(ang) * 60))
+      if (!Number.isNaN(ang)) {
+        qx = Math.max(30, Math.min(1890, qx + Math.cos(ang) * 60))
+        qy = Math.max(30, Math.min(970, qy + Math.sin(ang) * 60))
+      }
       for (const k of ks) {
         if (k.hp <= 0) continue
         const d = Math.hypot(qx - k.x, qy - k.y)
@@ -107,7 +109,9 @@ while (true) {
     }
     return dmg
   }
-  if (nearK && (kd < 250 || (kd < 450 && ownTowers >= 3))) {
+  let kiteMove = ""
+  let kiteHurt = Infinity
+  if (nearK && kd < 600) {
     let bestV = -Infinity
     for (let k = 0; k < 16; k++) {
       const ang = (k * Math.PI) / 8
@@ -130,10 +134,13 @@ while (true) {
         knightDist(x, y) + (covered ? 150 : 0) + (shielded ? 100 : 0) - (edge < 150 ? (150 - edge) * 2 : 0) - 150 * hurt
       if (v > bestV) {
         bestV = v
-        action = `MOVE ${x} ${y}`
+        kiteMove = `MOVE ${x} ${y}`
+        kiteHurt = hurt
       }
     }
   }
+  // Close knights: kite outright; farther ones only once the base stands.
+  if (kiteMove && (kd < 250 || (kd < 450 && ownTowers >= 3))) action = kiteMove
   const attacked = enemies.some(e => Math.hypot(e.x - queen.x, e.y - queen.y) < 200)
   if (attacked && action === "WAIT") {
     if (improving >= 0 && st[improving].p1 < 790) action = `BUILD ${improving} TOWER`
@@ -175,6 +182,8 @@ while (true) {
       action = improving >= 0 ? `BUILD ${improving} TOWER` : `MOVE ${c.x} ${c.y}`
     }
   }
+  // Staying put (build / repair) when the rollout says running takes less.
+  if (kiteMove && !action.startsWith("MOVE") && rollout(NaN) > kiteHurt) action = kiteMove
   // A BUILD on a touched site that stays unbuilt for 6 turns: ban it.
   const bm = action.match(/^BUILD (\d+) /)
   const touching = bm ? Math.hypot(sites[+bm[1]].x - queen.x, sites[+bm[1]].y - queen.y) < sites[+bm[1]].r + 40 : false
