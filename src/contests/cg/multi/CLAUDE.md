@@ -1231,6 +1231,7 @@ to the nearest free site out of enemy tower range; accumulated with 0.7
 decay. Training: knights whenever possible for 50 turns and after 210,
 else 8-knight bursts. 3/4 vs the boss, every win by killing its queen.
 The heuristic bot is in `legacy/code-royale-heuristic.ts`.
+Arena 28.9, rank 3 (boss 30.0) on the first sample.
 
 ## hypersonic
 
