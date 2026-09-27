@@ -626,3 +626,10 @@ column. Bot: drop/chain/skull simulation, 3-ply exhaustive over the known
 pairs, eval = cleared blocks × chain² + same-colour contacts − height.
 4/4 vs the Wood boss. Later leagues: two colours per pair and rotations
 (output `x rotation`), nuisance — extend the search then.
+
+## codebusters
+
+6 leagues (Wood 2 start). League 1 bot: carry home and RELEASE within 1550
+of the base, BUST a ghost at 900–1760, else approach a seen ghost to ~1300,
+else explore a waypoint grid (seen waypoints dropped). 4/4 vs the Wood boss.
+Later leagues add STUN, ghost stamina, etc.

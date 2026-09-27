@@ -79,7 +79,7 @@ Surveyed 2026-09-26.
 | git-patchwork | 5 | Wood 1 | 3 | — | 2 | |
 | keep-off-the-grass-fall-challenge-2022 | 5 | Wood 1 | 3 | — | 2 | |
 | langton-s-ant | 5 | Wood 1 | 3 | — | 2 | |
-| codebusters | 6 | Wood 2 | 4 | — | 2 | |
+| codebusters | 6 | Wood 2 | 4 | TypeScript rules, submitted | 2 | 4/4 vs Wood boss; STUN/ghost stamina come later |
 | fall-challenge-2020 | 6 | Wood 2 | 4 | — | 2 | |
 | fantastic-bits | 6 | Wood 2 | 4 | — | 2 | |
 | game-of-drones | 6 | Wood 2 | 4 | TypeScript greedy allocation, submitted | 2 | 4/4 vs Wood boss (~3× its score) |
