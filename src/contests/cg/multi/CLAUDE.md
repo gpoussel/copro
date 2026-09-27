@@ -1070,3 +1070,13 @@ mid-map until turn 70, then prowls ~4300 from the enemy base: WIND (mana
 ≥ 20) monsters within 6500 of that base, SHIELD (mana ≥ 50) monsters
 already heading there. 4/4 vs the Silver boss. Replaces the user's Rust
 agent (`legacy/spring-challenge-2022.rs`).
+
+## spring-challenge-2026-troll-farm (WIP, not submitted)
+
+Silver with the user's C++ agent (`legacy/…troll-farm.cpp`, 169/683; 1/2
+vs the Silver boss in a quick test). A greedy TS bot (harvest best
+fruits / distance, drop when full, chop size ≥ 2 trees after turn 200,
+train one troll early) scored ~100 vs 110–360: 0/4, **weaker than the
+user's agent, so not submitted**. Wood (4 points per unit, a size-4 tree
+= 16) and more trolls look like the levers; read the referee
+(github.com/eulerscheZahl/Troll-Farm) before retrying.
