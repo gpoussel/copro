@@ -1131,6 +1131,12 @@ THROW at a 3×3 hitting ≥ 2 enemies and none of ours, else SHOOT the best
 expected damage (kills +50) within 2× range, else HUNKER_DOWN. Scoring:
 each turn +(our zone − theirs) when positive, zone = cells strictly closer
 (Manhattan × distance multiplier) to our agents. 4/4 vs the Bronze boss.
+Silver boss crushed it (654–0 in 19 turns: we huddled and hunkered while
+its zone lead hit the 600-point cap). Moves now also score the zone
+difference with the agent at the candidate cell (wet ≥ 50 doubles its
+distance), −12 next to one of our agents (3×3 bombs), −2 within 5 of an
+enemy, −3 per cell beyond optimal range; shots focus on the enemy others
+already target. 2/4 vs the Silver boss.
 
 ## botters-of-the-galaxy
 

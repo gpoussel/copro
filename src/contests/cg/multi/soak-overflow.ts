@@ -172,8 +172,8 @@ while (true) {
     out.length = 0
     const occupied = new Set([...mine, ...foes].map(a => a.y * W + a.x))
     const taken = new Set<number>()
-    const cx = (W - 1) / 2
-    const cy = (H - 1) / 2
+    const moved = new Map<number, { x: number; y: number; wet: number }>()
+    const focus = new Map<number, number>() // damage already aimed at each enemy
     for (const a of mine) {
       const range = optimal.get(a.id) ?? 4
       const soak = power.get(a.id) ?? 16
@@ -197,16 +197,36 @@ while (true) {
         for (const f of foes) {
           const d = Math.abs(f.x - x) + Math.abs(f.y - y)
           nearest = Math.min(nearest, d)
-          if (d <= 12) v += (1 - modifier(x, y, f.x, f.y)) * 6
+          if (d <= 12) v += (1 - modifier(x, y, f.x, f.y)) * 3
         }
-        v -= Math.abs(nearest - range) * 1.5
-        v -= (Math.abs(x - cx) + Math.abs(y - cy)) * 0.3
+        v -= Math.max(0, nearest - range) * 3
+        // Territory: cells closer to us than to them (wet ≥ 50 counts
+        // double distance), with this agent at (x, y).
+        const ours = mine.map(m => (m.id === a.id ? { x, y, wet: m.wet } : moved.get(m.id) ?? m))
+        let zone = 0
+        for (let ty = 0; ty < H; ty++)
+          for (let tx = 0; tx < W; tx++) {
+            if (tileAt(tx, ty) !== 0) continue
+            let dm = 999
+            for (const m of ours) dm = Math.min(dm, (Math.abs(m.x - tx) + Math.abs(m.y - ty)) * (m.wet >= 50 ? 2 : 1))
+            let df = 999
+            for (const f of foes) df = Math.min(df, (Math.abs(f.x - tx) + Math.abs(f.y - ty)) * (f.wet >= 50 ? 2 : 1))
+            if (dm < df) zone++
+            else if (df < dm) zone--
+          }
+        v += zone * 0.8
+        // Spread out: a splash bomb hits a 3×3.
+        for (const m of ours)
+          if (m !== ours[mine.indexOf(a)] && Math.max(Math.abs(m.x - x), Math.abs(m.y - y)) <= 1) v -= 12
+        // Out of reach of enemy bombs (range 4 + splash 1) when possible.
+        for (const f of foes) if (Math.abs(f.x - x) + Math.abs(f.y - y) <= 5) v -= 2
         if (v > bestV) {
           bestV = v
           best = [x, y]
         }
       }
       taken.add(best[1] * W + best[0])
+      moved.set(a.id, { x: best[0], y: best[1], wet: a.wet })
       let cmd = `${a.id};MOVE ${best[0]} ${best[1]}`
       const [px, py] = best
       // Bomb: a centre within 4 hitting ≥ 2 enemies and none of ours.
@@ -236,11 +256,17 @@ while (true) {
           const d = Math.abs(f.x - px) + Math.abs(f.y - py)
           if (d > 2 * range) continue
           let dmg = soak * (d <= range ? 1 : 0.5) * modifier(f.x, f.y, px, py)
-          if (f.wet + dmg >= 100) dmg += 50 // a kill
+          const already = focus.get(f.id) ?? 0
+          if (f.wet + already + dmg >= 100) dmg += 50 // a kill
+          else if (already > 0) dmg += 10 // focus fire
           if (dmg > bestDmg) {
             bestDmg = dmg
             target = f
           }
+        }
+        if (target) {
+          const d = Math.abs(target.x - px) + Math.abs(target.y - py)
+          focus.set(target.id, (focus.get(target.id) ?? 0) + soak * (d <= range ? 1 : 0.5) * modifier(target.x, target.y, px, py))
         }
         cmd += target ? `;SHOOT ${target.id}` : ";HUNKER_DOWN"
       } else cmd += ";HUNKER_DOWN"
