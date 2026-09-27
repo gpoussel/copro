@@ -1039,6 +1039,11 @@ while the knight stream hits it. A home-corner tower cluster + archer
 barracks + shelter at the home-most tower lasted to turn 70–80 but still
 lost 0/4 (reverted). Needs real queen kiting and archers that actually
 get trained (gold went to knights first).
+The IDE Bronze boss is NOT that file: it mines first, towers early, moves
+its queen, trains later. Also tried (all 0/4, reverted): 4 reserved
+home-corner tower sites; knight barracks first (queen HP race, the boss
+ended at 11–37 HP); mines until income ≥ 12 (buildings are free, only
+units cost gold). Our knights (1 batch per ~8 turns) melt on its towers.
 
 ## hypersonic
 
