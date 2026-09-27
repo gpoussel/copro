@@ -1,17 +1,29 @@
 // 🎮 CodinGame Multiplayer - cultist-wars
 // https://www.codingame.com/multiplayer/bot-programming/cultist-wars
-// Source: https://bitbucket.org/Nixerrr/cultist-wars/src
+// Referee: https://github.com/kgeilmann/cultist-wars-referee
 //
-// 13x7, one action per turn. The leader converts adjacent (4-dir) neutrals
-// or enemy cultists; cultists shoot for 7 − distance (range 6), the bullet
-// hits the first obstacle/unit on the Bresenham line drawn from the lower y.
-// Plan: convert when adjacent, else the best clear shot, else walk the leader
-// to the nearest convertible unit.
+// 13×7, one action per player per turn, 150 rounds, score = units left.
+// Leader converts an adjacent (Manhattan 1) neutral or enemy cultist;
+// cultists shoot within Manhattan 6 for 7 − distance (hp 10) — the bullet
+// stops at the first obstacle or unit on the referee's Bresenham line (drawn
+// from the shooter when it is above the target, else from the target, the
+// hit then being the blocker closest to the shooter); friendly fire exists.
+// Bot: 2-ply search (our action, then the opponent's best reply) on an exact
+// simulation; eval = units (10 + 0.3·hp, +40 leader), each leader's BFS
+// path distance to the nearest neutral (×2.5; enemy cultists once the
+// neutrals are gone) and its exposure to enemy shots.
 
 const myId = parseInt(readline())
 const [W, H] = readline().split(" ").map(Number)
 const grid: string[] = []
 for (let y = 0; y < H; y++) grid.push(readline())
+const floor = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H && grid[y][x] !== "x"
+const DIRS = [
+  [0, -1],
+  [1, 0],
+  [0, 1],
+  [-1, 0],
+]
 
 interface Unit {
   id: number
@@ -19,14 +31,11 @@ interface Unit {
   hp: number
   x: number
   y: number
-  owner: number
+  owner: number // 0/1 players, 2 neutral
 }
 
-// Cells strictly between a shooter (x0, y0) and its target (x1, y1), as the
-// referee traces them: from the shooter when it is above the target, else
-// from the target; Bresenham with `e2 > -dy` / `e2 < dx`.
-function line(x0: number, y0: number, x1: number, y1: number): [number, number][] {
-  if (!(y0 < y1)) [x0, y0, x1, y1] = [x1, y1, x0, y0]
+// Cells strictly between, in the referee's trace order.
+function trace(x0: number, y0: number, x1: number, y1: number): [number, number][] {
   const dx = Math.abs(x1 - x0)
   const dy = Math.abs(y1 - y0)
   const sx = x0 < x1 ? 1 : -1
@@ -34,7 +43,7 @@ function line(x0: number, y0: number, x1: number, y1: number): [number, number][
   let err = dx - dy
   let x = x0
   let y = y0
-  const cells: [number, number][] = []
+  const out: [number, number][] = []
   for (let guard = 0; guard < 64; guard++) {
     const e2 = 2 * err
     if (e2 > -dy) {
@@ -46,19 +55,124 @@ function line(x0: number, y0: number, x1: number, y1: number): [number, number][
       y += sy
     }
     if (x === x1 && y === y1) break
-    cells.push([x, y])
+    out.push([x, y])
   }
-  return cells
+  return out
+}
+// The unit a shot from s at t hits (null: an obstacle), given the units.
+function hit(units: Unit[], s: Unit, t: Unit): Unit | null {
+  const at = (x: number, y: number) => units.find(u => u.hp > 0 && u.x === x && u.y === y)
+  const blocked = (x: number, y: number) => !floor(x, y) || at(x, y) !== undefined
+  if (s.y < t.y) {
+    for (const [x, y] of trace(s.x, s.y, t.x, t.y)) if (blocked(x, y)) return at(x, y) ?? null
+    return t
+  }
+  let res: [number, number] | null = null
+  for (const [x, y] of trace(t.x, t.y, s.x, s.y)) if (blocked(x, y)) res = [x, y]
+  if (!res) return t
+  return at(res[0], res[1]) ?? null
 }
 
-const recent: number[] = [] // the leader's last cells
-const STEPS = [
-  [1, 0],
-  [-1, 0],
-  [0, 1],
-  [0, -1],
-]
-const manhattan = (a: Unit, b: Unit) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
+type Act = { unit: number; kind: string; a: number; b: number }
+function actions(units: Unit[], side: number): Act[] {
+  const out: Act[] = [{ unit: -1, kind: "WAIT", a: 0, b: 0 }]
+  const occupied = (x: number, y: number) => units.some(u => u.hp > 0 && u.x === x && u.y === y)
+  for (const u of units) {
+    if (u.owner !== side || u.hp <= 0) continue
+    for (const [dx, dy] of DIRS) {
+      const nx = u.x + dx
+      const ny = u.y + dy
+      if (floor(nx, ny) && !occupied(nx, ny)) out.push({ unit: u.id, kind: "MOVE", a: nx, b: ny })
+    }
+    if (u.type === 1) {
+      for (const v of units)
+        if (v.hp > 0 && v.type === 0 && v.owner !== side && Math.abs(v.x - u.x) + Math.abs(v.y - u.y) === 1)
+          out.push({ unit: u.id, kind: "CONVERT", a: v.id, b: 0 })
+    } else {
+      for (const v of units)
+        if (v.hp > 0 && v.owner !== side && v.owner !== 2 && Math.abs(v.x - u.x) + Math.abs(v.y - u.y) <= 6)
+          out.push({ unit: u.id, kind: "SHOOT", a: v.id, b: 0 })
+    }
+  }
+  return out
+}
+function apply(units: Unit[], act: Act): Unit[] {
+  const next = units.map(u => ({ ...u }))
+  if (act.kind === "WAIT") return next
+  const u = next.find(v => v.id === act.unit)!
+  if (act.kind === "MOVE") {
+    u.x = act.a
+    u.y = act.b
+  } else if (act.kind === "CONVERT") {
+    next.find(v => v.id === act.a)!.owner = u.owner
+  } else {
+    const t = next.find(v => v.id === act.a)!
+    const h = hit(next, u, t)
+    if (h) h.hp = Math.max(0, h.hp - (7 - (Math.abs(h.x - u.x) + Math.abs(h.y - u.y))))
+  }
+  return next
+}
+// Path distance (walls and units block) from (x, y) to the nearest cell
+// next to one of the targets; 99 when unreachable or no target.
+function pathTo(units: Unit[], x0: number, y0: number, targets: Unit[]): number {
+  if (!targets.length) return 99
+  const block = new Uint8Array(W * H)
+  for (const u of units) if (u.hp > 0) block[u.y * W + u.x] = 1
+  const goal = new Uint8Array(W * H)
+  for (const t of targets)
+    for (const [dx, dy] of DIRS) {
+      const x = t.x + dx
+      const y = t.y + dy
+      if (floor(x, y)) goal[y * W + x] = 1
+    }
+  const dist = new Int16Array(W * H).fill(-1)
+  const q = [y0 * W + x0]
+  dist[q[0]] = 0
+  for (let h = 0; h < q.length; h++) {
+    const c = q[h]
+    if (goal[c]) return dist[c]
+    for (const [dx, dy] of DIRS) {
+      const x = (c % W) + dx
+      const y = Math.floor(c / W) + dy
+      const n = y * W + x
+      if (!floor(x, y) || block[n] || dist[n] >= 0) continue
+      dist[n] = dist[c] + 1
+      q.push(n)
+    }
+  }
+  return 99
+}
+// Damage the enemy's cultists could deal to u with one shot each.
+function danger(units: Unit[], u: Unit): number {
+  let d = 0
+  for (const e of units) {
+    if (e.hp <= 0 || e.type !== 0 || e.owner === u.owner || e.owner === 2) continue
+    const m = Math.abs(e.x - u.x) + Math.abs(e.y - u.y)
+    if (m <= 6 && hit(units, e, u) === u) d += 7 - m
+  }
+  return d
+}
+function evaluate(units: Unit[], me: number): number {
+  let s = 0
+  for (const u of units) {
+    if (u.hp <= 0) continue
+    const sign = u.owner === me ? 1 : u.owner === 1 - me ? -1 : 0
+    s += sign * (10 + 0.3 * u.hp + (u.type === 1 ? 40 : 0))
+  }
+  const neutrals = units.filter(u => u.hp > 0 && u.owner === 2)
+  for (const side of [me, 1 - me]) {
+    const leader = units.find(u => u.owner === side && u.type === 1 && u.hp > 0)
+    if (!leader) continue
+    const sign = side === me ? 1 : -1
+    // The race for neutrals, then for enemy cultists.
+    const targets = neutrals.length ? neutrals : units.filter(u => u.hp > 0 && u.type === 0 && u.owner === 1 - side)
+    const d = pathTo(units, leader.x, leader.y, targets)
+    s -= sign * Math.min(d, 20) * (neutrals.length ? 2.5 : 1)
+    // Leader exposure (the boss focuses leaders).
+    s -= sign * danger(units, leader) * (side === me ? 1.5 : 1)
+  }
+  return s
+}
 
 while (true) {
   const n = parseInt(readline())
@@ -67,132 +181,27 @@ while (true) {
     const [id, type, hp, x, y, owner] = readline().split(" ").map(Number)
     units.push({ id, type, hp, x, y, owner })
   }
-  const occupied = new Set(units.map(u => u.y * W + u.x))
-  const mine = units.filter(u => u.owner === myId)
-  const enemies = units.filter(u => u.owner === 1 - myId)
-  const neutrals = units.filter(u => u.owner === 2)
-  const leader = mine.find(u => u.type === 1)
-
-  // Damage enemy cultists could shoot at (x, y) next turn.
-  const clearShot = (sx: number, sy: number, tx: number, ty: number) =>
-    !line(sx, sy, tx, ty).some(([x, y]) => grid[y][x] === "x" || occupied.has(y * W + x))
-  const dangerAt = (x: number, y: number) =>
-    enemies
-      .filter(e => e.type === 0)
-      .reduce((s, e) => {
-        const d = Math.abs(e.x - x) + Math.abs(e.y - y)
-        return d <= 6 && clearShot(e.x, e.y, x, y) ? s + 7 - d : s
-      }, 0)
-
-  let action = "WAIT"
-  let bestValue = 0
-  const consider = (value: number, command: string) => {
-    if (value > bestValue) {
-      bestValue = value
-      action = command
+  const deadline = Date.now() + 70
+  let best: Act = { unit: -1, kind: "WAIT", a: 0, b: 0 }
+  let bestV = -Infinity
+  const mine = actions(units, myId)
+  // Order by the immediate value so the best candidates are searched first.
+  const ranked = mine.map(a => ({ a, s: apply(units, a) })).map(o => ({ ...o, v: evaluate(o.s, myId) }))
+  ranked.sort((p, q) => q.v - p.v)
+  for (const { a, s } of ranked) {
+    let worst = Infinity
+    for (const r of actions(s, 1 - myId)) {
+      const v = evaluate(apply(s, r), myId)
+      if (v < worst) worst = v
+      if (worst <= bestV) break
     }
-  }
-  // Conversions (enemy cultists are worth more: they also leave the enemy).
-  if (leader) {
-    for (const u of [...enemies.filter(e => e.type === 0), ...neutrals]) {
-      if (manhattan(u, leader) === 1) consider(u.owner === 2 ? 8 : 12, `${leader.id} CONVERT ${u.id}`)
+    if (worst > bestV) {
+      bestV = worst
+      best = a
     }
+    if (Date.now() > deadline) break
   }
-  // Shots.
-  for (const s of mine.filter(u => u.type === 0)) {
-    for (const tgt of enemies) {
-      const d = manhattan(s, tgt)
-      if (d > 6 || !clearShot(s.x, s.y, tgt.x, tgt.y)) continue
-      const damage = 7 - d
-      const kill = damage >= tgt.hp
-      // Cultists that can shoot our leader are the first to go.
-      const threatens =
-        !!leader && tgt.type === 0 && manhattan(tgt, leader) <= 6 && clearShot(tgt.x, tgt.y, leader.x, leader.y)
-      consider(
-        damage + (kill ? (tgt.type === 1 ? 100 : 10) : 0) + (tgt.type === 1 ? 3 : 0) + (threatens ? 3 : 0),
-        `${s.id} SHOOT ${tgt.id}`
-      )
-    }
-  }
-  // Leader walks (BFS through free cells) towards the nearest cell next to
-  // a convertible unit, avoiding enemy fire.
-  if (leader) {
-    const targets = [...neutrals, ...enemies.filter(e => e.type === 0)]
-    const free = (x: number, y: number) =>
-      x >= 0 && y >= 0 && x < W && y < H && grid[y][x] !== "x" && !occupied.has(y * W + x)
-    const dist = new Int32Array(W * H).fill(-1)
-    const queue: number[] = []
-    for (const t of targets)
-      for (const [dx, dy] of STEPS) {
-        const x = t.x + dx
-        const y = t.y + dy
-        if ((free(x, y) || (x === leader.x && y === leader.y)) && dist[y * W + x] < 0) {
-          dist[y * W + x] = 0
-          queue.push(y * W + x)
-        }
-      }
-    for (let h = 0; h < queue.length; h++) {
-      const c = queue[h]
-      for (const [dx, dy] of STEPS) {
-        const x = (c % W) + dx
-        const y = Math.floor(c / W) + dy
-        if (free(x, y) && dist[y * W + x] < 0) {
-          dist[y * W + x] = dist[c] + 1
-          queue.push(y * W + x)
-        }
-      }
-    }
-    let bestStep: [number, number] | null = null
-    let bestStepValue = -Infinity
-    for (const [dx, dy] of STEPS) {
-      const nx = leader.x + dx
-      const ny = leader.y + dy
-      if (!free(nx, ny) || dist[ny * W + nx] < 0) continue
-      // The boss focuses our leader (10 HP): lethal squares weigh heavily.
-      const danger = dangerAt(nx, ny)
-      const back = recent.includes(ny * W + nx) ? 3 : 0 // no shuttling
-      const v = -dist[ny * W + nx] - danger * (danger >= leader.hp ? 5 : 0.5) - back
-      if (v > bestStepValue) {
-        bestStepValue = v
-        bestStep = [nx, ny]
-      }
-    }
-    if (bestStep)
-      // While neutrals remain, racing for them beats chip-damage shots
-      // (units at the end are the score).
-      consider(
-        (neutrals.length ? 4.5 : 1) + Math.min(0, bestStepValue + 20) * 0.01,
-        `${leader.id} MOVE ${bestStep[0]} ${bestStep[1]}`
-      )
-  }
-  // Leader standing on a lethal square: step to the safest neighbour.
-  if (leader && dangerAt(leader.x, leader.y) >= leader.hp) {
-    let safest: [number, number] | null = null
-    let least = dangerAt(leader.x, leader.y)
-    for (const [dx, dy] of STEPS) {
-      const nx = leader.x + dx
-      const ny = leader.y + dy
-      if (nx < 0 || ny < 0 || nx >= W || ny >= H || grid[ny][nx] === "x" || occupied.has(ny * W + nx)) continue
-      const d = dangerAt(nx, ny)
-      if (d < least) {
-        least = d
-        safest = [nx, ny]
-      }
-    }
-    if (safest) consider(9, `${leader.id} MOVE ${safest[0]} ${safest[1]}`)
-  }
-  // Cultists close in on the enemy leader when nothing better is available.
-  const enemyLeader = enemies.find(e => e.type === 1)
-  if (enemyLeader) {
-    const closest = mine
-      .filter(u => u.type === 0)
-      .sort((a, b) => manhattan(a, enemyLeader) - manhattan(b, enemyLeader))[0]
-    if (closest && manhattan(closest, enemyLeader) > 6)
-      consider(0.5, `${closest.id} MOVE ${enemyLeader.x} ${enemyLeader.y}`)
-  }
-  if (leader) {
-    recent.push(leader.y * W + leader.x)
-    if (recent.length > 4) recent.shift()
-  }
-  console.log(action)
+  if (best.kind === "WAIT") console.log("WAIT")
+  else if (best.kind === "MOVE") console.log(`${best.unit} MOVE ${best.a} ${best.b}`)
+  else console.log(`${best.unit} ${best.kind} ${best.a}`)
 }

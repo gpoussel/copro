@@ -565,6 +565,16 @@ any line of fire first (5) — 0/4 with a wipe-out (too timid). Next A/B:
 shots at a cultist that can hit any of ours +2 (one took 8 free shots at
 our unit while the leader walked to neutrals): arena 22.8, reverted.
 
+**Search rewrite** (rule bot now `legacy/cultist-wars-rules.ts`): the
+legacy exact simulation + 2-ply (our action, the opponent's best reply,
+70 ms) with a new eval — units 10 + 0.3·hp (+40 leader), each leader's
+BFS path distance (walls and units block) to the nearest neutral ×2.5
+(enemy cultists ×1 once neutrals are gone), leader exposure (sum of
+7 − d over enemy cultists with a clear referee-exact shot) ×1.5 for ours,
+×1 for theirs. The old 2-ply's Manhattan "proximity" term let the boss
+win the neutral race; the path-distance race fixes it: 4/4 vs the Bronze
+boss (rule bot arena 25.8).
+
 ## tryangle-catch
 
 4 leagues (Bronze start = league 1: MOVE + SPAWN). Rules from the referee
