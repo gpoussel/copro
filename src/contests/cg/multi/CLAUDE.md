@@ -633,7 +633,15 @@ cut to 2 plies. 4/4 vs the Bronze boss.
 6 leagues (Wood 2 start). League 1 bot: carry home and RELEASE within 1550
 of the base, BUST a ghost at 900–1760, else approach a seen ghost to ~1300,
 else explore a waypoint grid (seen waypoints dropped). 4/4 vs the Wood boss.
-Later leagues add STUN, ghost stamina, etc.
+Wood 1 adds STUN (range 1760, 20-turn reload; **the stunner drops its own
+ghost too**, so never stun while carrying). Bot now: stun enemy carriers (or
+any active enemy near us when ghosts are around), intercept an enemy carrier
+on its straight line home, ghost memory (last seen positions, dropped when
+carried or missing within 2000), step back when a ghost is closer than 900
+(the old "stop at 1300" froze a buster next to its ghost for 10+ turns), camp
+near the enemy base once exploration is done. 4/6 vs the Wood 1 boss, close
+scores. Ideas: escort carriers, ghost stamina (next league), symmetry of the
+initial ghost layout.
 
 ## fantastic-bits
 
