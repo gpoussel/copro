@@ -1166,7 +1166,10 @@ touching enemy barracks/mines destroys them, hide behind towers, never
 rebuild depleted mines. Raiding nearby uncovered enemy barracks/mines:
 1/4 (queen exposed), dropped. Second knight barracks once the base
 stands, trained only together (8-knight bursts): 3/4, two wins by
-killing the boss queen; arena A/B.
+killing the boss queen: arena 27.5 (rank 8). IDE vs this boss is noise:
+the same version scored 3/4 then 1/4, so variants are judged in the
+arena only. Arena A/B: second barracks forward (free area site nearest
+the enemy corner).
 
 ## hypersonic
 
