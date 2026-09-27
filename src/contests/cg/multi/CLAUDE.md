@@ -816,6 +816,11 @@ Silver (full game): 1/4 with "learn free spells in the first 6 turns".
 Now the opening (turns ≤ 9) learns the affordable tome spell with the best
 tier-weighted net delta (+1.5 repeatable, +1 pure gain, −0.6 per tome
 index cost) while it is worth > 0.5: 4/4 vs the Silver boss.
+Arena 35.7 vs boss 37.16 with that, so: a beam search (width 250, 30 ms,
+depth ≤ 16) over CAST / REST / BREW sequences that may brew several
+potions, value = prices × 0.93^turn + tier-weighted leftover ingredients;
+the old per-order BFS is only a 3 ms fallback (both at full time = 75 ms
+timed out on turn ~10). 4/4 vs the Silver boss.
 
 ## crystal-rush
 

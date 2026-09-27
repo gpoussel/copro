@@ -18,6 +18,7 @@ type Action = {
   repeatable: boolean
 }
 
+const USE_BEAM = true
 let turn = 0
 while (true) {
   turn++
@@ -68,7 +69,7 @@ while (true) {
   const seen = new Set<number>([key(inv, startMask)])
   let frontier: Node[] = [{ inv, mask: startMask, first: "", depth: 0 }]
   const bestFor = new Map<number, { depth: number; first: string }>() // order id -> fastest
-  const deadline = Date.now() + 35
+  const deadline = Date.now() + (USE_BEAM ? 3 : 35)
   for (let depth = 1; depth <= 10 && frontier.length && Date.now() < deadline; depth++) {
     const next: Node[] = []
     for (const node of frontier) {
@@ -99,6 +100,55 @@ while (true) {
   for (const node of frontier)
     for (const o of orders)
       if (!bestFor.has(o.id) && fits(node.inv, o.delta)) bestFor.set(o.id, { depth: node.depth, first: node.first })
+
+  // Beam search over sequences that may brew several potions: value =
+  // prices discounted 0.93 per turn + 0.5 per tier-weighted ingredient left.
+  type BNode = { inv: number[]; mask: number; brewed: number; first: string; score: number; value: number }
+  const tierValue = (v: number[]) => v[0] * 0.5 + v[1] * 1 + v[2] * 1.5 + v[3] * 2
+  let beam: BNode[] = [{ inv, mask: startMask, brewed: 0, first: "", score: 0, value: 0 }]
+  let bestBeam: BNode | null = null
+  const beamDeadline = Date.now() + 30
+  for (let depth = 0; depth < 16 && beam.length && Date.now() < beamDeadline; depth++) {
+    const disc = Math.pow(0.93, depth)
+    const next = new Map<string, BNode>()
+    const add = (n: BNode) => {
+      const k = `${n.inv.join(",")}|${n.mask}|${n.brewed}`
+      const old = next.get(k)
+      if (!old || old.value < n.value) next.set(k, n)
+    }
+    for (const node of beam) {
+      orders.forEach((o, oi) => {
+        if (node.brewed & (1 << oi) || !fits(node.inv, o.delta)) return
+        const v = node.inv.map((x, k) => x + o.delta[k])
+        const score = node.score + o.price * disc
+        add({ inv: v, mask: node.mask, brewed: node.brewed | (1 << oi), first: node.first || `BREW ${o.id}`, score, value: score + tierValue(v) * disc })
+      })
+      if (node.mask !== full) add({ ...node, mask: full, first: node.first || "REST", value: node.score + tierValue(node.inv) * disc })
+      spells.forEach((sp, i) => {
+        if (!(node.mask & (1 << i))) return
+        let v = node.inv
+        for (let times = 1; times <= (sp.repeatable ? 4 : 1); times++) {
+          if (!fits(v, sp.delta)) break
+          v = v.map((x, k) => x + sp.delta[k])
+          if (v[0] + v[1] + v[2] + v[3] > 10) break
+          add({
+            inv: v,
+            mask: node.mask & ~(1 << i),
+            brewed: node.brewed,
+            first: node.first || (times === 1 ? `CAST ${sp.id}` : `CAST ${sp.id} ${times}`),
+            score: node.score,
+            value: node.score + tierValue(v) * disc,
+          })
+        }
+      })
+    }
+    beam = [...next.values()].sort((a, b) => b.value - a.value).slice(0, 250)
+    for (const n of beam) if (n.first && (!bestBeam || n.value > bestBeam.value)) bestBeam = n
+  }
+  if (USE_BEAM && bestBeam && bestBeam.score > 0) {
+    console.log(bestBeam.first)
+    continue
+  }
 
   // Best rate among brewing now and planned sequences.
   let choice = ""
