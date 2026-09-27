@@ -1231,7 +1231,13 @@ to the nearest free site out of enemy tower range; accumulated with 0.7
 decay. Training: knights whenever possible for 50 turns and after 210,
 else 8-knight bursts. 3/4 vs the boss, every win by killing its queen.
 The heuristic bot is in `legacy/code-royale-heuristic.ts`.
-Arena 28.9, rank 3 (boss 30.0) on the first sample.
+Arena 28.9 and 29.0, rank 3 (boss 30.0). Losses = queen killed, often
+cornered; we built 2–3 mines / 1–4 towers / 2–5 trainings vs 8–10 / 5–8 /
+14–21 (the boss: 10–13 mines, 11–17 towers, 30–45 trainings). Now: eval
+income ×60, towers 50 base, −0.2·distance to the nearest free site, wall
+(< 200) and corner (< 400) penalties ×2, 2nd knight barracks +100, a
+giant barracks vs ≥ 5 enemy towers (option + eval); training spends all
+gold (a giant first vs ≥ 5 towers when none alive, then knights).
 
 ## hypersonic
 

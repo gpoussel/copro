@@ -837,7 +837,6 @@ const numSites = map.length
 let me = -1
 let prev: State | null = null
 let turn = 0
-let bursting = false
 
 const dist = (ax: number, ay: number, bx: number, by: number) => Math.sqrt((ax - bx) * (ax - bx) + (ay - by) * (ay - by))
 
@@ -881,17 +880,25 @@ function evaluate(s: State): number {
         mines++
       } else if (st.type === TOWER) {
         towers++
-        v += (towers <= 6 ? 30 : 10) + (40 * st.hp) / 800
+        v += (towers <= 6 ? 50 : 10) + (40 * st.hp) / 800
       } else if (st.type === BARRACKS && st.ctype === KNIGHT) {
         kb++
         kbDist = Math.min(kbDist, dist(map[i].x, map[i].y, eq.x, eq.y))
       }
     } else if (st.owner === en) v -= st.type === TOWER ? 10 : 25
   }
-  v += 30 * income
+  v += 60 * income
   if (kb === 0) v -= 400
-  else if (kb === 2) v += 30
+  else if (kb === 2) v += 100
   else if (kb > 2) v -= 300
+  // Tower turtles (the boss raises 11-17): a giant barracks to bust them.
+  let enemyTowers = 0
+  let gb = 0
+  for (const st of s.sites) {
+    if (st.owner === en && st.type === TOWER) enemyTowers++
+    if (st.owner === me && st.type === BARRACKS && st.ctype === GIANT) gb++
+  }
+  if (enemyTowers >= 5) v += gb === 1 ? 150 : gb === 0 ? -100 : -300
   if (kbDist < Infinity) v -= 0.03 * kbDist
   if (towers < 5 && mines > 2 && towers < mines) v -= 150
   // Agade's knight threat: HP over distance, a knight far enough dies first.
@@ -909,7 +916,17 @@ function evaluate(s: State): number {
     const d = dist(q.x, q.y, map[i].x, map[i].y)
     if (d < near && !underEnemyTower(s, map[i].x, map[i].y, en)) near = d
   }
-  if (near < Infinity) v -= 0.05 * near
+  if (near < Infinity) v -= 0.2 * near
+  // Arena losses: queens cornered against walls / in corners.
+  const edge = Math.min(q.x, q.y, 1920 - q.x, 1000 - q.y)
+  if (edge < 200) v -= 2 * (200 - edge)
+  const corner = Math.min(
+    Math.hypot(q.x, q.y),
+    Math.hypot(1920 - q.x, q.y),
+    Math.hypot(q.x, 1000 - q.y),
+    Math.hypot(1920 - q.x, 1000 - q.y),
+  )
+  if (corner < 400) v -= 2 * (400 - corner)
   return v
 }
 
@@ -936,10 +953,17 @@ function options(s: State): Action[] {
     }
     let kb = 0
     for (const o of s.sites) if (o.owner === me && o.type === BARRACKS && o.ctype === KNIGHT) kb++
+    let gb = 0
+    let et = 0
+    for (const o of s.sites) {
+      if (o.owner === me && o.type === BARRACKS && o.ctype === GIANT) gb++
+      if (o.owner === 1 - me && o.type === TOWER) et++
+    }
     if (st.type === NONE) {
       if (st.gold > 0) build(0)
       build(1)
       if (kb < 2) build(2)
+      if (gb === 0 && et >= 5) build(4)
     } else if (st.owner === me) {
       if (st.type === MINE && st.rate < st.maxMine && st.gold > 0) build(0)
       if (st.type === TOWER && st.hp < 700) build(1)
@@ -990,35 +1014,37 @@ function plan(root: State, deadline: number): Action {
   return best ? best.first : newAction()
 }
 
+// Spend everything, as the boss does (30-45 trainings a game against our
+// 8-10 with bursts): a giant first when the enemy turtles behind 5+ towers
+// and none of ours is alive, then knights from the barracks closest to the
+// enemy queen.
 function training(s: State): number[] {
   const en = 1 - me
   const eq = s.queens[en]
   const ready: number[] = []
+  let giantB = -1
+  let enemyTowers = 0
   for (let i = 0; i < numSites; i++) {
     const st = s.sites[i]
-    if (st.owner === me && st.type === BARRACKS && st.ctype === KNIGHT && !st.training) ready.push(i)
+    if (st.owner === en && st.type === TOWER) enemyTowers++
+    if (st.owner !== me || st.type !== BARRACKS || st.training) continue
+    if (st.ctype === KNIGHT) ready.push(i)
+    else if (st.ctype === GIANT) giantB = i
   }
   ready.sort((a, b) => dist(map[a].x, map[a].y, eq.x, eq.y) - dist(map[b].x, map[b].y, eq.x, eq.y))
-  let kb = 0
-  for (const st of s.sites) if (st.owner === me && st.type === BARRACKS && st.ctype === KNIGHT) kb++
-  const g = s.gold[me]
+  let g = s.gold[me]
   const out: number[] = []
-  const spend = (n: number) => {
-    let left = g
-    for (const i of ready.slice(0, n))
-      if (left >= C_COST[KNIGHT]) {
-        out.push(i)
-        left -= C_COST[KNIGHT]
-      }
+  const giantAlive = s.creeps[me].some(c => c.type === GIANT)
+  if (giantB >= 0 && enemyTowers >= 5 && !giantAlive) {
+    if (g < C_COST[GIANT]) return out // save for it
+    out.push(giantB)
+    g -= C_COST[GIANT]
   }
-  if (turn <= 50 || turn > 210) spend(ready.length)
-  else if (kb >= 2) {
-    if (g >= 160 && ready.length >= 2) spend(2)
-  } else {
-    if (g >= 160) bursting = true
-    if (g < 80) bursting = false
-    if (bursting) spend(1)
-  }
+  for (const i of ready)
+    if (g >= C_COST[KNIGHT]) {
+      out.push(i)
+      g -= C_COST[KNIGHT]
+    }
   return out
 }
 
