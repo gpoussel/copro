@@ -1149,6 +1149,10 @@ the queen dies walking out there early.
 Kite base samples: 25.7, 24.9, 26.4 (rank 48). The boss (Princess Boss)
 plays 4 mines, 3 knight barracks, then ~9 towers it keeps repairing.
 Up to 5 towers once the first 3 are ≥ 600 HP: arena 24.4, reverted.
+Kiting now also rolls each direction out 6 turns (knights close at 100,
+age 1/turn, hit 1 each in contact; our towers shoot the nearest knight
+for 3 + (range − d)/200) and subtracts 150 per damage point: 4/4 vs
+the boss (first time).
 
 ## hypersonic
 

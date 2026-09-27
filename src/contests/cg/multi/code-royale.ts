@@ -39,13 +39,13 @@ while (true) {
   const numUnits = parseInt(readline())
   let queen = { x: 0, y: 0 }
   const enemies: { x: number; y: number }[] = []
-  const knights: { x: number; y: number }[] = []
+  const knights: { x: number; y: number; hp: number }[] = []
   for (let i = 0; i < numUnits; i++) {
-    const [x, y, owner, type] = readline().split(" ").map(Number)
+    const [x, y, owner, type, hp] = readline().split(" ").map(Number)
     if (owner === 0 && type === -1) queen = { x, y }
     else if (owner === 1 && type !== -1) {
       enemies.push({ x, y })
-      if (type === 0) knights.push({ x, y })
+      if (type === 0) knights.push({ x, y, hp })
     }
   }
   if (!corner) corner = { x: queen.x < 960 ? 0 : 1920, y: queen.y < 500 ? 0 : 1000 }
@@ -71,6 +71,42 @@ while (true) {
   // towers stand.
   const ownTowers = sites.filter(q => mine(q) && st[q.id].type === 1).length
   const kd = nearK ? knightDist(queen.x, queen.y) : Infinity
+  // Damage our queen takes over 6 turns running in direction ang: knights
+  // close in at 100 (contact 50), age 1 HP per turn, hit 1 each; each of our
+  // towers shoots the nearest knight in range for 3 + (range - d) / 200.
+  const ourTowers = sites.filter(q => mine(q) && st[q.id].type === 1)
+  const rollout = (ang: number) => {
+    let qx = queen.x
+    let qy = queen.y
+    const ks = knights.map(k => ({ ...k }))
+    let dmg = 0
+    for (let t = 0; t < 6; t++) {
+      qx = Math.max(30, Math.min(1890, qx + Math.cos(ang) * 60))
+      qy = Math.max(30, Math.min(970, qy + Math.sin(ang) * 60))
+      for (const k of ks) {
+        if (k.hp <= 0) continue
+        const d = Math.hypot(qx - k.x, qy - k.y)
+        const step = Math.min(100, Math.max(0, d - 50))
+        if (d > 0) {
+          k.x += ((qx - k.x) / d) * step
+          k.y += ((qy - k.y) / d) * step
+        }
+        if (Math.hypot(qx - k.x, qy - k.y) <= 55) dmg++
+        k.hp--
+      }
+      for (const tw of ourTowers) {
+        let best: (typeof ks)[number] | null = null
+        let bd = st[tw.id].p2
+        for (const k of ks)
+          if (k.hp > 0) {
+            const d = Math.hypot(tw.x - k.x, tw.y - k.y)
+            if (d < bd) (bd = d), (best = k)
+          }
+        if (best) best.hp -= 3 + Math.floor((st[tw.id].p2 - bd) / 200)
+      }
+    }
+    return dmg
+  }
   if (nearK && (kd < 250 || (kd < 450 && ownTowers >= 3))) {
     let bestV = -Infinity
     for (let k = 0; k < 16; k++) {
@@ -89,7 +125,9 @@ while (true) {
         return Math.hypot(nearK.x + t * dx - q.x, nearK.y + t * dy - q.y) < q.r
       })
       const edge = Math.min(x, y, 1920 - x, 1000 - y)
-      const v = knightDist(x, y) + (covered ? 150 : 0) + (shielded ? 100 : 0) - (edge < 150 ? (150 - edge) * 2 : 0)
+      const hurt = rollout(ang)
+      const v =
+        knightDist(x, y) + (covered ? 150 : 0) + (shielded ? 100 : 0) - (edge < 150 ? (150 - edge) * 2 : 0) - 150 * hurt
       if (v > bestV) {
         bestV = v
         action = `MOVE ${x} ${y}`
