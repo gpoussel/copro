@@ -13,7 +13,7 @@ Surveyed 2026-09-26.
 | abalone | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (6–0) |
 | amazons | 2 | **Legend** ✅ | 0 | TypeScript 1-ply territory, submitted | 2 | 4/4 matches vs boss |
 | ataxx | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 6/6 vs boss |
-| back-to-the-code | — | ready (no league) | 1 | TypeScript rectangles, **not submitted yet** (needs MCP PR #7 + reconnect) | 2–4 | 4/4 vs boss (~2.5× its cells) |
+| back-to-the-code | — | **Legend** ✅ (no league) | 0 | TypeScript rectangles, submitted | 2–4 | 4/4 vs boss; submitted after MCP PR #7 |
 | bandas | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
 | blocking | 2 | **Gold** ✅ | 0 | TypeScript greedy, submitted | 2–4 | ~40% vs boss (close scores) |
 | breakthrough | 1 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss (single league) |
@@ -40,7 +40,7 @@ Surveyed 2026-09-26.
 | othello-1 | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 3/4 vs boss; weak: improve (MCTS or deeper search) |
 | oware-abapa | 2 | **Legend** ✅ | 0 | TypeScript alpha-beta, submitted | 2 | 4/4 vs boss |
 | paper-soccer | 1 | **Legend** ✅ | 0 | TypeScript 2-ply turns, submitted | 2 | 4/4 vs boss (single league) |
-| platinum-rift-episode-2 | — | ready (no league) | 1 | TypeScript spread+rush, **not submitted yet** (needs MCP PR #7 + reconnect) | 2 | 4/4 vs boss (base taken in 13–19 turns) |
+| platinum-rift-episode-2 | — | **Legend** ✅ (no league) | 0 | TypeScript spread+rush, submitted | 2 | 4/4 vs boss; submitted after MCP PR #7 |
 | poker | 2 | **Gold** ✅ | 0 | TypeScript Monte Carlo equity, submitted | 2–4 | 2/4 heads-up vs boss |
 | start-up | 1 | **Legend** ✅ | 0 | TypeScript rules, submitted | 4 | valid; 106–200‰ vs bosses 450–800‰ |
 | tower-dereference | 1 | **Legend** ✅ | 0 | TypeScript upgrade-first, submitted | 2 | 4/4 vs boss (single league) |

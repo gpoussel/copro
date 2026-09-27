@@ -426,7 +426,7 @@ League-less (old BOT_PROGRAMMING), 35×20. Bot: best rectangle by neutral
 cells gained / (distance to nearest corner + perimeter cells to claim), no
 enemy cell inside, walk it corner to corner, replan when an enemy cell shows
 up in it (prefix sums make each rectangle O(1)). 4/4 vs the boss (~2.5× its
-cells). **Submitting failed**: the MCP's pre-submit ranking call errors on
+cells). Submitted once MCP PR #7 (ranking calls best-effort) was merged; the pre-submit ranking call used to error on
 league-less puzzles (fixed in codingame-mcp PR #7).
 
 ## platinum-rift-episode-2
@@ -436,7 +436,7 @@ enemy on turn 1). Bot: each group sends 1 pod to every unowned neighbour
 (platinum first, then towards the enemy base), the rest walks the shortest
 path to the enemy base; 2 pods stay home when enemies are adjacent; pods in a
 fight never retreat into enemy zones. 4/4 vs the boss (base taken in 13–19
-turns). Same pending-submit issue as back-to-the-code (MCP PR #7).
+turns). Submitted after MCP PR #7.
 
 ## counting-tictactoe
 
