@@ -987,6 +987,14 @@ nearest unowned cell (enemy HQ first, ties towards it), distinct targets;
 train level 1 on free own/border cells closest to the enemy HQ while
 gold − 10 + 5·(income − 1) ≥ 0. 4/4 vs the Wood 3 boss (HQ taken).
 Later: levels 2/3 (kill lower levels), mines, towers (Bronze = full game).
+Silver: the level-1 bot lost 0/4 (HQ taken). Rewritten for the full
+rules: moves only onto cells the unit may take (enemy unit level + 1,
+level 3 next to an active enemy tower), a tower next to our HQ when enemy
+units come within 3, mines on spots inside our territory while income
+< 25, training at the level each border cell needs (enemy units first)
+while gold covers cost + 4 turns of upkeep. Still 0/4 vs the Silver boss
+("Broken Boss" walks to our HQ): submitted as it covers more rules. Next:
+HQ defence (kill units within 2 of the HQ), cutting enemy territory.
 
 ## code-a-la-mode
 

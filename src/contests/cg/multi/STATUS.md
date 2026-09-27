@@ -94,7 +94,7 @@ Surveyed 2026-09-26.
 | summer-challenge-2024-olymbits | 6 | **Gold** ✅ | 0 | TypeScript 4 mini-games, submitted | 3 | best ~4/5 vs Bronze bosses |
 | tron-battle | 6 | Silver | 1 | TypeScript Voronoi + 1v1 alpha-beta, submitted | 2 | 3/4 vs Silver boss |
 | xmas-rush | 6 | Silver | 1 | TypeScript push search + multi-item moves, submitted | 2 | 2/4 vs Silver boss |
-| a-code-of-ice-and-fire | 7 | Silver | 1 | TypeScript expand + train, submitted | 2 | 4/4 vs Wood 3 boss |
+| a-code-of-ice-and-fire | 7 | Silver | 1 | TypeScript levels/towers/mines, submitted | 2 | 0/4 vs Silver boss (HQ defence missing) |
 | code-a-la-mode | 7 | Wood 1 | 3 | TypeScript plate loop + strawberries, submitted | 3 | best total 3/3 |
 | code-of-kutulu | 7 | Bronze | 2 | TypeScript flee + group + effects, submitted | 4 | best 2/3 vs Wood 1 bosses |
 | code-royale | 7 | Bronze | 2 | TypeScript mines + towers + knights, submitted | 2 | 4/4 vs Wood 1 boss |
