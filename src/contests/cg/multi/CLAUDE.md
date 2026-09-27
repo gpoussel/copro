@@ -1026,3 +1026,15 @@ minus 2 per BONUS), RELEASE the offered app with the fewest missing tasks,
 other phases take the first listed move. 2/4 vs the Wood 2 boss (the
 user's C++ agent, `legacy/green-circle.cpp`: 1/4). Later: card actions,
 giving cards when too close, bigger apps.
+
+## winter-challenge-2024
+
+Cellularena, 8 leagues (the wood ones are 5-match scenarios vs the boss).
+Costs: BASIC A, HARVESTER C+D, TENTACLE B+C, SPORER B+D, ROOT A+B+C+D. Bot
+per organism: a harvester facing an unharvested source (A first) on a free
+cell next to our organs when C and D allow, else a BASIC (or any
+affordable organ) on the free neighbour with the most free space, never on
+a source we harvest (other sources are eaten for +3). Won 3/3 Wood 2
+scenarios by one cell. Replaces the user's TS agent
+(`legacy/winter-challenge-2024.ts`). Later: tentacles (attack), sporers
+(new roots).
