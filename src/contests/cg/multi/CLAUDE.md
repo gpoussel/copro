@@ -873,3 +873,11 @@ moves, 10·min(6, BFS distance to the nearest minion, spawn delay added)
 − 50 if ≤ 1, +15 near another explorer (else drift towards the closest).
 Best (surviving) score in 4/4 games vs 3 bosses, by small margins.
 Later leagues: slashers, shelters, PLAN / LIGHT / YELL.
+
+## mean-max
+
+3 players, Wood: one Reaper (mass 0.5, friction 0.2). Bot: wreck with the
+best (water + 3·overlapping wrecks) / (distance + 600), aim = target − v,
+ACC = min(300, 0.5·|correction|), coast when inside and slow. Reached 50
+water first in 3/3 games vs 2 bosses. Later: Destroyer (break tankers),
+Doof (rage, skills: grenade, tar, oil).

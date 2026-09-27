@@ -101,7 +101,7 @@ Surveyed 2026-09-26.
 | coders-of-the-caribbean | 7 | Wood 3 | 5 | TypeScript barrel chase, submitted | 2 | 4/4 vs Wood 3 boss |
 | ghost-in-the-cell | 7 | Wood 3 | 5 | TypeScript greedy targets, submitted | 2 | 4/4 vs Wood 3 boss |
 | hypersonic | 7 | Wood 3 | 5 | TypeScript greedy boxes, submitted | 2 | 4/4 vs Wood 3 boss |
-| mean-max | 7 | Wood 3 | 5 | — | 3 | |
+| mean-max | 7 | Wood 3 | 5 | TypeScript reaper greedy, submitted | 3 | first to 50 in 3/3 vs 2 bosses |
 | winter-challenge-2024 | 8 | Wood 3 | 5 | TypeScript 104/1145 | 2 | |
 | wondev-woman | 7 | Wood 3 | 5 | TypeScript 1-ply, submitted | 2 | 4/4 vs Wood 3 boss |
 | soak-overflow | 8 | Wood 4 | 6 | — | 2 | |
