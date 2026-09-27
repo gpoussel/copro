@@ -618,6 +618,10 @@ own zones. Bot: buy on the richest neutral zones, then on our zones touching
 enemies; each group sends 1 pod per unowned neighbour it outnumbers
 (platinum first), the rest steps towards the nearest unowned zone. 4/4 vs the
 Wood boss.
+Bronze = 4-player games (rank 361/401): the 1-pod-per-rich-zone opening
+got wiped out by turn 5 (test with `opponents=["boss","boss","boss"]`).
+With 3+ players the opening now buys 2 pods per zone inside the richest
+2-link area: best score in 3/3 four-player games (~145 vs ≤ 17).
 
 ## smash-the-code
 

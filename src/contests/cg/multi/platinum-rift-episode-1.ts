@@ -20,7 +20,9 @@ for (let i = 0; i < linkCount; i++) {
   adj[b].push(a)
 }
 
+let turn = 0
 while (true) {
+  turn++
   const platinum = parseInt(readline())
   const owner = new Int8Array(zoneCount)
   const pods: number[][] = []
@@ -69,6 +71,40 @@ while (true) {
 
   const buys: string[] = []
   let budget = Math.floor(platinum / 20)
+  // Opening with 3+ players: 2 pods per zone around the richest area (the
+  // platinum within 2 links), so the pods are not picked off one by one.
+  if (turn === 1 && playerCount > 2) {
+    const within2 = (z: number) => {
+      const seen = new Set([z])
+      let frontier = [z]
+      for (let d = 0; d < 2; d++) {
+        const next: number[] = []
+        for (const a of frontier) for (const b of adj[a]) if (!seen.has(b)) (seen.add(b), next.push(b))
+        frontier = next
+      }
+      return seen
+    }
+    let bestArea = new Set<number>()
+    let bestValue = -1
+    for (let z = 0; z < zoneCount; z++) {
+      if (owner[z] !== -1 || enemies(z) > 0) continue
+      const area = within2(z)
+      let v = 0
+      for (const a of area) v += owner[a] === -1 && enemies(a) === 0 ? platinumSource[a] : -3
+      if (v > bestValue) {
+        bestValue = v
+        bestArea = area
+      }
+    }
+    const spots = [...bestArea]
+      .filter(z => owner[z] === -1 && enemies(z) === 0)
+      .sort((a, b) => platinumSource[b] - platinumSource[a])
+    for (const z of spots) {
+      if (budget < 2) break
+      buys.push(`2 ${z}`)
+      budget -= 2
+    }
+  }
   const neutral = [...Array(zoneCount).keys()]
     .filter(z => owner[z] === -1 && enemies(z) === 0 && !claimed.has(z))
     .sort((a, b) => platinumSource[b] - platinumSource[a])

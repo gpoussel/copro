@@ -86,7 +86,7 @@ Surveyed 2026-09-26.
 | great-escape | 6 | Silver | 1 | TypeScript path+walls | 2 | Wood 2→Wood 1 |
 | green-circle | 6 | Wood 2 | 4 | C++ 250/544 | 2 | |
 | ocean-of-code | 6 | Silver | 1 | TypeScript tracking+torpedo+mines, submitted | 2 | 6/6 vs Bronze boss |
-| platinum-rift-episode-1 | 6 | Bronze | 2 | TypeScript spread+buy, submitted | 2 | 4/4 vs Wood boss (eliminated ~turn 25) |
+| platinum-rift-episode-1 | 6 | Bronze | 2 | TypeScript spread+buy, cluster opening, submitted | 2 | best 3/3 in 4p vs bosses |
 | poker-chip-race | 6 | Wood 2 | 4 | TypeScript WIP, **not submitted** (0/6) | 2 | gets eaten; needs physics simulation |
 | smash-the-code | 6 | Silver | 1 | TypeScript 3-ply sim, submitted | 2 | 4/4 vs Wood boss; later leagues add rotations/different colours |
 | spring-challenge-2020 | 6 | Silver | 1 | TypeScript beam paths, types, abilities | 2 | Silver boss ~2/6; collection efficiency and deaths |
