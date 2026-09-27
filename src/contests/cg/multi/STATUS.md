@@ -81,9 +81,9 @@ Surveyed 2026-09-26.
 | langton-s-ant | 5 | **Gold** ✅ | 0 | TypeScript planned picks (shared grid), submitted | 2 | 4/4 vs Silver boss |
 | codebusters | 6 | **Gold** ✅ | 0 | TypeScript rules+STUN+stamina, submitted | 2 | 4/4 vs Bronze boss (close) |
 | fall-challenge-2020 | 6 | **Gold** ✅ | 0 | TypeScript BFS over casts + learn, submitted | 2 | 4/4 vs Silver boss |
-| fantastic-bits | 6 | Silver | 1 | TypeScript chase+throw+flipendo, submitted | 2 | 2/4 vs Silver boss |
+| fantastic-bits | 6 | **Gold** ✅ | 0 | TypeScript chase+throw+flipendo, submitted | 2 | 2/4 vs Silver boss |
 | game-of-drones | 6 | **Gold** ✅ | 0 | TypeScript greedy allocation, submitted | 2 | 4/4 vs Wood boss (~3× its score) |
-| great-escape | 6 | Silver | 1 | TypeScript path+walls | 2 | Wood 2→Wood 1 |
+| great-escape | 6 | **Gold** ✅ | 0 | TypeScript path+walls | 2 | Wood 2→Wood 1 |
 | green-circle | 6 | Silver | 1 | TypeScript desk choice, submitted | 2 | 2/4 vs Wood 2 boss |
 | ocean-of-code | 6 | Silver | 1 | TypeScript path tracking+silence, submitted | 2 | 1/4 vs Silver boss; old bot 9/690 |
 | platinum-rift-episode-1 | 6 | Silver | 1 | TypeScript spread+buy, cluster opening, submitted | 2 | best 3/3 in 4p vs bosses |
@@ -99,10 +99,10 @@ Surveyed 2026-09-26.
 | code-of-kutulu | 7 | Silver | 1 | TypeScript flee + group + effects, submitted | 4 | best 2/3 vs Wood 1 bosses |
 | code-royale | 7 | Bronze | 2 | TypeScript mines + towers + knights, submitted | 2 | 4/4 vs Wood 1 boss |
 | coders-of-the-caribbean | 7 | Silver | 1 | TypeScript barrels + leading shots, submitted | 2 | 4/4 vs Wood 2 boss |
-| ghost-in-the-cell | 7 | Bronze | 2 | TypeScript greedy + bombs/evacuation, submitted | 2 | 3/4 vs Bronze boss |
-| hypersonic | 7 | Silver | 1 | TypeScript greedy + escape check, submitted | 2 | 2/4 vs Silver boss |
+| ghost-in-the-cell | 7 | Silver | 1 | TypeScript greedy + bombs/evacuation, submitted | 2 | 3/4 vs Bronze boss |
+| hypersonic | 7 | **Gold** ✅ | 0 | TypeScript greedy + escape check, submitted | 2 | 2/4 vs Silver boss |
 | mean-max | 7 | **Gold** ✅ | 0 | TypeScript 3 units + oil, submitted | 3 | first to 50 in 2/3 vs Wood 1 bosses |
 | winter-challenge-2024 | 8 | Silver | 1 | TypeScript harvest + grow + spore, submitted | 2 | 3/3 Wood 1 scenario |
 | wondev-woman | 7 | **Gold** ✅ | 0 | TypeScript 1-ply state eval, submitted | 2 | 4/4 vs Bronze boss |
 | soak-overflow | 8 | Silver | 1 | TypeScript full-game heuristic, submitted | 2 | 4/4 vs Bronze boss |
-| botters-of-the-galaxy | 10 | Wood 4 | 6 | TypeScript Hulk brawler, submitted | 2 | 4/4 vs Wood 6 boss |
+| botters-of-the-galaxy | 10 | Silver | 1 | TypeScript Hulk brawler, submitted | 2 | 4/4 vs Wood 6 boss |
