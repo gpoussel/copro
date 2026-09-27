@@ -840,3 +840,11 @@ first version timed out on turn 1. Wood bot: build the nearest free sites
 knights when affordable (archers when > 2 enemy knights), queen stays in
 our corner and steps away from knights within 400. 4/4 vs the Wood boss.
 Later leagues: mines (gold income), towers, giants.
+
+## hypersonic
+
+Bomberman 13×11, Wood: bombs (8 turns, range 3 counting the bomb cell)
+do not hurt. Bot: BFS over free cells, best cell = undoomed boxes a bomb
+there would hit / (distance + 2); BOMB when standing on it and head for
+the next best cell. 4/4 vs the Wood boss (~22 to 7 boxes). Later: walls
+`X`, items (boxes `1`/`2`), bombs kill: add an escape check before bombing.
