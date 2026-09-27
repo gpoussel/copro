@@ -810,6 +810,10 @@ closest to the current tree (eggs −2 while eggs remain before turn 30,
 last turn's targets first for stability) along its shortest path, while
 ≥ 2 ants per tree cell; BEACON strength 1 on every tree cell. 2/4 vs the
 Silver boss (close); 1.5 ants/cell + egg bonus 3 went 0/4.
+Forum (forum.codingame.com/t/200927): top bots simulate the referee and
+search beacon layouts; a Gold heuristic picks the 2 closest eggs per base
+for 4 turns, then half the eggs, then crystals up to a majority. That
+selection went 1/4 here (reverted). Arena 24.4 vs boss 25.9.
 
 ## fall-challenge-2020
 
