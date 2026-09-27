@@ -889,6 +889,13 @@ barrel by rum / (hex distance + 1), distinct targets; no barrel left: go
 to the enemy. `FIRE` flag for the next league (range 10, every other
 turn, predicted position TODO). 4/4 vs the Wood 3 boss. Later: mines,
 cannonballs, up to 3 ships, manual control (referee on GitHub).
+Wood 2 (mines, FIRE): the barrel-only bot lost 0/2. Now fires every
+other turn at the enemy's centre extrapolated along its heading for the
+flight time (1 + round(d/3), from our bow, range 10) when rum > 50 or no
+barrel is left, never while a cannonball is about to land on our ship,
+and skips barrels next to a mine. 4/4 vs the Wood 2 boss (sunk it in
+18–60 turns). Offset-grid neighbours: even rows (+1,0) (0,−1) (−1,−1)
+(−1,0) (−1,+1) (0,+1), odd rows (+1,0) (+1,−1) (0,−1) (−1,0) (0,+1) (+1,+1).
 
 ## code-of-kutulu
 
