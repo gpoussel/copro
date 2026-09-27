@@ -52,14 +52,14 @@ Surveyed 2026-09-26.
 | beeminegame | 3 | **Gold** ✅ | 0 | TypeScript greedy hives | 2 | Silver→Gold 2026-09-26 (levels/bees in Gold: bot ignores them) |
 | counting-tictactoe | 3 | **Legend** ✅ | 0 | TypeScript MCTS | 2 | Gold→Legend 2026-09-27 |
 | elemental-wars | 3 | Silver | 1 | TypeScript chase/flee, submitted | 3 | best score 4/6 vs 2 bosses; awaiting promotion (more elementals + freeing prisoners next) |
-| mad-pod-racing | 7 | **Gold** ✅ | 0 | TypeScript Gold 2-pod racer, submitted | 2 | 1/4 vs Gold boss; next: blocker pod + collisions (Magus) |
+| mad-pod-racing | 7 | **Legend** ✅ | 0 | TypeScript Gold 2-pod racer, submitted | 2 | 1/4 vs Gold boss; next: blocker pod + collisions (Magus) |
 | night-of-war | 3 | **Legend** ✅ | 0 | TypeScript rules | 2 | Silver→Gold 2026-09-26 (Gold rules: 5×5? re-read) |
 | penguins | 3 | **Legend** ✅ | 0 | TypeScript Voronoi | 2–4 | Silver→Legend 2026-09-26 |
 | space-shooter | 3 | **Gold** ✅ | 0 | TypeScript steering | 2 | Silver→Gold 2026-09-26 (missiles in this league: bot ignores them) |
 | spring-challenge-2022 | 6 | **Gold** ✅ | 0 | TypeScript 2 defenders + attacker, submitted | 2 | 4/4 vs Silver boss |
 | spring-challenge-2026-troll-farm | 6 | Silver | 1 | C++ 169/683 (user); TS WIP not submitted | 2 | TS greedy 0/4, weaker than the C++ |
 | tic-tac-toe | 5 | **Legend** ✅ | 0 | TypeScript MCTS v6 | 2 | Gold→Legend 2026-09-26 |
-| volcanoes | 3 | Silver | 1 | TypeScript flat Monte Carlo, submitted | 2 | 4/4 vs Silver boss |
+| volcanoes | 3 | **Legend** ✅ | 0 | TypeScript flat Monte Carlo, submitted | 2 | 4/4 vs Silver boss |
 | atari-go | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
 | atari-go-9x9 | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
 | code4life | 6 | Bronze | 2 | TypeScript state machine, submitted | 2 | ~2/4 vs Bronze boss |
@@ -73,18 +73,18 @@ Surveyed 2026-09-26.
 | seabed-security | 7 | Silver | 1 | TypeScript dive/surface, submitted | 2 | 2/4 vs Bronze boss |
 | spring-challenge-2021 | 6 | **Gold** ✅ | 0 | TypeScript rules bot, submitted | 2 | 4/4 vs Bronze boss |
 | tryangle-catch | 4 | Bronze | 2 | TypeScript capture teams, submitted | 2 | 1/4 vs Bronze boss |
-| winter-challenge-2026-snakebyte | 4 | Bronze | 2 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
+| winter-challenge-2026-snakebyte | 4 | Silver | 1 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
 | bit-runner-2048 | 5 | Bronze | 2 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
 | crystal-rush | 5 | Bronze | 2 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |
 | git-patchwork | 5 | **Legend** ✅ | 0 | TypeScript greedy + rotations, submitted | 2 | 4/4 vs Bronze boss |
 | keep-off-the-grass-fall-challenge-2022 | 5 | **Gold** ✅ | 0 | TypeScript expand + recyclers, submitted | 2 | old bot reached rank 1 in Silver; resubmitted by mistake (1-2/4 vs Silver boss) |
 | langton-s-ant | 5 | **Gold** ✅ | 0 | TypeScript planned picks (shared grid), submitted | 2 | 4/4 vs Silver boss |
 | codebusters | 6 | **Gold** ✅ | 0 | TypeScript rules+STUN+stamina, submitted | 2 | 4/4 vs Bronze boss (close) |
-| fall-challenge-2020 | 6 | Silver | 1 | TypeScript BFS over casts + learn, submitted | 2 | 4/4 vs Silver boss |
+| fall-challenge-2020 | 6 | **Gold** ✅ | 0 | TypeScript BFS over casts + learn, submitted | 2 | 4/4 vs Silver boss |
 | fantastic-bits | 6 | Silver | 1 | TypeScript chase+throw+flipendo, submitted | 2 | 2/4 vs Silver boss |
 | game-of-drones | 6 | **Gold** ✅ | 0 | TypeScript greedy allocation, submitted | 2 | 4/4 vs Wood boss (~3× its score) |
 | great-escape | 6 | Silver | 1 | TypeScript path+walls | 2 | Wood 2→Wood 1 |
-| green-circle | 6 | Wood 2 | 4 | TypeScript desk choice, submitted | 2 | 2/4 vs Wood 2 boss |
+| green-circle | 6 | Wood 1 | 3 | TypeScript desk choice, submitted | 2 | 2/4 vs Wood 2 boss |
 | ocean-of-code | 6 | Silver | 1 | TypeScript path tracking+silence, submitted | 2 | 1/4 vs Silver boss; old bot 9/690 |
 | platinum-rift-episode-1 | 6 | Silver | 1 | TypeScript spread+buy, cluster opening, submitted | 2 | best 3/3 in 4p vs bosses |
 | poker-chip-race | 6 | Bronze | 2 | TypeScript rare pushes + predictions, submitted | 2 | 4/4 vs Wood 2 boss |
@@ -96,13 +96,13 @@ Surveyed 2026-09-26.
 | xmas-rush | 6 | Silver | 1 | TypeScript push search + multi-item moves, submitted | 2 | 2/4 vs Silver boss |
 | a-code-of-ice-and-fire | 7 | Silver | 1 | TypeScript levels/towers/mines, submitted | 2 | 0/4 vs Silver boss (HQ defence missing) |
 | code-a-la-mode | 7 | Bronze | 2 | TypeScript plate loop + strawberries + croissants, submitted | 3 | best total 3/3 |
-| code-of-kutulu | 7 | Bronze | 2 | TypeScript flee + group + effects, submitted | 4 | best 2/3 vs Wood 1 bosses |
+| code-of-kutulu | 7 | Silver | 1 | TypeScript flee + group + effects, submitted | 4 | best 2/3 vs Wood 1 bosses |
 | code-royale | 7 | Bronze | 2 | TypeScript mines + towers + knights, submitted | 2 | 4/4 vs Wood 1 boss |
 | coders-of-the-caribbean | 7 | Silver | 1 | TypeScript barrels + leading shots, submitted | 2 | 4/4 vs Wood 2 boss |
 | ghost-in-the-cell | 7 | Bronze | 2 | TypeScript greedy + bombs/evacuation, submitted | 2 | 3/4 vs Bronze boss |
 | hypersonic | 7 | Silver | 1 | TypeScript greedy + escape check, submitted | 2 | 2/4 vs Silver boss |
 | mean-max | 7 | Silver | 1 | TypeScript 3 units + oil, submitted | 3 | first to 50 in 2/3 vs Wood 1 bosses |
 | winter-challenge-2024 | 8 | Silver | 1 | TypeScript harvest + grow + spore, submitted | 2 | 3/3 Wood 1 scenario |
-| wondev-woman | 7 | Silver | 1 | TypeScript 1-ply state eval, submitted | 2 | 4/4 vs Bronze boss |
+| wondev-woman | 7 | **Gold** ✅ | 0 | TypeScript 1-ply state eval, submitted | 2 | 4/4 vs Bronze boss |
 | soak-overflow | 8 | Bronze | 2 | TypeScript tutorial goals, submitted | 2 | Wood 1 goal (bunkers) |
 | botters-of-the-galaxy | 10 | Wood 6 | 8 | TypeScript Hulk brawler, submitted | 2 | 4/4 vs Wood 6 boss |
