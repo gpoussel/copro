@@ -1004,3 +1004,15 @@ the constructed bot: pick by value-per-cost with a −3 penalty when the
 cost bucket / item quota is full; battle = greedy summons, items, guards,
 favourable trades unless lethal, face. 3/4 vs the Bronze boss. Replaces
 the user's old agent (kept in `legacy/legends-of-code-magic.ts`).
+
+## code4life
+
+Bronze (limited molecules, expertise, projects, travel times). State
+machine: SAMPLES (rank 1 / 2 / 3 by total expertise < 3 / < 8 / more) →
+DIAGNOSIS (diagnose, upload samples the greedy molecule plan cannot fit,
+download good cloud samples — never one we uploaded: the first version
+looped upload/download all game) → MOLECULES (what the planned samples
+need, first samples first) → LABORATORY. ~2/4 vs the Bronze boss (close
+scores); rank thresholds 2/6 did worse (0/4), 4/10 similar. Replaces the
+user's Rust agent (`legacy/code4life.rs`). Ideas: science projects, block
+the enemy's molecules, better sample mix.

@@ -62,7 +62,7 @@ Surveyed 2026-09-26.
 | volcanoes | 3 | Silver | 1 | TypeScript 1-ply | 2 | stuck 82/125 in Silver: needs growth simulation / search |
 | atari-go | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
 | atari-go-9x9 | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
-| code4life | 6 | Bronze | 2 | Rust 1221/1535 | 2 | |
+| code4life | 6 | Bronze | 2 | TypeScript state machine, submitted | 2 | ~2/4 vs Bronze boss |
 | coders-of-the-realm | 4 | **Legend** ✅ | 0 | TypeScript greedy placement | 2–4 | Bronze→Silver |
 | coders-of-the-realm---1v1 | 4 | **Legend** ✅ | 0 | TypeScript greedy placement | 2 | Bronze→Silver |
 | cultist-wars | 4 | Bronze | 2 | TypeScript action scoring, submitted | 2 | 2/6 vs Bronze boss (loses as player 2): improve shooting duels |
