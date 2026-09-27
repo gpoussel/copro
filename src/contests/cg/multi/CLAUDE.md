@@ -907,3 +907,12 @@ Summer 2025. Wood leagues are tutorials with one fixed goal each (3 of 5
 successes vs the boss). **Tiles come one line per row** (`x y type`
 triples), not one line per cell. Wood 4 (`LEAGUE = 1`): agents to (6,1)
 and (6,3). Read each new league's goal and bump `LEAGUE`.
+
+## botters-of-the-galaxy
+
+MOBA lane, 10 leagues (Wood 6 start). The Wood boss (DoubleHulk) walks
+straight at our hero: IRONMAN (820 HP) died by turn ~35–70 whether it
+stood still or kited (kiting got cornered at the map edge). HULK fighting
+the enemy hero within 400 next to our tower wins 4/4. Otherwise: stay
+behind our frontmost creep, last-hit, weakest creep in range. Later:
+items, last hit/deny, neutrals (GROOT), bushes, 2nd hero, skills.

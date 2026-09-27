@@ -105,4 +105,4 @@ Surveyed 2026-09-26.
 | winter-challenge-2024 | 8 | Wood 3 | 5 | TypeScript 104/1145 | 2 | |
 | wondev-woman | 7 | Wood 3 | 5 | TypeScript 1-ply, submitted | 2 | 4/4 vs Wood 3 boss |
 | soak-overflow | 8 | Wood 4 | 6 | TypeScript tutorial goals, submitted | 2 | Wood 4 goal done |
-| botters-of-the-galaxy | 10 | Wood 6 | 8 | — | 2 | |
+| botters-of-the-galaxy | 10 | Wood 6 | 8 | TypeScript Hulk brawler, submitted | 2 | 4/4 vs Wood 6 boss |
