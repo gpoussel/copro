@@ -1048,6 +1048,11 @@ the constructed bot: pick by value-per-cost with a −3 penalty when the
 cost bucket / item quota is full; battle = greedy summons, items, guards,
 favourable trades unless lethal, face. 3/4 vs the Bronze boss. Replaces
 the user's old agent (kept in `legacy/legends-of-code-magic.ts`).
+Silver: 0/2. Draft now uses ClosetAI's leaked card values (the array in
+gym-locm's ClosetAIDraftAgent, indexed by cardNumber − 1) with a curve
+penalty; summons pick the subset using the most mana (brute force over
+the hand). 1/4 vs the Silver boss: the battle logic is the weak part
+(next: search over attack orders / trades, lethal through guards).
 
 ## code4life
 

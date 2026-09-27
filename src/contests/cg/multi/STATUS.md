@@ -69,7 +69,7 @@ Surveyed 2026-09-26.
 | game-of-life-or-death | 4 | **Legend** ✅ | 0 | TypeScript pattern search (scales to 16×16), resubmitted | 2 | 4/4 vs Silver boss (~780–0) |
 | gargoyles-versus-santas | 4 | **Legend** ✅ | 0 | TypeScript interception | 2 | Bronze→Silver |
 | isola | 4 | **Gold** ✅ | 0 | TypeScript alpha-beta | 2 | Bronze→Gold 2026-09-26 |
-| legends-of-code-magic | 7 | Silver | 1 | TypeScript draft + greedy battle, submitted | 2 | 3/4 vs Bronze boss |
+| legends-of-code-magic | 7 | Silver | 1 | TypeScript ClosetAI draft + greedy battle, submitted | 2 | 1/4 vs Silver boss |
 | seabed-security | 7 | Silver | 1 | TypeScript dive/surface, submitted | 2 | 2/4 vs Bronze boss |
 | spring-challenge-2021 | 6 | **Gold** ✅ | 0 | TypeScript rules bot, submitted | 2 | 4/4 vs Bronze boss |
 | tryangle-catch | 4 | Bronze | 2 | TypeScript WIP, **not submitted** (0/6) | 2 | units get surrounded; study the referee before retrying |

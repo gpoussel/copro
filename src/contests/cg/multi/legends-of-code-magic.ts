@@ -3,7 +3,7 @@
 //
 // LOCM: a 30-turn draft (PICK 0/1/2 of 3 cards) then a one-board battle
 // (≤ 6 creatures). Same heuristics as legends-of-code-magic-constructed:
-// - draft: value-per-cost score, with a mana-curve penalty for full buckets;
+// - draft: ClosetAI's leaked card values, with a mana-curve penalty;
 // - battle: lethal check, greedy summons, items (red on threats, green on
 //   our creatures, blue damage to face), guards first, favourable trades,
 //   the rest to face.
@@ -76,6 +76,16 @@ function cardValue(c: Card): number {
 
 const curve = new Map<number, number>() // cost bucket -> picked
 let items = 0
+// ClosetAI's leaked draft values (indexed by cardNumber − 1), as used by
+// gym-locm's ClosetAIDraftAgent (github.com/ronaldosvieira/gym-locm).
+const CLOSET = [
+  -666, 65, 50, 80, 50, 70, 71, 115, 71, 73, 43, 77, 62, 63, 50, 66, 60, 66, 90, 75, 50, 68, 67, 100, 42, 63, 67, 52,
+  69, 90, 60, 47, 87, 81, 67, 62, 75, 94, 56, 62, 51, 61, 43, 54, 97, 64, 67, 49, 109, 111, 89, 114, 93, 92, 89, 2, 54,
+  25, 63, 76, 58, 99, 79, 19, 82, 115, 106, 104, 146, 98, 70, 56, 65, 52, 54, 65, 55, 77, 48, 84, 115, 75, 89, 68, 80,
+  71, 46, 73, 69, 47, 63, 70, 11, 71, 54, 85, 77, 77, 64, 82, 62, 49, 43, 78, 67, 72, 67, 36, 48, 75, -8, 82, 69, 32,
+  87, 98, 124, 35, 60, 59, 49, 72, 54, 35, 22, 50, 54, 51, 54, 59, 38, 31, 43, 62, 55, 57, 41, 70, 38, 76, 1, -100,
+  -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100,
+]
 function draft(cards: Card[]): string {
   const limit = (cost: number) =>
     cost <= 1 ? 4 : cost <= 2 ? 6 : cost <= 3 ? 6 : cost <= 4 ? 5 : cost <= 5 ? 4 : cost <= 6 ? 3 : 2
@@ -83,9 +93,9 @@ function draft(cards: Card[]): string {
   let bestScore = -Infinity
   cards.forEach((c, i) => {
     const bucket = Math.min(c.cost, 7)
-    let score = cardValue(c)
-    if ((curve.get(bucket) ?? 0) >= limit(c.cost)) score -= 3
-    if (c.type !== 0 && items >= 10) score -= 3
+    let score = CLOSET[c.number - 1] ?? cardValue(c) * 10
+    if ((curve.get(bucket) ?? 0) >= limit(c.cost)) score -= 15
+    if (c.type !== 0 && items >= 10) score -= 15
     if (score > bestScore) {
       bestScore = score
       best = i
@@ -107,12 +117,22 @@ function battle(state: ReturnType<typeof readState>): string {
   const mine = state.cards.filter(c => c.location === 1).map(c => ({ ...c, canAttack: true }))
   const theirs = state.cards.filter(c => c.location === -1)
 
-  // Summons: best value first while mana and board space allow.
-  const creatures = hand
-    .filter(c => c.type === 0)
-    .sort((a, b) => cardValue(b) + b.cost * 2 - (cardValue(a) + a.cost * 2))
-  for (const c of creatures) {
-    if (c.cost > mana || mine.length >= 6) continue
+  // Summons: the subset of creatures (≤ board space) that uses the most
+  // mana, ties by total value (hand ≤ 8: brute force over subsets).
+  const creatures = hand.filter(c => c.type === 0)
+  let bestSet: Card[] = []
+  let bestKey = -Infinity
+  for (let m = 0; m < 1 << creatures.length; m++) {
+    const set = creatures.filter((_, i) => (m >> i) & 1)
+    const cost = set.reduce((t, c) => t + c.cost, 0)
+    if (cost > mana || mine.length + set.length > 6) continue
+    const key = cost * 100 + set.reduce((t, c) => t + cardValue(c) + c.cost * 2, 0)
+    if (key > bestKey) {
+      bestKey = key
+      bestSet = set
+    }
+  }
+  for (const c of bestSet) {
     actions.push(`SUMMON ${c.id}`)
     mana -= c.cost
     oppHp += c.oppHp
@@ -153,9 +173,7 @@ function battle(state: ReturnType<typeof readState>): string {
     else if (faceDamage < oppHp) {
       target =
         enemies
-          .filter(
-            e => e.defense > 0 && (a.attack >= e.defense || has(a, "L")) && (e.attack < a.defense || has(a, "W"))
-          )
+          .filter(e => e.defense > 0 && (a.attack >= e.defense || has(a, "L")) && (e.attack < a.defense || has(a, "W")))
           .sort((x, y) => y.attack - x.attack)[0] ?? null
     }
     if (target) {
