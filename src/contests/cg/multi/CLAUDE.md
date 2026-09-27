@@ -692,6 +692,15 @@ we are out of the blast; drop a mine whenever charged; SILENCE one step
 after a blast within 3 of us; sonar the likeliest sector when > 30
 candidates; drift to distance ~3 of the candidates' centre when the torpedo
 is ready. 6/6 vs the Bronze boss (it never hit us).
+Silver boss (Cpt. Haddock) silences every ~16 turns and tracks us: 0/4.
+Added: path-aware enemy hypotheses (position + its visited-cell bitset,
+pruned when a move re-enters its path, reset on SURFACE, deduped/sampled to
+4000 after SILENCE), self-tracking (the same from our public orders and our
+life loss after its blasts) with SILENCE (the 1-4 dash keeping the most
+space) when ≤ 15 positions remain for us or after a close blast, and a
+stricter firing threshold (0.9 expected damage unless we are known).
+Still 1/4 in IDE tests. Next: charge SILENCE right after firing, move to
+torpedo range when located, sonar more, simulate the enemy's mines.
 
 ## spring-challenge-2020
 
