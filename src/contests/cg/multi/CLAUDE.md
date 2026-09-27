@@ -1141,7 +1141,9 @@ Arena 25.7 / 24.9. Tried (IDE, not kept): 3 mines 2/4, giants 1/4,
 pack-average kiting 1/4, 5 towers 1/4. KaZede (12/13 vs the boss) and
 GasaiYuno build the knight barracks on turn 1–2 and train with the 100
 starting gold, then mines, many towers, a queen always moving; they win
-by killing the boss queen. Barracks-first order: 2/4, arena A/B.
+by killing the boss queen. Barracks-first order: 2/4 but arena 21.2:
+reverted. (A submit reply shows the previous agent; the new one ranks
+under a new agentId.)
 
 ## hypersonic
 
