@@ -631,6 +631,9 @@ Silver: with exactly two players alive, iterative-deepening alpha-beta
 difference (×4 once separated), 70 ms. Old 1-ply bot 1/4, alpha-beta 3/4
 vs the Silver boss. Ideas: articulation points / tree of chambers for the
 separated endgame.
+Separated positions now score the fillable cells (checkerboard parity:
+moves alternate colours, first the colour opposite the head, so a region
+fills ≤ 2·min + 1). 3/4 again; arena 29.48 vs boss 30.90 before it.
 
 ## great-escape
 
