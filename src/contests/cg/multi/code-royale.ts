@@ -137,22 +137,10 @@ while (true) {
         }
       }
       const edge = Math.min(qx, qy, 1920 - qx, 1000 - qy)
-      const corner = Math.min(
-        Math.hypot(qx, qy),
-        Math.hypot(1920 - qx, qy),
-        Math.hypot(qx, 1000 - qy),
-        Math.hypot(1920 - qx, 1000 - qy)
-      )
-      // Beyond the horizon: room from the surviving knights, no trap
-      // against walls or in corners (queens still died cornered).
-      let room = 400
-      for (const k of ks) if (k.hp > 0) room = Math.min(room, Math.hypot(k.x - qx, k.y - qy))
       const score =
         -100 * dmg -
         0.05 * Math.max(0, Math.hypot(plan.x - qx, plan.y - qy) - plan.r) -
-        (edge < 200 ? (200 - edge) * 1.5 : 0) -
-        (corner < 350 ? (350 - corner) * 1.5 : 0) +
-        0.1 * room +
+        (edge < 150 ? 150 - edge : 0) +
         (seq[0] === 8 ? 1 : 0)
       if (score > bestScore) {
         bestScore = score
