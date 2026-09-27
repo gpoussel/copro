@@ -578,6 +578,8 @@ boss (rule bot arena 25.8). A 70 ms budget timed out in the arena (turn
 Arena 23.8 (below the rule bot's 26.1) although the 2-ply scan completes
 on CG. Iterative-deepening alpha-beta (depth 2–6, or even depths only)
 went 2W 1D 1L, then timed out at depth 4 (0–1/4): reverted to 2-ply.
+An arena loss (1–7) showed our cultists never shooting (chip damage was
+worth 0.3/hp and kills need 2 shots): hp now counts 1 per point. 3/4.
 
 ## tryangle-catch
 

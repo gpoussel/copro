@@ -157,7 +157,7 @@ function evaluate(units: Unit[], me: number): number {
   for (const u of units) {
     if (u.hp <= 0) continue
     const sign = u.owner === me ? 1 : u.owner === 1 - me ? -1 : 0
-    s += sign * (10 + 0.3 * u.hp + (u.type === 1 ? 40 : 0))
+    s += sign * (10 + u.hp + (u.type === 1 ? 40 : 0)) // hp counts fully: chip damage is progress
   }
   const neutrals = units.filter(u => u.hp > 0 && u.owner === 2)
   for (const side of [me, 1 - me]) {
