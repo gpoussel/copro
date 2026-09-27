@@ -1161,6 +1161,10 @@ the order with the best award / estimated work (crate or ready item 1,
 strawberries 4, croissant 13, tart 16 or 8 with a raw tart ready; the
 carried plate must fit) and only bakes/chops for that order. 2/3 with
 higher totals (13–14k).
+Arena 22.2 with that. Partner coordination added: the order the
+partner's plate fits is left to it, and chopping / baking is skipped when
+the partner already carries that chain (strawberries, dough, raw tart).
+Best total in 2/3 (close second in the third).
 
 ## soak-overflow
 

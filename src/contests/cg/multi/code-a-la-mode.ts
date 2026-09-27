@@ -36,7 +36,8 @@ while (true) {
   const [pxs, pys, item] = readline().trim().split(" ")
   const px = +pxs
   const py = +pys
-  readline() // partner
+  const partnerItem = readline().trim().split(" ")[2] ?? "NONE"
+  const partnerPlate = partnerItem.startsWith("DISH") ? partnerItem.split("-").filter(s => s !== "DISH") : null
   const nt = parseInt(readline())
   const tables: { x: number; y: number; item: string }[] = []
   for (let i = 0; i < nt; i++) {
@@ -83,8 +84,18 @@ while (true) {
     carriedPlate.every(d => o.items.includes(d))
       ? o.award / (3 + o.items.filter(d => !carriedPlate.includes(d)).reduce((t, d) => t + work(d), 0))
       : 0
-  const best = orders.slice().sort((a, b) => orderValue(b) - orderValue(a))[0]
-  const needChopped = best?.items.includes("CHOPPED_STRAWBERRIES") && !onTable("CHOPPED_STRAWBERRIES")
+  // The partner's plate claims the best order it fits: aim at another one.
+  const partnerOrder = partnerPlate
+    ? orders.filter(o => partnerPlate.every(d => o.items.includes(d))).sort((a, b) => orderValue(b) - orderValue(a))[0]
+    : undefined
+  const ranked = orders.slice().sort((a, b) => orderValue(b) - orderValue(a))
+  const best = ranked.find(o => o !== partnerOrder) ?? ranked[0]
+  // Do not duplicate what the partner is already carrying through.
+  const partnerBusy = (...what: string[]) => what.includes(partnerItem.split("-")[0])
+  const needChopped =
+    best?.items.includes("CHOPPED_STRAWBERRIES") &&
+    !onTable("CHOPPED_STRAWBERRIES") &&
+    !partnerBusy("STRAWBERRIES", "CHOPPED_STRAWBERRIES")
   // Croissants: dough (H) baked 10 turns in the oven (O), ready for 10 more.
   const croissantReady = ovenItem === "CROISSANT" || ovenItem === "TART" // anything baked: take it
   // Tart (Bronze): dough → board (CHOPPED_DOUGH) → + blueberries (RAW_TART)
@@ -92,6 +103,7 @@ while (true) {
   const needTart =
     OVEN[0] >= 0 &&
     !!best?.items.includes("TART") &&
+    !partnerBusy("CHOPPED_DOUGH", "RAW_TART", "TART") &&
     !onTable("TART") &&
     !onTable("RAW_TART") &&
     ovenItem !== "RAW_TART" &&
@@ -99,6 +111,7 @@ while (true) {
   const needCroissant =
     OVEN[0] >= 0 &&
     !!best?.items.includes("CROISSANT") &&
+    !partnerBusy("DOUGH", "CROISSANT") &&
     !onTable("CROISSANT") &&
     ovenItem === "NONE"
   let action: string
