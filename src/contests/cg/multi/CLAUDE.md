@@ -853,6 +853,13 @@ do not hurt. Bot: BFS over free cells, best cell = undoomed boxes a bomb
 there would hit / (distance + 2); BOMB when standing on it and head for
 the next best cell. 4/4 vs the Wood boss (~22 to 7 boxes). Later: walls
 `X`, items (boxes `1`/`2`), bombs kill: add an escape check before bombing.
+Bronze (friendly fire, 2–4 players, items = entity type 2): explosion
+timeline with chain reactions; a bomb showing timer k blasts before our
+k-th move, so the cell held after move t faces the blasts of time t + 1.
+Every step (and every BOMB) needs an escape: BFS over cell × time up to 10
+turns avoiding blasts and unexploded bombs. Moves are one adjacent cell
+(the referee's own MOVE pathing could walk into a blast). 4/4 vs the
+Bronze boss (killed it in 3).
 
 ## wondev-woman
 
