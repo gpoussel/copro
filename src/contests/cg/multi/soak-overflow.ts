@@ -8,7 +8,7 @@
 // Wood 2 (LEAGUE = 3): move next to the best cover (against the enemies),
 // then shoot the enemy in range with the least cover (MOVE;SHOOT).
 
-const LEAGUE: number = 3
+const LEAGUE: number = 4
 const myId = parseInt(readline())
 const agentDataCount = parseInt(readline())
 const owner = new Map<number, number>()
@@ -51,6 +51,8 @@ function modifier(x: number, y: number, sx: number, sy: number): number {
   return best
 }
 const cover = (x: number, y: number, sx: number, sy: number) => 1 - modifier(x, y, sx, sy)
+let bunkerMode = false
+let bomberId = -1
 while (true) {
   const n = parseInt(readline())
   const mine: { id: number; x: number; y: number; bombs: number }[] = []
@@ -80,7 +82,7 @@ while (true) {
     const target = foes.sort((a, b) => b.wet - a.wet || a.id - b.id)[0]
     for (const a of mine) out.push(target ? `${a.id};SHOOT ${target.id}` : `${a.id};HUNKER_DOWN`)
   }
-  if (LEAGUE === 3) {
+  if (LEAGUE === 3 && !bunkerMode) {
     for (const a of mine) {
       let bestCell = [a.x, a.y]
       let bestCover = -1
@@ -117,7 +119,8 @@ while (true) {
   // Wood 1 (bunkers): 4 walled 3×3 bunkers; one traps our second agent.
   // Splash the other three (centre throw = the whole interior, 30 each,
   // range 4 Manhattan) with our bomber; never shoot, never hit our agent.
-  if (LEAGUE === 4 || (mine.some(a => a.bombs >= 2) && foes.length > 6)) {
+  if (mine.some(a => a.bombs >= 2) && foes.length > 6) bunkerMode = true
+  if (LEAGUE === 4 || bunkerMode) {
     out.length = 0
     const centres = [
       [2, 2],
@@ -125,14 +128,17 @@ while (true) {
       [W - 3, 2],
       [W - 3, H - 3],
     ]
-    const bomber = mine.slice().sort((a, b) => b.bombs - a.bombs)[0]
+    // The bomber is fixed at the start (most bombs); the trapped agent never
+    // throws (its own bunker would be the only target in range).
+    if (bomberId < 0) bomberId = mine.slice().sort((a, b) => b.bombs - a.bombs)[0].id
+    const bomber = mine.find(a => a.id === bomberId) ?? mine[0]
     const targets = centres.filter(
       ([cx, cy]) =>
         !mine.some(a => a !== bomber && Math.max(Math.abs(a.x - cx), Math.abs(a.y - cy)) <= 1) &&
         foes.some(f => Math.max(Math.abs(f.x - cx), Math.abs(f.y - cy)) <= 1 && f.wet < 100),
     )
     for (const a of mine) {
-      if (a !== bomber || !targets.length || a.bombs === 0) {
+      if (a.id !== bomberId || !targets.length || a.bombs === 0) {
         out.push(`${a.id};MOVE ${a.x} ${a.y}`)
         continue
       }

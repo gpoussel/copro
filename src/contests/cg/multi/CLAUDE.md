@@ -1038,6 +1038,11 @@ unless it touches the shooter (Chebyshev 1); best cover wins (×0.5 low,
 ((0,1) if (1,1) is high, else (0,3); mirrored on the right) and the enemy
 in the facing column whose x-side tile is not high cover — it ignores the
 y-axis cover, so our target mimics that. Failed ~half the maps before.
+Wood 1 (`LEAGUE = 4`, bunkers; promoted within minutes of the fix): 4
+bunkers (3×3 inside a high-cover ring), one traps our second agent; the
+bomber (most bombs, fixed at the start — the trapped agent once became
+"bomber" and bombed itself) throws at each other bunker's centre (splash
+covers the interior, range 4 Manhattan), never shooting. Checks pass 2/2.
 
 ## botters-of-the-galaxy
 
