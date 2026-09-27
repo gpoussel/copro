@@ -10,7 +10,10 @@
 //    a free cell adjacent to one of our organs;
 // 2. else a BASIC on the free neighbour cell with the most free space
 //    around, never on a source we harvest (other sources are welcome);
-// 3. else another affordable organ type as filler, else WAIT.
+// 3. a TENTACLE facing an adjacent enemy organ (B+C);
+// 4. a SPORER facing the longest free line, then SPORE a new root far along
+//    it (next to a source if possible) when we hold one of each protein;
+// 5. else another affordable organ type as filler, else WAIT.
 
 const [W, H] = readline().split(" ").map(Number)
 const DIRS: [number, number, string][] = [
@@ -26,6 +29,7 @@ while (true) {
   type Organ = { id: number; x: number; y: number; type: string; dir: string; root: number }
   const mine: Organ[] = []
   const harvested = new Set<number>()
+  const enemy = new Set<number>()
   const sources = new Set<number>()
   for (let i = 0; i < n; i++) {
     const p = readline().trim().split(" ")
@@ -35,6 +39,7 @@ while (true) {
     const owner = +p[3]
     grid[y * W + x] = type === "WALL" ? "#" : owner >= 0 ? (owner === 1 ? "M" : "O") : type
     if ("ABCD".includes(type) && type.length === 1) sources.add(y * W + x)
+    if (owner === 0) enemy.add(y * W + x)
     if (owner === 1) {
       const o = { id: +p[4], x, y, type, dir: p[5], root: +p[7] }
       mine.push(o)
@@ -85,7 +90,85 @@ while (true) {
         stock[3]--
       }
     }
-    // 2. BASIC growth into open space.
+    // 2. Tentacle next to an enemy organ (it attacks the cell it faces).
+    if (order === "WAIT" && stock[1] >= 1 && stock[2] >= 1)
+      for (const o of organs) {
+        for (const [dx, dy] of DIRS) {
+          const x = o.x + dx
+          const y = o.y + dy
+          if (!free(x, y) || used.has(y * W + x)) continue
+          const face = DIRS.find(([fx, fy]) => enemy.has((y + fy) * W + x + fx) && inside(x + fx, y + fy))
+          if (face) {
+            order = `GROW ${o.id} ${x} ${y} TENTACLE ${face[2]}`
+            used.add(y * W + x)
+            stock[1]--
+            stock[2]--
+            break
+          }
+        }
+        if (order !== "WAIT") break
+      }
+    // 3. Sporer / spore: new roots far away (one of each protein per root).
+    if (order === "WAIT") {
+      const sporer = organs.find(o => o.type === "SPORER")
+      const lineCells = (x: number, y: number, dx: number, dy: number) => {
+        const cells: number[] = []
+        for (let k = 1; ; k++) {
+          const cx = x + dx * k
+          const cy = y + dy * k
+          if (!free(cx, cy)) break
+          cells.push(cy * W + cx)
+        }
+        return cells
+      }
+      if (sporer && stock.every(v => v >= 1)) {
+        const d = DIRS.find(dd => dd[2] === sporer.dir)!
+        const cells = lineCells(sporer.x, sporer.y, d[0], d[1]).filter(c => !used.has(c))
+        // Farthest cell, preferring one next to an unharvested source.
+        let best = -1
+        let bestV = -1
+        cells.forEach((c, k) => {
+          const cx = c % W
+          const cy = Math.floor(c / W)
+          const nearSource = DIRS.some(([ex, ey]) => sources.has((cy + ey) * W + cx + ex))
+          const v = k + (nearSource ? 10 : 0)
+          if (k >= 2 && v > bestV) {
+            bestV = v
+            best = c
+          }
+        })
+        if (best >= 0) {
+          order = `SPORE ${sporer.id} ${best % W} ${Math.floor(best / W)}`
+          used.add(best)
+          for (let k = 0; k < 4; k++) stock[k]--
+        }
+      } else if (!sporer && roots.length < 4 && stock[1] >= 2 && stock[3] >= 2 && stock[0] >= 1 && stock[2] >= 1) {
+        let best: string | null = null
+        let bestLen = 3
+        let bestCell = -1
+        for (const o of organs)
+          for (const [dx, dy] of DIRS) {
+            const x = o.x + dx
+            const y = o.y + dy
+            if (!free(x, y) || used.has(y * W + x) || sources.has(y * W + x)) continue
+            for (const [fx, fy, name] of DIRS) {
+              const len = lineCells(x, y, fx, fy).length
+              if (len > bestLen) {
+                bestLen = len
+                best = `GROW ${o.id} ${x} ${y} SPORER ${name}`
+                bestCell = y * W + x
+              }
+            }
+          }
+        if (best) {
+          order = best
+          used.add(bestCell)
+          stock[1]--
+          stock[3]--
+        }
+      }
+    }
+    // 4. BASIC growth into open space.
     if (order === "WAIT") {
       const types: [string, number[]][] = [
         ["BASIC", [1, 0, 0, 0]],

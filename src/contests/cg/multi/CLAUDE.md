@@ -1040,8 +1040,13 @@ cell next to our organs when C and D allow, else a BASIC (or any
 affordable organ) on the free neighbour with the most free space, never on
 a source we harvest (other sources are eaten for +3). Won 3/3 Wood 3
 (harvester) scenarios by one cell. Replaces the user's TS agent
-(`legacy/winter-challenge-2024.ts`). Later: tentacles (attack), sporers
-(new roots).
+(`legacy/winter-challenge-2024.ts`).
+Wood 1 (tentacle, sporer): TENTACLE (B+C) on a free cell facing an
+adjacent enemy organ; SPORER (B+D, when A, C and 2 B / 2 D are in stock)
+facing the longest free line, then `SPORE id x y` far along it (next to a
+source if possible) with one protein of each type. 2/3 in the scenario
+(ends when proteins run out). Next: new roots should harvest (not eat) a
+source, tentacle fights, Bronze = full game.
 
 ## spring-challenge-2021
 
