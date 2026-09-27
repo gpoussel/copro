@@ -1170,6 +1170,8 @@ killing the boss queen: arena 27.5 (rank 8). IDE vs this boss is noise:
 the same version scored 3/4 then 1/4, so variants are judged in the
 arena only. Arena A/B: second barracks forward (free area site nearest
 the enemy corner): 21.6, reverted.
+**Arena samples are noisy too**: the identical burst version scored 27.5
+then 22.9. Compare variants over several samples / win rates.
 
 ## hypersonic
 

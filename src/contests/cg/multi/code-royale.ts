@@ -181,7 +181,15 @@ while (true) {
       if (t) action = `BUILD ${t.id} BARRACKS-KNIGHT`
     }
     if (action === "WAIT" && towers.length < 3) {
-      const t = improving >= 0 && st[improving].p1 < 790 ? sites[improving] : closest(free)
+      // Forum (BlitzProg): a new tower on a site our towers already cover
+      // (a tight cluster to hide in), never under an enemy tower.
+      const underEnemy = (q: Site) =>
+        sites.some(e => st[e.id].owner === 1 && st[e.id].type === 1 && Math.hypot(e.x - q.x, e.y - q.y) < st[e.id].p2)
+      const cover = (q: Site) => towers.filter(tw => Math.hypot(tw.x - q.x, tw.y - q.y) < st[tw.id].p2).length
+      const spot = free
+        .filter(q => !underEnemy(q))
+        .sort((a, b) => cover(b) - cover(a) || dq(a) - dq(b))[0]
+      const t = improving >= 0 && st[improving].p1 < 790 ? sites[improving] : (spot ?? closest(free))
       if (t) {
         improving = t.id
         action = `BUILD ${t.id} TOWER`
