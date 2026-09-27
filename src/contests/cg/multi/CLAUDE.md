@@ -729,6 +729,9 @@ snaffle crossing our line within 2 turns, throws aimed inside the posts
 minus 2× our velocity, second wizard chases the snaffle nearest our goal.
 2/4 vs the Silver boss (DumbleBoss). Next: simulate throws/flips with wall
 bounces, ACCIO, bludger avoidance / OBLIVIATE.
+Arena 20.92 → 19.79 vs boss 20.95–20.98 (a hair under). Added ACCIO (15)
+on a snaffle within 4000 of our goal and 5000 of the wizard when an enemy
+wizard is 500 closer to it. 2/4 in IDE tests (same as before).
 
 ## xmas-rush
 

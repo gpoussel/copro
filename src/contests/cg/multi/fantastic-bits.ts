@@ -92,6 +92,23 @@ while (true) {
         }
       }
     }
+    // Defence: ACCIO a snaffle near our goal that an enemy wizard is closer to.
+    if (!casted && magic >= 15) {
+      const foes = ents.filter(e => e.type === "OPPONENT_WIZARD")
+      const grab = free.find(
+        s =>
+          Math.abs(s.x - MY_GX) < 4000 &&
+          d2(s, w) < 5000 &&
+          foes.some(f => d2(f, s) < d2(w, s) - 500),
+      )
+      if (grab) {
+        out.push(`ACCIO ${grab.id}`)
+        magic -= 15
+        casted = true
+        taken.add(grab.id)
+        continue
+      }
+    }
     // Chase: first wizard the nearest snaffle, second the most threatening.
     const options = free.filter(s => !taken.has(s.id) || free.length === 1)
     const key = (s: E) => (out.length === 0 ? d2(s, w) : d2(s, w) + Math.abs(s.x - MY_GX) * 0.7)
