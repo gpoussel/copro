@@ -978,6 +978,10 @@ knights → giants (enemy ≥ 2 towers) → mines ×6 → towers ×5; the touche
 own mine is grown to its max rate first; with knights near the queen it
 shelters at (and repairs) its nearest tower, or raises one (hiding in the
 corner let knights raze the mines). 2/4 → 4/4 vs the Wood 1 boss.
+Bronze: 18.7 vs boss 29.9. Agade's postmortem order (2 mines, 1 knight
+barracks, then towers) went 0/4 vs the Bronze boss (ours 2/4): reverted.
+His real edge was queen kiting by simulated annealing (depth 7), which
+this bot lacks.
 
 ## hypersonic
 
