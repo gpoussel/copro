@@ -49,6 +49,12 @@ function line(x0: number, y0: number, x1: number, y1: number): [number, number][
   return cells.slice(1, -1)
 }
 
+const STEPS = [
+  [1, 0],
+  [-1, 0],
+  [0, 1],
+  [0, -1],
+]
 const manhattan = (a: Unit, b: Unit) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
 
 while (true) {
@@ -99,33 +105,53 @@ while (true) {
       consider(damage + (kill ? (tgt.type === 1 ? 100 : 10) : 0) + (tgt.type === 1 ? 3 : 0), `${s.id} SHOOT ${tgt.id}`)
     }
   }
-  // Leader walks to the nearest convertible unit, avoiding enemy fire.
+  // Leader walks (BFS through free cells) towards the nearest cell next to
+  // a convertible unit, avoiding enemy fire.
   if (leader) {
-    const targets = [...neutrals, ...enemies.filter(e => e.type === 0)].sort(
-      (a, b) => manhattan(a, leader) - manhattan(b, leader)
-    )
-    if (targets.length) {
-      const tgt = targets[0]
-      let bestStep: [number, number] | null = null
-      let bestStepValue = -Infinity
-      for (const [dx, dy] of [
-        [1, 0],
-        [-1, 0],
-        [0, 1],
-        [0, -1],
-      ]) {
-        const nx = leader.x + dx
-        const ny = leader.y + dy
-        if (nx < 0 || ny < 0 || nx >= W || ny >= H || grid[ny][nx] === "x" || occupied.has(ny * W + nx)) continue
-        const v = -(Math.abs(nx - tgt.x) + Math.abs(ny - tgt.y)) - dangerAt(nx, ny) * 2
-        if (v > bestStepValue) {
-          bestStepValue = v
-          bestStep = [nx, ny]
+    const targets = [...neutrals, ...enemies.filter(e => e.type === 0)]
+    const free = (x: number, y: number) =>
+      x >= 0 && y >= 0 && x < W && y < H && grid[y][x] !== "x" && !occupied.has(y * W + x)
+    const dist = new Int32Array(W * H).fill(-1)
+    const queue: number[] = []
+    for (const t of targets)
+      for (const [dx, dy] of STEPS) {
+        const x = t.x + dx
+        const y = t.y + dy
+        if ((free(x, y) || (x === leader.x && y === leader.y)) && dist[y * W + x] < 0) {
+          dist[y * W + x] = 0
+          queue.push(y * W + x)
         }
       }
-      if (bestStep)
-        consider(1 + Math.min(0, bestStepValue + 20) * 0.01, `${leader.id} MOVE ${bestStep[0]} ${bestStep[1]}`)
+    for (let h = 0; h < queue.length; h++) {
+      const c = queue[h]
+      for (const [dx, dy] of STEPS) {
+        const x = (c % W) + dx
+        const y = Math.floor(c / W) + dy
+        if (free(x, y) && dist[y * W + x] < 0) {
+          dist[y * W + x] = dist[c] + 1
+          queue.push(y * W + x)
+        }
+      }
     }
+    let bestStep: [number, number] | null = null
+    let bestStepValue = -Infinity
+    for (const [dx, dy] of STEPS) {
+      const nx = leader.x + dx
+      const ny = leader.y + dy
+      if (!free(nx, ny) || dist[ny * W + nx] < 0) continue
+      const v = -dist[ny * W + nx] - dangerAt(nx, ny) * 0.5
+      if (v > bestStepValue) {
+        bestStepValue = v
+        bestStep = [nx, ny]
+      }
+    }
+    if (bestStep)
+      // While neutrals remain, racing for them beats chip-damage shots
+      // (units at the end are the score).
+      consider(
+        (neutrals.length ? 4.5 : 1) + Math.min(0, bestStepValue + 20) * 0.01,
+        `${leader.id} MOVE ${bestStep[0]} ${bestStep[1]}`
+      )
   }
   // Cultists close in on the enemy leader when nothing better is available.
   const enemyLeader = enemies.find(e => e.type === 1)

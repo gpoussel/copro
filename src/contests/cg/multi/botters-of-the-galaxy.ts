@@ -51,12 +51,13 @@ while (true) {
   const buyer = heroes.find(h => h.items < 4)
   const buy = buyer ? shop.filter(it => it.cost <= gold).sort((a, b) => b.value - a.value)[0] : undefined
   const bought = buy ? buyer!.id : -1
-  // Wood 6 has no creeps (towers: 1500 HP, 1 damage; referee
+  // Wood 6-5 have no creeps (towers: 1500 HP, 1 damage; referee
   // github.com/Illedan/BOTG-Refree): a duel. HULK beats every hero head-on,
   // so attack whichever of the enemy hero / tower dies sooner, and the hero
   // whenever our tower would fall first.
-  const lanes = units.some(u => u.type === "UNIT")
-  if (!lanes) {
+  // Wood 4 adds creeps but towers still deal 1 damage: the duel holds.
+  const harmless = enemies.some(e => e.type === "TOWER" && e.dmg <= 1)
+  if (harmless) {
     const foeTower = enemies.find(e => e.type === "TOWER")
     for (const h of heroes) {
       const foe = enemies.find(e => e.type === "HERO")

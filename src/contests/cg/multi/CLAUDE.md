@@ -543,6 +543,12 @@ friendly fire; score = units at round 150; players alternate turns. A
 2-ply search on an exact simulation (`legacy/cultist-wars-2ply.ts`) went
 0–1/4 (too passive: waits while the boss converts the neutrals): the old
 rule bot stays submitted. Next: race for neutrals first, then fight.
+Replay (0–9 loss): the leader oscillated between two cells for 40 turns
+(greedy Manhattan step against a wall). The leader now follows a BFS
+distance map from the free cells next to convertible units (danger ×0.5
+as tie-break), and while neutrals remain that walk (4.5) beats chip
+shots (kills and conversions still first). 3/4 vs the Bronze boss (arena
+was 17.2 vs 28.9).
 
 ## tryangle-catch
 
