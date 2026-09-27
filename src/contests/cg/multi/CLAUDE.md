@@ -925,6 +925,9 @@ Summer 2025. Wood leagues are tutorials with one fixed goal each (3 of 5
 successes vs the boss). **Tiles come one line per row** (`x y type`
 triples), not one line per cell. Wood 4 (`LEAGUE = 1`): agents to (6,1)
 and (6,3). Read each new league's goal and bump `LEAGUE`.
+Wood 3 (`LEAGUE = 2`): every agent SHOOTs the wettest enemy. **The CG TS
+judge fails on type errors** (a `LEAGUE === 1` comparison on a literal
+`2` type timed out turn 1): type the constant as `number`.
 
 ## botters-of-the-galaxy
 
