@@ -965,6 +965,11 @@ Arena 30.5 vs 32.4 with the first search. Enemy model now also rams: a
 free enemy car targets our carrier when it is closer than 1.25× the
 nearest prisoner; the eval penalises enemy free cars within 1500 of our
 carrier (0.5 per unit). 4/4 vs the Bronze boss.
+Arena 31.6 / 30.3 (two samples; 22/25 wins, losses only to the boss and
+Covfefe). CodinGame ran only ~200 sims per turn (~1000 locally): the
+collision search now uses module-level typed buffers (no closure or
+object per iteration, insertion sort) and clone copies fields: 1.7×
+more sims, harness still exact.
 
 ## git-patchwork
 

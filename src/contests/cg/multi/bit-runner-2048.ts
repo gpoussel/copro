@@ -41,8 +41,8 @@ const truncate = (x: number) => {
 
 function clone(s: State): State {
   return {
-    cars: s.cars.map(c => ({ ...c })),
-    balls: s.balls.map(b => ({ ...b })),
+    cars: s.cars.map(c => ({ id: c.id, owner: c.owner, x: c.x, y: c.y, vx: c.vx, vy: c.vy, a: c.a, ball: c.ball, bx: 0, by: 0 })),
+    balls: s.balls.map(b => ({ id: b.id, x: b.x, y: b.y, vx: b.vx, vy: b.vy, cap: b.cap, bx: 0, by: 0 })),
     score: [s.score[0], s.score[1]],
     nextId: s.nextId,
   }
@@ -76,7 +76,6 @@ function border(x: number, y: number, vx: number, vy: number, rad: number, R: nu
 }
 
 // kind: 0 car-border, 1 center-car, 2 ball-car, 3 car-car, 4 ball-border
-type Col = { t: number; kind: number; i: number; j: number }
 
 function bounceBorder(u: { x: number; y: number; vx: number; vy: number; bx: number; by: number }, rad: number, minImp: number, R: number) {
   const nn = u.x * u.x + u.y * u.y
@@ -150,6 +149,33 @@ function bounceCars(a: Car, b: Car, SW: number) {
   }
 }
 
+// Collision buffers (kept across calls: no allocation in the hot loop).
+const colT = new Float64Array(64)
+const colK = new Int8Array(64)
+const colI = new Int8Array(64)
+const colJ = new Int8Array(64)
+let nCols = 0
+let maxT = 1
+function add(ct: number, kind: number, i: number, j: number) {
+  if (ct < 0) return
+  if (Math.abs(ct - maxT) < EPS) {
+    if (nCols < 64) {
+      colT[nCols] = ct
+      colK[nCols] = kind
+      colI[nCols] = i
+      colJ[nCols] = j
+      nCols++
+    }
+  } else if (ct < maxT) {
+    colT[0] = ct
+    colK[0] = kind
+    colI[0] = i
+    colJ[0] = j
+    nCols = 1
+    maxT = ct
+  }
+}
+
 // One turn after the inputs were applied (angles / thrust already added).
 function play(s: State, P: Params) {
   let t = 0
@@ -162,17 +188,8 @@ function play(s: State, P: Params) {
       b.bx = b.vx
       b.by = b.vy
     }
-    let maxT = 1 - t
-    const cols: Col[] = []
-    const add = (ct: number, kind: number, i: number, j: number) => {
-      if (ct < 0) return
-      if (Math.abs(ct - maxT) < EPS) cols.push({ t: ct, kind, i, j })
-      else if (ct < maxT) {
-        cols.length = 0
-        cols.push({ t: ct, kind, i, j })
-        maxT = ct
-      }
-    }
+    maxT = 1 - t
+    nCols = 0
     const n = s.cars.length
     for (let i = 0; i < n; i++) {
       const a = s.cars[i]
@@ -194,9 +211,24 @@ function play(s: State, P: Params) {
       if (b.cap) continue
       add(border(b.x, b.y, b.vx, b.vy, BALL_R, P.R), 4, k, -1)
     }
-    if (!cols.length) break
-    cols.sort((p, q) => p.t - q.t)
-    const dt = cols[0].t
+    if (!nCols) break
+    // Stable insertion sort by time (usually a single collision).
+    for (let a = 1; a < nCols; a++) {
+      const ct = colT[a], ck = colK[a], ci = colI[a], cj = colJ[a]
+      let b = a - 1
+      while (b >= 0 && colT[b] > ct) {
+        colT[b + 1] = colT[b]
+        colK[b + 1] = colK[b]
+        colI[b + 1] = colI[b]
+        colJ[b + 1] = colJ[b]
+        b--
+      }
+      colT[b + 1] = ct
+      colK[b + 1] = ck
+      colI[b + 1] = ci
+      colJ[b + 1] = cj
+    }
+    const dt = colT[0]
     t += dt
     for (const c of s.cars) {
       c.x += c.vx * dt
@@ -206,7 +238,8 @@ function play(s: State, P: Params) {
       b.x += b.vx * dt
       b.y += b.vy * dt
     }
-    for (const col of cols) {
+    for (let q = 0; q < nCols; q++) {
+      const col = { kind: colK[q], i: colI[q], j: colJ[q] }
       if (col.kind === 0) bounceBorder(s.cars[col.i], CAR_R, 600, P.R)
       else if (col.kind === 4) {
         const b = s.balls[col.i]
