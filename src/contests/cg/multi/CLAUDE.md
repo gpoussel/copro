@@ -1151,6 +1151,13 @@ minus 2 per BONUS), RELEASE the offered app with the fewest missing tasks,
 other phases take the first listed move. 2/4 vs the Wood 2 boss (the
 user's C++ agent, `legacy/green-circle.cpp`: 1/4). Later: card actions,
 giving cards when too close, bigger apps.
+Referee: github.com/societe-generale/GreenCircle (`LeagueRules`, `Game.
+move`, `config/level1/Boss.java`): the Wood 2 boss just plays the first
+listed move; league 1 has small apps only and no cycle / proximity
+penalties; the 5th app must be clean. Now: desks feed the application
+needing the fewest extra skill cards (the clean finisher), releases pick
+the least debt with the current HAND (not the whole deck). 4/6 vs the
+boss (arena was 17.86 vs 18.84).
 
 ## winter-challenge-2024
 

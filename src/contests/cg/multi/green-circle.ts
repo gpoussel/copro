@@ -1,14 +1,15 @@
 // 🎮 CodinGame Multiplayer - green-circle
 // https://www.codingame.com/multiplayer/bot-programming/green-circle
 //
-// Deck building (Samsara): each turn move to a desk (0-7, one-way) to take
-// its skill card, then maybe RELEASE an application (tasks paid by skill
-// cards; a specific skill fills 2 of its tasks well and 2 others badly, a
-// BONUS 1 well + 1 badly; bad tasks give technical debt). 5 applications
-// win. Bot: MOVE to the desk whose card most reduces the missing tasks of
-// the applications closest to completion (over all our cards); RELEASE the
-// offered application with the fewest missing tasks; other phases pick the
-// first listed move.
+// Deck building (Samsara): each turn move to a desk (0-7) to take its skill
+// card, then maybe RELEASE an application (a specific skill fills 2 of its
+// tasks well and 2 others badly, a BONUS 1 well + 1 badly; bad tasks add
+// technical debt cards to the deck). 5 applications win and the 5th must
+// be clean. Referee: github.com/societe-generale/GreenCircle.
+// Bot: MOVE to the desk whose skill the "cleanest" target application
+// still lacks (fewest extra cards needed), then skills many apps use;
+// RELEASE the offered app costing the least debt with the current hand;
+// other phases pick the first listed move.
 
 const SKILLS = 8
 type App = { id: number; need: number[] }
@@ -25,41 +26,43 @@ while (true) {
   readline() // opponent
   const lc = parseInt(readline())
   const owned = new Array(10).fill(0)
+  const hand = new Array(10).fill(0)
   for (let i = 0; i < lc; i++) {
     const p = readline().trim().split(" ")
     if (p[0] === "OPPONENT_CARDS") continue
     p.slice(1).map(Number).forEach((v, k) => (owned[k] += v))
+    if (p[0] === "HAND") p.slice(1).map(Number).forEach((v, k) => (hand[k] = v))
+  }
+  // Technical debt a release would cost with the cards in hand (a skill
+  // card fills 2 of its tasks well, a BONUS 1 task well; the rest is botched).
+  const debt = (app: App) => {
+    let total = 0
+    let good = 0
+    for (let k = 0; k < SKILLS; k++) {
+      total += app.need[k]
+      good += Math.min(app.need[k], 2 * hand[k])
+    }
+    good = Math.min(total, good + hand[8])
+    return total - good
   }
   const mc = parseInt(readline())
   const moves: string[] = []
   for (let i = 0; i < mc; i++) moves.push(readline().trim())
-  // Tasks still missing for an app with a given card collection.
-  const missing = (app: App, cards: number[]) => {
-    let good = 0
-    let short = 0
-    for (let k = 0; k < SKILLS; k++) {
-      const covered = Math.min(app.need[k], 2 * cards[k])
-      good += covered
-      short += app.need[k] - covered
-    }
-    // Bonus cards and spare skills fill the rest (badly).
-    return Math.max(0, short - cards[8] * 2) + 0 * good
-  }
   let out = moves[0] ?? "WAIT"
   if (phase === "MOVE") {
+    // The 5th application must be delivered cleanly: aim the deck at the
+    // application needing the fewest extra skill cards (2 tasks per card).
+    const shortfall = (app: App) =>
+      app.need.reduce((t, n, k) => t + Math.max(0, Math.ceil(n / 2) - owned[k]), 0)
+    const target = apps.slice().sort((a, b) => shortfall(a) - shortfall(b))[0]
     let best = -Infinity
     for (const m of moves) {
       const p = m.split(" ")
       if (p[0] !== "MOVE") continue
       const z = +p[1]
-      const cards = owned.slice()
-      cards[z]++
       let score = 0
-      for (const app of apps) {
-        const before = missing(app, owned)
-        const after = missing(app, cards)
-        score += (before - after) / (before + 1)
-      }
+      if (target) score += Math.max(0, Math.ceil(target.need[z] / 2) - owned[z]) * 10
+      for (const app of apps) score += app.need[z] > 0 ? 1 : 0
       if (score > best) {
         best = score
         out = m
@@ -71,7 +74,7 @@ while (true) {
       rel.sort((a, b) => {
         const A = apps.find(x => x.id === +a.split(" ")[1])!
         const B = apps.find(x => x.id === +b.split(" ")[1])!
-        return missing(A, owned) - missing(B, owned)
+        return debt(A) - debt(B)
       })
       out = rel[0]
     } else out = "WAIT"
