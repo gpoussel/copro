@@ -101,7 +101,7 @@ Surveyed 2026-09-26.
 | coders-of-the-caribbean | 7 | Wood 2 | 4 | TypeScript barrels + leading shots, submitted | 2 | 4/4 vs Wood 2 boss |
 | ghost-in-the-cell | 7 | Bronze | 2 | TypeScript greedy + bombs/evacuation, submitted | 2 | 3/4 vs Bronze boss |
 | hypersonic | 7 | Bronze | 2 | TypeScript greedy + escape check, submitted | 2 | 4/4 vs Bronze boss |
-| mean-max | 7 | Wood 1 | 3 | TypeScript reaper greedy, submitted | 3 | first to 50 in 3/3 vs 2 bosses |
+| mean-max | 7 | Wood 1 | 3 | TypeScript 3 units + oil, submitted | 3 | first to 50 in 2/3 vs Wood 1 bosses |
 | winter-challenge-2024 | 8 | Wood 3 | 5 | TypeScript 104/1145 | 2 | |
 | wondev-woman | 7 | Bronze | 2 | TypeScript 1-ply state eval, submitted | 2 | 4/4 vs Bronze boss |
 | soak-overflow | 8 | Wood 3 | 5 | TypeScript tutorial goals, submitted | 2 | Wood 3 goal (shoot wettest) |

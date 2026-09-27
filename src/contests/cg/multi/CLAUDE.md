@@ -922,6 +922,11 @@ best (water + 3·overlapping wrecks) / (distance + 600), aim = target − v,
 ACC = min(300, 0.5·|correction|), coast when inside and slow. Reached 50
 water first in 3/3 games vs 2 bosses. Later: Destroyer (break tankers),
 Doof (rage, skills: grenade, tar, oil).
+Wood 1 = all three units + skills (tar, oil; grenade later?). Now: the
+destroyer rams the tanker minimising d(destroyer) + ½·d(our reaper), the
+reaper waits next to it when no wreck exists, the doof rams the leading
+enemy reaper and oils it (30 rage) when it sits in a wreck ≥ 1500 from
+our reaper. Wood-3 reaper-only bot: 0/3; now 50 water first in 2/3.
 
 ## a-code-of-ice-and-fire
 
