@@ -59,7 +59,7 @@ Surveyed 2026-09-26.
 | spring-challenge-2022 | 6 | **Gold** ✅ | 0 | TypeScript 2 defenders + attacker, submitted | 2 | 4/4 vs Silver boss |
 | spring-challenge-2026-troll-farm | 6 | Silver | 1 | C++ 169/683 (user); TS WIP not submitted | 2 | TS greedy 0/4, weaker than the C++ |
 | tic-tac-toe | 5 | **Legend** ✅ | 0 | TypeScript MCTS v6 | 2 | Gold→Legend 2026-09-26 |
-| volcanoes | 3 | Silver | 1 | TypeScript 1-ply | 2 | stuck 82/125 in Silver: needs growth simulation / search |
+| volcanoes | 3 | Silver | 1 | TypeScript flat Monte Carlo, submitted | 2 | 4/4 vs Silver boss |
 | atari-go | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
 | atari-go-9x9 | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
 | code4life | 6 | Bronze | 2 | TypeScript state machine, submitted | 2 | ~2/4 vs Bronze boss |

@@ -452,6 +452,14 @@ S_k. Bot: 1-ply over valid moves with eruptions simulated (level 4 → dormant,
 spreads to empty/own neighbours, destroys enemy ones, cascades), eval =
 Hex-like 0-1 BFS distance per opposite pair for both sides. Growth phases not
 simulated. 3/4 vs the Silver boss. Ideas: simulate growth, 2-ply.
+Silver (stuck 82/125 with the 1-ply bot). Referee: github.com/skotz/
+codingame-volcanoes (`Board.java`): cycle of 6 = P1, P2, growth, P2, P1,
+growth; eruption deltas +1 empty / +1 own / −4 enemy (sign flip clears),
+dormant = level 4, cascades in phases; win = own chain joining Nk–Sk.
+Now flat Monte Carlo: UCB1 (c 0.7) over our legal moves, uniform random
+playouts of the exact rules (our turn index derived from "empty board at
+our first turn" = first player), immediate wins first. 4/4 vs the Silver
+boss (wins in 7–17 turns).
 
 ## penguins
 
