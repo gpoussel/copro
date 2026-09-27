@@ -857,3 +857,11 @@ Wood: reaching level 3 wins. Bot: 1-ply, climb to 3 at once, else score
 can reach from level 2) − 200 if the opponent could climb to a 3 next turn
 − its mobility. 4/4 vs the Wood boss (wins in 5–8 turns). Later: points
 per climb, 2 units, PUSH&BUILD, fog: needs a real search (minimax).
+
+## coders-of-the-caribbean
+
+Hex 23×21 (odd-r offset), Wood 3: one ship, MOVE/SLOWER/WAIT. Bot: best
+barrel by rum / (hex distance + 1), distinct targets; no barrel left: go
+to the enemy. `FIRE` flag for the next league (range 10, every other
+turn, predicted position TODO). 4/4 vs the Wood 3 boss. Later: mines,
+cannonballs, up to 3 ships, manual control (referee on GitHub).
