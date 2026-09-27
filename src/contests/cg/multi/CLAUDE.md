@@ -1048,3 +1048,14 @@ biggest affordable tree unless it cannot pay off (seed→1 ≤ day 20, 1→2 ≤
 cell not adjacent to our trees; else WAIT. 4/4 vs the Bronze boss
 (~160 to 70). Replaces the user's Rust agent (`legacy/spring-challenge-2021.rs`).
 Ideas: shadow simulation for the sun points, day-by-day sun planning.
+
+## seabed-security
+
+Bronze (monsters). Bot: each drone dives its lane (x 2500 / 7500, drifting
+towards the side with more wanted fish below per radar) until y 8800 or no
+wanted fish below, then surfaces to save (first saves score double);
+light every 2nd turn below 2000 with no monster in sight; heading search
+(24 × 600u) closest to the wanted direction keeping > 900u from each
+visible monster's next position. 2/4 vs the Bronze boss (the user's C++
+agent, `legacy/seabed-security.cpp`, scored 0 in the same test). The boss
+saves ~96 points by turn 70: our avoidance zig-zags too much on the way up.

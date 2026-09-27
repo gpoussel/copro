@@ -70,7 +70,7 @@ Surveyed 2026-09-26.
 | gargoyles-versus-santas | 4 | **Legend** ✅ | 0 | TypeScript interception | 2 | Bronze→Silver |
 | isola | 4 | **Gold** ✅ | 0 | TypeScript alpha-beta | 2 | Bronze→Gold 2026-09-26 |
 | legends-of-code-magic | 7 | Bronze | 2 | TypeScript draft + greedy battle, submitted | 2 | 3/4 vs Bronze boss |
-| seabed-security | 7 | Bronze | 2 | C++ 274/707 | 2 | |
+| seabed-security | 7 | Bronze | 2 | TypeScript dive/surface, submitted | 2 | 2/4 vs Bronze boss |
 | spring-challenge-2021 | 6 | Bronze | 2 | TypeScript rules bot, submitted | 2 | 4/4 vs Bronze boss |
 | tryangle-catch | 4 | Bronze | 2 | TypeScript WIP, **not submitted** (0/6) | 2 | units get surrounded; study the referee before retrying |
 | winter-challenge-2026-snakebyte | 4 | Bronze | 2 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
