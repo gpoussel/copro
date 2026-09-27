@@ -654,6 +654,14 @@ holding, else chase the nearest free snaffle (different targets per wizard),
 aiming at its next position minus our momentum. 4/4 vs the Wood boss.
 Later leagues: bludgers, spells (OBLIVIATE/PETRIFICUS/ACCIO/FLIPENDO) with
 magic points.
+Silver (spells since Bronze; the league-1 bot sat at 1044/1323): FLIPENDO
+(20 magic) a free snaffle 400–3500 away whose line from the wizard (next
+positions) crosses the enemy goal between y 2200–5300 (full force within
+~2450: +2000 speed per turn for 3 turns on a snaffle), PETRIFICUS (10) a
+snaffle crossing our line within 2 turns, throws aimed inside the posts
+minus 2× our velocity, second wizard chases the snaffle nearest our goal.
+2/4 vs the Silver boss (DumbleBoss). Next: simulate throws/flips with wall
+bounces, ACCIO, bludger avoidance / OBLIVIATE.
 
 ## xmas-rush
 

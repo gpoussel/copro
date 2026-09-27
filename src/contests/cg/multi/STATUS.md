@@ -81,7 +81,7 @@ Surveyed 2026-09-26.
 | langton-s-ant | 5 | Bronze | 2 | TypeScript greedy simulation, submitted | 2 | 4/4 vs Wood 1 boss |
 | codebusters | 6 | Silver | 1 | TypeScript rules+STUN+stamina, submitted | 2 | 4/4 vs Bronze boss (close) |
 | fall-challenge-2020 | 6 | Silver | 1 | TypeScript BFS over casts, submitted | 2 | 4/4 vs Wood 1 boss |
-| fantastic-bits | 6 | Silver | 1 | TypeScript chase+throw, submitted | 2 | 4/4 vs Wood boss; spells (magic) later |
+| fantastic-bits | 6 | Silver | 1 | TypeScript chase+throw+flipendo, submitted | 2 | 2/4 vs Silver boss |
 | game-of-drones | 6 | Silver | 1 | TypeScript greedy allocation, submitted | 2 | 4/4 vs Wood boss (~3× its score) |
 | great-escape | 6 | Silver | 1 | TypeScript path+walls | 2 | Wood 2→Wood 1 |
 | green-circle | 6 | Wood 2 | 4 | C++ 250/544 | 2 | |
