@@ -3,11 +3,12 @@
 // Referee: https://github.com/CodinGame/WondevWoman
 //
 // Santorini-like: move (up at most 1 level, down any) then build +1 on an
-// adjacent cell (4 = removed). Wood: standing on level 3 wins; later leagues
-// score each climb to 3, give 2 units and PUSH&BUILD. Bot: 1-ply over the
-// legal MOVE&BUILD actions: climb to 3 if possible; else land high, keep
-// climbable neighbours, never build a level-3 cell the (visible) opponent
-// can step on next turn, prefer building on cells we can climb.
+// adjacent cell (4 = removed); or push an adjacent enemy (same direction or
+// one of the two nearest) and build where it stood. From Bronze: 2 units
+// each, a point per climb onto level 3, enemies seen only when adjacent.
+// Bot: 1-ply over the legal actions with a state evaluation: points (×100),
+// unit heights, mobility, and territory (cells one of our units reaches
+// first, king moves); enemy terms only for visible enemies.
 
 const size = parseInt(readline())
 const units = parseInt(readline())
@@ -21,10 +22,65 @@ const DIR: Record<string, [number, number]> = {
   W: [-1, 0],
   NW: [-1, -1],
 }
+const STEPS = Object.values(DIR)
+
+function evaluate(grid: number[][], mine: [number, number][], theirs: [number, number][]): number {
+  const h = (x: number, y: number) => (x < 0 || y < 0 || x >= size || y >= size ? -1 : grid[y][x])
+  const all = [...mine, ...theirs.filter(t => t[0] >= 0)]
+  const occupied = (x: number, y: number) => all.some(([ux, uy]) => ux === x && uy === y)
+  const mobility = (ux: number, uy: number) => {
+    let m = 0
+    let up = 0
+    for (const [dx, dy] of STEPS) {
+      const v = h(ux + dx, uy + dy)
+      if (v < 0 || v > 3 || v > h(ux, uy) + 1 || occupied(ux + dx, uy + dy)) continue
+      m++
+      if (v === h(ux, uy) + 1) up++
+    }
+    return m + up
+  }
+  // Territory: BFS (king moves, climbing rule) from each side.
+  const reach = (starts: [number, number][]) => {
+    const d = new Int32Array(size * size).fill(99)
+    const q: number[] = []
+    for (const [x, y] of starts) {
+      d[y * size + x] = 0
+      q.push(y * size + x)
+    }
+    for (let i = 0; i < q.length; i++) {
+      const c = q[i]
+      const cx = c % size
+      const cy = Math.floor(c / size)
+      for (const [dx, dy] of STEPS) {
+        const nx = cx + dx
+        const ny = cy + dy
+        const v = h(nx, ny)
+        if (v < 0 || v > 3 || v > h(cx, cy) + 1) continue
+        if (d[ny * size + nx] <= d[c] + 1) continue
+        d[ny * size + nx] = d[c] + 1
+        q.push(ny * size + nx)
+      }
+    }
+    return d
+  }
+  let score = 0
+  for (const [x, y] of mine) score += h(x, y) * 12 + mobility(x, y) * 3 - (mobility(x, y) === 0 ? 60 : 0)
+  const visible = theirs.filter(t => t[0] >= 0)
+  for (const [x, y] of visible) score -= h(x, y) * 12 + mobility(x, y) * 3 - (mobility(x, y) === 0 ? 60 : 0)
+  if (visible.length) {
+    const dm = reach(mine)
+    const dt = reach(visible)
+    for (let c = 0; c < size * size; c++) {
+      if (dm[c] < dt[c]) score += 2
+      else if (dt[c] < dm[c]) score -= 2
+    }
+  }
+  return score
+}
 
 while (true) {
   const grid: number[][] = []
-  for (let y = 0; y < size; y++) grid.push([...readline()].map(ch => (ch === "." ? -1 : +ch)))
+  for (let y = 0; y < size; y++) grid.push([...readline()].map(ch => (ch === "." ? -1 : ch === "4" ? 4 : +ch)))
   const mine: [number, number][] = []
   for (let i = 0; i < units; i++) mine.push(readline().split(" ").map(Number) as [number, number])
   const theirs: [number, number][] = []
@@ -36,46 +92,32 @@ while (true) {
     console.log("ACCEPT-DEFEAT")
     continue
   }
-  const h = (x: number, y: number) => (x < 0 || y < 0 || x >= size || y >= size ? -1 : grid[y][x])
-  const occupied = (x: number, y: number) => [...mine, ...theirs].some(([ux, uy]) => ux === x && uy === y)
   let best = actions[0]
   let bestScore = -Infinity
   for (const a of actions) {
-    if (a[0] !== "MOVE&BUILD") continue
-    const [ux, uy] = mine[+a[1]]
-    const [mx, my] = DIR[a[2]]
-    const nx = ux + mx
-    const ny = uy + my
-    const [bx, by] = DIR[a[3]]
-    const tx = nx + bx
-    const ty = ny + by
-    const land = h(nx, ny)
-    if (land === 3) {
-      best = a
-      bestScore = Infinity
-      break
+    const idx = +a[1]
+    const [ux, uy] = mine[idx]
+    const [d1x, d1y] = DIR[a[2]]
+    const [d2x, d2y] = DIR[a[3]]
+    const g = grid.map(r => r.slice())
+    const m = mine.map(p => p.slice() as [number, number])
+    const t = theirs.map(p => p.slice() as [number, number])
+    let points = 0
+    if (a[0] === "MOVE&BUILD") {
+      const nx = ux + d1x
+      const ny = uy + d1y
+      if (g[ny][nx] === 3) points++
+      m[idx] = [nx, ny]
+      g[ny + d2y][nx + d2x]++
+    } else {
+      // PUSH&BUILD: the enemy at dir1 is pushed along dir2, its cell rises.
+      const ex = ux + d1x
+      const ey = uy + d1y
+      const k = t.findIndex(p => p[0] === ex && p[1] === ey)
+      if (k >= 0) t[k] = [ex + d2x, ey + d2y]
+      g[ey][ex]++
     }
-    const built = h(tx, ty) + 1
-    grid[ty][tx] = built
-    let score = land * 30
-    // Climbable neighbours after the build.
-    for (const [dx, dy] of Object.values(DIR)) {
-      const v = h(nx + dx, ny + dy)
-      if (v < 0 || v > 3 || occupied(nx + dx, ny + dy)) continue
-      if (v <= land + 1) score += 3 + (v === land + 1 ? 4 : 0) + (v === 3 && land >= 2 ? 40 : 0)
-    }
-    // Opponent: can it climb to 3 next turn?
-    for (const [ox, oy] of theirs) {
-      if (ox < 0) continue
-      const oh = h(ox, oy)
-      for (const [dx, dy] of Object.values(DIR)) {
-        const v = h(ox + dx, oy + dy)
-        if (v === 3 && oh >= 2 && !(ox + dx === nx && oy + dy === ny)) score -= 200
-        if (v >= 0 && v <= 3 && v <= oh + 1) score -= 1
-      }
-    }
-    grid[ty][tx] = built - 1
-    if (built === 4) score -= 2
+    const score = points * 100 + evaluate(g, m, t)
     if (score > bestScore) {
       bestScore = score
       best = a

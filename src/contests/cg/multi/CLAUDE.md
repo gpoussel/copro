@@ -869,6 +869,12 @@ Wood: reaching level 3 wins. Bot: 1-ply, climb to 3 at once, else score
 can reach from level 2) − 200 if the opponent could climb to a 3 next turn
 − its mobility. 4/4 vs the Wood boss (wins in 5–8 turns). Later: points
 per climb, 2 units, PUSH&BUILD, fog: needs a real search (minimax).
+Bronze (2 units, a point per climb to 3, PUSH&BUILD, enemies visible only
+when adjacent): the 1-unit heuristic lost 0/4 by small margins. Now 1-ply
+with a state eval: 100/point + per unit (12·height + 3·mobility, −60 if
+stuck) for us minus the visible enemies, + 2 per cell our side reaches
+first (BFS, climbing rule); pushes applied (enemy moved, its cell +1). 4/4
+vs the Bronze boss. Next: track unseen enemies, 2-ply.
 
 ## coders-of-the-caribbean
 
