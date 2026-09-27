@@ -748,7 +748,10 @@ they face), block with a recycler only against ≥ 3 units we cannot match;
 economy recyclers every 3 turns until turn 20 (≈ 1 per 40 cells, ≥ 3 steps
 from the enemy, −8 per neighbour that would turn to grass); neutral targets
 before enemy ones (forum: ndc, BlitzProg). Still ~1–2/4 vs the Bronze boss
-with huge swings (17–102, 143–7): the boss out-produces us. Next: count
+with huge swings (17–102, 143–7): the boss out-produces us. **But the
+first (league 1) bot had already reached rank 1 in Silver when this was
+submitted**: it was restored and resubmitted; the reworked version is kept
+in `legacy/keep-off-the-grass-v2.ts` (IDE results were equal). Next: count
 matter per turn in replays, Voronoi-based front line, spawn stacks at the
 front instead of 1-unit trickles.
 
