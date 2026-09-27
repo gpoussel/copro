@@ -165,11 +165,19 @@ while (true) {
       else if (fromCrate) action = use(CRATE[fromCrate])
       else if (fromTable) action = `USE ${fromTable.x} ${fromTable.y}`
       else if (!missing.length) action = use(WINDOW)
+      else if (
+        (missing.includes("CROISSANT") && (ovenItem === "DOUGH" || ovenItem === "CROISSANT")) ||
+        (missing.includes("TART") && (ovenItem === "RAW_TART" || ovenItem === "TART"))
+      )
+        // Wait at the oven: a plate USE takes the baked item onto it.
+        action = use(OVEN)
       else action = use(freeTable()) // park the plate, go chop
     }
   }
   // Stuck (same action, same hands for 6 turns): put the item down.
-  if (action === lastAction && item === lastItem && item !== "NONE") stuck++
+  // (Waiting at the oven for a bake is not being stuck.)
+  const baking = ovenItem === "DOUGH" || ovenItem === "RAW_TART"
+  if (action === lastAction && item === lastItem && item !== "NONE" && !(action === use(OVEN) && baking)) stuck++
   else stuck = 0
   lastAction = action
   lastItem = item

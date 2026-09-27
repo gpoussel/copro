@@ -1225,6 +1225,9 @@ turns in every round: holding dough in front of a busy oven (a ready
 croissant there cannot be taken with full hands). Dough now goes to the
 oven only when it is empty (else the board for a tart, else a table), and
 6 identical turns with something in hand drop it on a free table.
+Arena 21.5. A plate whose missing item is baking used to be parked and
+picked up again in a loop: it now waits at the oven (a plate USE takes
+the baked item onto it), exempt from the stuck detector.
 
 ## soak-overflow
 
