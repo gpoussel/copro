@@ -1124,6 +1124,13 @@ to 4 mines once the towers are solid: 0/4 (reverted). Early flight
 (knights within 700: best of 16 steps by nearest-knight distance, −3
 per unit closer than 250 to a wall; repair only when they are within
 150): 2/4 but arena 19.3: reverted.
+The boss is "Princess Boss" (Python); "morph" beat it 8 times in a row
+(get_player_battles + download_game_replays): 2 mines, knight barracks,
+towers, then its queen almost never stands still — it kites around its
+towers and obstacles between builds, adds a giant barracks and mines
+later. Kiting added: enemy knights within 450 → best of 16 steps by
+nearest-knight distance +150 inside our tower cover +100 with a site
+between that knight and us, −2/unit closer than 150 to a wall. 3/4.
 
 ## hypersonic
 

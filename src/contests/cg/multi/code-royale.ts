@@ -39,10 +39,14 @@ while (true) {
   const numUnits = parseInt(readline())
   let queen = { x: 0, y: 0 }
   const enemies: { x: number; y: number }[] = []
+  const knights: { x: number; y: number }[] = []
   for (let i = 0; i < numUnits; i++) {
     const [x, y, owner, type] = readline().split(" ").map(Number)
     if (owner === 0 && type === -1) queen = { x, y }
-    else if (owner === 1 && type !== -1) enemies.push({ x, y })
+    else if (owner === 1 && type !== -1) {
+      enemies.push({ x, y })
+      if (type === 0) knights.push({ x, y })
+    }
   }
   if (!corner) corner = { x: queen.x < 960 ? 0 : 1920, y: queen.y < 500 ? 0 : 1000 }
   const c = corner
@@ -57,8 +61,38 @@ while (true) {
   if (improving >= 0 && !(mine(sites[improving]) && st[improving].type === 1)) improving = -1
 
   let action = "WAIT"
+  // Kite (as a bot that beat this boss 8 times in a row does): with enemy
+  // knights close, step to where the nearest knight is farthest, inside our
+  // towers' cover and with an obstacle between it and us (sites block).
+  const knightDist = (x: number, y: number) => knights.reduce((m, k) => Math.min(m, Math.hypot(k.x - x, k.y - y)), Infinity)
+  const nearK = knights.slice().sort((a, b) => Math.hypot(a.x - queen.x, a.y - queen.y) - Math.hypot(b.x - queen.x, b.y - queen.y))[0]
+  if (nearK && knightDist(queen.x, queen.y) < 450) {
+    let bestV = -Infinity
+    for (let k = 0; k < 16; k++) {
+      const ang = (k * Math.PI) / 8
+      const x = Math.round(queen.x + Math.cos(ang) * 60)
+      const y = Math.round(queen.y + Math.sin(ang) * 60)
+      if (x < 30 || y < 30 || x > 1890 || y > 970) continue
+      if (sites.some(q => Math.hypot(q.x - x, q.y - y) < q.r + 30)) continue
+      const covered = sites.some(q => mine(q) && st[q.id].type === 1 && Math.hypot(q.x - x, q.y - y) < st[q.id].p2)
+      // Obstacle on the segment knight -> point.
+      const shielded = sites.some(q => {
+        const dx = x - nearK.x
+        const dy = y - nearK.y
+        const l2 = dx * dx + dy * dy || 1
+        const t = Math.max(0, Math.min(1, ((q.x - nearK.x) * dx + (q.y - nearK.y) * dy) / l2))
+        return Math.hypot(nearK.x + t * dx - q.x, nearK.y + t * dy - q.y) < q.r
+      })
+      const edge = Math.min(x, y, 1920 - x, 1000 - y)
+      const v = knightDist(x, y) + (covered ? 150 : 0) + (shielded ? 100 : 0) - (edge < 150 ? (150 - edge) * 2 : 0)
+      if (v > bestV) {
+        bestV = v
+        action = `MOVE ${x} ${y}`
+      }
+    }
+  }
   const attacked = enemies.some(e => Math.hypot(e.x - queen.x, e.y - queen.y) < 200)
-  if (attacked) {
+  if (attacked && action === "WAIT") {
     if (improving >= 0 && st[improving].p1 < 790) action = `BUILD ${improving} TOWER`
     else {
       const t = farthest(free)
