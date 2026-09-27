@@ -25,6 +25,8 @@ const COST = [80, 100, 140]
 let corner: { x: number; y: number } | null = null
 let improving = -1 // tower being grown
 let turn = 0
+let bursting = false
+let giantAt = -100 // turn our last giant was trained
 const banned = new Set<number>()
 let lastBuild = ""
 let sameBuild = 0
@@ -43,12 +45,15 @@ while (true) {
   let queen = { x: 0, y: 0 }
   const enemies: { x: number; y: number }[] = []
   const knights: { x: number; y: number; hp: number }[] = []
+  let ownGiants = 0
   for (let i = 0; i < numUnits; i++) {
     const [x, y, owner, type, hp] = readline().split(" ").map(Number)
     if (owner === 0 && type === -1) queen = { x, y }
     else if (owner === 1 && type !== -1) {
       enemies.push({ x, y })
       if (type === 0) knights.push({ x, y, hp })
+    } else if (owner === 0 && type === 2) {
+      ownGiants++
     }
   }
   if (!corner) corner = { x: queen.x < 960 ? 0 : 1920, y: queen.y < 500 ? 0 : 1000 }
@@ -197,19 +202,17 @@ while (true) {
       const t = closest(free)
       if (t) action = `BUILD ${t.id} BARRACKS-KNIGHT`
     }
-    // Raid (how KaZede beat this boss 12/13): with the base up and no
-    // knight near, the queen walks to an enemy mine / barracks that no enemy
-    // tower covers and destroys it by touching it (the tactical search
-    // takes over when knights come).
-    if (action === "WAIT" && turn > 60 && barracks.length >= 2 && kd > 600 && towers.every(t => st[t.id].p1 >= 500)) {
-      const enemyCover = (q: Site) =>
-        sites.some(
-          e => st[e.id].owner === 1 && st[e.id].type === 1 && Math.hypot(e.x - q.x, e.y - q.y) < st[e.id].p2 + 40
-        )
-      const prey = sites
-        .filter(q => st[q.id].owner === 1 && (st[q.id].type === 0 || st[q.id].type === 2) && !enemyCover(q))
-        .sort((a, b) => dq(a) - dq(b))[0]
-      if (prey) action = `MOVE ${prey.x} ${prey.y}`
+    // RoboStac (contest winner): giants against tower-heavy defenders.
+    const enemyTowerCount = sites.filter(q => st[q.id].owner === 1 && st[q.id].type === 1).length
+    if (
+      action === "WAIT" &&
+      turn > 50 &&
+      enemyTowerCount >= 4 &&
+      towers.length >= 3 &&
+      !barracks.some(q => st[q.id].p2 === 2)
+    ) {
+      const t = closest(free)
+      if (t) action = `BUILD ${t.id} BARRACKS-GIANT`
     }
     if (action === "WAIT") {
       // Grow the weakest tower to 790, else rest in the corner.
@@ -252,16 +255,35 @@ while (true) {
     }
   } else sameBuild = 0
   lastBuild = action
+  // Training after RoboStac's postmortem (contest winner): knights whenever
+  // possible for 50 turns (early pressure), everything in the last 40;
+  // against 4+ enemy towers save 220 for a giant, knights 8 turns after it;
+  // otherwise save 200 and train until under 80.
   const train: number[] = []
   let g = gold
-  const kb = sites.filter(s => mine(s) && st[s.id].type === 2 && st[s.id].p2 === 0)
-  // With two barracks, train only both at once (a burst of 8).
-  if (kb.length >= 2 && (gold < 160 || kb.some(s => st[s.id].p1 > 0))) g = 0
-  for (const s of sites)
-    if (mine(s) && st[s.id].type === 2 && st[s.id].p1 === 0 && COST[st[s.id].p2] < g) {
-      train.push(s.id)
-      g -= COST[st[s.id].p2]
-    }
+  const ready = (q: Site) => mine(q) && st[q.id].type === 2 && st[q.id].p1 === 0
+  const knightB = sites.filter(q => ready(q) && st[q.id].p2 === 0)
+  const giantB = sites.filter(q => ready(q) && st[q.id].p2 === 2)
+  const eTowers = sites.filter(q => st[q.id].owner === 1 && st[q.id].type === 1).length
+  const giantAlive = ownGiants > 0
+  const spend = (list: Site[]) => {
+    for (const q of list)
+      if (COST[st[q.id].p2] <= g) {
+        train.push(q.id)
+        g -= COST[st[q.id].p2]
+      }
+  }
+  if (turn <= 50 || turn > 210) spend([...giantB, ...knightB])
+  else if (eTowers >= 4 && sites.some(q => mine(q) && st[q.id].type === 2 && st[q.id].p2 === 2)) {
+    if (!giantAlive && giantB.length && g >= 220) {
+      spend(giantB.slice(0, 1))
+      giantAt = turn
+    } else if (giantAlive && turn - giantAt >= 8) spend(knightB)
+  } else {
+    if (gold >= 200) bursting = true
+    if (gold < 80) bursting = false
+    if (bursting) spend(knightB)
+  }
   console.log(action)
   console.log(train.length ? `TRAIN ${train.join(" ")}` : "TRAIN")
 }

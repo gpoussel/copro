@@ -1200,7 +1200,12 @@ Search base samples: 27.1, 24.5, 24.2 (mean 25.3). KaZede's win shows the
 boss rebuilding mines/barracks late: his queen raids the boss half. A/B:
 after turn 60 with 2 barracks, healthy towers and no knight within 600,
 the queen walks onto the nearest enemy mine / barracks outside enemy
-tower cover.
+tower cover: 21.4, dropped.
+Postmortems: RoboStac (winner) and Agade (3rd) on GitHub; nmahoude and
+NighTurs bots read (no decisive anti-turtle trick). Now RoboStac's
+training: knights whenever possible for 50 turns, everything in the last
+40; vs ≥ 4 enemy towers a giant barracks, save 220 for a giant, knights 8
+turns after; else save 200 and train until < 80.
 
 ## hypersonic
 
