@@ -650,3 +650,12 @@ pushed-out player lands on the inserted tile, item leaving the board goes to
 our hand), keep the one whose BFS-reachable area gets closest to a quest
 item; MOVE = BFS path (≤ 20) to the item or the nearest reachable tile.
 4/4 vs the Wood boss.
+
+## ocean-of-code
+
+Captain Sonar, 6 leagues (Wood 2 start: move/surface/torpedo). Bot: enemy
+candidate cells filtered by its orders (MOVE shifts, SURFACE sector, TORPEDO
+within water distance 4 of the target), torpedo when ≤ 20 candidates and
+expected damage ≥ 0.5 without hitting us, move towards the most unvisited
+reachable water, SURFACE when stuck. Start in the most open central area.
+4/4 vs the Wood boss. Later: SONAR, SILENCE, MINE/TRIGGER.
