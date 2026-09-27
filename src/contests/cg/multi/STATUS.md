@@ -82,7 +82,7 @@ Surveyed 2026-09-26.
 | codebusters | 6 | Wood 2 | 4 | — | 2 | |
 | fall-challenge-2020 | 6 | Wood 2 | 4 | — | 2 | |
 | fantastic-bits | 6 | Wood 2 | 4 | — | 2 | |
-| game-of-drones | 6 | Wood 2 | 4 | — | 2 | |
+| game-of-drones | 6 | Wood 2 | 4 | TypeScript greedy allocation, submitted | 2 | 4/4 vs Wood boss (~3× its score) |
 | great-escape | 6 | Wood 2 | 4 | TypeScript path+walls, submitted | 2 | 4/4 vs Wood boss; 3-player later |
 | green-circle | 6 | Wood 2 | 4 | C++ 250/544 | 2 | |
 | ocean-of-code | 6 | Wood 2 | 4 | — | 2 | |

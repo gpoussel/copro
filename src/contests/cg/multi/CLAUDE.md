@@ -599,3 +599,10 @@ bigger than us are threats too, flee on time-to-contact < 6, skip guarded
 prey, accelerate only when the heading is off) survives longer but still
 loses 0/6 to the Wood boss. Needs the physics (bounces, ejection, absorption
 momentum) simulated to plan safe moves.
+
+## game-of-drones
+
+2–4 players, 3–11 drones, 4–8 zones (6 leagues, Wood 2 start). Greedy
+allocation: need per zone = strongest enemy group within 600 + 1 (1 to keep
+an owned quiet zone), zones served cheapest first by the nearest free drones,
+leftovers to the most contested zone. 4/4 vs the Wood boss (~3× its score).
