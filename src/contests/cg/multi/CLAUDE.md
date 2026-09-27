@@ -773,6 +773,9 @@ Bot: value = 2·squares − price − min(time, time left); play the best of the
 first 3 patches if the value is > 0 (else SKIP), at the position whose
 squares touch the most filled cells / borders. 4/4 vs the Wood 1 boss.
 Later leagues: income events, special patches, rotations/flips.
+Bronze: flips and rotations (`PLAY id x y flip rot`, horizontal flip
+first, then clockwise turns): all 8 orientations tried. 4/4 vs the Bronze
+boss.
 
 ## langton-s-ant
 
@@ -794,3 +797,7 @@ minimum turns to the finish (runner stops on the hurdle it hits), play the
 best first move. Gold medal in 3/3 games (21 vs 7 / 7). Later leagues run 4
 mini-games at once (archery, roller, diving): one move for all, so weigh
 each game's gain by our medal needs (the classic approach).
+Wood 1: four hurdle races at once (score = product of per-race medal
+points). The league-1 bot only drove race 0 (rank 2373/2695). Now: sum of
+DP costs over non-stunned races (weight 0.3 for races where a rival is > 6
+cells ahead): best score in 3/3 games.

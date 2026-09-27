@@ -76,7 +76,7 @@ Surveyed 2026-09-26.
 | winter-challenge-2026-snakebyte | 4 | Bronze | 2 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
 | bit-runner-2048 | 5 | Bronze | 2 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
 | crystal-rush | 5 | Bronze | 2 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |
-| git-patchwork | 5 | Bronze | 2 | TypeScript greedy value, submitted | 2 | 4/4 vs Wood 1 boss |
+| git-patchwork | 5 | Bronze | 2 | TypeScript greedy + rotations, submitted | 2 | 4/4 vs Bronze boss |
 | keep-off-the-grass-fall-challenge-2022 | 5 | Silver | 1 | TypeScript expand + recyclers, submitted | 2 | old bot reached rank 1 in Silver; resubmitted by mistake (1-2/4 vs Silver boss) |
 | langton-s-ant | 5 | Bronze | 2 | TypeScript greedy simulation, submitted | 2 | 4/4 vs Wood 1 boss |
 | codebusters | 6 | Silver | 1 | TypeScript rules+STUN+stamina, submitted | 2 | 4/4 vs Bronze boss (close) |
@@ -91,7 +91,7 @@ Surveyed 2026-09-26.
 | smash-the-code | 6 | Silver | 1 | TypeScript 3-ply sim, submitted | 2 | 4/4 vs Wood boss; later leagues add rotations/different colours |
 | spring-challenge-2020 | 6 | Silver | 1 | TypeScript beam paths, types, abilities | 2 | Silver boss ~2/6; collection efficiency and deaths |
 | spring-challenge-2023-ants | 6 | Wood 2 | 4 | TypeScript LINE chains, submitted | 2 | 4/4 vs Wood boss; eggs/multiple bases later |
-| summer-challenge-2024-olymbits | 6 | Wood 1 | 3 | TypeScript hurdle DP, submitted | 3 | gold 3/3 vs 2 bosses |
+| summer-challenge-2024-olymbits | 6 | Wood 1 | 3 | TypeScript 4-race DP, submitted | 3 | best score 3/3 vs Wood 1 bosses |
 | tron-battle | 6 | Silver | 1 | TypeScript Voronoi | 2 | Wood 2→Wood 1 |
 | xmas-rush | 6 | Silver | 1 | TypeScript push-search, submitted | 2 | 4/4 vs Wood boss; multi-quest later |
 | a-code-of-ice-and-fire | 7 | Wood 3 | 5 | — | 2 | |
