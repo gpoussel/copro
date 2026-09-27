@@ -1205,7 +1205,10 @@ Postmortems: RoboStac (winner) and Agade (3rd) on GitHub; nmahoude and
 NighTurs bots read (no decisive anti-turtle trick). Now RoboStac's
 training: knights whenever possible for 50 turns, everything in the last
 40; vs ≥ 4 enemy towers a giant barracks, save 220 for a giant, knights 8
-turns after; else save 200 and train until < 80.
+turns after; else save 200 and train until < 80.: 22.2 — training nearly
+stopped after turn 50 (income ~5/turn never reached 200). Economy is the
+bottleneck: A/B expansion phase (mines on our half to income 8, towers ≥
+mines, 2nd barracks, towers to 8) on the search base with 160 bursts.
 
 ## hypersonic
 

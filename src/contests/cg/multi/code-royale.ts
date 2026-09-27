@@ -24,9 +24,6 @@ type SiteState = { gold: number; maxSize: number; type: number; owner: number; p
 const COST = [80, 100, 140]
 let corner: { x: number; y: number } | null = null
 let improving = -1 // tower being grown
-let turn = 0
-let bursting = false
-let giantAt = -100 // turn our last giant was trained
 const banned = new Set<number>()
 let lastBuild = ""
 let sameBuild = 0
@@ -34,7 +31,6 @@ let sameBuild = 0
 while (true) {
   const [gold, touched] = readline().split(" ").map(Number)
   const start = Date.now()
-  turn++
   void touched
   const st: SiteState[] = []
   for (let i = 0; i < numSites; i++) {
@@ -45,15 +41,12 @@ while (true) {
   let queen = { x: 0, y: 0 }
   const enemies: { x: number; y: number }[] = []
   const knights: { x: number; y: number; hp: number }[] = []
-  let ownGiants = 0
   for (let i = 0; i < numUnits; i++) {
     const [x, y, owner, type, hp] = readline().split(" ").map(Number)
     if (owner === 0 && type === -1) queen = { x, y }
     else if (owner === 1 && type !== -1) {
       enemies.push({ x, y })
       if (type === 0) knights.push({ x, y, hp })
-    } else if (owner === 0 && type === 2) {
-      ownGiants++
     }
   }
   if (!corner) corner = { x: queen.x < 960 ? 0 : 1920, y: queen.y < 500 ? 0 : 1000 }
@@ -196,23 +189,40 @@ while (true) {
         action = `BUILD ${t.id} TOWER`
       }
     }
-    // A second knight barracks once the base stands: waves of 8 knights
-    // (forum: save gold, then train in bursts) get through towers.
-    if (action === "WAIT" && towers.length >= 3 && towers.every(t => st[t.id].p1 >= 500) && barracks.length < 2) {
-      const t = closest(free)
-      if (t) action = `BUILD ${t.id} BARRACKS-KNIGHT`
-    }
-    // RoboStac (contest winner): giants against tower-heavy defenders.
-    const enemyTowerCount = sites.filter(q => st[q.id].owner === 1 && st[q.id].type === 1).length
-    if (
-      action === "WAIT" &&
-      turn > 50 &&
-      enemyTowerCount >= 4 &&
-      towers.length >= 3 &&
-      !barracks.some(q => st[q.id].p2 === 2)
-    ) {
-      const t = closest(free)
-      if (t) action = `BUILD ${t.id} BARRACKS-GIANT`
+    // Expansion, as the bots that beat this boss play (4-10 mines, 6-8
+    // towers, 2 knight barracks over a game): keep building on the nearest
+    // free site of our half that no enemy tower covers — mines while the
+    // income is under 8, towers while fewer than mines, a second knight
+    // barracks (8-knight bursts), then towers. Repairs come first.
+    if (action === "WAIT" && barracks.length >= 1 && towers.length >= 3 && towers.every(t => st[t.id].p1 >= 400)) {
+      const ec = { x: 1920 - c.x, y: 1000 - c.y }
+      const ours = (q: Site) => Math.hypot(q.x - c.x, q.y - c.y) < Math.hypot(q.x - ec.x, q.y - ec.y)
+      const enemyCover = (q: Site) =>
+        sites.some(
+          e => st[e.id].owner === 1 && st[e.id].type === 1 && Math.hypot(e.x - q.x, e.y - q.y) < st[e.id].p2 + 30
+        )
+      const open = sites.filter(
+        q => st[q.id].type === -1 && st[q.id].owner === -1 && !banned.has(q.id) && ours(q) && !enemyCover(q)
+      )
+      const mines = sites.filter(q => mine(q) && st[q.id].type === 0)
+      const income = mines.reduce((a, q) => a + st[q.id].p1, 0)
+      const growing = mines.filter(q => st[q.id].p1 < st[q.id].maxSize && dq(q) < 400)
+      const kb = barracks.filter(q => st[q.id].p2 === 0)
+      const next = closest(open)
+      if (growing.length && income < 8) action = `BUILD ${closest(growing)!.id} MINE`
+      else if (next) {
+        const kind =
+          income < 8 && st[next.id].gold !== 0 && st[next.id].maxSize !== 0
+            ? "MINE"
+            : towers.length < mines.length
+              ? "TOWER"
+              : kb.length < 2
+                ? "BARRACKS-KNIGHT"
+                : towers.length < 8
+                  ? "TOWER"
+                  : ""
+        if (kind) action = `BUILD ${next.id} ${kind}`
+      }
     }
     if (action === "WAIT") {
       // Grow the weakest tower to 790, else rest in the corner.
@@ -255,35 +265,16 @@ while (true) {
     }
   } else sameBuild = 0
   lastBuild = action
-  // Training after RoboStac's postmortem (contest winner): knights whenever
-  // possible for 50 turns (early pressure), everything in the last 40;
-  // against 4+ enemy towers save 220 for a giant, knights 8 turns after it;
-  // otherwise save 200 and train until under 80.
   const train: number[] = []
   let g = gold
-  const ready = (q: Site) => mine(q) && st[q.id].type === 2 && st[q.id].p1 === 0
-  const knightB = sites.filter(q => ready(q) && st[q.id].p2 === 0)
-  const giantB = sites.filter(q => ready(q) && st[q.id].p2 === 2)
-  const eTowers = sites.filter(q => st[q.id].owner === 1 && st[q.id].type === 1).length
-  const giantAlive = ownGiants > 0
-  const spend = (list: Site[]) => {
-    for (const q of list)
-      if (COST[st[q.id].p2] <= g) {
-        train.push(q.id)
-        g -= COST[st[q.id].p2]
-      }
-  }
-  if (turn <= 50 || turn > 210) spend([...giantB, ...knightB])
-  else if (eTowers >= 4 && sites.some(q => mine(q) && st[q.id].type === 2 && st[q.id].p2 === 2)) {
-    if (!giantAlive && giantB.length && g >= 220) {
-      spend(giantB.slice(0, 1))
-      giantAt = turn
-    } else if (giantAlive && turn - giantAt >= 8) spend(knightB)
-  } else {
-    if (gold >= 200) bursting = true
-    if (gold < 80) bursting = false
-    if (bursting) spend(knightB)
-  }
+  const kb = sites.filter(s => mine(s) && st[s.id].type === 2 && st[s.id].p2 === 0)
+  // With two barracks, train only both at once (a burst of 8).
+  if (kb.length >= 2 && (gold < 160 || kb.some(s => st[s.id].p1 > 0))) g = 0
+  for (const s of sites)
+    if (mine(s) && st[s.id].type === 2 && st[s.id].p1 === 0 && COST[st[s.id].p2] < g) {
+      train.push(s.id)
+      g -= COST[st[s.id].p2]
+    }
   console.log(action)
   console.log(train.length ? `TRAIN ${train.join(" ")}` : "TRAIN")
 }
