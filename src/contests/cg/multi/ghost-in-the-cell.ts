@@ -9,8 +9,8 @@
 // cost / 4), sending just enough (defenders, plus the enemy's production
 // until arrival, plus enemy troops heading there, minus ours) + 1.
 
-const MULTI = false
-const INC = false
+const MULTI = true
+const INC = true
 const n = parseInt(readline())
 const links = parseInt(readline())
 const dist: number[][] = Array.from({ length: n }, () => new Array(n).fill(99))
@@ -20,8 +20,15 @@ for (let i = 0; i < links; i++) {
   dist[b][a] = d
 }
 
+const bombSeen = new Map<number, number>() // enemy bomb id -> turn first seen
+let bombsLeft = 2
+let turn = 0
+
 while (true) {
+  turn++
   const count = parseInt(readline())
+  const enemyBombs: { id: number; src: number }[] = []
+  const myBombTargets = new Set<number>()
   const owner = new Array(n).fill(0)
   const cyborgs = new Array(n).fill(0)
   const prod = new Array(n).fill(0)
@@ -38,9 +45,44 @@ while (true) {
     } else if (p[1] === "TROOP") {
       if (a[0] === 1) incomingMine[a[2]] += a[3]
       else incomingEnemy[a[2]] += a[3]
+    } else if (p[1] === "BOMB") {
+      if (a[0] === 1) myBombTargets.add(a[2])
+      else {
+        const id = +p[0]
+        if (!bombSeen.has(id)) bombSeen.set(id, turn)
+        enemyBombs.push({ id, src: a[1] })
+      }
     }
   }
   const actions: string[] = []
+  // Enemy bombs (target unknown): evacuate every own factory it could hit
+  // next turn, to the nearest other factory.
+  const evacuate = new Set<number>()
+  for (const b of enemyBombs)
+    for (let f = 0; f < n; f++)
+      if (owner[f] === 1 && dist[b.src][f] - (turn - bombSeen.get(b.id)!) <= 1) evacuate.add(f)
+  for (const f of evacuate) {
+    if (cyborgs[f] === 0) continue
+    let to = -1
+    for (let t = 0; t < n; t++) if (t !== f && !evacuate.has(t) && (to < 0 || dist[f][t] < dist[f][to])) to = t
+    if (to >= 0) {
+      actions.push(`MOVE ${f} ${to} ${cyborgs[f]}`)
+      if (owner[to] === 1) incomingMine[to] += cyborgs[f]
+    }
+    cyborgs[f] = 0
+  }
+  // Our bombs: the enemy's best factory (its start first), one at a time.
+  if (MULTI && bombsLeft > 0 && myBombTargets.size === 0 && (turn === 1 || turn > 30)) {
+    let target = -1
+    for (let t = 0; t < n; t++)
+      if (owner[t] === -1 && (target < 0 || prod[t] * 10 + cyborgs[t] > prod[target] * 10 + cyborgs[target])) target = t
+    let from = -1
+    for (let f = 0; f < n; f++) if (owner[f] === 1 && target >= 0 && (from < 0 || dist[f][target] < dist[from][target])) from = f
+    if (target >= 0 && from >= 0 && (turn === 1 || prod[target] >= 2)) {
+      actions.push(`BOMB ${from} ${target}`)
+      bombsLeft--
+    }
+  }
   const spare = new Array(n).fill(0)
   for (let f = 0; f < n; f++)
     if (owner[f] === 1) spare[f] = Math.max(0, cyborgs[f] - Math.max(0, incomingEnemy[f] - incomingMine[f] - prod[f]))
@@ -78,7 +120,7 @@ while (true) {
   // Later leagues: upgrade a quiet factory with spare cyborgs.
   if (INC && MULTI)
     for (let f = 0; f < n; f++)
-      if (owner[f] === 1 && prod[f] < 3 && spare[f] - sent[f] >= 10 && incomingEnemy[f] === 0) {
+      if (owner[f] === 1 && prod[f] < 3 && spare[f] - sent[f] >= 10 && incomingEnemy[f] === 0 && !evacuate.has(f) && !enemyBombs.length) {
         actions.push(`INC ${f}`)
         sent[f] += 10
       }

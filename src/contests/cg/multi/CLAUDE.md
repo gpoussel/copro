@@ -831,6 +831,11 @@ production); options scored value / (distance + need / 4), value =
 production (+0.5 enemy, +2 for saving an own factory), need = defenders +
 enemy production until arrival + enemy troops − ours + 1. 4/4 vs the
 Wood 3 boss. Next leagues: several commands, BOMB, INC.
+Bronze (all rules): MULTI and INC on (INC only with no enemy bomb in
+flight). The boss bombs our start factory on turn 2: enemy bombs (target
+unknown) now evacuate every own factory they could reach next turn (age
+tracked from first sight), and we bomb the enemy's best factory on turn 1
+and again after turn 30 (production ≥ 2). 1/4 → 3/4 vs the Bronze boss.
 
 ## code-royale
 
