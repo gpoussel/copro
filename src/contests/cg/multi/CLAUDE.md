@@ -785,6 +785,10 @@ paired with prisoners by estimated distance, aiming ahead of the prisoner;
 targets corrected by −3·velocity; thrust 200 / 120 / 20 by heading error.
 3/4 vs the Wood 1 boss. Ideas: simulate (referee on GitHub), block the
 enemy carrier's path at the manhole.
+Bronze: 1/4 vs the boss (rank 4/178 at 100 %). A 6-turn plan search per
+car (`EXPERT rotation thrust`, moving targets, collisions ignored) also
+went 1/4: kept in `legacy/bit-runner-2048-search.ts`, not submitted. The
+losses probably come from collisions (steals): simulate car-car impacts.
 
 ## git-patchwork
 
