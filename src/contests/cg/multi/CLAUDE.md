@@ -726,6 +726,10 @@ the HQ), else blind-dig fresh cells from column 3. Holes that appear without
 us, and holes next to an enemy robot that stood still outside the HQ, count
 as possibly trapped and are skipped. 4/4 vs the Wood 1 boss (~105 to 1).
 Ideas: our own traps, trap chain kills, radar spots by expected value.
+Bronze boss (same rules): 1/4 at first. Any robot at the HQ now requests a
+radar when none is carried and (known ore < 4 per robot or < 4 radars down),
+radar carriers take distinct spots, ore cost = distance + ore column (the
+trip home): 3/4 with close scores.
 
 ## keep-off-the-grass-fall-challenge-2022
 

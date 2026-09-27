@@ -31,7 +31,6 @@ const ourHoles = new Set<number>() // cells we dug (safe from enemy traps)
 const pendingDig = new Map<number, number>() // robot id -> cell it dug last turn
 const suspicious = new Set<number>() // holes that appeared without us
 let prevHoles = new Set<number>()
-let radarBot = -1
 let prevEnemies = new Map<number, number>() // enemy robot id -> cell
 
 while (true) {
@@ -77,10 +76,11 @@ while (true) {
   let knownOre = 0
   for (const v of capacity.values()) knownOre += v
   const alive = robots.filter(r => r.x >= 0)
-  if (radarBot >= 0 && !alive.some(r => r.id === radarBot)) radarBot = -1
   const nextSpot = RADAR_SPOTS.find(([x, y]) => !radars.has(y * W + x) && safe(y * W + x))
 
   const reserved = new Set<number>()
+  const spotsTaken = new Set<number>()
+  let requested = false
   const out: string[] = []
   for (const r of robots) {
     if (r.x < 0) {
@@ -92,31 +92,37 @@ while (true) {
       continue
     }
     // Radar duty.
-    if (r.item === 2 && nextSpot) {
-      out.push(`DIG ${nextSpot[0]} ${nextSpot[1]}`)
-      if (Math.abs(r.x - nextSpot[0]) + Math.abs(r.y - nextSpot[1]) <= 1)
-        pendingDig.set(r.id, nextSpot[1] * W + nextSpot[0])
-      continue
+    if (r.item === 2) {
+      const spot = RADAR_SPOTS.find(
+        ([x, y]) => !radars.has(y * W + x) && safe(y * W + x) && !spotsTaken.has(y * W + x),
+      )
+      if (spot) {
+        spotsTaken.add(spot[1] * W + spot[0])
+        out.push(`DIG ${spot[0]} ${spot[1]}`)
+        if (Math.abs(r.x - spot[0]) + Math.abs(r.y - spot[1]) <= 1) pendingDig.set(r.id, spot[1] * W + spot[0])
+        continue
+      }
     }
+    // Request a radar at the HQ while ore is scarce or few radars are down.
     if (
       r.item !== 2 &&
       nextSpot &&
       radarCd === 0 &&
-      knownOre < 2 * alive.length &&
-      (radarBot < 0 || radarBot === r.id) &&
+      !requested &&
+      !robots.some(o => o.item === 2) &&
+      (knownOre < 4 * alive.length || radars.size < 4) &&
       r.x === 0
     ) {
-      radarBot = r.id
+      requested = true
       out.push("REQUEST RADAR")
       continue
     }
-    if (radarBot === r.id && r.item !== 2) radarBot = -1
     // Mine the nearest known ore with capacity left.
     let best = -1
     let bestD = Infinity
     for (const [c, left] of capacity) {
       if (left <= 0) continue
-      const d = Math.abs((c % W) - r.x) + Math.abs(Math.floor(c / W) - r.y) + (c % W) * 0.5
+      const d = Math.abs((c % W) - r.x) + Math.abs(Math.floor(c / W) - r.y) + (c % W)
       if (d < bestD) {
         bestD = d
         best = c
