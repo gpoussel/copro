@@ -189,40 +189,11 @@ while (true) {
         action = `BUILD ${t.id} TOWER`
       }
     }
-    // Expansion, as the bots that beat this boss play (4-10 mines, 6-8
-    // towers, 2 knight barracks over a game): keep building on the nearest
-    // free site of our half that no enemy tower covers — mines while the
-    // income is under 8, towers while fewer than mines, a second knight
-    // barracks (8-knight bursts), then towers. Repairs come first.
-    if (action === "WAIT" && barracks.length >= 1 && towers.length >= 3 && towers.every(t => st[t.id].p1 >= 400)) {
-      const ec = { x: 1920 - c.x, y: 1000 - c.y }
-      const ours = (q: Site) => Math.hypot(q.x - c.x, q.y - c.y) < Math.hypot(q.x - ec.x, q.y - ec.y)
-      const enemyCover = (q: Site) =>
-        sites.some(
-          e => st[e.id].owner === 1 && st[e.id].type === 1 && Math.hypot(e.x - q.x, e.y - q.y) < st[e.id].p2 + 30
-        )
-      const open = sites.filter(
-        q => st[q.id].type === -1 && st[q.id].owner === -1 && !banned.has(q.id) && ours(q) && !enemyCover(q)
-      )
-      const mines = sites.filter(q => mine(q) && st[q.id].type === 0)
-      const income = mines.reduce((a, q) => a + st[q.id].p1, 0)
-      const growing = mines.filter(q => st[q.id].p1 < st[q.id].maxSize && dq(q) < 400)
-      const kb = barracks.filter(q => st[q.id].p2 === 0)
-      const next = closest(open)
-      if (growing.length && income < 8) action = `BUILD ${closest(growing)!.id} MINE`
-      else if (next) {
-        const kind =
-          income < 8 && st[next.id].gold !== 0 && st[next.id].maxSize !== 0
-            ? "MINE"
-            : towers.length < mines.length
-              ? "TOWER"
-              : kb.length < 2
-                ? "BARRACKS-KNIGHT"
-                : towers.length < 8
-                  ? "TOWER"
-                  : ""
-        if (kind) action = `BUILD ${next.id} ${kind}`
-      }
+    // A second knight barracks once the base stands: waves of 8 knights
+    // (forum: save gold, then train in bursts) get through towers.
+    if (action === "WAIT" && towers.length >= 3 && towers.every(t => st[t.id].p1 >= 500) && barracks.length < 2) {
+      const t = closest(free)
+      if (t) action = `BUILD ${t.id} BARRACKS-KNIGHT`
     }
     if (action === "WAIT") {
       // Grow the weakest tower to 790, else rest in the corner.

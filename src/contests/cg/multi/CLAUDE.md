@@ -1209,6 +1209,9 @@ turns after; else save 200 and train until < 80.: 22.2 — training nearly
 stopped after turn 50 (income ~5/turn never reached 200). Economy is the
 bottleneck: A/B expansion phase (mines on our half to income 8, towers ≥
 mines, 2nd barracks, towers to 8) on the search base with 160 bursts.
+23.3: economy now matches opponents (5–8 mines, 5–6 towers, 9–14 trains)
+without a score gain. Heuristics plateau at 22–27.5; next: exact referee
+port + beam search over queen actions (RoboStac's approach).
 
 ## hypersonic
 
