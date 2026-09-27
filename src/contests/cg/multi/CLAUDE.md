@@ -1065,6 +1065,11 @@ Wood 1 (CROISSANT: dough H baked 10 turns in oven O, burns 10 turns after
 ready; oven line `contents timer`): bake when an order wants a croissant,
 none lies on a table and the oven is empty; take a ready croissant at once
 (onto the plate if holding one, else to a table). Best total in 3/3.
+Bronze (TART: dough → board = CHOPPED_DOUGH → + blueberries = RAW_TART →
+oven = TART): dough goes to the board when a tart is wanted (and no
+croissant is, or the oven is busy); RAW_TART into the oven when empty else
+onto a table (picked up later); anything baked is taken at once. Best total
+2/3 (third within 1 point). Arena was 13.1 vs boss 23.9 before this.
 
 ## soak-overflow
 

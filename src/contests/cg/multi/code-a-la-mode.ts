@@ -72,7 +72,16 @@ while (true) {
   const best = orders.slice().sort((a, b) => b.award - a.award)[0]
   const needChopped = best?.items.includes("CHOPPED_STRAWBERRIES") && !onTable("CHOPPED_STRAWBERRIES")
   // Croissants: dough (H) baked 10 turns in the oven (O), ready for 10 more.
-  const croissantReady = ovenItem === "CROISSANT"
+  const croissantReady = ovenItem === "CROISSANT" || ovenItem === "TART" // anything baked: take it
+  // Tart (Bronze): dough → board (CHOPPED_DOUGH) → + blueberries (RAW_TART)
+  // → oven (TART).
+  const needTart =
+    OVEN[0] >= 0 &&
+    orders.some(o => o.items.includes("TART")) &&
+    !onTable("TART") &&
+    !onTable("RAW_TART") &&
+    ovenItem !== "RAW_TART" &&
+    ovenItem !== "TART"
   const needCroissant =
     OVEN[0] >= 0 &&
     orders.some(o => o.items.includes("CROISSANT")) &&
@@ -80,12 +89,19 @@ while (true) {
     ovenItem === "NONE"
   let action: string
   if (carried[0] === "STRAWBERRIES") action = use(BOARD)
-  else if (carried[0] === "DOUGH") action = use(OVEN)
-  else if (carried[0] === "CHOPPED_STRAWBERRIES" || carried[0] === "CROISSANT") action = use(freeTable())
+  else if (carried[0] === "DOUGH") action = needTart && (!needCroissant || ovenItem !== "NONE") ? use(BOARD) : use(OVEN)
+  else if (carried[0] === "CHOPPED_DOUGH") action = use(CRATE.BLUEBERRIES)
+  else if (carried[0] === "RAW_TART") action = ovenItem === "NONE" ? use(OVEN) : use(freeTable())
+  else if (carried[0] === "CHOPPED_STRAWBERRIES" || carried[0] === "CROISSANT" || carried[0] === "TART")
+    action = use(freeTable())
   else if (!carried.includes("DISH")) {
     if (carried.length) action = use(freeTable()) // drop anything else
     else if (croissantReady) action = use(OVEN) // take it before it burns
-    else if (needCroissant && DOUGH[0] >= 0) action = use(DOUGH)
+    else if ((needCroissant || needTart) && DOUGH[0] >= 0) action = use(DOUGH)
+    else if (onTable("RAW_TART") && ovenItem === "NONE") {
+      const t = onTable("RAW_TART")!
+      action = `USE ${t.x} ${t.y}`
+    }
     else if (needChopped && STRAWBERRY[0] >= 0) action = use(STRAWBERRY)
     else {
       // A plate: prefer a plate already on a table that still fits an order.
@@ -107,7 +123,7 @@ while (true) {
       const missing = target.items.filter(d => !onPlate.includes(d))
       const fromCrate = missing.find(d => CRATE[d])
       const fromTable = missing.map(d => onTable(d)).find(t => t)
-      if (missing.includes("CROISSANT") && croissantReady) action = use(OVEN)
+      if ((missing.includes(ovenItem) && croissantReady)) action = use(OVEN)
       else if (fromCrate) action = use(CRATE[fromCrate])
       else if (fromTable) action = `USE ${fromTable.x} ${fromTable.y}`
       else if (!missing.length) action = use(WINDOW)
