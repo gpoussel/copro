@@ -1015,6 +1015,14 @@ Bronze: 18.7 vs boss 29.9. Agade's postmortem order (2 mines, 1 knight
 barracks, then towers) went 0/4 vs the Bronze boss (ours 2/4): reverted.
 His real edge was queen kiting by simulated annealing (depth 7), which
 this bot lacks.
+Bronze boss = `config/level4/Boss.java` in github.com/csj/team-2: knight
+barracks at the nearest site, mines (grown to max) until income ≥ 10,
+then towers on every free site, TRAIN whenever gold ≥ 80; its queen never
+flees. Ours dies by turn ~50 (0/4): parked on a forward tower "repairing"
+while the knight stream hits it. A home-corner tower cluster + archer
+barracks + shelter at the home-most tower lasted to turn 70–80 but still
+lost 0/4 (reverted). Needs real queen kiting and archers that actually
+get trained (gold went to knights first).
 
 ## hypersonic
 
