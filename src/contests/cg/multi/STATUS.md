@@ -87,7 +87,7 @@ Surveyed 2026-09-26.
 | green-circle | 6 | Wood 2 | 4 | TypeScript desk choice, submitted | 2 | 2/4 vs Wood 2 boss |
 | ocean-of-code | 6 | Silver | 1 | TypeScript path tracking+silence, submitted | 2 | 1/4 vs Silver boss; old bot 9/690 |
 | platinum-rift-episode-1 | 6 | Silver | 1 | TypeScript spread+buy, cluster opening, submitted | 2 | best 3/3 in 4p vs bosses |
-| poker-chip-race | 6 | Wood 2 | 4 | TypeScript WIP, **not submitted** (0/6) | 2 | gets eaten; needs physics simulation |
+| poker-chip-race | 6 | Wood 2 | 4 | TypeScript rare pushes + predictions, submitted | 2 | 4/4 vs Wood 2 boss |
 | smash-the-code | 6 | Silver | 1 | TypeScript 3-ply sim, submitted | 2 | 4/4 vs Wood boss; later leagues add rotations/different colours |
 | spring-challenge-2020 | 6 | Silver | 1 | TypeScript beam paths, types, abilities | 2 | Silver boss ~2/6; collection efficiency and deaths |
 | spring-challenge-2023-ants | 6 | Silver | 1 | TypeScript harvesting tree, submitted | 2 | 2/4 vs Silver boss |

@@ -618,13 +618,15 @@ per wall kept) never placed a wall and lost 1/4: reverted. Next: value
 walls by the race margin *after* they are spent, save walls for when the
 opponent is 2-3 moves from its goal.
 
-## poker-chip-race (WIP, not submitted)
+## poker-chip-race
 
-Counts on two separate lines (stub). Greedy chase/flee bot (neutral drops
-bigger than us are threats too, flee on time-to-contact < 6, skip guarded
-prey, accelerate only when the heading is off) survives longer but still
-loses 0/6 to the Wood boss. Needs the physics (bounces, ejection, absorption
-momentum) simulated to plan safe moves.
+Counts on two separate lines. **Every push costs 1/15 of the chip's
+matter**: the first bots pushed nearly every turn (chasing / fleeing) and
+shrank until eaten (0/6; a WAIT-only bot also gets eaten). Now pushes are
+rare: straight-line predictions with wall bounces; push away only when a
+bigger object is predicted to touch us within 6 turns; smaller own chips
+merge into the biggest; otherwise push towards prey only when our drift
+touches no smaller object within 20 turns. 4/4 vs the Wood 2 boss.
 
 ## game-of-drones
 
