@@ -1212,7 +1212,7 @@ bot waited at its tower (draws: 8.4 vs boss 17.1). Duel mode (no UNIT on
 the map): attack whichever of enemy hero / tower dies sooner (hero if
 our tower would fall first): 4/4, games over by turn 24. Wood 5 adds
 items (boss: DOCTOR_STRANGE, cheapest item, hits the nearest tower); the
-bot now buys the best affordable non-potion item (15·damage + maxHealth
+bot now buys the best affordable non-potion item (15·damage + maxHealth;
 + 2·speed) while it has < 4. Wood 4 adds creeps (last hits/denies = gold).
 **itemsOwned is field 21 of the unit line** (read as 24 at first: NaN,
 so nothing was ever bought and a bladed IRONMAN out-traded us). Duel
@@ -1220,7 +1220,13 @@ mode now runs while the enemy tower deals ≤ 1 damage (Wood 6–4) and
 fights back whenever the enemy hero can hit us. Lane mode (Wood 3+):
 stay out of the enemy tower's range + 40, last-hit / deny (own creeps
 ≤ 40 % HP), duel the hero away from its tower when we have more HP,
-retreat under 30 % HP.
+retreat under 30 % HP while something threatens us (no HP regeneration:
+an unconditional retreat parked the hero at its tower until it died).
+Wood 2 (Groots): a hero under 50 % HP buys the biggest affordable potion
+(potions need a free slot, so regular items stop at 3), items are valued
+15·damage + maxHealth (boots were bought before), and the hero stands
+120 behind the front creep (60 let enemy creeps target it). 3/4 vs the
+Wood 2 boss; Wood 3 went up with the lane mode at once.
 
 ## legends-of-code-magic
 

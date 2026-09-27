@@ -14,12 +14,13 @@ for (let i = 0; i < bushes; i++) readline()
 // manaRegeneration isPotion.
 type Item = { name: string; cost: number; value: number }
 const shop: Item[] = []
+const potions: Item[] = [] // value = health restored
 const itemCount = parseInt(readline())
 for (let i = 0; i < itemCount; i++) {
   const p = readline().trim().split(" ")
   const v = p.map(Number)
-  if (v[9] === 1) continue // potions
-  shop.push({ name: p[0], cost: v[1], value: 15 * v[2] + v[4] + 2 * v[7] })
+  if (v[9] === 1) potions.push({ name: p[0], cost: v[1], value: v[3] })
+  else shop.push({ name: p[0], cost: v[1], value: 15 * v[2] + v[4] })
 }
 const dir = team === 0 ? 1 : -1
 let picks = 0
@@ -46,8 +47,13 @@ while (true) {
   const front = myCreeps.length ? (dir > 0 ? Math.max(...myCreeps.map(c => c.x)) : Math.min(...myCreeps.map(c => c.x))) : tower.x
   const out: string[] = []
   // Buy the best affordable item (damage first) while slots remain.
-  const buyer = heroes.find(h => h.items < 4)
-  const buy = buyer ? shop.filter(it => it.cost <= gold).sort((a, b) => b.value - a.value)[0] : undefined
+  // A hurt hero drinks first (potions need a free slot too).
+  const hurt = heroes.find(h => h.items < 4 && h.hp < 0.5 * h.maxHp)
+  const potion = hurt
+    ? potions.filter(it => it.cost <= gold && it.value > 0).sort((a, b) => b.value - a.value)[0]
+    : undefined
+  const buyer = potion ? hurt : heroes.find(h => h.items < 3)
+  const buy = potion ?? (buyer ? shop.filter(it => it.cost <= gold).sort((a, b) => b.value - a.value)[0] : undefined)
   const bought = buy ? buyer!.id : -1
   // Wood 6-5 have no creeps (towers: 1500 HP, 1 damage; referee
   // github.com/Illedan/BOTG-Refree): a duel. HULK beats every hero head-on,
@@ -88,8 +94,11 @@ while (true) {
     }
     const dist = (u: U) => Math.hypot(u.x - h.x, u.y - h.y)
     const reach = h.range + 150 // move part of the turn, then hit
-    const safeX = front - dir * 60
-    const low = h.hp < 0.3 * h.maxHp
+    const safeX = front - dir * 120
+    // Low: retreat only while something threatens us (no regeneration).
+    const low =
+      h.hp < 0.3 * h.maxHp &&
+      enemies.some(e => (e.type === "HERO" && dist(e) < 500) || (e.type === "UNIT" && dist(e) < 300))
     const canHit = (u: U) => dist(u) <= reach && !inTowerRange(u.x, u.y)
     const lastHit = allCreeps
       .filter(c => canHit(c) && c.hp <= h.dmg && (c.team !== team || c.hp <= 0.4 * c.maxHp))
