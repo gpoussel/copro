@@ -24,6 +24,9 @@ type SiteState = { gold: number; maxSize: number; type: number; owner: number; p
 const COST = [80, 100, 140]
 let corner: { x: number; y: number } | null = null
 let improving = -1 // tower being grown
+const banned = new Set<number>()
+let lastBuild = ""
+let sameBuild = 0
 
 while (true) {
   const [gold, touched] = readline().split(" ").map(Number)
@@ -46,7 +49,8 @@ while (true) {
   const dq = (s: Site) => Math.hypot(s.x - queen.x, s.y - queen.y)
   const inArea = (s: Site) => Math.hypot(s.x - c.x, s.y - c.y) < (1920 + 1000) / 3
   const area = sites.filter(inArea)
-  const free = area.filter(s => st[s.id].type === -1 && st[s.id].owner === -1)
+  // Skip sites a BUILD kept failing on (a queen tried one for 22 turns).
+  const free = area.filter(s => st[s.id].type === -1 && st[s.id].owner === -1 && !banned.has(s.id))
   const mine = (s: Site) => st[s.id].owner === 0
   const closest = (list: Site[]) => list.slice().sort((a, b) => dq(a) - dq(b))[0]
   const farthest = (list: Site[]) => list.slice().sort((a, b) => dq(b) - dq(a))[0]
@@ -94,6 +98,16 @@ while (true) {
       action = improving >= 0 ? `BUILD ${improving} TOWER` : `MOVE ${c.x} ${c.y}`
     }
   }
+  // A BUILD on a touched site that stays unbuilt for 6 turns: ban it.
+  const bm = action.match(/^BUILD (\d+) /)
+  const touching = bm ? Math.hypot(sites[+bm[1]].x - queen.x, sites[+bm[1]].y - queen.y) < sites[+bm[1]].r + 40 : false
+  if (bm && action === lastBuild && st[+bm[1]].owner !== 0 && touching) {
+    if (++sameBuild >= 6) {
+      banned.add(+bm[1])
+      sameBuild = 0
+    }
+  } else sameBuild = 0
+  lastBuild = action
   const train: number[] = []
   let g = gold
   for (const s of sites)

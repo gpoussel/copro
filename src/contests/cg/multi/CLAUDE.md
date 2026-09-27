@@ -1110,6 +1110,9 @@ Bronze boss (every earlier version 0/4). The old builder bot is in
 Arena 22.3 (from 18.7). Variants 0/4 each: 3 mines + 4 towers (towers
 come too late), towers before the barracks (early deaths); a giant
 barracks once the enemy has ≥ 2 towers, giants trained first: 1/4.
+An arena loss: the queen ordered BUILD on one site for 22 turns without
+it ever being built: a site still unbuilt after 6 BUILDs while touching
+it is now banned (2/4). Skipping sites under enemy towers went 1/4.
 
 ## hypersonic
 
