@@ -1065,7 +1065,9 @@ hit creeps for 3 + (range − distance)/200, melt 4 HP/turn, +100 per BUILD.
 A debug run showed the IDE boss flooding 12–17 live knights by turn 35:
 a fleeing queen (best of 16 steps by nearest-knight distance) got
 cornered and died (0/4, reverted). Needs a dense home tower cluster
-(towers are free, ~5 of them out-damage the flood) plus giants.
+(towers are free, ~5 of them out-damage the flood) plus giants. A 5-tower
+cluster (2 mines, 4 towers, mine, barracks, tower) still died by turn
+~25 (0/4): the queen needs to survive the first waves before any build.
 
 ## hypersonic
 
