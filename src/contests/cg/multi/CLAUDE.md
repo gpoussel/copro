@@ -561,7 +561,9 @@ That version: arena 26.3 (from 22.6). An arena loss showed our leader
 shuttling between two cells for ~50 turns (flee from a lethal square,
 then the BFS walk back): cells from its last 4 turns now cost 3. 3/4.
 Arena 26.1. Tried and reverted: danger ×2 in the walk + stepping out of
-any line of fire first (5) — 0/4 with a wipe-out (too timid).
+any line of fire first (5) — 0/4 with a wipe-out (too timid). Next A/B:
+shots at a cultist that can hit any of ours +2 (one took 8 free shots at
+our unit while the leader walked to neutrals).
 
 ## tryangle-catch
 
