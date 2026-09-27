@@ -641,3 +641,12 @@ holding, else chase the nearest free snaffle (different targets per wizard),
 aiming at its next position minus our momentum. 4/4 vs the Wood boss.
 Later leagues: bludgers, spells (OBLIVIATE/PETRIFICUS/ACCIO/FLIPENDO) with
 magic points.
+
+## xmas-rush
+
+6 leagues (Wood 2 start, 1 quest). Tiles are 4-digit masks (up right down
+left). Bot: PUSH = simulate all 28 pushes (players/items shift with tiles,
+pushed-out player lands on the inserted tile, item leaving the board goes to
+our hand), keep the one whose BFS-reachable area gets closest to a quest
+item; MOVE = BFS path (≤ 20) to the item or the nearest reachable tile.
+4/4 vs the Wood boss.
