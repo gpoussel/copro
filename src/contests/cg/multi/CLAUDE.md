@@ -509,6 +509,10 @@ column. Same bot for both: every legal move scored by captures (×30), the
 opponent's best immediate capture afterwards (×−25), group liberties (atari
 heavily penalised), slight centre pull. 4/4 vs both Bronze bosses (e.g. 16–1,
 34–0). atari-go's later leagues use 13×13 and 19×19 boards.
+Silver (200 turns): crushed 0/4 (23–86, 11–97 captured stones): the boss
+reads ladders / nets. Needs real capture reading (ladder search for
+2-liberty groups, defend by extension only when it gains liberties) or
+MCTS with capture-aware playouts.
 
 ## cultist-wars
 
