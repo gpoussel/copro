@@ -53,11 +53,11 @@ function modifier(x: number, y: number, sx: number, sy: number): number {
 const cover = (x: number, y: number, sx: number, sy: number) => 1 - modifier(x, y, sx, sy)
 while (true) {
   const n = parseInt(readline())
-  const mine: { id: number; x: number; y: number }[] = []
+  const mine: { id: number; x: number; y: number; bombs: number }[] = []
   const foes: { id: number; x: number; y: number; wet: number }[] = []
   for (let i = 0; i < n; i++) {
-    const [id, x, y, , , wet] = readline().split(" ").map(Number)
-    if (owner.get(id) === myId) mine.push({ id, x, y })
+    const [id, x, y, , bombs, wet] = readline().split(" ").map(Number)
+    if (owner.get(id) === myId) mine.push({ id, x, y, bombs })
     else foes.push({ id, x, y, wet })
   }
   readline() // my agent count
@@ -112,6 +112,49 @@ while (true) {
       }
       const target = inRange.sort((f, g) => d(f) - d(g)).slice(0, 2).sort((f, g) => xCover(f) - xCover(g) || d(f) - d(g))[0]
       out.push(`${a.id};MOVE ${bestCell[0]} ${bestCell[1]}` + (target ? `;SHOOT ${target.id}` : ";HUNKER_DOWN"))
+    }
+  }
+  // Wood 1 (bunkers): 4 walled 3×3 bunkers; one traps our second agent.
+  // Splash the other three (centre throw = the whole interior, 30 each,
+  // range 4 Manhattan) with our bomber; never shoot, never hit our agent.
+  if (LEAGUE === 4 || (mine.some(a => a.bombs >= 2) && foes.length > 6)) {
+    out.length = 0
+    const centres = [
+      [2, 2],
+      [2, H - 3],
+      [W - 3, 2],
+      [W - 3, H - 3],
+    ]
+    const bomber = mine.slice().sort((a, b) => b.bombs - a.bombs)[0]
+    const targets = centres.filter(
+      ([cx, cy]) =>
+        !mine.some(a => a !== bomber && Math.max(Math.abs(a.x - cx), Math.abs(a.y - cy)) <= 1) &&
+        foes.some(f => Math.max(Math.abs(f.x - cx), Math.abs(f.y - cy)) <= 1 && f.wet < 100),
+    )
+    for (const a of mine) {
+      if (a !== bomber || !targets.length || a.bombs === 0) {
+        out.push(`${a.id};MOVE ${a.x} ${a.y}`)
+        continue
+      }
+      const [cx, cy] = targets.sort(
+        (p, q) => Math.abs(p[0] - a.x) + Math.abs(p[1] - a.y) - (Math.abs(q[0] - a.x) + Math.abs(q[1] - a.y)),
+      )[0]
+      if (Math.abs(cx - a.x) + Math.abs(cy - a.y) <= 4) out.push(`${a.id};THROW ${cx} ${cy}`)
+      else {
+        // Walk to the closest free cell within range 4 of the centre.
+        let best = [a.x, a.y]
+        let bestD = Infinity
+        for (let y = 0; y < H; y++)
+          for (let x = 0; x < W; x++) {
+            if (tileAt(x, y) !== 0 || Math.abs(cx - x) + Math.abs(cy - y) > 4) continue
+            const d = Math.abs(x - a.x) + Math.abs(y - a.y)
+            if (d < bestD) {
+              bestD = d
+              best = [x, y]
+            }
+          }
+        out.push(`${a.id};MOVE ${best[0]} ${best[1]}`)
+      }
     }
   }
   console.log(out.join("\n"))
