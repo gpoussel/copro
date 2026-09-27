@@ -1078,6 +1078,14 @@ cornered and died (0/4, reverted). Needs a dense home tower cluster
 (towers are free, ~5 of them out-damage the flood) plus giants. A 5-tower
 cluster (2 mines, 4 towers, mine, barracks, tower) still died by turn
 ~25 (0/4): the queen needs to survive the first waves before any build.
+**Turtle rewrite** after a Silver-level design (vadim-job-hg/Codingame,
+code-royale-silver.py): only sites within ~970 of our corner; 2 fully
+grown mines, 1 knight barracks, 3 towers; enemy units within 200 of the
+queen → repair the tower being grown (< 790 HP) or raise one on the free
+site farthest from the queen; otherwise keep growing the weakest tower to
+790, else rest in the corner; every ready barracks trains. 2/4 vs the
+Bronze boss (every earlier version 0/4). The old builder bot is in
+`legacy/code-royale-builder.ts`.
 
 ## hypersonic
 
