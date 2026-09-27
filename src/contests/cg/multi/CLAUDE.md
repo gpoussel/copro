@@ -890,3 +890,13 @@ nearest unowned cell (enemy HQ first, ties towards it), distinct targets;
 train level 1 on free own/border cells closest to the enemy HQ while
 gold − 10 + 5·(income − 1) ≥ 0. 4/4 vs the Wood 3 boss (HQ taken).
 Later: levels 2/3 (kill lower levels), mines, towers (Bronze = full game).
+
+## code-a-la-mode
+
+3 players, 3 rounds of 2 cooperating chefs. Wood 3: ICE_CREAM (crate I)
+and BLUEBERRIES (B); plates from the dishwasher D, deliver at W. Player
+lines are `x y item` on one line. Bot: plate → missing desserts of the best
+order the plate can still become (USE on a crate with a plate adds it) →
+window; a plate matching no order goes back to D. Best total in 3/3.
+Later: strawberries (chop at C), croissants (dough H + oven), tarts;
+cooperate with the partner via tables.

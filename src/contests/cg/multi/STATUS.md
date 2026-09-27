@@ -95,7 +95,7 @@ Surveyed 2026-09-26.
 | tron-battle | 6 | Silver | 1 | TypeScript Voronoi | 2 | Wood 2→Wood 1 |
 | xmas-rush | 6 | Silver | 1 | TypeScript push-search, submitted | 2 | 4/4 vs Wood boss; multi-quest later |
 | a-code-of-ice-and-fire | 7 | Wood 3 | 5 | TypeScript expand + train, submitted | 2 | 4/4 vs Wood 3 boss |
-| code-a-la-mode | 7 | Wood 3 | 5 | — | 3 | |
+| code-a-la-mode | 7 | Wood 3 | 5 | TypeScript plate loop, submitted | 3 | best total 3/3 vs 2 bosses |
 | code-of-kutulu | 7 | Wood 3 | 5 | TypeScript flee + group, submitted | 4 | best 4/4 vs 3 bosses (close) |
 | code-royale | 7 | Wood 3 | 5 | TypeScript barracks + knights, submitted | 2 | 4/4 vs Wood 3 boss |
 | coders-of-the-caribbean | 7 | Wood 3 | 5 | TypeScript barrel chase, submitted | 2 | 4/4 vs Wood 3 boss |
