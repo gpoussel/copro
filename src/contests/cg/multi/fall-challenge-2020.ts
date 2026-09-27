@@ -5,8 +5,8 @@
 // exhausted spells, repeatable spells cast several times), states
 // deduplicated on (inventory, castable spells). For every order, the fastest
 // sequence that makes it brewable; play the first action of the sequence with
-// the best price / (turns + 1). Later leagues: LEARN the first free tome
-// spells during the opening.
+// the best price / (turns + 1). Opening (turns ≤ 9): LEARN the most valuable
+// affordable tome spells.
 
 type Action = {
   id: number
@@ -41,11 +41,18 @@ while (true) {
   const spells = actions.filter(a => a.type === "CAST")
   const tome = actions.filter(a => a.type === "LEARN")
 
-  // Opening: learn a few spells that cost nothing (tome index 0).
-  if (tome.length && turn <= 6) {
-    const free = tome.find(a => a.tomeIndex === 0)
-    if (free) {
-      console.log(`LEARN ${free.id}`)
+  // Opening: learn the most valuable affordable spells (a tome index i costs
+  // i tier-0 ingredients); value = tier-weighted output − input, repeatable
+  // spells worth more.
+  if (tome.length && turn <= 9) {
+    const worth = (a: Action) => {
+      const net = a.delta.reduce((t, d, k) => t + d * (k + 1), 0)
+      const pos = a.delta.every(d => d >= 0)
+      return net + (a.repeatable ? 1.5 : 0) + (pos ? 1 : 0) - a.tomeIndex * 0.6
+    }
+    const pick = tome.filter(a => a.tomeIndex <= inv[0]).sort((a, b) => worth(b) - worth(a))[0]
+    if (pick && worth(pick) > 0.5) {
+      console.log(`LEARN ${pick.id}`)
       continue
     }
   }

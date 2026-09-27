@@ -757,6 +757,10 @@ Wood 1 (4 base spells, 3 potions end the game): BFS over CAST/REST states
 fastest sequence per order, play the first action of the best
 price / (turns + 1); LEARN free tome spells in the opening once LEARN
 exists. 4/4 vs the Wood 1 boss.
+Silver (full game): 1/4 with "learn free spells in the first 6 turns".
+Now the opening (turns ≤ 9) learns the affordable tome spell with the best
+tier-weighted net delta (+1.5 repeatable, +1 pure gain, −0.6 per tome
+index cost) while it is worth > 0.5: 4/4 vs the Silver boss.
 
 ## crystal-rush
 
