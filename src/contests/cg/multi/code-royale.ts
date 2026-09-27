@@ -187,6 +187,12 @@ while (true) {
         action = `BUILD ${t.id} TOWER`
       }
     }
+    // A second knight barracks once the base stands: waves of 8 knights
+    // (forum: save gold, then train in bursts) get through towers.
+    if (action === "WAIT" && towers.length >= 3 && towers.every(t => st[t.id].p1 >= 500) && barracks.length < 2) {
+      const t = closest(free)
+      if (t) action = `BUILD ${t.id} BARRACKS-KNIGHT`
+    }
     if (action === "WAIT") {
       // Grow the weakest tower to 790, else rest in the corner.
       if (!(improving >= 0 && st[improving].p1 < 790)) {
@@ -214,6 +220,9 @@ while (true) {
   lastBuild = action
   const train: number[] = []
   let g = gold
+  const kb = sites.filter(s => mine(s) && st[s.id].type === 2 && st[s.id].p2 === 0)
+  // With two barracks, train only both at once (a burst of 8).
+  if (kb.length >= 2 && (gold < 160 || kb.some(s => st[s.id].p1 > 0))) g = 0
   for (const s of sites)
     if (mine(s) && st[s.id].type === 2 && st[s.id].p1 === 0 && COST[st[s.id].p2] < g) {
       train.push(s.id)

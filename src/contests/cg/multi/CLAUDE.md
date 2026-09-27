@@ -1160,6 +1160,13 @@ staying takes more damage: 4/4 with 67–82 HP left.
 Arena 25.2: most losses were queens trapped jittering in the corner (the
 idle queen rested there by design). She now rests at our towers' centroid
 and kiting steps pay 2/unit closer than 350 to any corner. 4/4.
+Arena 26.2 / 26.0. Forum thread (forum.codingame.com/t/30903, read via
+its .json): save gold and train in bursts, 2 mines per barracks, queen
+touching enemy barracks/mines destroys them, hide behind towers, never
+rebuild depleted mines. Raiding nearby uncovered enemy barracks/mines:
+1/4 (queen exposed), dropped. Second knight barracks once the base
+stands, trained only together (8-knight bursts): 3/4, two wins by
+killing the boss queen; arena A/B.
 
 ## hypersonic
 
