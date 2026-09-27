@@ -62,7 +62,7 @@ Surveyed 2026-09-26.
 | volcanoes | 3 | **Legend** ✅ | 0 | TypeScript flat Monte Carlo, submitted | 2 | 4/4 vs Silver boss |
 | atari-go | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
 | atari-go-9x9 | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
-| code4life | 6 | Bronze | 2 | TypeScript state machine, submitted | 2 | ~2/4 vs Bronze boss |
+| code4life | 6 | Silver | 1 | TypeScript state machine, submitted | 2 | ~2/4 vs Bronze boss |
 | coders-of-the-realm | 4 | **Legend** ✅ | 0 | TypeScript greedy placement | 2–4 | Bronze→Silver |
 | coders-of-the-realm---1v1 | 4 | **Legend** ✅ | 0 | TypeScript greedy placement | 2 | Bronze→Silver |
 | cultist-wars | 4 | Bronze | 2 | TypeScript action scoring, submitted | 2 | 2/6 vs Bronze boss (loses as player 2): improve shooting duels |
@@ -75,7 +75,7 @@ Surveyed 2026-09-26.
 | tryangle-catch | 4 | **Gold** ✅ | 0 | TypeScript capture teams + spawning, submitted | 2 | promoted to Gold |
 | winter-challenge-2026-snakebyte | 4 | Silver | 1 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
 | bit-runner-2048 | 5 | Bronze | 2 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
-| crystal-rush | 5 | Silver | 1 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |
+| crystal-rush | 5 | **Gold** ✅ | 0 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |
 | git-patchwork | 5 | **Legend** ✅ | 0 | TypeScript greedy + rotations, submitted | 2 | 4/4 vs Bronze boss |
 | keep-off-the-grass-fall-challenge-2022 | 5 | **Gold** ✅ | 0 | TypeScript expand + recyclers, submitted | 2 | old bot reached rank 1 in Silver; resubmitted by mistake (1-2/4 vs Silver boss) |
 | langton-s-ant | 5 | **Gold** ✅ | 0 | TypeScript planned picks (shared grid), submitted | 2 | 4/4 vs Silver boss |
@@ -101,8 +101,8 @@ Surveyed 2026-09-26.
 | coders-of-the-caribbean | 7 | Silver | 1 | TypeScript barrels + leading shots, submitted | 2 | 4/4 vs Wood 2 boss |
 | ghost-in-the-cell | 7 | Bronze | 2 | TypeScript greedy + bombs/evacuation, submitted | 2 | 3/4 vs Bronze boss |
 | hypersonic | 7 | Silver | 1 | TypeScript greedy + escape check, submitted | 2 | 2/4 vs Silver boss |
-| mean-max | 7 | Silver | 1 | TypeScript 3 units + oil, submitted | 3 | first to 50 in 2/3 vs Wood 1 bosses |
+| mean-max | 7 | **Gold** ✅ | 0 | TypeScript 3 units + oil, submitted | 3 | first to 50 in 2/3 vs Wood 1 bosses |
 | winter-challenge-2024 | 8 | Silver | 1 | TypeScript harvest + grow + spore, submitted | 2 | 3/3 Wood 1 scenario |
 | wondev-woman | 7 | **Gold** ✅ | 0 | TypeScript 1-ply state eval, submitted | 2 | 4/4 vs Bronze boss |
 | soak-overflow | 8 | Silver | 1 | TypeScript full-game heuristic, submitted | 2 | 4/4 vs Bronze boss |
-| botters-of-the-galaxy | 10 | Wood 6 | 8 | TypeScript Hulk brawler, submitted | 2 | 4/4 vs Wood 6 boss |
+| botters-of-the-galaxy | 10 | Wood 4 | 6 | TypeScript Hulk brawler, submitted | 2 | 4/4 vs Wood 6 boss |

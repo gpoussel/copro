@@ -32,6 +32,8 @@ while (true) {
   const owner = new Array(n).fill(0)
   const cyborgs = new Array(n).fill(0)
   const prod = new Array(n).fill(0)
+  const disabled = new Array(n).fill(0)
+  const arrivals: { to: number; turn: number; owner: number; count: number }[] = []
   const incomingEnemy = new Array(n).fill(0)
   const incomingMine = new Array(n).fill(0)
   for (let i = 0; i < count; i++) {
@@ -42,7 +44,9 @@ while (true) {
       owner[id] = a[0]
       cyborgs[id] = a[1]
       prod[id] = a[2]
+      disabled[id] = a[3]
     } else if (p[1] === "TROOP") {
+      arrivals.push({ to: a[2], turn: a[4], owner: a[0], count: a[3] })
       if (a[0] === 1) incomingMine[a[2]] += a[3]
       else incomingEnemy[a[2]] += a[3]
     } else if (p[1] === "BOMB") {
@@ -77,15 +81,63 @@ while (true) {
     for (let t = 0; t < n; t++)
       if (owner[t] === -1 && (target < 0 || prod[t] * 10 + cyborgs[t] > prod[target] * 10 + cyborgs[target])) target = t
     let from = -1
-    for (let f = 0; f < n; f++) if (owner[f] === 1 && target >= 0 && (from < 0 || dist[f][target] < dist[from][target])) from = f
+    for (let f = 0; f < n; f++)
+      if (owner[f] === 1 && target >= 0 && (from < 0 || dist[f][target] < dist[from][target])) from = f
     if (target >= 0 && from >= 0 && (turn === 1 || prod[target] >= 2)) {
       actions.push(`BOMB ${from} ${target}`)
       bombsLeft--
     }
   }
+  // Timeline of a factory over `horizon` turns (referee order: produce,
+  // then arrivals fight each other, then the survivors fight the garrison).
+  // Returns the owner / cyborgs after each turn (index 0 = now).
+  const timeline = (f: number, horizon: number, extra?: { turn: number; count: number }) => {
+    let own = owner[f]
+    let cyb = cyborgs[f]
+    const owners = [own]
+    const counts = [cyb]
+    for (let t = 1; t <= horizon; t++) {
+      if (own !== 0 && disabled[f] < t) cyb += prod[f]
+      let mine = 0
+      let theirs = 0
+      for (const a of arrivals)
+        if (a.to === f && a.turn === t) {
+          if (a.owner === 1) mine += a.count
+          else theirs += a.count
+        }
+      if (extra && extra.turn === t) mine += extra.count
+      const diff = mine - theirs
+      if (diff !== 0) {
+        const side = diff > 0 ? 1 : -1
+        if (own === side) cyb += Math.abs(diff)
+        else {
+          cyb -= Math.abs(diff)
+          if (cyb < 0) {
+            own = side
+            cyb = -cyb
+          }
+        }
+      }
+      owners.push(own)
+      counts.push(cyb)
+    }
+    return { owners, counts }
+  }
+  const HORIZON = 20
+  // Own factories: what can leave now without losing it (min garrison over
+  // the horizon), or how many it lacks and by when.
   const spare = new Array(n).fill(0)
-  for (let f = 0; f < n; f++)
-    if (owner[f] === 1) spare[f] = Math.max(0, cyborgs[f] - Math.max(0, incomingEnemy[f] - incomingMine[f] - prod[f]))
+  const lack = new Array(n).fill(0)
+  const fallsAt = new Array(n).fill(0)
+  for (let f = 0; f < n; f++) {
+    if (owner[f] !== 1) continue
+    const { owners, counts } = timeline(f, HORIZON)
+    const t = owners.findIndex(o => o !== 1)
+    if (t >= 0) {
+      fallsAt[f] = t
+      lack[f] = counts[t] + 1
+    } else spare[f] = Math.max(0, Math.min(cyborgs[f], ...counts))
+  }
   const sent = new Array(n).fill(0)
   // Candidate moves, best first.
   const options: { from: number; to: number; need: number; score: number }[] = []
@@ -96,12 +148,13 @@ while (true) {
       const d = dist[f][t]
       let need: number
       if (owner[t] === 1) {
-        // Reinforce a factory about to fall.
-        need = incomingEnemy[t] - cyborgs[t] - incomingMine[t] - prod[t] * d + 1
-        if (need <= 0) continue
+        // Reinforce a factory about to fall, in time.
+        if (!lack[t] || d > fallsAt[t]) continue
+        need = lack[t]
       } else {
-        need = cyborgs[t] + (owner[t] === -1 ? prod[t] * (d + 1) : 0) + incomingEnemy[t] - incomingMine[t] + 1
-        if (need <= 0) continue
+        const { owners, counts } = timeline(t, d)
+        if (owners[d] === 1) continue
+        need = counts[d] + 1
       }
       const value = owner[t] === 1 ? prod[t] + 2 : prod[t] + (owner[t] === -1 ? 0.5 : 0)
       if (value <= 0) continue
@@ -109,18 +162,37 @@ while (true) {
     }
   }
   options.sort((a, b) => b.score - a.score)
+  const served = new Set<number>()
   for (const o of options) {
     const avail = spare[o.from] - sent[o.from]
     if (avail < o.need) continue
+    if (served.has(o.to)) continue
     actions.push(`MOVE ${o.from} ${o.to} ${o.need}`)
     sent[o.from] += o.need
-    incomingMine[o.to] += o.need
+    served.add(o.to)
     if (!MULTI) break
   }
   // Later leagues: upgrade a quiet factory with spare cyborgs.
+  // While an enemy bomb flies, our two most productive factories are its
+  // likely targets: do not upgrade those.
+  const likelyBombed = new Set(
+    enemyBombs.length
+      ? [...Array(n).keys()]
+          .filter(f => owner[f] === 1)
+          .sort((a, b) => prod[b] - prod[a])
+          .slice(0, 2)
+      : []
+  )
   if (INC && MULTI)
     for (let f = 0; f < n; f++)
-      if (owner[f] === 1 && prod[f] < 3 && spare[f] - sent[f] >= 10 && incomingEnemy[f] === 0 && !evacuate.has(f) && !enemyBombs.length) {
+      if (
+        owner[f] === 1 &&
+        prod[f] < 3 &&
+        spare[f] - sent[f] >= 10 &&
+        incomingEnemy[f] === 0 &&
+        !evacuate.has(f) &&
+        !likelyBombed.has(f)
+      ) {
         actions.push(`INC ${f}`)
         sent[f] += 10
       }

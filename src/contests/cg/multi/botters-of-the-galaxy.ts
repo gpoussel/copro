@@ -4,10 +4,8 @@
 // MOBA lane: creeps walk to the enemy tower, heroes fight. Pick HULK (1450
 // HP; IRONMAN's 820 HP died to the boss's Hulk even when kiting), then
 // DOCTOR_STRANGE for a second hero in later leagues.
-// Bot: fight the enemy hero when it is within 400; otherwise stay behind our frontmost creep (the tower targets the closest
-// unit); attack the weakest enemy creep in range (last hit when possible),
-// the enemy hero if it is in range, else walk back behind the front; with
-// no creep of ours ahead, fall back to our tower.
+// Duel mode while towers are harmless (Wood 6-4), lane mode after (see
+// below); the best affordable item is bought whenever gold allows.
 
 const team = parseInt(readline())
 const bushes = parseInt(readline())
@@ -31,11 +29,11 @@ while (true) {
   readline() // enemy gold
   const roundType = parseInt(readline())
   const n = parseInt(readline())
-  type U = { id: number; team: number; type: string; x: number; y: number; range: number; hp: number; dmg: number; items: number }
+  type U = { id: number; team: number; type: string; x: number; y: number; range: number; hp: number; maxHp: number; dmg: number; items: number }
   const units: U[] = []
   for (let i = 0; i < n; i++) {
     const p = readline().trim().split(" ")
-    units.push({ id: +p[0], team: +p[1], type: p[2], x: +p[3], y: +p[4], range: +p[5], hp: +p[6], dmg: +p[9], items: +p[24] })
+    units.push({ id: +p[0], team: +p[1], type: p[2], x: +p[3], y: +p[4], range: +p[5], hp: +p[6], maxHp: +p[7], dmg: +p[9], items: +p[24] })
   }
   if (roundType < 0) {
     console.log(picks++ === 0 ? "HULK" : "DOCTOR_STRANGE")
@@ -73,23 +71,34 @@ while (true) {
     console.log(out.join("\n"))
     continue
   }
+  // Lane mode (towers deal 190 per hit): never enter the enemy tower's
+  // range, last-hit enemy creeps and deny ours (≤ 40 % HP) — the tie-break
+  // at turn 200 is kills + denies —, duel the enemy hero away from its
+  // tower, retreat when low.
+  const foeTower = enemies.find(e => e.type === "TOWER")
+  const inTowerRange = (x: number, y: number) =>
+    !!foeTower && Math.hypot(x - foeTower.x, y - foeTower.y) <= foeTower.range + 40
+  const allCreeps = units.filter(u => u.type === "UNIT")
   for (const h of heroes) {
-    const safeX = front - dir * 60
+    if (h.id === bought) {
+      out.push(`BUY ${buy!.name}`)
+      continue
+    }
     const dist = (u: U) => Math.hypot(u.x - h.x, u.y - h.y)
-    const inRange = enemies.filter(e => e.type !== "TOWER" && dist(e) <= h.range)
-    const lastHit = inRange.filter(e => e.type === "UNIT" && e.hp <= h.dmg).sort((a, b) => a.hp - b.hp)[0]
-    const hero = inRange.find(e => e.type === "HERO")
-    const creep = inRange.filter(e => e.type === "UNIT").sort((a, b) => a.hp - b.hp)[0]
-    const ahead = (h.x - safeX) * dir > 0
-    // Fight the enemy hero when it comes close (our tower helps).
-    const foe = enemies.find(e => e.type === "HERO" && dist(e) < 400)
-    if (h.id === bought) out.push(`BUY ${buy!.name}`)
-    else if (foe) {
-      out.push(`ATTACK ${foe.id}`)
-    } else if (ahead) out.push(`MOVE ${Math.round(safeX)} ${h.y}`)
+    const reach = h.range + 150 // move part of the turn, then hit
+    const safeX = front - dir * 60
+    const low = h.hp < 0.3 * h.maxHp
+    const canHit = (u: U) => dist(u) <= reach && !inTowerRange(u.x, u.y)
+    const lastHit = allCreeps
+      .filter(c => canHit(c) && c.hp <= h.dmg && (c.team !== team || c.hp <= 0.4 * c.maxHp))
+      .sort((a, b) => (b.team !== team ? 1 : 0) - (a.team !== team ? 1 : 0) || a.hp - b.hp)[0]
+    const foe = enemies.find(e => e.type === "HERO" && dist(e) <= 400 && !inTowerRange(e.x, e.y))
+    const creep = enemies.filter(e => e.type === "UNIT" && canHit(e)).sort((a, b) => a.hp - b.hp)[0]
+    if (low) out.push(`MOVE ${tower.x + dir * 80} ${tower.y}`)
     else if (lastHit) out.push(`ATTACK ${lastHit.id}`)
-    else if (hero) out.push(`ATTACK ${hero.id}`)
-    else if (creep) out.push(`ATTACK ${creep.id}`)
+    else if (foe && h.hp > foe.hp) out.push(`ATTACK ${foe.id}`)
+    else if ((h.x - safeX) * dir > 0 || inTowerRange(h.x, h.y)) out.push(`MOVE ${Math.round(safeX)} ${h.y}`)
+    else if (creep && creep.hp > 2 * h.dmg) out.push(`ATTACK ${creep.id}`)
     else out.push(`MOVE ${Math.round(safeX)} ${h.y}`)
   }
   console.log(out.join("\n"))
