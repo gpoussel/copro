@@ -104,5 +104,5 @@ Surveyed 2026-09-26.
 | mean-max | 7 | Bronze | 2 | TypeScript 3 units + oil, submitted | 3 | first to 50 in 2/3 vs Wood 1 bosses |
 | winter-challenge-2024 | 8 | Wood 3 | 5 | TypeScript 104/1145 | 2 | |
 | wondev-woman | 7 | Bronze | 2 | TypeScript 1-ply state eval, submitted | 2 | 4/4 vs Bronze boss |
-| soak-overflow | 8 | Wood 2 | 4 | TypeScript tutorial goals, submitted | 2 | Wood 3 goal (shoot wettest) |
+| soak-overflow | 8 | Wood 2 | 4 | TypeScript tutorial goals, submitted | 2 | Wood 2 goal (cover) |
 | botters-of-the-galaxy | 10 | Wood 6 | 8 | TypeScript Hulk brawler, submitted | 2 | 4/4 vs Wood 6 boss |

@@ -956,6 +956,11 @@ and (6,3). Read each new league's goal and bump `LEAGUE`.
 Wood 3 (`LEAGUE = 2`): every agent SHOOTs the wettest enemy. **The CG TS
 judge fails on type errors** (a `LEAGUE === 1` comparison on a literal
 `2` type timed out turn 1): type the constant as `number`.
+Wood 2 (`LEAGUE = 3`): cover. A cover tile (1 low = 50 %, 2 high = 75 %)
+orthogonally adjacent to the agent protects against shots from its far
+side, ignored if the shooter touches the same cover. Move to the
+neighbour cell with the best worst-case cover, then SHOOT the enemy in
+range with the least cover (ties: closest). Output `id;MOVE x y;SHOOT id`.
 
 ## botters-of-the-galaxy
 
