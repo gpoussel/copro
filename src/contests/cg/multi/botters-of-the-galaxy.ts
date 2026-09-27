@@ -30,11 +30,11 @@ while (true) {
   readline() // enemy gold
   const roundType = parseInt(readline())
   const n = parseInt(readline())
-  type U = { id: number; team: number; type: string; x: number; y: number; range: number; hp: number; maxHp: number; dmg: number; items: number }
+  type U = { id: number; team: number; type: string; x: number; y: number; range: number; hp: number; maxHp: number; dmg: number; items: number; cd: number[]; mana: number; hero: string }
   const units: U[] = []
   for (let i = 0; i < n; i++) {
     const p = readline().trim().split(" ")
-    units.push({ id: +p[0], team: +p[1], type: p[2], x: +p[3], y: +p[4], range: +p[5], hp: +p[6], maxHp: +p[7], dmg: +p[9], items: +p[21] })
+    units.push({ id: +p[0], team: +p[1], type: p[2], x: +p[3], y: +p[4], range: +p[5], hp: +p[6], maxHp: +p[7], dmg: +p[9], items: +p[21], cd: [+p[13], +p[14], +p[15]], mana: +p[16], hero: p[19] })
   }
   if (roundType < 0) {
     console.log(picks++ === 0 ? "HULK" : "DOCTOR_STRANGE")
@@ -105,7 +105,38 @@ while (true) {
       .sort((a, b) => (b.team !== team ? 1 : 0) - (a.team !== team ? 1 : 0) || a.hp - b.hp)[0]
     const foe = enemies.find(e => e.type === "HERO" && dist(e) <= 400 && !inTowerRange(e.x, e.y))
     const creep = enemies.filter(e => e.type === "UNIT" && canHit(e)).sort((a, b) => a.hp - b.hp)[0]
-    if (low) out.push(`MOVE ${tower.x + dir * 80} ${tower.y}`)
+    // Skills (Bronze+; referee Factories: mana, range, cooldown).
+    const foeHero = enemies.find(e => e.type === "HERO")
+    const hurtAlly = heroes.filter(a => a.hp < 0.6 * a.maxHp).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0]
+    let skill = ""
+    if (h.hero === "HULK") {
+      const near = enemies.filter(e => e.type !== "TOWER" && dist(e) < 200).length
+      if (foeHero && dist(foeHero) <= 150 && h.mana >= 40 && h.cd[2] === 0 && !inTowerRange(foeHero.x, foeHero.y))
+        skill = `BASH ${foeHero.id}`
+      else if (h.hp < 0.6 * h.maxHp && near >= 2 && h.mana >= 30 && h.cd[1] === 0) skill = "EXPLOSIVESHIELD"
+      else if (
+        foe &&
+        dist(foe) <= 300 &&
+        dist(foe) > h.range &&
+        h.mana >= 20 &&
+        h.cd[0] === 0 &&
+        h.hp > foe.hp
+      )
+        skill = `CHARGE ${foe.id}`
+    } else if (h.hero === "DOCTOR_STRANGE") {
+      if (hurtAlly && Math.hypot(hurtAlly.x - h.x, hurtAlly.y - h.y) <= 250 && h.mana >= 50 && h.cd[0] === 0)
+        skill = `AOEHEAL ${hurtAlly.x} ${hurtAlly.y}`
+      else if (
+        hurtAlly &&
+        Math.hypot(hurtAlly.x - h.x, hurtAlly.y - h.y) <= 500 &&
+        h.mana >= 40 &&
+        h.cd[1] === 0 &&
+        enemies.some(e => Math.hypot(e.x - hurtAlly.x, e.y - hurtAlly.y) < 300)
+      )
+        skill = `SHIELD ${hurtAlly.id}`
+    }
+    if (skill) out.push(skill)
+    else if (low) out.push(`MOVE ${tower.x + dir * 80} ${tower.y}`)
     else if (lastHit) out.push(`ATTACK ${lastHit.id}`)
     else if (foe && h.hp > foe.hp) out.push(`ATTACK ${foe.id}`)
     else if ((h.x - safeX) * dir > 0 || inTowerRange(h.x, h.y)) out.push(`MOVE ${Math.round(safeX)} ${h.y}`)

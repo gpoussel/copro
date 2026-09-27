@@ -1252,6 +1252,16 @@ Wood 2 (Groots): a hero under 50 % HP buys the biggest affordable potion
 15·damage + maxHealth (boots were bought before), and the hero stands
 120 behind the front creep (60 let enemy creeps target it). 3/4 vs the
 Wood 2 boss; Wood 3 went up with the lane mode at once.
+Wood 1 (2 heroes: HULK + DOCTOR_STRANGE, same lane logic): 4/4.
+Bronze boss (IRONMAN + DOCTOR_STRANGE, blades, FIREBALL / BURNING / PULL /
+SHIELD, retreats to its tower): 1/4 without skills. Skills (Factories:
+name mana range cooldown — HULK CHARGE 20/300/4, EXPLOSIVESHIELD 30/self/8,
+BASH 40/150/10 (2-turn stun); DOCTOR_STRANGE AOEHEAL 50/250/6 (heals 20 %
+of mana), SHIELD 40/500/6, PULL 40/400/5; unit fields 13–15 = cooldowns,
+16 = mana, 19 = hero type): HULK bashes the enemy hero in reach (outside
+its tower), shields itself under 60 % with ≥ 2 enemies near, charges a
+weaker enemy hero 95–300 away; Doctor heals / shields the most hurt ally
+under 60 %. 3/4 vs the Bronze boss.
 
 ## legends-of-code-magic
 
