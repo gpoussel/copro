@@ -822,3 +822,12 @@ Wood 1: four hurdle races at once (score = product of per-race medal
 points). The league-1 bot only drove race 0 (rank 2373/2695). Now: sum of
 DP costs over non-stunned races (weight 0.3 for races where a rival is > 6
 cells ahead): best score in 3/3 games.
+
+## ghost-in-the-cell
+
+7–15 factories, one command per turn in Wood 3 (`MULTI = false`; `INC`
+flag for later). Bot: spare = cyborgs − (enemy troops heading in − ours −
+production); options scored value / (distance + need / 4), value =
+production (+0.5 enemy, +2 for saving an own factory), need = defenders +
+enemy production until arrival + enemy troops − ours + 1. 4/4 vs the
+Wood 3 boss. Next leagues: several commands, BOMB, INC.
