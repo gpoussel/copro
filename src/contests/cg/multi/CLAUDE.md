@@ -561,6 +561,11 @@ along shortest paths avoiding death traps; spawns only while army < 6
 before turn 40 (army < 10 / turn 80 did worse). 1/4 vs the Bronze boss:
 we end up eliminated (units picked off one by one). Next: keep teams
 together, stop walking next to enemy majorities.
+The boss code is in the repo (`config/level1/Boss.cs`): it SPAWNS every
+turn it owns a triangle (up to one unit per node), sends its 3 closest
+units to the cheapest capturable triangle and moves the others randomly.
+Spawning without limit (army < node count) instead of "army < 6, turn <
+40": 4/4 vs the Bronze boss (e.g. 4937–26, 559–17).
 
 ## game-of-life-or-death
 

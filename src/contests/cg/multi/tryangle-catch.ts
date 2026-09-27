@@ -11,8 +11,8 @@
 // Units on a node whose neighbours all have an enemy majority die.
 // Bot: units work in teams of 3: each capturable triangle we do not own is
 // priced by the distance of its 3 nearest free units; the cheapest is taken
-// first, each unit steps along its shortest path to its corner. Spawn a few
-// units early on (army < 6, before turn 40) from triangles we own.
+// first, each unit steps along its shortest path to its corner. Spawn from
+// every triangle we own while the army is smaller than the node count.
 
 const houseCount = parseInt(readline())
 for (let i = 0; i < houseCount; i++) readline()
@@ -68,7 +68,7 @@ while (true) {
   // Early spawns from triangles we own (costs the triangle's income).
   let army = units.length
   for (const t of triangles) {
-    if (t.owner !== 0 || army >= 6 || turn > 40) continue
+    if (t.owner !== 0 || army >= houseCount) continue
     const [a, b, c] = t.corners
     commands.push(`SPAWN ${a} ${b} ${c}`)
     army++
