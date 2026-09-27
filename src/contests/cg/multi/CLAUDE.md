@@ -1016,3 +1016,13 @@ need, first samples first) → LABORATORY. ~2/4 vs the Bronze boss (close
 scores); rank thresholds 2/6 did worse (0/4), 4/10 similar. Replaces the
 user's Rust agent (`legacy/code4life.rs`). Ideas: science projects, block
 the enemy's molecules, better sample mix.
+
+## green-circle
+
+Samsara-like deck building; possible moves are listed. Bot: MOVE to the
+desk whose card most reduces Σ missing / (missing + 1) over the open
+applications (missing = tasks not covered by 2 per matching skill card,
+minus 2 per BONUS), RELEASE the offered app with the fewest missing tasks,
+other phases take the first listed move. 2/4 vs the Wood 2 boss (the
+user's C++ agent, `legacy/green-circle.cpp`: 1/4). Later: card actions,
+giving cards when too close, bigger apps.
