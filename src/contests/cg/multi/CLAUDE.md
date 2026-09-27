@@ -665,8 +665,15 @@ reachable water, SURFACE when stuck. Start in the most open central area.
 
 Pac-Man duel, 6 leagues (Wood 2 start: 1 pac, full vision). Bot: best
 value / BFS distance pellet per pac (horizontal wrap), distinct targets.
-4/4 vs the Wood boss. Later: up to 5 pacs, fog of war, SPEED and SWITCH
-(rock/paper/scissors) abilities.
+4/4 vs the Wood boss. Bronze (fog, types, SPEED/SWITCH, 10-turn shared
+cooldown): the first version lost pacs to enemies arriving at speed 2.
+Now: pellet memory (cells seen empty in line of sight dropped, vanished
+super pellets dropped), enemies remembered 3 turns, SWITCH to the counter
+type when a beating pac is ≤ 2 steps away, eat a weaker pac in reach whose
+cooldown is running, SPEED when no threat ≤ 4, else BFS avoiding the
+threats' reach and our pacs' destinations, and output the cell reached this
+turn (the referee's own path could cross danger). 4/4 vs the Bronze boss.
+Ideas: explore unseen areas by pellet probability, trap enemies in dead ends.
 
 ## spring-challenge-2023-ants
 
