@@ -124,7 +124,7 @@ while (true) {
         const seen = new Set([first.body.join(";")])
         let found = -1
         let nodes = 0
-        for (let depth = 1; depth <= 6 && layer.length && found < 0 && Date.now() < deadline; depth++) {
+        for (let depth = 1; depth <= 8 && layer.length && found < 0 && Date.now() < deadline; depth++) {
           const next: [number, number][][] = []
           for (const body of layer) {
             for (const [, ex, ey] of DIRS) {
@@ -141,7 +141,7 @@ while (true) {
               seen.add(key)
               next.push(r.body)
             }
-            if (found >= 0 || ++nodes > 250 || Date.now() > deadline) break
+            if (found >= 0 || ++nodes > 600 || Date.now() > deadline) break
           }
           layer = next
         }

@@ -622,6 +622,9 @@ per turn) over real moves to the soonest energy; −30 for a cut, −20 next
 to an enemy head. 4/4 vs the Bronze boss (the first try without a time
 guard timed out). **Not submitted yet: the old bot is rank 1/617 at 100 %
 (promotion pending) — submit after it moves up.**
+(It was actually below the boss: 24.18 vs 24.57 — submitted, promoted.)
+Silver: search widened to depth 8 / 600 nodes (still 30 ms guard): 4/4
+vs the Silver boss (3/4 before); arena was 20.7 vs 22.5.
 
 ## tron-battle
 
