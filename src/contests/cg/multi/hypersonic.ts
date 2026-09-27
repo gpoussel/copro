@@ -135,10 +135,15 @@ while (true) {
   for (const s of steps) safeStep.set(s, survives(s, bombs))
   const stepOf = (c: number) => (c === here ? here : first[c])
 
+  // Can we bomb here and still escape?
+  const withBombHere = [...bombs, { x: me.x, y: me.y, timer: 8, range: me.range }]
+  const escapeHere = me.bombs > 0 && bombValue(here) > 0 ? steps.find(s => survives(s, withBombHere)) : undefined
   let best = -1
   let bestScore = -Infinity
   for (const c of q) {
     if (!safeStep.get(stepOf(c))) continue
+    // Here only counts if we can actually bomb it now.
+    if (c === here && escapeHere === undefined && !items.has(c)) continue
     const score = (bombValue(c) + (items.has(c) ? 1.5 : 0)) / (dist[c] + 2)
     if (score > bestScore) {
       bestScore = score
@@ -146,15 +151,10 @@ while (true) {
     }
   }
   let out = ""
-  if (best === here && me.bombs > 0 && bombValue(here) > 0) {
-    const withBomb = [...bombs, { x: me.x, y: me.y, timer: 8, range: me.range }]
-    const escape = steps.find(s => survives(s, withBomb))
-    if (escape !== undefined) out = `BOMB ${escape % W} ${Math.floor(escape / W)}`
-  }
+  if (best === here && escapeHere !== undefined) out = `BOMB ${escapeHere % W} ${Math.floor(escapeHere / W)}`
   if (!out) {
     let step = best >= 0 && best !== here ? stepOf(best) : here
     if (!safeStep.get(step)) step = steps.find(s => safeStep.get(s)) ?? here
-    // Standing on the best cell without a bomb: wait there if it is safe.
     out = `MOVE ${step % W} ${Math.floor(step / W)}`
   }
   console.log(out)

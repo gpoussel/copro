@@ -100,7 +100,7 @@ Surveyed 2026-09-26.
 | code-royale | 7 | Bronze | 2 | TypeScript mines + towers + knights, submitted | 2 | 4/4 vs Wood 1 boss |
 | coders-of-the-caribbean | 7 | Silver | 1 | TypeScript barrels + leading shots, submitted | 2 | 4/4 vs Wood 2 boss |
 | ghost-in-the-cell | 7 | Bronze | 2 | TypeScript greedy + bombs/evacuation, submitted | 2 | 3/4 vs Bronze boss |
-| hypersonic | 7 | Silver | 1 | TypeScript greedy + escape check, submitted | 2 | 4/4 vs Bronze boss |
+| hypersonic | 7 | Silver | 1 | TypeScript greedy + escape check, submitted | 2 | 2/4 vs Silver boss |
 | mean-max | 7 | Silver | 1 | TypeScript 3 units + oil, submitted | 3 | first to 50 in 2/3 vs Wood 1 bosses |
 | winter-challenge-2024 | 8 | Wood 1 | 3 | TypeScript harvest + grow + spore, submitted | 2 | 2/3 Wood 1 scenario |
 | wondev-woman | 7 | Silver | 1 | TypeScript 1-ply state eval, submitted | 2 | 4/4 vs Bronze boss |

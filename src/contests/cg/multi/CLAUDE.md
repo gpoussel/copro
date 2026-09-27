@@ -921,6 +921,11 @@ Every step (and every BOMB) needs an escape: BFS over cell × time up to 10
 turns avoiding blasts and unexploded bombs. Moves are one adjacent cell
 (the referee's own MOVE pathing could walk into a blast). 4/4 vs the
 Bronze boss (killed it in 3).
+Silver: stood in its corner all game (bombing there had no escape, so
+"best = here" never bombed and never moved): now the current cell only
+counts as a target when a bomb there is survivable. 2/4 vs the Silver
+boss (27–26, 49–2 losses: it destroys boxes faster). Next: bomb chains,
+2-bomb planning, item pickup, trap the opponent.
 
 ## wondev-woman
 
