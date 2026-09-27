@@ -659,3 +659,10 @@ within water distance 4 of the target), torpedo when ≤ 20 candidates and
 expected damage ≥ 0.5 without hitting us, move towards the most unvisited
 reachable water, SURFACE when stuck. Start in the most open central area.
 4/4 vs the Wood boss. Later: SONAR, SILENCE, MINE/TRIGGER.
+
+## spring-challenge-2020
+
+Pac-Man duel, 6 leagues (Wood 2 start: 1 pac, full vision). Bot: best
+value / BFS distance pellet per pac (horizontal wrap), distinct targets.
+4/4 vs the Wood boss. Later: up to 5 pacs, fog of war, SPEED and SWITCH
+(rock/paper/scissors) abilities.
