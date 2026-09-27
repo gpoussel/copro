@@ -181,7 +181,7 @@ while (true) {
     const [id, type, hp, x, y, owner] = readline().split(" ").map(Number)
     units.push({ id, type, hp, x, y, owner })
   }
-  const deadline = Date.now() + 70
+  const deadline = Date.now() + 45 // a 70 ms budget timed out in the arena
   let best: Act = { unit: -1, kind: "WAIT", a: 0, b: 0 }
   let bestV = -Infinity
   const mine = actions(units, myId)
@@ -190,11 +190,17 @@ while (true) {
   ranked.sort((p, q) => q.v - p.v)
   for (const { a, s } of ranked) {
     let worst = Infinity
+    let cut = false
     for (const r of actions(s, 1 - myId)) {
       const v = evaluate(apply(s, r), myId)
       if (v < worst) worst = v
       if (worst <= bestV) break
+      if (Date.now() > deadline) {
+        cut = true
+        break
+      }
     }
+    if (cut) break // an unfinished reply scan is not a real worst case
     if (worst > bestV) {
       bestV = worst
       best = a

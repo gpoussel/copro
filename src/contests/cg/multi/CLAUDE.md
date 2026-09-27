@@ -573,7 +573,8 @@ BFS path distance (walls and units block) to the nearest neutral ×2.5
 7 − d over enemy cultists with a clear referee-exact shot) ×1.5 for ours,
 ×1 for theirs. The old 2-ply's Manhattan "proximity" term let the boss
 win the neutral race; the path-distance race fixes it: 4/4 vs the Bronze
-boss (rule bot arena 25.8).
+boss (rule bot arena 25.8). A 70 ms budget timed out in the arena (turn
+48): now 45 ms, deadline also checked inside the reply scan.
 
 ## tryangle-catch
 
