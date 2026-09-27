@@ -883,6 +883,9 @@ Bronze: 1/4 vs the boss (rank 4/178 at 100 %). A 6-turn plan search per
 car (`EXPERT rotation thrust`, moving targets, collisions ignored) also
 went 1/4: kept in `legacy/bit-runner-2048-search.ts`, not submitted. The
 losses probably come from collisions (steals): simulate car-car impacts.
+Referee (`Unit.bounce`): a car-car impact above BALL_LOSE_MIN_IMPULSE
+swaps the prisoners. A "carrier dodges cars predicted within 850 in 3
+turns" rule went 0/4 (reverted). Arena 23.3 vs boss 32.6.
 
 ## git-patchwork
 
