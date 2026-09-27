@@ -606,3 +606,11 @@ momentum) simulated to plan safe moves.
 allocation: need per zone = strongest enemy group within 600 + 1 (1 to keep
 an owned quiet zone), zones served cheapest first by the nearest free drones,
 leftovers to the most contested zone. 4/4 vs the Wood boss (~3× its score).
+
+## platinum-rift-episode-1
+
+2–4 players (6 leagues, Wood 2 start). Pods cost 20, bought onto neutral or
+own zones. Bot: buy on the richest neutral zones, then on our zones touching
+enemies; each group sends 1 pod per unowned neighbour it outnumbers
+(platinum first), the rest steps towards the nearest unowned zone. 4/4 vs the
+Wood boss.

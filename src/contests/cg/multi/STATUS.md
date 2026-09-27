@@ -86,7 +86,7 @@ Surveyed 2026-09-26.
 | great-escape | 6 | Wood 2 | 4 | TypeScript path+walls, submitted | 2 | 4/4 vs Wood boss; 3-player later |
 | green-circle | 6 | Wood 2 | 4 | C++ 250/544 | 2 | |
 | ocean-of-code | 6 | Wood 2 | 4 | — | 2 | |
-| platinum-rift-episode-1 | 6 | Wood 2 | 4 | — | 2 | |
+| platinum-rift-episode-1 | 6 | Wood 2 | 4 | TypeScript spread+buy, submitted | 2 | 4/4 vs Wood boss (eliminated ~turn 25) |
 | poker-chip-race | 6 | Wood 2 | 4 | TypeScript WIP, **not submitted** (0/6) | 2 | gets eaten; needs physics simulation |
 | smash-the-code | 6 | Wood 2 | 4 | — | 2 | |
 | spring-challenge-2020 | 6 | Wood 2 | 4 | — | 2 | |
