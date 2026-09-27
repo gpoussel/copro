@@ -865,3 +865,11 @@ barrel by rum / (hex distance + 1), distinct targets; no barrel left: go
 to the enemy. `FIRE` flag for the next league (range 10, every other
 turn, predicted position TODO). 4/4 vs the Wood 3 boss. Later: mines,
 cannonballs, up to 3 ships, manual control (referee on GitHub).
+
+## code-of-kutulu
+
+4 explorers, the first entity is ours. Wood bot: among WAIT and the 4
+moves, 10·min(6, BFS distance to the nearest minion, spawn delay added)
+− 50 if ≤ 1, +15 near another explorer (else drift towards the closest).
+Best (surviving) score in 4/4 games vs 3 bosses, by small margins.
+Later leagues: slashers, shelters, PLAN / LIGHT / YELL.
