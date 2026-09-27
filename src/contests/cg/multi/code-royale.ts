@@ -165,16 +165,14 @@ while (true) {
     const completeMines = sites.filter(s => mine(s) && st[s.id].type === 0 && st[s.id].p1 >= st[s.id].maxSize)
     const barracks = sites.filter(s => mine(s) && st[s.id].type === 2)
     const towers = sites.filter(s => mine(s) && st[s.id].type === 1)
-    // Knight barracks first (every bot seen beating this boss trains with
-    // the 100 starting gold on turn 2-3), then mines, then towers.
-    if (barracks.length < 1) {
-      const t = closest(free)
-      if (t) action = `BUILD ${t.id} BARRACKS-KNIGHT`
-    }
-    if (action === "WAIT" && completeMines.length < 2) {
+    if (completeMines.length < 2) {
       const growing = area.filter(s => mine(s) && st[s.id].type === 0 && st[s.id].p1 < st[s.id].maxSize)
       const t = closest(growing) ?? closest(free.filter(s => st[s.id].gold !== 0 && st[s.id].maxSize !== 0))
       if (t) action = `BUILD ${t.id} MINE`
+    }
+    if (action === "WAIT" && barracks.length < 1) {
+      const t = closest(free)
+      if (t) action = `BUILD ${t.id} BARRACKS-KNIGHT`
     }
     if (action === "WAIT" && towers.length < 3) {
       // Forum (BlitzProg): a new tower on a site our towers already cover
