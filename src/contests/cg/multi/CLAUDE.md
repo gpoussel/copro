@@ -822,6 +822,10 @@ there): the old model lost every game as second player. Picks are now
 planned as a set (greedy seed + hill climbing on the remaining picks,
 700 ms first turn, 200 ms after), playing the plan's most important cell.
 Old greedy 0/4, planned 2/4, planned + colour fix 4/4 vs the Bronze boss.
+Silver = shared grid: `SHARED = true` (opponent picks applied, ant starts
+with the first player's colour, score = ours − theirs); budgets cut to
+250 / 180 ms (300 ms per turn, the 700 ms first turn timed out). 4/4 vs
+the Silver boss.
 
 ## summer-challenge-2024-olymbits
 

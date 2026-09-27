@@ -7,12 +7,13 @@
 // turns right and paints it with its colour; it stops when leaving the grid.
 // Two rounds with the first seat swapped (-1 -1 = we start a round, -2 -2 =
 // round change, answer ignored). Early leagues give each player its own
-// grid (SHARED = false): opponent moves are not applied to ours.
+// grid (SHARED = false): opponent moves are not applied to ours; Silver
+// shares one grid (SHARED = true).
 // Each turn: plan all our remaining picks (greedy seed + hill climbing on
 // the set, full ant simulation as the score) and play the plan's most
 // important cell.
 
-const SHARED = false
+const SHARED = true
 const dim = parseInt(readline())
 const PICKS = parseInt(readline())
 const pathLength = parseInt(readline())
@@ -74,7 +75,7 @@ while (true) {
   // the greedy plan) on the set of cells still to pick, within the time
   // budget; play one cell of the best plan.
   const start = Date.now()
-  const budget = placed === 0 ? 700 : 200
+  const budget = placed === 0 ? 250 : 180
   const left = Math.max(1, PICKS - placed)
   const freeCells: number[] = []
   for (let k = 0; k < dim * dim; k++) if (grid[k] === 0) freeCells.push(k)
