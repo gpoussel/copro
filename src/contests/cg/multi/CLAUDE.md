@@ -869,6 +869,11 @@ clusters, ore 1–3; `config/Boss.py3` is only the Wood boss). Now a
 dedicated fetcher (free robot closest to the HQ, timed to the cooldown)
 keeps radars coming while known ore < 4/robot or < 5 radars, the lattice
 starts at (7,7), blind digs only x ≥ 6, y 1..13: 2/4 twice.
+Promoted to Silver. Arena losses there were close (82–86) with no robot
+lost: every enemy-dug hole counted as trapped, wasting ore. Now only an
+enemy robot that stood still at the HQ (a REQUEST) may carry a trap; the
+holes around it when it next stands still (a DIG) are suspicious. 3/4 vs
+the Silver boss.
 
 ## keep-off-the-grass-fall-challenge-2022
 

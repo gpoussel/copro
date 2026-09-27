@@ -6,7 +6,8 @@
 // fixed lattice while known ore is scarce; the others dig the nearest known
 // ore cell with capacity left (ore amount minus robots already sent), else
 // dig blind in fresh cells near the HQ. Holes we did not dig ourselves may
-// hide an enemy trap: known ore there is skipped.
+// hide an enemy trap: known ore there is skipped when the digger may have
+// carried one (it stood still at the HQ before).
 
 const [W, H] = readline().split(" ").map(Number)
 // Ore clusters are centred at x = 3 + 25·u^0.55 (skewed away from the HQ),
@@ -33,6 +34,7 @@ const pendingDig = new Map<number, number>() // robot id -> cell it dug last tur
 const suspicious = new Set<number>() // holes that appeared without us
 let prevHoles = new Set<number>()
 let prevEnemies = new Map<number, number>() // enemy robot id -> cell
+const enemyCarry = new Set<number>() // enemy robots that may hold a trap
 
 while (true) {
   readline() // scores
@@ -60,12 +62,16 @@ while (true) {
   robots.sort((a, b) => a.id - b.id)
   // Holes: ours when one of our robots dug there, suspicious otherwise.
   for (const c of pendingDig.values()) if (holes.has(c) && !prevHoles.has(c)) ourHoles.add(c)
-  for (const c of holes) if (!prevHoles.has(c) && !ourHoles.has(c)) suspicious.add(c)
-  // An enemy robot that stood still outside the HQ dug next to it: any hole
-  // around it may now hold a trap.
+  // Only a robot that stood still at the HQ (a REQUEST) can carry a trap;
+  // when it then stands still elsewhere (a DIG), any hole around it may
+  // hold one. Holes dug by empty-handed robots are safe.
   for (const [id, c] of enemies) {
-    if (prevEnemies.get(id) !== c || c % W === 0) continue
-    for (const d of [c, c - 1, c + 1, c - W, c + W]) if (holes.has(d)) suspicious.add(d)
+    if (prevEnemies.get(id) !== c) continue
+    if (c % W === 0) enemyCarry.add(id)
+    else if (enemyCarry.has(id)) {
+      for (const d of [c, c - 1, c + 1, c - W, c + W]) if (holes.has(d)) suspicious.add(d)
+      enemyCarry.delete(id)
+    }
   }
   prevEnemies = enemies
   prevHoles = holes
