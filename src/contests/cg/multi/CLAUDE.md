@@ -557,6 +557,9 @@ cultists that can hit our leader +3. Tried and reverted: cultists
 advancing on the nearest enemy when not ahead (walked into fire one by
 one, 0–1 wipe-out). **`get_arena_battles` outcomes are unreliable here**
 (one "loss" had ranks [1, 0] = our win): read `ranks` in the replay.
+That version: arena 26.3 (from 22.6). An arena loss showed our leader
+shuttling between two cells for ~50 turns (flee from a lethal square,
+then the BFS walk back): cells from its last 4 turns now cost 3. 3/4.
 
 ## tryangle-catch
 

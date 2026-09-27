@@ -51,6 +51,7 @@ function line(x0: number, y0: number, x1: number, y1: number): [number, number][
   return cells
 }
 
+const recent: number[] = [] // the leader's last cells
 const STEPS = [
   [1, 0],
   [-1, 0],
@@ -149,7 +150,8 @@ while (true) {
       if (!free(nx, ny) || dist[ny * W + nx] < 0) continue
       // The boss focuses our leader (10 HP): lethal squares weigh heavily.
       const danger = dangerAt(nx, ny)
-      const v = -dist[ny * W + nx] - danger * (danger >= leader.hp ? 5 : 0.5)
+      const back = recent.includes(ny * W + nx) ? 3 : 0 // no shuttling
+      const v = -dist[ny * W + nx] - danger * (danger >= leader.hp ? 5 : 0.5) - back
       if (v > bestStepValue) {
         bestStepValue = v
         bestStep = [nx, ny]
@@ -187,6 +189,10 @@ while (true) {
       .sort((a, b) => manhattan(a, enemyLeader) - manhattan(b, enemyLeader))[0]
     if (closest && manhattan(closest, enemyLeader) > 6)
       consider(0.5, `${closest.id} MOVE ${enemyLeader.x} ${enemyLeader.y}`)
+  }
+  if (leader) {
+    recent.push(leader.y * W + leader.x)
+    if (recent.length > 4) recent.shift()
   }
   console.log(action)
 }
