@@ -57,7 +57,9 @@ while (true) {
   const reaper = mine(0)!
   const destroyer = mine(1)
   const doof = mine(2)
-  const wrecks = units.filter(u => u.type === 4)
+  // Reapers cannot harvest inside oil: those wrecks are skipped.
+  const oils = units.filter(u => u.type === 6)
+  const wrecks = units.filter(u => u.type === 4 && !oils.some(o => dist(o, u) < o.r))
   const tankers = units.filter(u => u.type === 3 && Math.hypot(u.x, u.y) < 5800)
 
   // Destroyer: a tanker close to it and to our reaper.
@@ -83,7 +85,24 @@ while (true) {
     reaperOrder = inside && Math.hypot(reaper.vx, reaper.vy) < 100 ? "WAIT" : steer(reaper, target.x, target.y, 300)
   } else if (tank) reaperOrder = steer(reaper, tank.x, tank.y, 200)
 
-  const destroyerOrder = destroyer && tank ? steer(destroyer, tank.x + tank.vx, tank.y + tank.vy, 300) : "WAIT"
+  let destroyerOrder = destroyer && tank ? steer(destroyer, tank.x + tank.vx, tank.y + tank.vy, 300) : "WAIT"
+  // Grenade (60 rage, range 2000, radius 1000): blow an enemy reaper out of
+  // a wreck we are not harvesting.
+  let rage = myRage
+  if (destroyer && rage >= 60) {
+    for (const foe of units.filter(u => u.type === 0 && u.player !== 0)) {
+      const w = wrecks.find(w => dist(w, foe) < w.r)
+      if (!w || w.extra < 2 || dist(destroyer, foe) > 1900 || dist(reaper, foe) < 1300) continue
+      // Land between it and the wreck centre so it is pushed out (a grenade
+      // on a vehicle's centre does not move it).
+      const d = dist(w, foe) || 1
+      const ux = d > 1 ? (w.x - foe.x) / d : 1
+      const uy = d > 1 ? (w.y - foe.y) / d : 0
+      destroyerOrder = `SKILL ${Math.round(foe.x + ux * 300)} ${Math.round(foe.y + uy * 300)}`
+      rage -= 60
+      break
+    }
+  }
 
   // Doof: the leading enemy's reaper.
   let doofOrder = "WAIT"
@@ -92,7 +111,7 @@ while (true) {
     const foe = units.find(u => u.type === 0 && u.player === leader)
     if (foe) {
       const foeWreck = wrecks.find(w => dist(w, foe) < w.r)
-      if (myRage >= 30 && foeWreck && dist(doof, foe) < 2000 && dist(reaper, foe) > 1500)
+      if (rage >= 30 && foeWreck && dist(doof, foe) < 2000 && dist(reaper, foe) > 1500)
         doofOrder = `SKILL ${foe.x} ${foe.y}`
       else doofOrder = `${Math.round(foe.x + foe.vx)} ${Math.round(foe.y + foe.vy)} 300`
     }

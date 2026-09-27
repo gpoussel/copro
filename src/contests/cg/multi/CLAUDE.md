@@ -1081,6 +1081,11 @@ destroyer rams the tanker minimising d(destroyer) + ½·d(our reaper), the
 reaper waits next to it when no wreck exists, the doof rams the leading
 enemy reaper and oils it (30 rage) when it sits in a wreck ≥ 1500 from
 our reaper. Wood-3 reaper-only bot: 0/3; now 50 water first in 2/3.
+Silver (19.2 vs boss 22.2): wrecks inside an oil zone are skipped (no
+harvest there), and the destroyer throws a grenade (60 rage, range 2000)
+at an enemy reaper sitting in a wreck with ≥ 2 water when ours is ≥ 1300
+away, landing 200 towards the wreck centre so it is pushed outwards (a
+grenade on a vehicle's centre does nothing). 3/4 firsts vs 2 bosses.
 
 ## a-code-of-ice-and-fire
 
