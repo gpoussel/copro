@@ -94,9 +94,9 @@ while (true) {
     let bestFirst = -1
     const seq = [0, 0, 0, 0]
     const total = 9 ** 4
-    const deadline = start + 35
+    const deadline = start + 25 // 35 timed out twice in the arena
     for (let n = 0; n < total; n++) {
-      if ((n & 63) === 0 && Date.now() > deadline) break
+      if ((n & 15) === 0 && Date.now() > deadline) break
       let m = n
       for (let i = 0; i < 4; i++) {
         seq[i] = m % 9
