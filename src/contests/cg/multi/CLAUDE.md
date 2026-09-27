@@ -881,3 +881,12 @@ best (water + 3·overlapping wrecks) / (distance + 600), aim = target − v,
 ACC = min(300, 0.5·|correction|), coast when inside and slow. Reached 50
 water first in 3/3 games vs 2 bosses. Later: Destroyer (break tankers),
 Doof (rage, skills: grenade, tar, oil).
+
+## a-code-of-ice-and-fire
+
+12×12, Wood 3: level-1 units only. Init lists the mine spots (read them
+even if unused). Bot: units (closest to the enemy HQ first) BFS to the
+nearest unowned cell (enemy HQ first, ties towards it), distinct targets;
+train level 1 on free own/border cells closest to the enemy HQ while
+gold − 10 + 5·(income − 1) ≥ 0. 4/4 vs the Wood 3 boss (HQ taken).
+Later: levels 2/3 (kill lower levels), mines, towers (Bronze = full game).
