@@ -1174,6 +1174,14 @@ plays the first listed move): PLAY_CARD prefers REFACTORING (with debt in
 hand), TRAINING, CODING, CODE_REVIEW, ARCHITECTURE_STUDY, DAILY_ROUTINE;
 GIVE_CARD gives the skill the open apps need least. 3/4 (first version 2/4,
 losing as second player).
+Bronze (full game: wrapping past desk 0 throws 2 cards, gifts near the
+opponent, complex cards; its boss = `config/Boss.java`, a sensible
+heuristic): rewrote on the boss's structure — first desk ahead whose skill
+an app needs more of (2/card + bonuses), avoiding wrap-around and desks
+next to the opponent; card play REFACTORING (with debt) > DAILY_ROUTINE >
+ARCHITECTURE_STUDY > CODE_REVIEW > CONTINUOUS_INTEGRATION > TRAINING;
+release when clean or ≤ 2 botched tasks before the 5th; give/throw bonus
+first. 3/4 vs the Bronze boss (the Wood bot lost 0/3).
 
 ## winter-challenge-2024
 
