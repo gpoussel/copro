@@ -190,11 +190,7 @@ while (true) {
     // A second knight barracks once the base stands: waves of 8 knights
     // (forum: save gold, then train in bursts) get through towers.
     if (action === "WAIT" && towers.length >= 3 && towers.every(t => st[t.id].p1 >= 500) && barracks.length < 2) {
-      // Forward (forum: a barracks near the centre shortens the knights'
-      // walk; they lose 1 HP per turn): the free area site nearest the
-      // enemy corner.
-      const ec = { x: 1920 - c.x, y: 1000 - c.y }
-      const t = free.slice().sort((a, b) => Math.hypot(a.x - ec.x, a.y - ec.y) - Math.hypot(b.x - ec.x, b.y - ec.y))[0]
+      const t = closest(free)
       if (t) action = `BUILD ${t.id} BARRACKS-KNIGHT`
     }
     if (action === "WAIT") {
