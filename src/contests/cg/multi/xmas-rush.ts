@@ -85,16 +85,19 @@ function reach(s: State): { dist: Int32Array; path: string[][] } {
   return { dist, path }
 }
 
-// How far our reachable area is from the nearest quest item (0 = reachable).
+// Push value: quest items reachable after it (×100), else how far our
+// reachable area is from the nearest one.
 function gap(s: State): number {
   const { dist } = reach(s)
+  let reachable = 0
   let best = 99
   for (const [ix, iy] of s.items) {
     if (ix < 0) continue
+    if (dist[iy * N + ix] >= 0) reachable++
     for (let c = 0; c < N * N; c++)
       if (dist[c] >= 0) best = Math.min(best, Math.abs((c % N) - ix) + Math.abs(Math.floor(c / N) - iy))
   }
-  return best
+  return best - reachable * 100
 }
 
 while (true) {
@@ -135,21 +138,47 @@ while (true) {
     }
     console.log(best)
   } else {
-    const { dist, path } = reach(state)
-    let target = -1
-    let bestD = Infinity
-    for (const [ix, iy] of state.items) {
-      if (ix < 0) continue
-      for (let c = 0; c < N * N; c++) {
-        if (dist[c] < 0) continue
-        const d = (Math.abs((c % N) - ix) + Math.abs(Math.floor(c / N) - iy)) * 100 + dist[c]
-        if (d < bestD) {
-          bestD = d
+    // Collect as many quest items as 20 steps allow (nearest first), then
+    // end as close as possible to the remaining ones.
+    let cur: State = state
+    const steps: string[] = []
+    const left = state.items.filter(([ix]) => ix >= 0).map(p => p.slice() as [number, number])
+    for (;;) {
+      const { dist, path } = reach(cur)
+      let target = -1
+      let bestD = Infinity
+      for (const [ix, iy] of left) {
+        const c = iy * N + ix
+        if (dist[c] > 0 && dist[c] < bestD && steps.length + dist[c] <= 20) {
+          bestD = dist[c]
           target = c
         }
       }
+      if (target < 0) {
+        // Final positioning: the reachable tile closest to a remaining item.
+        let endC = -1
+        let endD = Infinity
+        for (const [ix, iy] of left)
+          for (let c = 0; c < N * N; c++) {
+            if (dist[c] < 0 || steps.length + dist[c] > 20) continue
+            const d = (Math.abs((c % N) - ix) + Math.abs(Math.floor(c / N) - iy)) * 100 + dist[c]
+            if (d < endD) {
+              endD = d
+              endC = c
+            }
+          }
+        if (endC >= 0) steps.push(...path[endC])
+        break
+      }
+      steps.push(...path[target])
+      const tx = target % N
+      const ty = Math.floor(target / N)
+      left.splice(
+        left.findIndex(([ix, iy]) => ix === tx && iy === ty),
+        1,
+      )
+      cur = { ...cur, me: [tx, ty] }
     }
-    const steps = target >= 0 ? path[target].slice(0, 20) : []
     console.log(steps.length ? `MOVE ${steps.join(" ")}` : "PASS")
   }
 }

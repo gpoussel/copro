@@ -696,6 +696,12 @@ pushed-out player lands on the inserted tile, item leaving the board goes to
 our hand), keep the one whose BFS-reachable area gets closest to a quest
 item; MOVE = BFS path (≤ 20) to the item or the nearest reachable tile.
 4/4 vs the Wood boss.
+Silver (12 quests, 3 revealed): 0/4. Now a MOVE collects as many quest
+items as 20 steps allow (nearest first, recomputing reachability from each
+item) and ends on the tile closest to the remaining ones; pushes score
+−100 per quest item made reachable, then the gap. 2/4 vs the Silver boss.
+Next: pushes that also hurt the opponent, predicting its push (same
+row/column pushes cancel).
 
 ## ocean-of-code
 
