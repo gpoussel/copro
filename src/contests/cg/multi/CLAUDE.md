@@ -822,6 +822,12 @@ Wood 1: four hurdle races at once (score = product of per-race medal
 points). The league-1 bot only drove race 0 (rank 2373/2695). Now: sum of
 DP costs over non-stunned races (weight 0.3 for races where a rival is > 6
 cells ahead): best score in 3/3 games.
+Bronze = the full game: hurdles, archery (winds in the GPU; exact DP of
+the best final distance, typed arrays: a Map version once timed out),
+roller (GPU = risk order; stun at risk ≥ 5, +2 risk when sharing a cell),
+diving (objective string, index tracked per round). Each game rates the 4
+actions in ~[−1, 1], weighted by 1 / (3·gold + silver + 1) in that game.
+Best score in ~4/5 games vs 2 bosses.
 
 ## ghost-in-the-cell
 
