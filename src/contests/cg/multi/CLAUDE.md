@@ -645,6 +645,13 @@ pairs, eval = cleared blocks × chain² + same-colour contacts − height.
 4/4 vs the Wood boss. Bronze: two colours per pair and rotations (`x r`,
 r = 0 B right of A, 1 B above, 2 B left, 3 B below): 22 placements, search
 cut to 2 plies. 4/4 vs the Bronze boss.
+Silver: 1/4 vs the boss (it buries us with big combos). A beam search
+(width 120, 80 ms, real score formula 10·B·(CP+CB+GB), contacts/height
+potential) went 0/4 then 1/4 after reweighting: kept in
+`legacy/smash-the-code-beam.ts`. Pitfall: a contact bonus larger than a
+4-block clear makes the search never clear. Next: explicit "build then
+fire" (fire when combo ≥ threshold or when skulls are incoming / our
+stack is high), opponent danger estimate.
 
 ## codebusters
 
