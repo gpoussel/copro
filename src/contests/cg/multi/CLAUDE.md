@@ -597,6 +597,15 @@ heads, BFS distance to the nearest energy (gravity ignored), +3 when the head
 stays supported. 2/4 vs the Bronze boss. Ideas: simulate falls exactly (the
 referee source is on GitHub once published), plan short paths that stay
 supported.
+Referee: github.com/CodinGame/WinterChallenge2026-Exotec (`Game.doMoves /
+doBeheadings / doFalls`): grow on energy, a head in a platform or body is
+cut (≤ 3 long dies), then a snake with no cell resting on platform /
+energy / another snake falls (dies below the map). New version: per snake,
+simulate each first move exactly, then a BFS (depth 6, 250 nodes, 30 ms
+per turn) over real moves to the soonest energy; −30 for a cut, −20 next
+to an enemy head. 4/4 vs the Bronze boss (the first try without a time
+guard timed out). **Not submitted yet: the old bot is rank 1/617 at 100 %
+(promotion pending) — submit after it moves up.**
 
 ## tron-battle
 
