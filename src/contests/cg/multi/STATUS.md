@@ -84,7 +84,7 @@ Surveyed 2026-09-26.
 | fantastic-bits | 6 | Silver | 1 | TypeScript chase+throw+flipendo, submitted | 2 | 2/4 vs Silver boss |
 | game-of-drones | 6 | **Gold** ✅ | 0 | TypeScript greedy allocation, submitted | 2 | 4/4 vs Wood boss (~3× its score) |
 | great-escape | 6 | Silver | 1 | TypeScript path+walls | 2 | Wood 2→Wood 1 |
-| green-circle | 6 | Wood 1 | 3 | TypeScript desk choice, submitted | 2 | 2/4 vs Wood 2 boss |
+| green-circle | 6 | Bronze | 2 | TypeScript desk choice, submitted | 2 | 2/4 vs Wood 2 boss |
 | ocean-of-code | 6 | Silver | 1 | TypeScript path tracking+silence, submitted | 2 | 1/4 vs Silver boss; old bot 9/690 |
 | platinum-rift-episode-1 | 6 | Silver | 1 | TypeScript spread+buy, cluster opening, submitted | 2 | best 3/3 in 4p vs bosses |
 | poker-chip-race | 6 | Bronze | 2 | TypeScript rare pushes + predictions, submitted | 2 | 4/4 vs Wood 2 boss |
