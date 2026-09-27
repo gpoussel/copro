@@ -624,8 +624,9 @@ the centre columns. 4/4 vs the Silver boss (~780 to 0).
 6 leagues (Wood 2 start). League 1: vertical same-colour pairs, output a
 column. Bot: drop/chain/skull simulation, 3-ply exhaustive over the known
 pairs, eval = cleared blocks × chain² + same-colour contacts − height.
-4/4 vs the Wood boss. Later leagues: two colours per pair and rotations
-(output `x rotation`), nuisance — extend the search then.
+4/4 vs the Wood boss. Bronze: two colours per pair and rotations (`x r`,
+r = 0 B right of A, 1 B above, 2 B left, 3 B below): 22 placements, search
+cut to 2 plies. 4/4 vs the Bronze boss.
 
 ## codebusters
 

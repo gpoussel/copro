@@ -1,27 +1,39 @@
 // 🎮 CodinGame Multiplayer - smash-the-code
 // https://www.codingame.com/multiplayer/bot-programming/smash-the-code
 //
-// League 1: vertical same-colour pairs dropped into a 6x12 grid; 4+
-// connected blocks of a colour vanish (chains when the fall makes new groups);
-// skulls (0) only vanish next to an explosion. Search: 3 plies over the known
-// next pairs, every column, eval = cleared blocks (chains weighted) +
-// same-colour contacts − height.
+// Pairs of blocks dropped into a 6x12 grid; 4+ connected blocks of a colour
+// vanish (chains when the fall makes new groups); skulls (0) only vanish next
+// to an explosion. From Bronze pairs have two colours and rotate ("x r": r =
+// 0 B right of A, 1 B above, 2 B left, 3 B below). Search: 2 plies over the
+// known pairs and all 22 placements, eval = cleared blocks (chains weighted)
+// + same-colour contacts − height.
 
 const W = 6
 const H = 12
-const DEPTH = 3
+const DEPTH = 2
 
 // grid[x][y], y = 0 bottom; 0 skull, -1 empty, 1..5 colours.
 type Grid = Int8Array[]
 
-function drop(g: Grid, x: number, a: number, b: number): boolean {
+function dropOne(g: Grid, x: number, c: number): boolean {
   const col = g[x]
   let h = 0
   while (h < H && col[h] !== -1) h++
-  if (h + 2 > H) return false
-  col[h] = a
-  col[h + 1] = b
+  if (h >= H) return false
+  col[h] = c
   return true
+}
+// Placement p = x * 4 + rotation.
+const PLACEMENTS: number[] = []
+for (let x = 0; x < W; x++)
+  for (let r = 0; r < 4; r++) if (!(r === 0 && x === W - 1) && !(r === 2 && x === 0)) PLACEMENTS.push(x * 4 + r)
+function drop(g: Grid, p: number, a: number, b: number): boolean {
+  const x = p >> 2
+  const r = p & 3
+  if (r === 0) return dropOne(g, x, a) && dropOne(g, x + 1, b)
+  if (r === 2) return dropOne(g, x, a) && dropOne(g, x - 1, b)
+  if (r === 1) return dropOne(g, x, a) && dropOne(g, x, b)
+  return dropOne(g, x, b) && dropOne(g, x, a)
 }
 
 // Resolves groups and chains; returns the weighted number of cleared blocks.
@@ -106,9 +118,9 @@ const clone = (g: Grid): Grid => g.map(c => new Int8Array(c))
 function search(g: Grid, pairs: [number, number][], depth: number): number {
   if (depth === DEPTH) return evaluate(g)
   let best = -1e9
-  for (let x = 0; x < W; x++) {
+  for (const p of PLACEMENTS) {
     const h = clone(g)
-    if (!drop(h, x, pairs[depth][0], pairs[depth][1])) continue
+    if (!drop(h, p, pairs[depth][0], pairs[depth][1])) continue
     const cleared = resolve(h)
     const v = cleared * 10 + search(h, pairs, depth + 1) * 0.9
     if (v > best) best = v
@@ -133,16 +145,16 @@ while (true) {
     }
     grid.push(col)
   }
-  let bestX = 0
+  let bestP = PLACEMENTS[0]
   let bestV = -Infinity
-  for (let x = 0; x < W; x++) {
+  for (const p of PLACEMENTS) {
     const h = clone(grid)
-    if (!drop(h, x, pairs[0][0], pairs[0][1])) continue
+    if (!drop(h, p, pairs[0][0], pairs[0][1])) continue
     const v = resolve(h) * 10 + search(h, pairs, 1) * 0.9
     if (v > bestV) {
       bestV = v
-      bestX = x
+      bestP = p
     }
   }
-  console.log(bestX)
+  console.log(`${bestP >> 2} ${bestP & 3}`)
 }
