@@ -604,6 +604,11 @@ one line** (the statement lists four lines). Walls: H at (x,y) blocks
 every player must keep a path. Bot: walk the BFS shortest path; when an
 opponent would arrive first, place the wall with the best (their extra
 length − ours). 4/4 vs the Wood boss.
+Silver: 2/4 vs the boss (KommanBoss walls us early). A 2-ply 1v1 search
+(our move / top-8 walls, then its move / best wall; race margin + 0.25
+per wall kept) never placed a wall and lost 1/4: reverted. Next: value
+walls by the race margin *after* they are spent, save walls for when the
+opponent is 2-3 moves from its goal.
 
 ## poker-chip-race (WIP, not submitted)
 
