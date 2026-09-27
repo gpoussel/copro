@@ -1119,6 +1119,11 @@ barracks once the enemy has ≥ 2 towers, giants trained first: 1/4.
 An arena loss: the queen ordered BUILD on one site for 22 turns without
 it ever being built: a site still unbuilt after 6 BUILDs while touching
 it is now banned (2/4). Skipping sites under enemy towers went 1/4.
+Arena 21.3 (12W 8L: early queen deaths and close HP races). Growing up
+to 4 mines once the towers are solid: 0/4 (reverted). Early flight
+(knights within 700: best of 16 steps by nearest-knight distance, −3
+per unit closer than 250 to a wall; repair only when they are within
+150): 2/4, arena A/B.
 
 ## hypersonic
 

@@ -39,10 +39,14 @@ while (true) {
   const numUnits = parseInt(readline())
   let queen = { x: 0, y: 0 }
   const enemies: { x: number; y: number }[] = []
+  const knights: { x: number; y: number }[] = []
   for (let i = 0; i < numUnits; i++) {
     const [x, y, owner, type] = readline().split(" ").map(Number)
     if (owner === 0 && type === -1) queen = { x, y }
-    else if (owner === 1 && type !== -1) enemies.push({ x, y })
+    else if (owner === 1 && type !== -1) {
+      enemies.push({ x, y })
+      if (type === 0) knights.push({ x, y })
+    }
   }
   if (!corner) corner = { x: queen.x < 960 ? 0 : 1920, y: queen.y < 500 ? 0 : 1000 }
   const c = corner
@@ -57,8 +61,27 @@ while (true) {
   if (improving >= 0 && !(mine(sites[improving]) && st[improving].type === 1)) improving = -1
 
   let action = "WAIT"
+  // Knights close in at only 40 per turn (100 vs 60) and lose 1 HP per
+  // turn (≤ 30 turns): flee early, keeping away from walls and corners.
+  const nearest = knights.reduce((m, k) => Math.min(m, Math.hypot(k.x - queen.x, k.y - queen.y)), Infinity)
+  if (nearest < 700 && nearest > 150) {
+    let bestV = -Infinity
+    for (let k = 0; k < 16; k++) {
+      const ang = (k * Math.PI) / 8
+      const x = Math.round(queen.x + Math.cos(ang) * 60)
+      const y = Math.round(queen.y + Math.sin(ang) * 60)
+      if (x < 30 || y < 30 || x > 1890 || y > 970) continue
+      const near = knights.reduce((m, kn) => Math.min(m, Math.hypot(kn.x - x, kn.y - y)), Infinity)
+      const edge = Math.min(x, y, 1920 - x, 1000 - y)
+      const v = near - (edge < 250 ? (250 - edge) * 3 : 0)
+      if (v > bestV) {
+        bestV = v
+        action = `MOVE ${x} ${y}`
+      }
+    }
+  }
   const attacked = enemies.some(e => Math.hypot(e.x - queen.x, e.y - queen.y) < 200)
-  if (attacked) {
+  if (attacked && action === "WAIT") {
     if (improving >= 0 && st[improving].p1 < 790) action = `BUILD ${improving} TOWER`
     else {
       const t = farthest(free)
