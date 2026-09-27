@@ -854,6 +854,14 @@ Bronze boss (same rules): 1/4 at first. Any robot at the HQ now requests a
 radar when none is carried and (known ore < 4 per robot or < 4 radars down),
 radar carriers take distinct spots, ore cost = distance + ore column (the
 trip home): 3/4 with close scores.
+Arena 32.4 vs boss 34.4 (1/4 in IDE: radars were only requested by robots
+coming home with ore, so for ~50 turns four robots blind-dug empty cells
+at x = 3). Referee: github.com/CodinGameCommunity/UnleashTheGeek
+(`Game.generateMap`: cluster centres x = 3 + 25·u^0.55, y 2..12; 5×5
+clusters, ore 1–3; `config/Boss.py3` is only the Wood boss). Now a
+dedicated fetcher (free robot closest to the HQ, timed to the cooldown)
+keeps radars coming while known ore < 4/robot or < 5 radars, the lattice
+starts at (7,7), blind digs only x ≥ 6, y 1..13: 2/4 twice.
 
 ## keep-off-the-grass-fall-challenge-2022
 

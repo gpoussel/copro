@@ -9,23 +9,24 @@
 // hide an enemy trap: known ore there is skipped.
 
 const [W, H] = readline().split(" ").map(Number)
+// Ore clusters are centred at x = 3 + 25·u^0.55 (skewed away from the HQ),
+// y in 2..12 (referee: Game.generateMap).
 const RADAR_SPOTS: [number, number][] = [
-  [5, 7],
-  [9, 3],
-  [9, 11],
-  [13, 7],
-  [17, 3],
-  [17, 11],
-  [21, 7],
-  [25, 3],
-  [25, 11],
-  [5, 0],
-  [5, 14],
-  [13, 0],
-  [13, 14],
-  [21, 0],
-  [21, 14],
-  [28, 7],
+  [7, 7],
+  [11, 3],
+  [11, 11],
+  [15, 7],
+  [19, 3],
+  [19, 11],
+  [23, 7],
+  [27, 3],
+  [27, 11],
+  [4, 2],
+  [4, 12],
+  [15, 0],
+  [15, 14],
+  [23, 0],
+  [23, 14],
 ]
 const ourHoles = new Set<number>() // cells we dug (safe from enemy traps)
 const pendingDig = new Map<number, number>() // robot id -> cell it dug last turn
@@ -78,9 +79,17 @@ while (true) {
   const alive = robots.filter(r => r.x >= 0)
   const nextSpot = RADAR_SPOTS.find(([x, y]) => !radars.has(y * W + x) && safe(y * W + x))
 
+  let fetcher = -1
+  if (nextSpot && !robots.some(o => o.item === 2) && (knownOre < 4 * alive.length || radars.size < 5)) {
+    let bestX = Infinity
+    for (const r of alive)
+      if (r.item !== 4 && r.x < bestX && radarCd <= Math.ceil(r.x / 4)) {
+        bestX = r.x
+        fetcher = r.id
+      }
+  }
   const reserved = new Set<number>()
   const spotsTaken = new Set<number>()
-  let requested = false
   const out: string[] = []
   for (const r of robots) {
     if (r.x < 0) {
@@ -103,18 +112,12 @@ while (true) {
         continue
       }
     }
-    // Request a radar at the HQ while ore is scarce or few radars are down.
-    if (
-      r.item !== 2 &&
-      nextSpot &&
-      radarCd === 0 &&
-      !requested &&
-      !robots.some(o => o.item === 2) &&
-      (knownOre < 4 * alive.length || radars.size < 4) &&
-      r.x === 0
-    ) {
-      requested = true
-      out.push("REQUEST RADAR")
+    // Radar fetcher: the free robot closest to the HQ goes to request one
+    // while ore is scarce or few radars are down (timed to the cooldown).
+    if (r.id === fetcher) {
+      if (r.x === 0 && radarCd === 0) {
+        out.push("REQUEST RADAR")
+      } else out.push(`MOVE 0 ${r.y}`)
       continue
     }
     // Mine the nearest known ore with capacity left.
@@ -132,9 +135,10 @@ while (true) {
       // Blind dig: the nearest fresh cell away from the HQ column.
       for (let c = 0; c < W * H; c++) {
         const x = c % W
-        if (x < 3 || holes.has(c) || ore[c] === 0 || !safe(c)) continue
+        const y = Math.floor(c / W)
+        if (x < 6 || y < 1 || y > 13 || holes.has(c) || ore[c] === 0 || !safe(c)) continue
         if (reserved.has(c)) continue
-        const d = Math.abs(x - r.x) + Math.abs(Math.floor(c / W) - r.y)
+        const d = Math.abs(x - r.x) + Math.abs(y - r.y)
         if (d < bestD) {
           bestD = d
           best = c
