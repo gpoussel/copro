@@ -50,7 +50,7 @@ Surveyed 2026-09-26.
 | yavalath | 1 | **Legend** ✅ | 0 | TypeScript MCTS, submitted | 2 | 4/4 vs boss (single league) |
 | yinsh | 1 | **Legend** ✅ | 0 | TypeScript minimal (list-based), submitted | 2 | 2/2 vs boss; no engine yet |
 | beeminegame | 3 | **Gold** ✅ | 0 | TypeScript greedy hives | 2 | Silver→Gold 2026-09-26 (levels/bees in Gold: bot ignores them) |
-| counting-tictactoe | 3 | **Gold** ✅ | 0 | TypeScript MCTS | 2 | Silver→Gold 2026-09-26 |
+| counting-tictactoe | 3 | **Legend** ✅ | 0 | TypeScript MCTS | 2 | Gold→Legend 2026-09-27 |
 | elemental-wars | 3 | Silver | 1 | TypeScript chase/flee, submitted | 3 | best score 4/6 vs 2 bosses; awaiting promotion (more elementals + freeing prisoners next) |
 | mad-pod-racing | 7 | **Gold** ✅ | 0 | TypeScript Gold 2-pod racer, submitted | 2 | 1/4 vs Gold boss; next: blocker pod + collisions (Magus) |
 | night-of-war | 3 | **Gold** ✅ | 0 | TypeScript rules | 2 | Silver→Gold 2026-09-26 (Gold rules: 5×5? re-read) |
@@ -63,11 +63,11 @@ Surveyed 2026-09-26.
 | atari-go | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
 | atari-go-9x9 | 4 | Silver | 1 | TypeScript tactical | 2 | Bronze→Silver; 1 promotion left |
 | code4life | 6 | Bronze | 2 | Rust 1221/1535 | 2 | |
-| coders-of-the-realm | 4 | Bronze | 2 | TypeScript greedy placement, submitted | 2–4 | best score 4/4 vs Bronze boss; awaiting promotions |
-| coders-of-the-realm---1v1 | 4 | Bronze | 2 | TypeScript greedy placement, submitted | 2 | 4/4 vs Bronze boss (~130–25); awaiting promotions |
+| coders-of-the-realm | 4 | Silver | 1 | TypeScript greedy placement | 2–4 | Bronze→Silver |
+| coders-of-the-realm---1v1 | 4 | Silver | 1 | TypeScript greedy placement | 2 | Bronze→Silver |
 | cultist-wars | 4 | Bronze | 2 | TypeScript action scoring, submitted | 2 | 2/6 vs Bronze boss (loses as player 2): improve shooting duels |
-| game-of-life-or-death | 4 | Bronze | 2 | TypeScript pattern search, submitted | 2 | 4/4 vs Bronze boss (~590–1); awaiting promotions |
-| gargoyles-versus-santas | 4 | Bronze | 2 | TypeScript interception, submitted | 2 | 4/4 vs Bronze boss; awaiting promotions |
+| game-of-life-or-death | 4 | Silver | 1 | TypeScript pattern search | 2 | Bronze→Silver; bot scores negative in Silver: check new rules |
+| gargoyles-versus-santas | 4 | Silver | 1 | TypeScript interception | 2 | Bronze→Silver |
 | isola | 4 | **Gold** ✅ | 0 | TypeScript alpha-beta | 2 | Bronze→Gold 2026-09-26 |
 | legends-of-code-magic | 7 | Bronze | 2 | TypeScript 518/1629 | 2 | |
 | seabed-security | 7 | Bronze | 2 | C++ 274/707 | 2 | |
@@ -83,7 +83,7 @@ Surveyed 2026-09-26.
 | fall-challenge-2020 | 6 | Wood 2 | 4 | — | 2 | |
 | fantastic-bits | 6 | Wood 2 | 4 | — | 2 | |
 | game-of-drones | 6 | Wood 2 | 4 | TypeScript greedy allocation, submitted | 2 | 4/4 vs Wood boss (~3× its score) |
-| great-escape | 6 | Wood 2 | 4 | TypeScript path+walls, submitted | 2 | 4/4 vs Wood boss; 3-player later |
+| great-escape | 6 | Wood 1 | 3 | TypeScript path+walls | 2 | Wood 2→Wood 1 |
 | green-circle | 6 | Wood 2 | 4 | C++ 250/544 | 2 | |
 | ocean-of-code | 6 | Wood 2 | 4 | — | 2 | |
 | platinum-rift-episode-1 | 6 | Wood 2 | 4 | TypeScript spread+buy, submitted | 2 | 4/4 vs Wood boss (eliminated ~turn 25) |
@@ -92,7 +92,7 @@ Surveyed 2026-09-26.
 | spring-challenge-2020 | 6 | Wood 2 | 4 | — | 2 | |
 | spring-challenge-2023-ants | 6 | Wood 2 | 4 | — | 2 | |
 | summer-challenge-2024-olymbits | 6 | Wood 2 | 4 | — | 3 | |
-| tron-battle | 6 | Wood 2 | 4 | TypeScript Voronoi, submitted | 2 | 4/4 vs Wood boss; 2–4 players supported |
+| tron-battle | 6 | Wood 1 | 3 | TypeScript Voronoi | 2 | Wood 2→Wood 1 |
 | xmas-rush | 6 | Wood 2 | 4 | — | 2 | |
 | a-code-of-ice-and-fire | 7 | Wood 3 | 5 | — | 2 | |
 | code-a-la-mode | 7 | Wood 3 | 5 | — | 3 | |
