@@ -1123,7 +1123,7 @@ Arena 21.3 (12W 8L: early queen deaths and close HP races). Growing up
 to 4 mines once the towers are solid: 0/4 (reverted). Early flight
 (knights within 700: best of 16 steps by nearest-knight distance, −3
 per unit closer than 250 to a wall; repair only when they are within
-150): 2/4, arena A/B.
+150): 2/4 but arena 19.3: reverted.
 
 ## hypersonic
 
