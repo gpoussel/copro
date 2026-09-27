@@ -1161,6 +1161,11 @@ penalties; the 5th app must be clean. Now: desks feed the application
 needing the fewest extra skill cards (the clean finisher), releases pick
 the least debt with the current HAND (not the whole deck). 4/6 vs the
 boss (arena was 17.86 vs 18.84).
+Wood 1 (big apps, card play, give a card when adjacent; its boss also
+plays the first listed move): PLAY_CARD prefers REFACTORING (with debt in
+hand), TRAINING, CODING, CODE_REVIEW, ARCHITECTURE_STUDY, DAILY_ROUTINE;
+GIVE_CARD gives the skill the open apps need least. 3/4 (first version 2/4,
+losing as second player).
 
 ## winter-challenge-2024
 

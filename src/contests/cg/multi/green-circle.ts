@@ -79,5 +79,24 @@ while (true) {
       out = rel[0]
     } else out = "WAIT"
   }
+  if (phase === "PLAY_CARD") {
+    // Simple cards: clear debt, draw more, get bonuses; else keep the hand.
+    const order = ["REFACTORING", "TRAINING", "CODING", "CODE_REVIEW", "ARCHITECTURE_STUDY", "DAILY_ROUTINE"]
+    const pick = order
+      .map(o => moves.find(m => m.startsWith(o) && (o !== "REFACTORING" || hand[9] > 0)))
+      .find(m => m)
+    out = pick ?? (moves.find(m => m.startsWith("WAIT")) ?? moves[0] ?? "WAIT")
+  } else if (phase === "GIVE_CARD") {
+    // Give the skill we hold most of and need least.
+    const need = new Array(SKILLS).fill(0)
+    for (const app of apps) app.need.forEach((n, k) => (need[k] += n))
+    const gives = moves.filter(m => m.startsWith("GIVE"))
+    gives.sort((a, b) => {
+      const ka = +a.split(" ")[1]
+      const kb = +b.split(" ")[1]
+      return (need[ka] ?? 99) - (need[kb] ?? 99)
+    })
+    out = gives[0] ?? moves[0] ?? "WAIT"
+  }
   console.log(out)
 }
