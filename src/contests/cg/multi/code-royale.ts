@@ -24,6 +24,7 @@ type SiteState = { gold: number; maxSize: number; type: number; owner: number; p
 const COST = [80, 100, 140]
 let corner: { x: number; y: number } | null = null
 let improving = -1 // tower being grown
+let turn = 0
 const banned = new Set<number>()
 let lastBuild = ""
 let sameBuild = 0
@@ -31,6 +32,7 @@ let sameBuild = 0
 while (true) {
   const [gold, touched] = readline().split(" ").map(Number)
   const start = Date.now()
+  turn++
   void touched
   const st: SiteState[] = []
   for (let i = 0; i < numSites; i++) {
@@ -194,6 +196,20 @@ while (true) {
     if (action === "WAIT" && towers.length >= 3 && towers.every(t => st[t.id].p1 >= 500) && barracks.length < 2) {
       const t = closest(free)
       if (t) action = `BUILD ${t.id} BARRACKS-KNIGHT`
+    }
+    // Raid (how KaZede beat this boss 12/13): with the base up and no
+    // knight near, the queen walks to an enemy mine / barracks that no enemy
+    // tower covers and destroys it by touching it (the tactical search
+    // takes over when knights come).
+    if (action === "WAIT" && turn > 60 && barracks.length >= 2 && kd > 600 && towers.every(t => st[t.id].p1 >= 500)) {
+      const enemyCover = (q: Site) =>
+        sites.some(
+          e => st[e.id].owner === 1 && st[e.id].type === 1 && Math.hypot(e.x - q.x, e.y - q.y) < st[e.id].p2 + 40
+        )
+      const prey = sites
+        .filter(q => st[q.id].owner === 1 && (st[q.id].type === 0 || st[q.id].type === 2) && !enemyCover(q))
+        .sort((a, b) => dq(a) - dq(b))[0]
+      if (prey) action = `MOVE ${prey.x} ${prey.y}`
     }
     if (action === "WAIT") {
       // Grow the weakest tower to 790, else rest in the corner.
