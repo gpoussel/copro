@@ -66,7 +66,7 @@ Surveyed 2026-09-26.
 | coders-of-the-realm | 4 | **Legend** ✅ | 0 | TypeScript greedy placement | 2–4 | Bronze→Silver |
 | coders-of-the-realm---1v1 | 4 | **Legend** ✅ | 0 | TypeScript greedy placement | 2 | Bronze→Silver |
 | cultist-wars | 4 | Bronze | 2 | TypeScript action scoring, submitted | 2 | 2/6 vs Bronze boss (loses as player 2): improve shooting duels |
-| game-of-life-or-death | 4 | **Gold** ✅ | 0 | TypeScript pattern search (scales to 16×16), resubmitted | 2 | 4/4 vs Silver boss (~780–0) |
+| game-of-life-or-death | 4 | **Legend** ✅ | 0 | TypeScript pattern search (scales to 16×16), resubmitted | 2 | 4/4 vs Silver boss (~780–0) |
 | gargoyles-versus-santas | 4 | **Legend** ✅ | 0 | TypeScript interception | 2 | Bronze→Silver |
 | isola | 4 | **Gold** ✅ | 0 | TypeScript alpha-beta | 2 | Bronze→Gold 2026-09-26 |
 | legends-of-code-magic | 7 | Bronze | 2 | TypeScript 518/1629 | 2 | |
@@ -74,26 +74,26 @@ Surveyed 2026-09-26.
 | spring-challenge-2021 | 6 | Bronze | 2 | Rust 255/3033 | 2 | |
 | tryangle-catch | 4 | Bronze | 2 | TypeScript WIP, **not submitted** (0/6) | 2 | units get surrounded; study the referee before retrying |
 | winter-challenge-2026-snakebyte | 4 | Bronze | 2 | TypeScript greedy BFS, submitted | 2 | 2/4 vs Bronze boss; needs gravity-aware pathing |
-| bit-runner-2048 | 5 | Wood 1 | 3 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
+| bit-runner-2048 | 5 | Bronze | 2 | TypeScript chase/ram, submitted | 2 | 3/4 vs Wood 1 boss |
 | crystal-rush | 5 | Bronze | 2 | TypeScript radars + miners, submitted | 2 | 3/4 vs Bronze boss (close) |
-| git-patchwork | 5 | Wood 1 | 3 | TypeScript greedy value, submitted | 2 | 4/4 vs Wood 1 boss |
+| git-patchwork | 5 | Bronze | 2 | TypeScript greedy value, submitted | 2 | 4/4 vs Wood 1 boss |
 | keep-off-the-grass-fall-challenge-2022 | 5 | Silver | 1 | TypeScript expand + recyclers, submitted | 2 | old bot reached rank 1 in Silver; resubmitted by mistake (1-2/4 vs Silver boss) |
-| langton-s-ant | 5 | Wood 1 | 3 | TypeScript greedy simulation, submitted | 2 | 4/4 vs Wood 1 boss |
-| codebusters | 6 | Bronze | 2 | TypeScript rules+STUN+stamina, submitted | 2 | 4/4 vs Bronze boss (close) |
-| fall-challenge-2020 | 6 | Wood 1 | 3 | TypeScript BFS over casts, submitted | 2 | 4/4 vs Wood 1 boss |
-| fantastic-bits | 6 | Bronze | 2 | TypeScript chase+throw, submitted | 2 | 4/4 vs Wood boss; spells (magic) later |
-| game-of-drones | 6 | Bronze | 2 | TypeScript greedy allocation, submitted | 2 | 4/4 vs Wood boss (~3× its score) |
+| langton-s-ant | 5 | Bronze | 2 | TypeScript greedy simulation, submitted | 2 | 4/4 vs Wood 1 boss |
+| codebusters | 6 | Silver | 1 | TypeScript rules+STUN+stamina, submitted | 2 | 4/4 vs Bronze boss (close) |
+| fall-challenge-2020 | 6 | Silver | 1 | TypeScript BFS over casts, submitted | 2 | 4/4 vs Wood 1 boss |
+| fantastic-bits | 6 | Silver | 1 | TypeScript chase+throw, submitted | 2 | 4/4 vs Wood boss; spells (magic) later |
+| game-of-drones | 6 | Silver | 1 | TypeScript greedy allocation, submitted | 2 | 4/4 vs Wood boss (~3× its score) |
 | great-escape | 6 | Silver | 1 | TypeScript path+walls | 2 | Wood 2→Wood 1 |
 | green-circle | 6 | Wood 2 | 4 | C++ 250/544 | 2 | |
-| ocean-of-code | 6 | Bronze | 2 | TypeScript tracking+torpedo+mines, submitted | 2 | 6/6 vs Bronze boss |
+| ocean-of-code | 6 | Silver | 1 | TypeScript tracking+torpedo+mines, submitted | 2 | 6/6 vs Bronze boss |
 | platinum-rift-episode-1 | 6 | Bronze | 2 | TypeScript spread+buy, submitted | 2 | 4/4 vs Wood boss (eliminated ~turn 25) |
 | poker-chip-race | 6 | Wood 2 | 4 | TypeScript WIP, **not submitted** (0/6) | 2 | gets eaten; needs physics simulation |
-| smash-the-code | 6 | Bronze | 2 | TypeScript 3-ply sim, submitted | 2 | 4/4 vs Wood boss; later leagues add rotations/different colours |
+| smash-the-code | 6 | Silver | 1 | TypeScript 3-ply sim, submitted | 2 | 4/4 vs Wood boss; later leagues add rotations/different colours |
 | spring-challenge-2020 | 6 | Silver | 1 | TypeScript beam paths, types, abilities | 2 | Silver boss ~2/6; collection efficiency and deaths |
 | spring-challenge-2023-ants | 6 | Wood 2 | 4 | TypeScript LINE chains, submitted | 2 | 4/4 vs Wood boss; eggs/multiple bases later |
-| summer-challenge-2024-olymbits | 6 | Wood 2 | 4 | TypeScript hurdle DP, submitted | 3 | gold 3/3 vs 2 bosses |
+| summer-challenge-2024-olymbits | 6 | Wood 1 | 3 | TypeScript hurdle DP, submitted | 3 | gold 3/3 vs 2 bosses |
 | tron-battle | 6 | Silver | 1 | TypeScript Voronoi | 2 | Wood 2→Wood 1 |
-| xmas-rush | 6 | Bronze | 2 | TypeScript push-search, submitted | 2 | 4/4 vs Wood boss; multi-quest later |
+| xmas-rush | 6 | Silver | 1 | TypeScript push-search, submitted | 2 | 4/4 vs Wood boss; multi-quest later |
 | a-code-of-ice-and-fire | 7 | Wood 3 | 5 | — | 2 | |
 | code-a-la-mode | 7 | Wood 3 | 5 | — | 3 | |
 | code-of-kutulu | 7 | Wood 3 | 5 | — | 4 | |
