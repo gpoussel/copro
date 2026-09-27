@@ -848,3 +848,12 @@ do not hurt. Bot: BFS over free cells, best cell = undoomed boxes a bomb
 there would hit / (distance + 2); BOMB when standing on it and head for
 the next best cell. 4/4 vs the Wood boss (~22 to 7 boxes). Later: walls
 `X`, items (boxes `1`/`2`), bombs kill: add an escape check before bombing.
+
+## wondev-woman
+
+Santorini-like, legal actions listed (`MOVE&BUILD i dir dir`, N = y−1).
+Wood: reaching level 3 wins. Bot: 1-ply, climb to 3 at once, else score
+= 30·landing level + climbable neighbours (bonus for +1 steps and a 3 we
+can reach from level 2) − 200 if the opponent could climb to a 3 next turn
+− its mobility. 4/4 vs the Wood boss (wins in 5–8 turns). Later: points
+per climb, 2 units, PUSH&BUILD, fog: needs a real search (minimax).
