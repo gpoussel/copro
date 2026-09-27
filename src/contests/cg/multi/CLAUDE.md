@@ -614,3 +614,7 @@ own zones. Bot: buy on the richest neutral zones, then on our zones touching
 enemies; each group sends 1 pod per unowned neighbour it outnumbers
 (platinum first), the rest steps towards the nearest unowned zone. 4/4 vs the
 Wood boss.
+Silver (league 2) is 16×16 with 8 goal cells and 12 mana: the exhaustive
+search timed out on turn 2. Now: time-bounded random column patterns
+(often compact blocks), 16 generations, + a bonus for our cells advancing to
+the centre columns. 4/4 vs the Silver boss (~780 to 0).

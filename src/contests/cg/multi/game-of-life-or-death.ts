@@ -17,7 +17,18 @@ for (let i = 0; i < goalCount; i++) {
   const [x, y] = readline().split(" ").map(Number)
   goals.push(y * C + x)
 }
-const HORIZON = 6
+// Small boards (league 1, 8 rows): every pattern, 6 generations. Bigger ones
+// (16x16 later): time-bounded random patterns over a longer horizon, with a
+// bonus for our cells advancing towards the centre.
+const HORIZON = R <= 8 ? 6 : 16
+const TURN_MS = 38
+let rng = 0x2545f491
+const rand = () => {
+  rng ^= rng << 13
+  rng ^= rng >>> 17
+  rng ^= rng << 5
+  return (rng >>> 0) / 4294967296
+}
 
 // One generation for both players (grid: 1 us, -1 them, 0 empty).
 function step(g: Int8Array): Int8Array {
@@ -59,9 +70,22 @@ while (true) {
     const v = readline().trim().split(/\s+/).map(Number)
     for (let c = 0; c < C; c++) grid[r * C + c] = v[c]
   }
+  const deadline = Date.now() + TURN_MS
   let bestMask = 0
   let bestScore = -Infinity
-  for (let mask = 0; mask < 1 << R; mask++) {
+  const exhaustive = R <= 8
+  const candidates = exhaustive ? 1 << R : Infinity
+  for (let k = 0; k < candidates; k++) {
+    let mask = k
+    if (!exhaustive) {
+      if (Date.now() > deadline) break
+      // Random pattern with up to `mana` live cells, often a compact block.
+      mask = 0
+      const cells = Math.floor(rand() * (Math.min(mana, R) + 1))
+      const start = Math.floor(rand() * R)
+      const spread = rand() < 0.6 ? 4 : R
+      for (let c = 0; c < cells; c++) mask |= 1 << ((start + Math.floor(rand() * spread)) % R)
+    }
     if (popcount(mask) > mana) continue
     let g: Int8Array = new Int8Array(grid)
     for (let r = 0; r < R; r++) g[r * C] = (mask >> r) & 1 ? 1 : g[r * C] === -1 ? -1 : 0
@@ -76,8 +100,11 @@ while (true) {
       }
       score += (mine - theirs) * (1 + (HORIZON - t) * 0.2)
     }
-    // Keep a little mana for later and prefer live cells overall.
-    score += g.reduce((s, v) => s + v, 0) * 0.05 - popcount(mask) * 0.01
+    // Keep a little mana for later, prefer live cells, and (big boards) cells
+    // that got closer to the centre columns.
+    let advance = 0
+    for (let i = 0; i < R * C; i++) if (g[i] === 1) advance += Math.min(i % C, C / 2)
+    score += g.reduce((s, v) => s + v, 0) * 0.05 - popcount(mask) * 0.01 + (exhaustive ? 0 : advance * 0.02)
     if (score > bestScore) {
       bestScore = score
       bestMask = mask

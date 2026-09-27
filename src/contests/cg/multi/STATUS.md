@@ -66,7 +66,7 @@ Surveyed 2026-09-26.
 | coders-of-the-realm | 4 | Silver | 1 | TypeScript greedy placement | 2–4 | Bronze→Silver |
 | coders-of-the-realm---1v1 | 4 | Silver | 1 | TypeScript greedy placement | 2 | Bronze→Silver |
 | cultist-wars | 4 | Bronze | 2 | TypeScript action scoring, submitted | 2 | 2/6 vs Bronze boss (loses as player 2): improve shooting duels |
-| game-of-life-or-death | 4 | Silver | 1 | TypeScript pattern search | 2 | Bronze→Silver; bot scores negative in Silver: check new rules |
+| game-of-life-or-death | 4 | Silver | 1 | TypeScript pattern search (scales to 16×16), resubmitted | 2 | 4/4 vs Silver boss (~780–0) |
 | gargoyles-versus-santas | 4 | Silver | 1 | TypeScript interception | 2 | Bronze→Silver |
 | isola | 4 | **Gold** ✅ | 0 | TypeScript alpha-beta | 2 | Bronze→Gold 2026-09-26 |
 | legends-of-code-magic | 7 | Bronze | 2 | TypeScript 518/1629 | 2 | |
