@@ -666,3 +666,11 @@ Pac-Man duel, 6 leagues (Wood 2 start: 1 pac, full vision). Bot: best
 value / BFS distance pellet per pac (horizontal wrap), distinct targets.
 4/4 vs the Wood boss. Later: up to 5 pacs, fog of war, SPEED and SWITCH
 (rock/paper/scissors) abilities.
+
+## spring-challenge-2023-ants
+
+Beacon-driven ants on hex cells, 6 leagues (Wood 2 start). Bot: LINE from
+the nearest own base to the closest resources, adding targets while the ants
+can keep ~2 per chain cell (eggs preferred during the first 40 turns).
+4/4 vs the Wood boss. Ideas: weighted beacons per chain, compete for shared
+resources, the classic "minimum spanning tree of targets" approach.
