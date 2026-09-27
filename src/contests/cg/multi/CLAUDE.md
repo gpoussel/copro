@@ -1148,7 +1148,7 @@ Forward knight barracks (free area site nearest the enemy corner): 0/4,
 the queen dies walking out there early.
 Kite base samples: 25.7, 24.9, 26.4 (rank 48). The boss (Princess Boss)
 plays 4 mines, 3 knight barracks, then ~9 towers it keeps repairing.
-Arena A/B: up to 5 towers once the first 3 are ≥ 600 HP.
+Up to 5 towers once the first 3 are ≥ 600 HP: arena 24.4, reverted.
 
 ## hypersonic
 
