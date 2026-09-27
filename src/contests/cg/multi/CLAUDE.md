@@ -674,3 +674,11 @@ the nearest own base to the closest resources, adding targets while the ants
 can keep ~2 per chain cell (eggs preferred during the first 40 turns).
 4/4 vs the Wood boss. Ideas: weighted beacons per chain, compete for shared
 resources, the classic "minimum spanning tree of targets" approach.
+
+## fall-challenge-2020
+
+Witch potions, 6 leagues (Wood 2 start: BREW only). Bot: brew the priciest
+affordable order; fallback for later leagues: CAST the castable spell that
+reduces the tier-weighted missing ingredients of the best order (≤ 10 in
+inventory), else REST. 4/4 vs the Wood boss. Gold-level bots use a BFS/beam
+over CAST/REST/LEARN sequences.
