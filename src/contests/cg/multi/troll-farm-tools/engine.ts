@@ -384,7 +384,7 @@ export function parseOutput(g: Game, p: number, line: string, rand: (n: number) 
   for (const raw of line.split(";")) {
     const cmd = raw.trim()
     if (cmd === "" || cmd.toUpperCase() === "WAIT") continue
-    if (cmd.toUpperCase().startsWith("MSG ")) continue
+    if (/^MSG(\s|$)/i.test(cmd)) continue
     const w = cmd.split(/\s+/)
     const kw = w[0].toUpperCase()
     const kinds: Record<string, [number, number]> = {
