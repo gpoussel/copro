@@ -3,7 +3,7 @@
 // stock pays for, trained as early as possible) razes the trees near the enemy shack, lemons first,
 // and co-chops any of its own trees an enemy is felling; the first troll gathers what the cutter
 // costs (iron, fruits), then plants and harvests bananas / apples next to its shack.
-import { BANANA, GRASS, IRONCELL, ITEMS, WATER, bfs } from "./engine.js"
+import { BANANA, GRASS, IRONCELL, ITEMS, WATER, bfs, Game } from "./engine.js"
 
 interface T {
   type: number
@@ -36,8 +36,9 @@ export class Boss5 {
   oppDrop: Int16Array
   mineCells: number[] = []
   turnNo = 0
+  picked = new Map<number, number>()
 
-  constructor(init: string[]) {
+  constructor(init: string[], dist?: Int16Array[]) {
     const [W, H] = init[0].split(" ").map(Number)
     this.W = W
     this.H = H
@@ -51,7 +52,8 @@ export class Boss5 {
         if (ch === "0") this.shack = c
         if (ch === "1") this.opp = c
       }
-    for (let c = 0; c < this.N; c++) this.dist.push(bfs(this, [c]))
+    if (dist) this.dist = dist
+    else for (let c = 0; c < this.N; c++) this.dist.push(bfs(this, [c]))
     this.drop = bfs(this, this.nbrs(this.shack).filter(n => this.grid[n] === GRASS))
     this.oppDrop = bfs(this, this.nbrs(this.opp).filter(n => this.grid[n] === GRASS))
     for (let c = 0; c < this.N; c++) if (this.grid[c] === GRASS && this.nbrs(c).some(n => this.grid[n] === IRONCELL)) this.mineCells.push(c)
@@ -90,7 +92,6 @@ export class Boss5 {
   }
 
   turn(lines: string[]): string {
-    this.turnNo++
     let li = 0
     const inv = lines[li++].split(" ").map(Number)
     li++
@@ -101,14 +102,27 @@ export class Boss5 {
       trees.push({ type: ITEMS.indexOf(p[0]), cell: +p[2] * this.W + +p[1], size: +p[3], health: +p[4], fruits: +p[5] })
     }
     const nu = +lines[li++]
-    const mine: U[] = []
-    const opp: U[] = []
+    const all: U[] = []
     for (let i = 0; i < nu; i++) {
       const v = lines[li++].split(" ").map(Number)
       const u = { id: v[0], mine: v[1] === 0, cell: v[3] * this.W + v[2], speed: v[4], carry: v[5], harvest: v[6], chop: v[7], inv: v.slice(8, 14), load: 0 }
       u.load = u.inv.reduce((a, b) => a + b, 0)
-      ;(u.mine ? mine : opp).push(u)
+      all.push(u)
     }
+    return this.decide(inv, trees, all)
+  }
+
+  /** Same as turn() for player p of an engine state. */
+  turnGame(g: Game, p: number): string {
+    const trees: T[] = g.trees.map(t => ({ type: t.type, cell: t.cell, size: t.size, health: t.health, fruits: t.fruits }))
+    const all: U[] = g.trolls.map(u => ({ id: u.id, mine: u.owner === p, cell: u.cell, speed: u.speed, carry: u.carry, harvest: u.harvest, chop: u.chop, inv: u.inv.slice(), load: u.inv[0] + u.inv[1] + u.inv[2] + u.inv[3] + u.inv[4] + u.inv[5] }))
+    return this.decide(g.inv[p].slice(), trees, all)
+  }
+
+  decide(inv: number[], trees: T[], all: U[]): string {
+    this.turnNo++
+    const mine = all.filter(u => u.mine)
+    const opp = all.filter(u => !u.mine)
     const treeAt = new Map(trees.map(t => [t.cell, t]))
     const out: string[] = []
     const taken = new Set<number>()
@@ -134,59 +148,71 @@ export class Boss5 {
       let act = ""
       let dest = -1
       if (u.harvest === 0 && u.chop >= 2) {
-        // cutter
+        // cutter: raid the enemy's trees (lemons first, even when full: denial), later farm ours
+        const raid = this.turnNo < 190
         const defend = trees.find(t => this.drop[t.cell] <= this.oppDrop[t.cell] && opp.some(o => o.cell === t.cell && o.chop > 0))
-        if (u.load >= u.carry || (u.load > 0 && !here)) {
+        const enemySide = (c: number) => this.oppDrop[c] >= 0 && this.oppDrop[c] < this.drop[c]
+        let bestT: T | null = null
+        let bv = -1e9
+        for (const t of trees) {
+          if (this.dist[u.cell][t.cell] < 0 || t.size < 1) continue
+          const es = enemySide(t.cell)
+          if (raid ? !es : es || t.size < 2) continue
+          const v = raid ? (t.type === 1 ? 10 : 0) + 2 * t.size - this.dist[u.cell][t.cell] / u.speed - this.oppDrop[t.cell] : 4 * Math.min(t.size, u.carry) - 2 * (this.dist[u.cell][t.cell] / u.speed) - this.drop[t.cell]
+          if (v > bv) (bv = v), (bestT = t)
+        }
+        if (defend && this.dist[u.cell][defend.cell] <= 6) bestT = defend
+        if (here && here.size >= 1 && (raid ? enemySide(here.cell) : !enemySide(here.cell) && here.size >= 2)) bestT = here
+        if (here && bestT === here) act = `CHOP ${u.id}`
+        else if (u.load >= u.carry && (!bestT || !raid || this.dist[u.cell][bestT.cell] > 4)) {
           if (atShack(u)) act = `DROP ${u.id}`
           else dest = this.nearestDrop(u.cell)
-        } else if (here && (here.size >= 2 || (here.size >= 1 && this.oppDrop[here.cell] < this.drop[here.cell]))) act = `CHOP ${u.id}`
-        else {
-          const target = defend && this.dist[u.cell][defend.cell] <= 6 ? defend : null
-          let bestT: T | null = target
-          let bv = -1e9
-          if (!bestT)
-            for (const t of trees) {
-              if (this.dist[u.cell][t.cell] < 0 || t.size < 1) continue
-              const enemySide = this.oppDrop[t.cell] >= 0 && this.oppDrop[t.cell] < this.drop[t.cell]
-              if (!enemySide && t.size < 2) continue
-              const early = this.turnNo < 60
-              const v = 4 * Math.min(t.size, u.carry) + (enemySide ? 4 + (early ? 12 : 0) + (t.type === 1 ? 8 : 0) : 0) - 2 * (this.dist[u.cell][t.cell] / u.speed) - (enemySide ? this.oppDrop[t.cell] : this.drop[t.cell])
-              if (v > bv) (bv = v), (bestT = t)
-            }
-          if (bestT) dest = bestT.cell
-          else if (u.load > 0) dest = this.nearestDrop(u.cell)
+        } else if (bestT) dest = bestT.cell
+        else if (u.load > 0) {
+          if (atShack(u)) act = `DROP ${u.id}`
+          else dest = this.nearestDrop(u.cell)
         }
       } else {
         // gardener
-        const seed = u.inv[BANANA] > 0 ? BANANA : u.inv[2] > 0 ? 2 : -1
-        if (needIron > 0 && u.chop > 0 && free > 0 && this.mineCells.length) {
+        const picked = this.picked.get(u.id)
+        const seed = picked !== undefined && u.inv[picked] > 0 ? picked : -1
+        const lemonTrees = trees.filter(t => t.type === 1 && t.size === 4 && this.dist[u.cell][t.cell] >= 0)
+        if (needIron > 0 && u.chop > 0 && free > 0 && this.mineCells.length && needLemon === 0) {
           if (this.mineCells.includes(u.cell)) act = `MINE ${u.id}`
           else dest = this.mineCells.reduce((a, b) => (this.dist[u.cell][b] < this.dist[u.cell][a] ? b : a))
-        } else if (u.inv[4] > 0 || (u.load > 0 && seed < 0) || free === 0) {
+        } else if (k === 1 && needLemon > 0 && free > 0 && lemonTrees.length) {
+          const lt = lemonTrees.reduce((a, b) => (this.dist[u.cell][b.cell] < this.dist[u.cell][a.cell] ? b : a))
+          if (here === lt) act = `HARVEST ${u.id}` // waits there for the fruit
+          else dest = lt.cell
+        } else if (u.inv[4] > 0 || (u.load > 0 && seed < 0)) {
           if (atShack(u)) act = `DROP ${u.id}`
           else dest = this.nearestDrop(u.cell)
         } else if (seed >= 0) {
-          if (!here && this.grid[u.cell] === GRASS && this.drop[u.cell] <= 2 && u.cell !== this.shack) act = `PLANT ${u.id} ${ITEMS[seed]}`
+          if (!here && this.grid[u.cell] === GRASS && this.drop[u.cell] >= 0 && this.drop[u.cell] <= 3 && u.cell !== this.shack) {
+            act = `PLANT ${u.id} ${ITEMS[seed]}`
+            this.picked.delete(u.id)
+          }
           else {
             let best = -1
             for (let c = 0; c < this.N; c++)
-              if (this.grid[c] === GRASS && !treeAt.has(c) && this.drop[c] <= 2 && this.drop[c] >= 0 && !taken.has(c) && (best < 0 || this.dist[u.cell][c] < this.dist[u.cell][best])) best = c
+              if (this.grid[c] === GRASS && !treeAt.has(c) && this.drop[c] <= 3 && this.drop[c] >= 0 && !taken.has(c) && (best < 0 || this.dist[u.cell][c] < this.dist[u.cell][best])) best = c
             if (best >= 0) dest = best
           }
         } else {
-          // harvest the best fruit tree near home (lemons when the cutter still needs them)
           let bestT: T | null = null
           let bv = -1e9
           for (const t of trees) {
-            if (t.fruits === 0 || this.dist[u.cell][t.cell] < 0) continue
-            const v = t.fruits + (t.type === 1 && needLemon > 0 ? 5 : 0) + (t.type === BANANA ? 1 : 0) - this.dist[u.cell][t.cell] - this.drop[t.cell]
+            if (t.fruits === 0 || this.dist[u.cell][t.cell] < 0 || this.drop[t.cell] > 4) continue
+            const v = t.fruits + (t.type === BANANA ? 1 : 0) - this.dist[u.cell][t.cell]
             if (v > bv) (bv = v), (bestT = t)
           }
+          const pickT = inv[BANANA] > 0 ? "BANANA" : inv[2] > 0 ? "APPLE" : ""
           if (bestT && here === bestT) act = `HARVEST ${u.id}`
-          else if (bestT) dest = bestT.cell
-          else if (atShack(u) && inv[BANANA] > 0) act = `PICK ${u.id} BANANA`
-          else if (inv[BANANA] > 0) dest = this.nearestDrop(u.cell)
-          else if (here && this.turnNo > 250 && here.size >= 3) act = `CHOP ${u.id}`
+          else if (atShack(u) && pickT && k >= 2) {
+            act = `PICK ${u.id} ${pickT}`
+            this.picked.set(u.id, pickT === "BANANA" ? BANANA : 2)
+          } else if (bestT) dest = bestT.cell
+          else if (pickT && k >= 2) dest = this.nearestDrop(u.cell)
         }
       }
       if (act) {

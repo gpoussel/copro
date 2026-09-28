@@ -1641,6 +1641,27 @@ cuts our trees). TS bot 3/4–5/6 vs the boss; first arena run rank 1 at
 40 % (18.8, boss 21.8). Locally a simple raider (quick 2/3/0/2 chopper
 cutting trees near our shack) beats us ~23–17: aggression works here
 (post-mortems agree), defence/aggression is the next step.
+**Promoted to Gold 2026-09-28** (Silver arena 22.96 vs boss 21.17).
+Gold: first run rank 46/488 (17.92); Boss 5 = 23.3, above every Gold
+player (top 22.87). Boss 5 (Konstant-style, seen in replays with
+`bosstrace.ts`): trains the best (x,2,0,x) cutter the stock pays for, often
+on turn 1 (its first troll waits on a lemon tree otherwise); the cutter
+camps near OUR shack felling our trees (lemons first, young ones too, even
+when full: pure denial) until ~turn 190, then fells its own gardener's
+bananas at size 2; the gardener PICKs bananas/apples and plants them 1–3
+cells from its shack, harvests and drops. Against it our losses are games
+where we never get a real chopper (lemons cut, sources replanted in a
+loop) and where we wait for our trees to reach size 4 while it fells them
+(`losses.ts`: our-side wood felled by us 0 in losses, 60–80 in wins).
+Fixes: co-chop share counts the enemy's free carry (a full cutter takes
+nothing), fell our trees from size 2 when raided, no farm when exposed,
+≤ 2 source plantings, a chopper as soon as one is affordable, never stop
+training with one troll. IDE vs Boss 5 went 1/6 → ~5/10. Local clones
+(`boss5.ts`, `fidelity.ts` compares its actions with the real boss on
+dumped replays) stay weaker than the real boss: judge on IDE games.
+Legend reference (wala #5, replays in post-mortem): trolls 2/2/2/1 on turn
+1, 2/4/1/2 by ~t100, 3/4/0/3 by ~t150, then ~9 bananas planted and ~35 wood
+per 25 turns; 700–800 points per game.
 Forum: forum.codingame.com/t/208241 (Legend post-mortems: banana
 plant-chop-drop engines, 2–4 trolls, cutters raiding lemon sources,
 co-chop defence, no planting near enemy trolls).

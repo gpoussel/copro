@@ -4,6 +4,7 @@
 // the shack) on a farm cell near the shack, go home and drop. Training follows a design list.
 import { BANANA, COOLDOWN, DELTA_HEALTH, FINAL_HEALTH, GRASS, IRON, IRONCELL, ITEMS, MAX_FRUITS, MAX_SIZE, WATER, WATER_BOOST, WOOD, bfs } from "./engine.js"
 import { Game, nearType, parseOutput, score, step } from "./engine.js"
+import { Boss5 } from "./boss5.js"
 
 export const AUTO = [-1, -1, -1, -1]
 // Chopper designs by utility (carry first: wood comes 4 per tree), for the AUTO design.
@@ -71,15 +72,15 @@ export class Sim {
   g: Game
   a: Bot
   horizon = 150
-  b: Bot | null = null
-  constructor(g: Game, init: string[], mine: Params, dist: Int16Array[], theirs?: Params) {
+  b: Bot | Boss5 | null = null
+  constructor(g: Game, init: string[], mine: Params, dist: Int16Array[], theirs?: Params | "boss5") {
     this.g = g
     g.dist = dist
     this.a = new Bot(init, mine, true, dist)
     this.a.turnNo = g.turn
     if (theirs) {
       const oppInit = [init[0], ...init.slice(1).map(r => r.replace(/[01]/g, ch => (ch === "0" ? "1" : "0")))]
-      this.b = new Bot(oppInit, theirs, true, dist)
+      this.b = theirs === "boss5" ? new Boss5(oppInit, dist) : new Bot(oppInit, theirs, true, dist)
       this.b.turnNo = g.turn
     }
   }
@@ -131,7 +132,7 @@ export interface Params {
   planTurnBudget: number
   planTurns: number
   planAll: boolean // evaluate every plan on turn 1 whatever the time (deterministic local tests)
-  simOpp: Partial<Params> | null // opponent model in plan simulations (null = passive)
+  simOpp: Partial<Params> | "boss5" | null // opponent model in plan simulations (null = passive)
   simHorizon: number
   replan: boolean
   replanMargin: number
@@ -139,6 +140,8 @@ export interface Params {
   ripeByCarry: boolean
   noFarmExposed: boolean
   maxSources: number
+  raidNoWait: boolean
+  chopperNow: boolean
   patienceFirst: number
   cutterPlans: boolean
   stick: number
@@ -180,6 +183,8 @@ export const DEFAULT_PARAMS: Params = {
   ripeByCarry: false,
   noFarmExposed: true,
   maxSources: 2,
+  raidNoWait: true,
+  chopperNow: true,
   patienceFirst: 25,
   cutterPlans: false,
   stick: 1.3,
@@ -367,7 +372,7 @@ export class Bot {
     const PL = this.P.cutterPlans ? CUTTER_PLANS : PLANS
     while (this.planIdx < PL.length) {
       if (!this.planSim) {
-        this.planSim = new Sim(gameFromInput(this.init, this.planLines!, 0), this.init, { ...this.P, plan: PL[this.planIdx] }, this.dist, this.P.simOpp ? { ...DEFAULT_PARAMS, choosePlan: false, ...this.P.simOpp } : undefined)
+        this.planSim = new Sim(gameFromInput(this.init, this.planLines!, 0), this.init, { ...this.P, plan: PL[this.planIdx] }, this.dist, this.P.simOpp === "boss5" ? "boss5" : this.P.simOpp ? { ...DEFAULT_PARAMS, choosePlan: false, ...this.P.simOpp } : undefined)
         this.planSim.horizon = this.P.simHorizon
       }
       const v = this.planSim.run(t0 + budgetMs)
@@ -416,7 +421,7 @@ export class Bot {
     const rp = this.rp
     while (rp.idx < rp.cands.length) {
       if (!rp.sim) {
-        rp.sim = new Sim(gameFromInput(this.init, rp.lines, rp.turn), this.init, { ...this.P, plan: rp.cands[rp.idx] }, this.dist)
+        rp.sim = new Sim(gameFromInput(this.init, rp.lines, rp.turn), this.init, { ...this.P, plan: rp.cands[rp.idx] }, this.dist, this.P.simOpp === "boss5" ? "boss5" : undefined)
         rp.sim.horizon = Math.min(300, rp.turn + this.P.simHorizon)
       }
       const v = rp.sim.run(t0 + budgetMs)
@@ -560,6 +565,16 @@ export class Bot {
           cost = [k + d[0] * d[0], k + d[1] * d[1], k + d[2] * d[2], 0, k + d[3] * d[3]]
         }
       }
+      // no chopper yet: the best one the stock pays for right now beats a better one later
+      const isChopper = d[3] >= 2 && d[1] >= 2
+      if (P.chopperNow && k - 1 < designs.length && !mine.some(u => u.chop >= 2 && u.carry >= 2) && (!isChopper || !cost.every((c, i) => stock[i] >= c))) {
+        const fit = AUTO_DESIGNS.find(x => x[0] * x[0] + k <= stock[0] && x[1] * x[1] + k <= stock[1] && x[2] * x[2] + k <= stock[2] && x[3] * x[3] + k <= stock[4])
+        if (fit) {
+          d = fit.slice()
+          designs[k - 1] = d
+          cost = [k + d[0] * d[0], k + d[1] * d[1], k + d[2] * d[2], 0, k + d[3] * d[3]]
+        }
+      }
       if (k - 1 >= designs.length) this.cost = null
       else if (cost.every((c, i) => stock[i] >= c)) {
         trainNow = d
@@ -588,7 +603,8 @@ export class Bot {
     const ownTree = (t: BTree) => this.dropDist[t.cell] >= 0 && (this.oppDropDist[t.cell] < 0 || this.dropDist[t.cell] < this.oppDropDist[t.cell])
     // raid detection: an enemy troll standing on one of our trees (it chops them)
     if (opp.some(o => o.chop > 0 && treeAt.has(o.cell) && ownTree(treeAt.get(o.cell)!))) this.raidSeen = this.turnNo
-    const guard = this.turnNo - this.raidSeen <= 40 ? P.guardRaided : P.guard
+    const raided = this.turnNo - this.raidSeen <= 40
+    const guard = raided ? P.guardRaided : P.guard
     const scoreVal = [1, 1, 1, 1]
     // a missing training resource is worth a share of the troll it completes (the scarcest one
     // ends up the most valuable, whatever it is)
@@ -684,7 +700,9 @@ export class Bot {
             const endgame = left < 40
             let wait = 0
             // an enemy chopper about to reach our tree: fell it first rather than lose it
-            const threatened = guard > 0 && own && enemies.length === 0 && opp.some(o => o.chop > 0 && o.carry > o.load && this.dist[o.cell][tr.cell] >= 0 && this.steps(o, this.dist[o.cell][tr.cell]) <= guard)
+            const threatened =
+              (P.raidNoWait && raided && own && enemies.length === 0 && tr.size >= 2) ||
+              (guard > 0 && own && enemies.length === 0 && opp.some(o => o.chop > 0 && o.carry > o.load && this.dist[o.cell][tr.cell] >= 0 && this.steps(o, this.dist[o.cell][tr.cell]) <= guard))
             const ripe = P.ripeByCarry ? Math.min(MAX_SIZE, free) : MAX_SIZE // no use waiting for more wood than we can carry
             if (own && enemies.length === 0 && !endgame && tr.size < ripe && !threatened) {
               // our growing tree: be there when it reaches the size we can carry
@@ -702,7 +720,19 @@ export class Bot {
             const T = a + wait + kk + r
             if (T > left) continue
             let share = size
-            if (enemies.length > 0) share = Math.ceil(size / (1 + enemies.length))
+            // co-choppers take one wood each in turn, up to their free carry (a full enemy takes none)
+            const eFree = enemies.filter(o => o.chop > 0).map(o => o.carry - o.load)
+            if (eFree.length > 0) {
+              let left = size
+              let got = 0
+              const ef = eFree.slice()
+              let mf = free
+              while (left > 0 && (mf > 0 || ef.some(x => x > 0))) {
+                if (mf > 0) (got++, mf--, left--)
+                for (let i = 0; i < ef.length && left > 0; i++) if (ef[i] > 0) (ef[i]--, left--)
+              }
+              share = got
+            }
             const wood = Math.min(share, free)
             let value = 4 * wood
             const sizeNow = this.predict(tr, a).size
