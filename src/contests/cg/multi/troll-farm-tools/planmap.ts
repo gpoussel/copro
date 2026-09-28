@@ -6,7 +6,21 @@ import { BIG_PLANS, Bot, DEFAULT_PARAMS, PLANS, Params } from "./bot.js"
 import { javaGame } from "./seedmap.js"
 import { mapFeatures } from "./mapfeat.js"
 
-export const ALL_PLANS = [...PLANS, ...BIG_PLANS]
+import { CHEAP_START, GARDEN_PLAN } from "./bot.js"
+// candidates: our plans + plans seen in Legend replays (cedricdd, anuragm, delineate, bl4sterino)
+export const ALL_PLANS = [
+  ...PLANS,
+  ...BIG_PLANS,
+  CHEAP_START,
+  GARDEN_PLAN,
+  [[2, 2, 2, 0], [3, 4, 0, 2], [2, 4, 0, 3]],
+  [[3, 2, 2, 1], [2, 4, 0, 3]],
+  [[1, 2, 2, 2], [2, 4, 0, 3], [2, 4, 0, 3]],
+  [[2, 2, 2, 1], [3, 4, 2, 3], [3, 4, 0, 3]],
+  [[2, 3, 1, 2], [3, 4, 1, 2], [2, 4, 1, 3], [2, 4, 1, 3]],
+  [[2, 2, 2, 2], [3, 4, 1, 2], [3, 4, 1, 3]],
+  [[2, 1, 1, 1], [2, 2, 1, 1], [3, 4, 0, 2], [2, 4, 0, 3]],
+]
 export const benchMap = (seed: number) => javaGame(BigInt(seed) * 7919n + 17n)
 
 export function soloScore(seed: number, p: Partial<Params>): number {

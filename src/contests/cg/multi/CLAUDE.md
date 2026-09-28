@@ -1675,3 +1675,40 @@ per 25 turns; 700–800 points per game.
 Forum: forum.codingame.com/t/208241 (Legend post-mortems: banana
 plant-chop-drop engines, 2–4 trolls, cutters raiding lemon sources,
 co-chop defence, no planting near enemy trolls).
+
+**Legend work (2026-09-28).** Profiling build (c9be382) finished 16.78
+(rank 118/184); top is delineate 31.2 (PPO-trained ResNet, gist
+delineate/93ba9d48…), then heuristic bots at 27–30.
+Tools added: `seedmap.ts` rebuilds the exact map of any replay — the SDK
+seeds a `SecureRandom("SHA1PRNG")` with the long seed (ported), and
+replays show the seed rounded to a double, so `findSeed` searches around
+it; CodinGame itself replays the displayed seed string, so
+`play_arena_games(seed=…)` reproduces a lost game's map exactly. `recon.ts`
+then replays both recorded outputs through the engine (final scores
+checked; MOVE ties from the referee summary): stats / timeline / mapfeat /
+steal-style analyses of anyone's games (`stats.ts`, `timeline.ts`,
+`mapfeat.ts`, `remap.ts` = our bot solo and vs the reference on a game's
+map). `bench.ts` = solo economy on real maps (deterministic with planAll,
+paired per seed); `arena.ts` REAL=1 (referee maps) CG=1 (CodinGame-like
+budgets) OPP=boss5 A_REF=1.
+Findings: our solo economy (~550–650) is not far from the top's, but
+real games cost us ~40 % (vs delineate 317–620 where solo gives 440–830).
+**CodinGame ran the plan simulations ~3.5× slower than this machine**
+(6–9 of 13 plans by turn 12, re-plans starved): local tests now scale
+budgets (planBudget 230 / planTurnBudget 9.5 ≈ 800 / 34 ms on CG);
++2 ms of simulation per turn was worth +40 solo. Top players' economies:
+delineate / cedricdd harvest 20–35 lemons and 12–19 iron in the first 100
+turns (carry-4 chop-3 trolls cost lemons and iron); Meruem / cedricdd /
+pbou grow banana forests of 55–75 plantings with a strict division of
+labour: weak harvesters take a banana off a mature tree and replant it at
+once (never dropping), carry-4 choppers only chop and drop.
+v3 (7a9e62e: early lemon/plum/apple sources with a seed kept from
+training, Legend-size plans ranked, no counter-raids, adaptive simulation
+budget): arena ~17.4–17.7 at 75 %. v4 (61e5bc8: forest mode from turn
+130, gardener/chopper roles): solo 514 → 572 on fresh maps, local
+realistic arena 40-20 vs the previous bot. Map-type plan choice (k-NN on
+map features over 600 maps) picked no better than the best single plan:
+per-map optima come from details only simulation sees. Close maps vs
+foresters/raiders (pbou, rank 173, beats us): winners raid their forest
+(Linvg felled 43–79 of pbou's tree sizes); counter-raids stay an open
+question (same-seed IDE pairs were inconclusive).

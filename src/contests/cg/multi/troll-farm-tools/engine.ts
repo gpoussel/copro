@@ -658,10 +658,11 @@ export function step(g: Game, tasks: Task[]) {
 function stalled(g: Game): boolean {
   if (g.trees.length > 0) {
     g.turnsUntilEnd = 0
-    const cells = new Set(g.trees.map(t => t.cell))
     const sd = [distFrom(g, g.shack[0]), distFrom(g, g.shack[1])]
     for (const u of g.trolls) {
-      if (!cells.has(u.cell)) continue
+      let onTree = false
+      for (const t of g.trees) if (t.cell === u.cell) onTree = true
+      if (!onTree) continue
       g.turnsUntilEnd = Math.max(g.turnsUntilEnd, Math.trunc(sd[u.owner][u.cell] / u.speed) + 6)
     }
     return false

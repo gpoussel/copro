@@ -43,13 +43,26 @@ export const BIG_PLANS: number[][][] = [
   [[2, 2, 2, 1], [3, 4, 2, 3], [3, 4, 0, 3], [3, 4, 0, 3]],
 ]
 
-// PLANS + BIG_PLANS by solo average on 600 bench maps (fixed plan, no re-plan: 410 … 298), the
-// weakest dropped, and a cheap start for fruit-poor maps: CodinGame evaluates only ~8 plans before
-// training has to start, in this order.
-export const CHEAP_START: number[][] = [[1, 1, 1, 1], [2, 4, 1, 2], [3, 4, 1, 3]]
 // Meruem (Legend): a cheap harvester on turn 1, then two big choppers; the harvesters grow a banana forest
 export const GARDEN_PLAN: number[][] = [[2, 1, 1, 1], [3, 4, 1, 2], [2, 4, 0, 3]]
-export const RANKED_PLANS = [9, 12, 7, -1, 11, -2, 8, 0, 6, 1].map(i => (i === -1 ? CHEAP_START : i === -2 ? GARDEN_PLAN : [...PLANS, ...BIG_PLANS][i]))
+export const CHEAP_START: number[][] = [[1, 1, 1, 1], [2, 4, 1, 2], [3, 4, 1, 3]]
+// Evaluation order on turn 1 (CodinGame only gets through ~6-8 before training must start): solo
+// average of each plan on 400 bench maps with the forest (planmap.ts: 460 … 403), with plans seen
+// in Legend replays; the fruit-poor starts (two cheap harvesters) come third.
+export const RANKED_PLANS: number[][][] = [
+  [[2, 2, 2, 2], [3, 4, 1, 3], [3, 4, 1, 3], [2, 4, 0, 3]],
+  [[2, 4, 1, 1], [2, 4, 1, 3], [2, 4, 1, 3]],
+  [[2, 1, 1, 1], [2, 2, 1, 1], [3, 4, 0, 2], [2, 4, 0, 3]],
+  [[2, 3, 1, 2], [3, 4, 1, 2], [2, 4, 1, 3], [2, 4, 1, 3]],
+  [[2, 2, 2, 1], [3, 4, 2, 3], [3, 4, 0, 3], [3, 4, 0, 3]],
+  [[2, 4, 2, 2], [3, 4, 2, 3], [3, 4, 2, 3], [3, 4, 1, 3]],
+  [[3, 4, 1, 2], [3, 4, 2, 3], [3, 4, 0, 3]],
+  [[2, 2, 2, 1], [3, 4, 2, 3], [3, 4, 0, 3]],
+  [[2, 2, 2, 1], [2, 4, 1, 2], [3, 4, 0, 3]],
+  CHEAP_START,
+]
+// previous order (PLANS + BIG_PLANS ranked on 600 maps without the forest), kept for A/B tests
+export const OLD_RANKED: number[][][] = [9, 12, 7, -1, 11, -2, 8, 0, 6, 1].map(i => (i === -1 ? CHEAP_START : i === -2 ? GARDEN_PLAN : [...PLANS, ...BIG_PLANS][i]))
 
 /** Game state from our turn input (we are player 0). */
 export function gameFromInput(init: string[], lines: string[], turnsPlayed: number): Game {
@@ -151,6 +164,7 @@ export interface Params {
   planTurnBudget: number
   planTurns: number
   bigPlans: boolean
+  oldRank: boolean
   futureNeed: boolean // training fruits valued / sourced for the whole remaining plan, not just the next troll
   futureVal: number
   earlySources: number // before this turn, plant one lemon / plum / apple source by the shack while in stock (0: off)
@@ -211,6 +225,7 @@ export const DEFAULT_PARAMS: Params = {
   planTurns: 12,
   planAll: false,
   bigPlans: true,
+  oldRank: false,
   futureNeed: false,
   futureVal: 2,
   trollRate: 0,
@@ -429,7 +444,7 @@ export class Bot {
 
   evalPlans(budgetMs: number) {
     const t0 = performance.now()
-    const PL = this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? RANKED_PLANS : PLANS
+    const PL = this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? (this.P.oldRank ? OLD_RANKED : RANKED_PLANS) : PLANS
     while (this.planIdx < PL.length) {
       if (!this.planSim) {
         if (performance.now() > t0 + budgetMs - 8) break // starting a simulation costs a few ms
@@ -474,7 +489,7 @@ export class Bot {
         cands.push([...prefix, ...suffix])
       }
       add(this.designs.slice(k - 1))
-      for (const p of this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? RANKED_PLANS : PLANS) if (p.length > k - 1) add(p.slice(k - 1))
+      for (const p of this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? (this.P.oldRank ? OLD_RANKED : RANKED_PLANS) : PLANS) if (p.length > k - 1) add(p.slice(k - 1))
       // cheap choppers for lemon-poor games
       for (const d of [[2, 2, 0, 2], [2, 2, 1, 2], [3, 2, 0, 2], [2, 3, 0, 2]]) add([d])
       add([])
@@ -735,7 +750,13 @@ export class Bot {
     }
     const choppers = mine.filter(u => u.chop >= 2 && u.carry >= P.chopperCarry).length
     // farm cells: near the shack, free
-    const oppNear = (c: number, r: number) => opp.some(o => this.dist[o.cell][c] >= 0 && this.dist[o.cell][c] <= r)
+    // walking distance from the nearest enemy troll, per cell (capped at 4)
+    const oppD = new Uint8Array(this.N).fill(255)
+    for (const o of opp) {
+      const d = this.dist[o.cell]
+      for (let c = 0; c < this.N; c++) if (d[c] >= 0 && d[c] <= 4 && d[c] < oppD[c]) oppD[c] = d[c]
+    }
+    const oppNear = (c: number, r: number) => oppD[c] <= r
     const farmCells = this.farmAll.filter(c => !treeAt.has(c))
     const farmTrees = trees.filter(t => this.dropDist[t.cell] >= 0 && this.dropDist[t.cell] <= 2 && this.dropDist[t.cell] < this.oppDropDist[t.cell])
     // a farm we cannot fell feeds the enemy cutter
