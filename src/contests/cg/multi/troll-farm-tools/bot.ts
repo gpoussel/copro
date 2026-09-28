@@ -142,6 +142,7 @@ export interface Params {
   maxSources: number
   raidNoWait: boolean
   chopperNow: boolean
+  chopperCarry: number
   patienceFirst: number
   cutterPlans: boolean
   stick: number
@@ -185,6 +186,7 @@ export const DEFAULT_PARAMS: Params = {
   maxSources: 2,
   raidNoWait: true,
   chopperNow: true,
+  chopperCarry: 2,
   patienceFirst: 25,
   cutterPlans: false,
   stick: 1.3,
@@ -414,6 +416,8 @@ export class Bot {
       }
       add(this.designs.slice(k - 1))
       for (const p of this.P.cutterPlans ? CUTTER_PLANS : PLANS) if (p.length > k - 1) add(p.slice(k - 1))
+      // cheap choppers for lemon-poor games
+      for (const d of [[2, 2, 0, 2], [2, 2, 1, 2], [3, 2, 0, 2], [2, 3, 0, 2]]) add([d])
       add([])
       this.rp = { lines: this.lastLines, turn: this.turnNo - 1, cands, idx: 0, sim: null, vals: [], cur: 0 }
       this.rpNext = this.turnNo + this.P.replanEvery
@@ -617,7 +621,7 @@ export class Bot {
       const grow = 1 + 3 * g
       return this.turnNo + extra + grow + Math.ceil(FINAL_HEALTH[type] / 2) + 4 < 300
     }
-    const choppers = mine.filter(u => u.chop >= 2 && u.carry >= 3).length
+    const choppers = mine.filter(u => u.chop >= 2 && u.carry >= P.chopperCarry).length
     // farm cells: near the shack, free
     const oppNear = (c: number, r: number) => opp.some(o => this.dist[o.cell][c] >= 0 && this.dist[o.cell][c] <= r)
     const farmCells = this.farmAll.filter(c => !treeAt.has(c))
@@ -703,7 +707,7 @@ export class Bot {
             const threatened =
               (P.raidNoWait && raided && own && enemies.length === 0 && tr.size >= 2) ||
               (guard > 0 && own && enemies.length === 0 && opp.some(o => o.chop > 0 && o.carry > o.load && this.dist[o.cell][tr.cell] >= 0 && this.steps(o, this.dist[o.cell][tr.cell]) <= guard))
-            const ripe = P.ripeByCarry ? Math.min(MAX_SIZE, free) : MAX_SIZE // no use waiting for more wood than we can carry
+            const ripe = P.ripeByCarry ? Math.min(MAX_SIZE, u.carry) : MAX_SIZE // no use waiting for more wood than we can carry
             if (own && enemies.length === 0 && !endgame && tr.size < ripe && !threatened) {
               // our growing tree: be there when it reaches the size we can carry
               const tm = this.turnsToSize(tr, ripe)
@@ -740,7 +744,7 @@ export class Bot {
             else if (!own && sizeNow < MAX_SIZE) value += 4 * P.raidBeta * (MAX_SIZE - sizeNow)
             if (P.aggro > 0 && this.oppDropDist[tr.cell] >= 0 && this.oppDropDist[tr.cell] < 6) value += P.aggro * (6 - this.oppDropDist[tr.cell])
             // wood we cannot carry is lost (fine on the enemy's side: that is denial)
-            if (enemies.length === 0 && (own || this.dropDist[tr.cell] <= this.oppDropDist[tr.cell])) value -= P.wasteLambda * 4 * Math.max(0, size - wood)
+            if (enemies.length === 0 && (own || this.dropDist[tr.cell] <= this.oppDropDist[tr.cell])) value -= P.wasteLambda * Math.max(0, Math.min(1, (left - 25) / 40)) * 4 * Math.max(0, size - wood)
             if (value <= 0) continue
             if (!endgame && own && need[tr.type] > 0 && enemies.length === 0 && !threatened) continue
             if (producers.has(tr) && enemies.length === 0 && !threatened && left > 30) continue
