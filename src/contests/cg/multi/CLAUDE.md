@@ -1776,4 +1776,19 @@ cannot see tempo. v10 = simRaidAge 40. Also tried on the gauntlet, no
 gain: simOpp (our bot, or a parasite model, as the sims' foe), a
 parasite build (no forest, denyTheirs 1.5), noFarmExposed off (vs tass).
 Locally rejected: threatBonus (chop our trees an enemy chopper can reach).
+v10 (simRaidAge 40) fell to 16.5 at 28 % (v9: 22.5 at the same point):
+reverted. `dumpinputs.ts` + `PLANLOG=1 SIMTRACE=<turn> SIMIDX=<cand>
+SIMACTS=<turn> ./tfbot planall < inputs` replays a real game in the C++ bot
+and traces its re-plan sims. Found that way (a loss to Tux4711): a design
+out of reach is downgraded on its most-missing attribute, carry included,
+so a 2202 became a 2102 — a carry-1 chopper gets 1 wood per felled tree
+(3 vanish) — while the first troll ferried 1-point bananas. v11 = v9 +
+`minCarry` 2 (downgrades keep carry ≥ 2): solo neutral, IDE gauntlet
+−839 vs −1024 cumulative diff over 10 paired games.
+Forum post-mortems (t/208241) worth rereading: laconic_pixel (#8: map
+classification into build-up / hard disruptor / resource raid; "staying in
+train-rush too long" was his main loss cause), putibuzu (apple engine,
+maximin vs opponent candidates on small maps), 0x6E0FF ("reckless chop":
+fell enemy trees without collecting, to delay its training — tass does it
+with a carry-1 chopper), wala (#6: roles + priority order search).
 

@@ -431,9 +431,10 @@ struct Params {
   bool rpExtra = false;
   double threatBonus = 0;  // chop value of our trees an enemy chopper can reach within threatR turns
   int threatR = 6;
-  int simRaidAge = 40;
+  int simRaidAge = 0;
   int oppModel = 0;
-  double smallCap = 24;  // value cap of a missing training unit when only 1-2 are missing  // simOpp's foe: 0 our bot with the first ranked plan, 1 a parasite (see oppParams)  // plan simulations: ripe trees standing longer than this are felled by the (passive) foe  // more re-plan candidates (continuations once the ranked plans are used up)  // chop value of the opponent's trees: what felling them denies it
+  double smallCap = 24;
+  int minCarry = 2;  // a downgraded design keeps at least this carry  // value cap of a missing training unit when only 1-2 are missing  // simOpp's foe: 0 our bot with the first ranked plan, 1 a parasite (see oppParams)  // plan simulations: ripe trees standing longer than this are felled by the (passive) foe  // more re-plan candidates (continuations once the ranked plans are used up)  // chop value of the opponent's trees: what felling them denies it
   int maxWait = 12;
   double patience = 40, patienceRaided = 40, seedValue = 6;
   int producers = 2;
@@ -499,6 +500,7 @@ struct Sim {
   unique_ptr<Bot> a, b;  // b: opponent model (player 1), null = passive
   int horizon = 150;
   vector<int> ripeSince;
+  bool trace = false;
   Sim(const Game& g0, shared_ptr<Side> side, const Params& p, shared_ptr<Side> oppSide = nullptr, const Params* oppP = nullptr);
   bool run(double deadline, double& value);
 };
@@ -732,10 +734,12 @@ struct Bot {
         q.plan = rp->cands[rp->idx];
         rp->sim = makeSim(rp->g, q);
         rp->sim->horizon = min(300, rp->g.turn + P.simHorizon);
+        rp->sim->trace = getenv("SIMTRACE") && rp->idx == atoi(getenv("SIMIDX") ? getenv("SIMIDX") : "0") && rp->g.turn + 1 == atoi(getenv("SIMTRACE"));
       }
       double v;
       if (!rp->sim->run(t0 + budgetMs, v)) return;
       rp->vals.push_back(v);
+      if (getenv("PLANLOG") && rp->idx == 0) cerr << "  sim0 ended t" << rp->sim->g.turn << " over " << rp->sim->g.over << " trees " << rp->sim->g.trees.size() << " score " << score(rp->sim->g, 0) << endl;
       rp->sim.reset();
       rp->idx++;
     }
@@ -744,6 +748,16 @@ struct Bot {
       if (rp->vals[i] > rp->vals[best]) best = i;
     bool sw = best != 0 && rp->vals[best] > rp->vals[0] + P.replanMargin;
     rpLog = "replan t" + to_string(rp->g.turn + 1) + (sw ? " switch" : " keep");
+    if (getenv("PLANLOG")) {
+      string l = rpLog + " stock";
+      for (int i = 0; i < 5; i++) l += " " + to_string(rp->g.inv[0][i]);
+      for (int i = 0; i < (int)rp->vals.size(); i++) {
+        l += " |";
+        for (auto& d : rp->cands[i]) l += " " + to_string(d[0]) + to_string(d[1]) + to_string(d[2]) + to_string(d[3]);
+        l += ":" + to_string((int)rp->vals[i]);
+      }
+      cerr << l << endl;
+    }
     if (sw && mineCount == k) P.plan = rp->cands[best], P.planVersion++;
     rp.reset();
   }
@@ -839,10 +853,30 @@ bool Sim::run(double deadline, double& value) {
   while (!g.over && g.turn < horizon) {
     if (nowMs() > deadline) return false;
     vector<Act> acts = a->turnGame(g, 0);
+    if (trace && getenv("SIMACTS") && g.turn >= atoi(getenv("SIMACTS")) && g.turn < atoi(getenv("SIMACTS")) + 40) {
+      cerr << "     T" << g.turn + 1;
+      for (auto& u : g.trolls)
+        if (u.owner == 0) {
+          cerr << " | " << u.id << "@" << u.cell % g.m->W << "," << u.cell / g.m->W << " [";
+          for (int i = 0; i < 6; i++) cerr << u.inv[i];
+          cerr << "]";
+          for (auto& x : acts)
+            if (x.id == u.id) cerr << " " << "?MHPCKTDN"[x.kind] << (x.kind == A_MOVE ? to_string(x.arg % g.m->W) + "," + to_string(x.arg / g.m->W) : "");
+        }
+      cerr << endl;
+    }
     tasks.clear();
     toTasks(g, 0, acts, tasks);
     if (b) toTasks(g, 1, b->turnGame(g, 1), tasks);
     step(g, tasks);
+    if (trace && g.turn % 20 == 0) {
+      int n = 0, ld = 0;
+      for (auto& u : g.trolls)
+        if (u.owner == 0) n++, ld += u.load();
+      cerr << "    t" << g.turn << " score " << score(g, 0) << " trolls " << n << " load " << ld << " trees " << g.trees.size() << " st";
+      for (int i = 0; i < 6; i++) cerr << " " << g.inv[0][i];
+      cerr << endl;
+    }
     int age = a->P.simRaidAge;
     if (age > 0 && !b) {
       // a passive foe leaves ripe trees standing forever: a real one fells them
@@ -947,7 +981,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
     if (turnNo - targetSince > patience && !affordable(cost)) {
       targetSince += patience / 2;
       static const int attr[4] = {0, 1, 2, 4};
-      int minV[4] = {1, 1, 0, min(2, d[3])};
+      int minV[4] = {1, min(Pr.minCarry, d[1]), 0, min(2, d[3])};
       int bi = -1, bd = 0;
       for (int a = 0; a < 4; a++) {
         int def = cost[attr[a]] - stock[attr[a]];
@@ -1566,6 +1600,15 @@ static bool setParam(Params& P, const string& kv) {
   auto e = kv.find('=');
   if (e == string::npos) return false;
   string k = kv.substr(0, e);
+  if (k == "plan") {  // plan=2202/2212: fixed designs (speed carry harvest chop), no plan search
+    P.plan.clear();
+    stringstream ss(kv.substr(e + 1));
+    string d;
+    while (getline(ss, d, '/'))
+      if (d.size() == 4) P.plan.push_back({d[0] - '0', d[1] - '0', d[2] - '0', d[3] - '0'});
+    P.choosePlan = false, P.replan = false;
+    return true;
+  }
   double v = stod(kv.substr(e + 1));
   if (k == "planAll") P.planAll = v;
   else if (k == "planBudget") P.planBudget = v;
@@ -1595,6 +1638,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "simRaidAge") P.simRaidAge = v;
   else if (k == "oppModel") P.oppModel = v;
   else if (k == "smallCap") P.smallCap = v;
+  else if (k == "minCarry") P.minCarry = v;
   else if (k == "noFarmExposed") P.noFarmExposed = v;
   else if (k == "maxSources") P.maxSources = v;
   else if (k == "chopperNow") P.chopperNow = v;
