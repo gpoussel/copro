@@ -4,6 +4,9 @@ import { readFileSync, writeFileSync } from "fs"
 const dir = new URL(".", import.meta.url).pathname
 const strip = s => s.replace(/^import[\s\S]*?from\s+"[^"]+"\s*\n/gm, "").replace(/^export /gm, "")
 const parts = ["engine.ts", "boss5.ts", "valuefeat.ts", "valuemodel.ts", "bot.ts", "main.ts"].map(f => readFileSync(dir + f, "utf8"))
+// the Gold boss clone only serves local simulations (simOpp "boss5"): a stub keeps the bundle small
+parts[1] =
+  "export class Boss5 {\n  turnNo = 0\n  constructor(_init: string[], _dist?: Int16Array[]) {}\n  turn(_lines: string[]): string {\n    return \"WAIT\"\n  }\n  turnGame(_g: Game, _p = 0): string {\n    return \"WAIT\"\n  }\n}\n"
 const names = parts
   .slice(0, 5)
   .flatMap(s => [...s.matchAll(/^export (?:const|function|class) (\w+)/gm)].map(m => m[1]))
