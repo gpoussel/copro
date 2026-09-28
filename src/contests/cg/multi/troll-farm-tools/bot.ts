@@ -47,7 +47,9 @@ export const BIG_PLANS: number[][][] = [
 // weakest dropped, and a cheap start for fruit-poor maps: CodinGame evaluates only ~8 plans before
 // training has to start, in this order.
 export const CHEAP_START: number[][] = [[1, 1, 1, 1], [2, 4, 1, 2], [3, 4, 1, 3]]
-export const RANKED_PLANS = [9, 12, 7, -1, 11, 8, 0, 6, 1].map(i => (i < 0 ? CHEAP_START : [...PLANS, ...BIG_PLANS][i]))
+// Meruem (Legend): a cheap harvester on turn 1, then two big choppers; the harvesters grow a banana forest
+export const GARDEN_PLAN: number[][] = [[2, 1, 1, 1], [3, 4, 1, 2], [2, 4, 0, 3]]
+export const RANKED_PLANS = [9, 12, 7, -1, 11, -2, 8, 0, 6, 1].map(i => (i === -1 ? CHEAP_START : i === -2 ? GARDEN_PLAN : [...PLANS, ...BIG_PLANS][i]))
 
 /** Game state from our turn input (we are player 0). */
 export function gameFromInput(init: string[], lines: string[], turnsPlayed: number): Game {
@@ -156,6 +158,10 @@ export interface Params {
   planAll: boolean // evaluate every plan on turn 1 whatever the time (deterministic local tests)
   simOpp: Partial<Params> | "boss5" | null // opponent model in plan simulations (null = passive)
   simHorizon: number
+  forest: number // from this turn (0: off), gardeners (weak harvesters) replant bananas, choppers only chop
+  forestValue: number
+  farmFar: number // farm cells up to this far from the shack when well on our side (2: off)
+  farmMargin: number
   turnLimit: number // total ms per turn aimed at: simulations get what the rest of decide() leaves (0: off)
   replanHorizon: number // turns simulated ahead by a re-plan (0: simHorizon)
   replan: boolean
@@ -213,6 +219,10 @@ export const DEFAULT_PARAMS: Params = {
   simHorizon: 200,
   replanHorizon: 0,
   turnLimit: 36,
+  forest: 130,
+  forestValue: 40,
+  farmFar: 2,
+  farmMargin: 4,
   replan: true,
   replanMargin: 10,
   replanEvery: 15,
@@ -328,10 +338,18 @@ export class Bot {
     for (let c = 0; c < this.N; c++) if (this.nbrs(c).some(n => this.grid[n] === WATER)) this.nearWater[c] = 1
     // farm cells: grass near our shack, clearly on our side
     for (let c = 0; c < this.N; c++) {
-      if (this.grid[c] !== GRASS || this.dropDist[c] > 2 || this.dropDist[c] < 0) continue
-      if (this.oppDropDist[c] >= 0 && this.oppDropDist[c] <= this.dropDist[c] + 2) continue
-      this.farmAll.push(c)
+      const d = this.dropDist[c]
+      if (this.grid[c] !== GRASS || d < 0) continue
+      const od = this.oppDropDist[c] < 0 ? 99 : this.oppDropDist[c]
+      // near the shack, or farther out on our side of the map (close shacks leave little room)
+      if (d <= 2 && od > d + 2) this.farmAll.push(c)
     }
+    if (this.farmAll.length < 8)
+      for (let c = 0; c < this.N; c++) {
+        const d = this.dropDist[c]
+        const od = this.oppDropDist[c] < 0 ? 99 : this.oppDropDist[c]
+        if (this.grid[c] === GRASS && d > 2 && d <= this.P.farmFar && od >= d + this.P.farmMargin) this.farmAll.push(c)
+      }
     this.farmAll.sort((a, b) => this.dropDist[a] * 2 - this.nearWater[a] * 2 - (this.dropDist[b] * 2 - this.nearWater[b] * 2))
   }
 
@@ -772,7 +790,52 @@ export class Bot {
       if (l) l.push(o)
       else enemiesAt.set(o.cell, [o])
     }
+    // forest mode (Meruem-style division of labour): weak harvesters pick a banana off a mature tree
+    // (or the stock) and plant it straight away on a free farm cell; the choppers only fell and drop
+    const isChopperRole = (u: BTroll) => u.chop >= 2 && u.carry >= 3
+    const isGardener = (u: BTroll) => u.harvest >= 1 && !isChopperRole(u)
+    const forestOn = P.forest > 0 && this.turnNo >= P.forest && left > 30 && !(exposed && P.noFarmExposed) && mine.some(isChopperRole)
+    const forestCells = forestOn ? farmCells.filter(c => !oppNear(c, 2) && plantOk(BANANA, c, 3)) : []
+    const gardenerJobs = (u: BTroll): Job[] => {
+      const jobs: Job[] = []
+      const FV = P.forestValue
+      const dNow = this.dist[u.cell]
+      const atShack = this.dropDist[u.cell] === 0 || u.cell === this.shack
+      if (u.inv[BANANA] > 0)
+        for (const c of forestCells) {
+          const d = dNow[c]
+          if (d >= 0) jobs.push({ u, rate: FV / (this.steps(u, d) + 1), dest: c, act: `PLANT ${u.id} BANANA`, kind: "plant" })
+        }
+      const free = u.carry - u.load
+      if (free > 0) {
+        for (const tr of trees) {
+          if (tr.type !== BANANA || !ownTree(tr)) continue
+          const d = dNow[tr.cell]
+          if (d < 0) continue
+          const a = this.steps(u, d)
+          if (this.predict(tr, a).fruits <= 0) continue
+          jobs.push({ u, rate: FV / (a + 3), dest: tr.cell, act: "HARVEST " + u.id, tree: tr, kind: "harvest" })
+        }
+        if (pickable[BANANA] > 0) {
+          const T = (atShack ? 0 : this.steps(u, this.dropDist[u.cell])) + 3
+          const dest = atShack ? -1 : this.bestDrop(u)
+          jobs.push({ u, rate: (0.7 * FV) / T, dest, act: `PICK ${u.id} BANANA`, kind: "pick" })
+        }
+      }
+      // anything else carried goes home
+      const other = u.load - u.inv[BANANA]
+      if (other > 0) {
+        const v = carriedValue(u) - u.inv[BANANA] * scoreVal[BANANA]
+        if (atShack) jobs.push({ u, rate: v, dest: -1, act: "DROP " + u.id, kind: "drop" })
+        else for (const c of this.dropCells) if (dNow[c] >= 0) jobs.push({ u, rate: v / (this.steps(u, dNow[c]) + 1), dest: c, act: "DROP " + u.id, kind: "drop" })
+      }
+      return jobs
+    }
     const jobsFor = (u: BTroll): Job[] => {
+      if (forestOn && isGardener(u) && forestCells.length > 0) {
+        const gj = gardenerJobs(u)
+        if (gj.length > 0) return gj
+      }
       const jobs: Job[] = []
       const aDrop = "DROP " + u.id
       const aHarvest = "HARVEST " + u.id
@@ -924,6 +987,7 @@ export class Bot {
       }
       // a troll that picked a seed plants it (it would drop it with anything else it gathers)
       if (this.seedIntent.has(u.id) && jobs.some(j => j.kind === "plant")) return jobs.filter(j => j.kind === "plant")
+      if (forestOn && isChopperRole(u) && !this.seedIntent.has(u.id)) return jobs.filter(j => j.kind !== "plant" && j.kind !== "pick")
       // a seed with nowhere worth planting it any more goes back to the shack (it used to be held for turns)
       if (this.seedIntent.has(u.id) && u.load > 0 && !jobs.some(j => j.kind === "drop")) {
         this.seedIntent.delete(u.id)
