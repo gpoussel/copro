@@ -1731,3 +1731,18 @@ on 16 same-seed games vs raiders), raid defence.
 Timing: statement allows 1000 ms on turn 1, 50 ms after; a game is lost
 after 3 overruns ≤ 50 ms or one larger (GC spikes reach 55–60 ms; none
 reported so far).
+**C++ port (2026-09-28 evening).** After the user suggested stepping back
+(language / approach): `troll-farm-tools/bot.cpp` ports bot.ts + engine.ts
+with the enabled options, checked decision for decision by `cppcheck.ts`
+(48/48 games identical, solo and vs the reference). CodinGame compiles C++
+without -O: `#pragma GCC optimize("O3,inline")` gives -O2 speed (plain
+"O3" left the STL 3.5x slower). On CodinGame the ten turn-1 plan
+simulations take 24 ms (TypeScript: 6–9 of them in 880 ms) and re-plans
+fit in one turn. **v7 (C++, same logic, full CPU): 23.26, rank 31/184**
+(best TypeScript: ~19.3). The binary also has `bench` / `arena` modes on
+maps dumped by `dumpmaps.ts` (~35 games a minute). Rollout decisions (the
+heuristic's job vs a troll on its 2nd / 3rd job, each played 200 turns):
++64 solo, but 65-135 in a mirror arena with a passive foe in the rollouts
+(they drop co-chops and defence); with our bot as the modelled foe, even
+(60-59). v8 = rollouts on, in the arena. Plan sims against a modelled foe
+(simOpp): 35-44 in the mirror arena.
