@@ -866,6 +866,8 @@ export class Bot {
     const isGardener = (u: BTroll) => u.harvest >= 1 && !isChopperRole(u)
     const forestOn = P.forest > 0 && this.turnNo >= P.forest && left > 30 && !(exposed && P.noFarmExposed) && !defend && mine.some(isChopperRole)
     const forestCells = forestOn ? farmCells.filter(c => !oppNear(c, 2) && plantOk(BANANA, c, 3)) : []
+    // free forest cells left once the bananas our gardeners already carry are planted
+    const forestSlots = forestCells.length - mine.reduce((a, u) => a + (isGardener(u) ? u.inv[BANANA] : 0), 0)
     const gardenerJobs = (u: BTroll): Job[] => {
       const jobs: Job[] = []
       const FV = P.forestValue
@@ -877,7 +879,7 @@ export class Bot {
           if (d >= 0) jobs.push({ u, rate: FV / (this.steps(u, d) + 1), dest: c, act: `PLANT ${u.id} BANANA`, kind: "plant" })
         }
       const free = u.carry - u.load
-      if (free > 0) {
+      if (free > 0 && forestSlots > 0) {
         for (const tr of trees) {
           if (tr.type !== BANANA || !ownTree(tr)) continue
           const d = dNow[tr.cell]
