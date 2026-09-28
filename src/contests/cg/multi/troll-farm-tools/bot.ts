@@ -5,6 +5,8 @@
 import { BANANA, COOLDOWN, DELTA_HEALTH, FINAL_HEALTH, GRASS, IRON, IRONCELL, ITEMS, MAX_FRUITS, MAX_SIZE, WATER, WATER_BOOST, WOOD, bfs } from "./engine.js"
 import { Game, nearType, parseOutput, score, step } from "./engine.js"
 import { Boss5 } from "./boss5.js"
+import { valueFeatures } from "./valuefeat.js"
+import { VALUE_W } from "./valuemodel.js"
 
 export const AUTO = [-1, -1, -1, -1]
 // Chopper designs by utility (carry first: wood comes 4 per tree), for the AUTO design.
@@ -64,7 +66,8 @@ export const RANKED_PLANS: number[][][] = [
 // previous order (PLANS + BIG_PLANS ranked on 600 maps without the forest), kept for A/B tests
 export const OLD_RANKED: number[][][] = [9, 12, 7, -1, 11, -2, 8, 0, 6, 1].map(i => (i === -1 ? CHEAP_START : i === -2 ? GARDEN_PLAN : [...PLANS, ...BIG_PLANS][i]))
 
-let P_CHEAP: number[][] = [[2, 3, 0, 2]]
+// cheap trolls re-plans always try: rarely best on rich maps, the way out on fruit-poor or raided ones
+let P_CHEAP: number[][] = [[2, 2, 0, 2], [2, 2, 1, 2], [2, 3, 0, 2], [1, 2, 1, 1]]
 export const setCheap = (c: number[][]) => (P_CHEAP = c)
 
 /** Game state from our turn input (we are player 0). */
@@ -106,6 +109,7 @@ export class Sim {
   a: Bot
   horizon = 150
   b: Bot | Boss5 | null = null
+  useModel = false
   constructor(g: Game, init: string[], mine: Params, dist: Int16Array[], theirs?: Params | "boss5") {
     this.g = g
     g.dist = dist
@@ -127,8 +131,16 @@ export class Sim {
       if (this.b) tasks.push(...parseOutput(g, 1, this.b.turnGame(g, 1), () => 0).tasks)
       step(g, tasks)
     }
-    // score + what our trolls carry (wood 4, fruits 1)
+    // before the end: the value model's forecast of the final score from here (valuemodel.ts),
+    // else score + what our trolls carry (wood 4, fruits 1)
+    const w = !g.over && this.useModel ? VALUE_W[g.turn] : undefined
     const val = (p: number) => {
+      if (w) {
+        const x = valueFeatures(g, p)
+        let v = 0
+        for (let i = 0; i < x.length; i++) v += w[i] * x[i]
+        return v
+      }
       let v = score(g, p)
       for (const u of g.trolls) if (u.owner === p) v += 4 * u.inv[WOOD] + u.inv[0] + u.inv[1] + u.inv[2] + u.inv[3]
       return v
@@ -188,6 +200,8 @@ export interface Params {
   guardDefend: number
   farmFar: number // farm cells up to this far from the shack when well on our side (2: off)
   farmMargin: number
+  valueModel: boolean
+  replanModel: boolean // the value model in re-plans too // simulations end on the value model's forecast (horizons rounded to its turns)
   turnLimit: number // total ms per turn aimed at: simulations get what the rest of decide() leaves (0: off)
   replanHorizon: number // turns simulated ahead by a re-plan (0: simHorizon)
   replan: boolean
@@ -246,6 +260,8 @@ export const DEFAULT_PARAMS: Params = {
   simHorizon: 200,
   replanHorizon: 0,
   turnLimit: 36,
+  valueModel: false,
+  replanModel: false,
   forest: 130,
   forestValue: 40,
   raidDefense: false,
@@ -472,7 +488,8 @@ export class Bot {
       if (!this.planSim) {
         if (performance.now() > t0 + budgetMs - 8) break // starting a simulation costs a few ms
         this.planSim = new Sim(gameFromInput(this.init, this.planLines!, 0), this.init, { ...this.P, plan: PL[this.planIdx] }, this.dist, this.P.simOpp === "boss5" ? "boss5" : this.P.simOpp ? { ...DEFAULT_PARAMS, choosePlan: false, ...this.P.simOpp } : undefined)
-        this.planSim.horizon = this.P.simHorizon
+        this.planSim.horizon = this.P.valueModel ? Math.min(300, Math.ceil(this.P.simHorizon / 20) * 20) : this.P.simHorizon
+        this.planSim.useModel = this.P.valueModel
       }
       const v = this.planSim.run(t0 + budgetMs)
       if (v === null) break
@@ -498,7 +515,8 @@ export class Bot {
     const t0 = performance.now()
     const k = mine.length
     if (!this.rp) {
-      if (this.designs.length <= k - 1 || this.turnNo > this.P.trainDeadline - 30) return
+      // (also when the plan ran out: a cheap troll may still pay, e.g. after a raider razed our lemons)
+      if (this.turnNo > this.P.trainDeadline - 30) return
       const prefix = mine
         .filter(u => u.id > 1)
         .sort((a, b) => a.id - b.id)
@@ -525,7 +543,9 @@ export class Bot {
       if (!rp.sim) {
         if (performance.now() > t0 + budgetMs - 8) return
         rp.sim = new Sim(gameFromInput(this.init, rp.lines, rp.turn), this.init, { ...this.P, plan: rp.cands[rp.idx] }, this.dist, this.P.simOpp === "boss5" ? "boss5" : undefined)
-        rp.sim.horizon = Math.min(300, rp.turn + (this.P.replanHorizon || this.P.simHorizon))
+        const h = rp.turn + (this.P.replanHorizon || this.P.simHorizon)
+        rp.sim.horizon = Math.min(300, this.P.valueModel && this.P.replanModel ? Math.ceil(h / 20) * 20 : h)
+        rp.sim.useModel = this.P.valueModel && this.P.replanModel
       }
       const v = rp.sim.run(t0 + budgetMs)
       if (v === null) return

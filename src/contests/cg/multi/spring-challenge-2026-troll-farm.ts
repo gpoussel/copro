@@ -914,6 +914,71 @@ class Boss5 {
   }
 }
 
+// Features of a game state for the value model (seat p): what is banked, what is carried, what
+// stands on our side (by size), the troll force and the stock. Kept small and cheap: the bot calls
+// it at the end of every truncated plan simulation.
+const dropCache = new WeakMap<Game, Int16Array[]>()
+
+function valueFeatures(g: Game, p: number): number[] {
+  let dd = dropCache.get(g)
+  if (!dd) {
+    dd = [0, 1].map(q => bfs(g, neighbors(g, g.shack[q]).filter(c => g.grid[c] === GRASS)))
+    dropCache.set(g, dd)
+  }
+  const inv = g.inv[p]
+  const banked = inv[0] + inv[1] + inv[2] + inv[3] + 4 * inv[5]
+  let carried = 0
+  let n = 0,
+    carry = 0,
+    chop = 0,
+    speed = 0,
+    harvest = 0,
+    prod = 0
+  for (const u of g.trolls) {
+    if (u.owner !== p) continue
+    carried += 4 * u.inv[5] + u.inv[0] + u.inv[1] + u.inv[2] + u.inv[3]
+    n++
+    carry += u.carry
+    chop += u.chop
+    speed += u.speed
+    harvest += u.harvest
+    prod += Math.min(u.carry, 4) * Math.min(u.chop, 3) * u.speed
+  }
+  const size = [0, 0, 0, 0, 0]
+  let near = 0,
+    bananas = 0,
+    fruits = 0
+  for (const t of g.trees) {
+    const a = dd[p][t.cell],
+      b = dd[1 - p][t.cell]
+    if (a < 0 || (b >= 0 && b <= a)) continue
+    size[t.size]++
+    if (a <= 2) near++
+    if (t.type === 3) bananas++
+    fruits += t.fruits
+  }
+  return [1, banked, carried, size[1], size[2], size[3], size[4], near, bananas, fruits, n, carry, chop, speed, harvest, prod, inv[0], inv[1], inv[2], inv[3], inv[4]]
+}
+
+// Value model (valuedata.ts + a ridge fit per turn, 4000 solo games): final score ~ w[t] . features(state at t).
+// Generated; refit after changing the policy or the features.
+const VALUE_W: Record<number, number[]> = {
+  20: [-53.4249, -7.8403, -8.551, -11.204, -11.9689, -3.0003, 2.6669, 44.2732, -3.172, 0.9248, -12.6607, 13.7692, -21.158, 9.6048, 18.7257, 17.863, 14.7439, 14.8672, 9.7228, 13.6278, 22.1389],
+  40: [-110.429, -5.1847, 1.0541, -11.8595, -7.2258, -12.2338, -6.1786, 35.6741, 0.493, 2.6878, -8.1526, 37.0882, -35.8104, 15.3711, 19.9366, 16.5383, 6.0947, 8.041, 8.393, 13.8411, 25.5524],
+  60: [-175.686, -2.0309, 0.4661, 9.7952, -3.4749, -2.799, 5.2464, 25.8726, 5.6398, -1.8909, -6.741, 47.9615, -34.878, 9.8079, 15.8212, 14.0885, 2.8549, 6.4268, 5.8363, 13.6991, 22.8337],
+  80: [-162.692, 0.8077, -3.0258, 5.5894, -7.1129, 6.0849, 12.63, 21.9455, 12.5026, -4.9168, -14.0077, 58.3957, -30.7029, 7.7689, 20.1471, 8.2142, -1.6986, 2.2681, -1.77, 10.1083, 13.5697],
+  100: [-176.794, 1.4287, -3.7192, 9.4128, 0.4356, 4.0837, 19.431, 18.6942, 14.1993, -6.9492, -15.3861, 58.7077, -28.5377, 1.7189, 26.6476, 5.771, -1.212, 0.1879, -3.505, 7.3356, 9.5948],
+  120: [-167.2598, 1.4575, -0.5371, -3.7297, -0.2672, 4.5907, 17.2014, 17.066, 15.6111, -6.3645, -13.0962, 53.1526, -28.3674, 1.4679, 23.5765, 4.0658, -1.6424, 0.319, -2.3392, 4.9924, 8.4189],
+  140: [-80.3245, 1.3742, 0.1927, 22.8738, 11.9421, 5.893, 9.5778, 11.086, 11.0328, -3.6584, -5.0541, 41.1248, -24.1969, -6.5052, 10.5106, 4.1846, -0.835, 0.0262, -1.3561, 2.8419, 5.46],
+  160: [-51.7071, 1.3908, 1.3416, 18.1764, 11.5482, 12.7961, 13.4071, 5.7768, 8.2432, -4.5791, -5.4956, 32.5023, -18.5281, -7.4053, 2.605, 3.805, -0.1638, -0.1243, -0.4632, 1.104, 3.5012],
+  180: [-62.9625, 1.3848, 1.3847, 14.1099, 11.916, 10.2985, 11.8912, 6.0016, 6.0226, -3.8383, -8.1123, 25.3335, -13.1487, -6.1892, 2.7522, 3.0435, -0.0298, -0.0159, -0.2091, 0.7172, 2.6944],
+  200: [-58.5938, 1.3127, 1.0863, 14.4213, 12.4285, 9.3836, 8.9819, 5.1942, 4.435, -2.8207, -7.9148, 19.9291, -9.7578, -4.3361, 2.2394, 2.2212, 0.0479, -0.0059, -0.061, 0.7092, 2.0962],
+  220: [-50.6649, 1.2185, 0.8618, 13.9509, 14.9892, 12.9792, 8.281, 4.5256, 1.8732, -2.4423, -6.9521, 14.9002, -6.2691, -2.5089, 1.0056, 1.4058, 0.0442, 0.0149, 0.0229, 0.578, 1.287],
+  240: [-36.204, 1.1752, 1.0786, 12.0542, 12.4932, 11.4045, 5.6401, 3.2946, 1.6231, -1.7787, -4.5894, 7.6361, -3.2313, -0.6429, 2.1952, 0.7309, 0.0533, 0.0386, 0.0507, 0.299, 0.9424],
+  260: [-22.6969, 1.1085, 0.8798, 5.3847, 6.1127, 6.1308, 4.1581, 2.5894, 1.4207, -1.2736, -2.6543, 3.9642, -1.3801, 0.3953, 1.8005, 0.3249, -0.0025, -0.0034, 0.0215, 0.0504, 0.4198],
+  280: [-16.805, 1.0608, 0.786, 1.1753, 1.5418, 2.3764, 2.1654, 2.02, 1.093, -0.5656, -1.3878, 0.2691, 0.4902, 1.7258, 1.7046, -0.0253, -0.0101, -0.0243, 0.0027, 0.0573, 0.2632],
+}
+
 // Troll Farm bot: job assignment by rate (points / turns, every job ends with a DROP).
 // Jobs: harvest a tree, chop a tree (co-chop to share the wood of a tree an enemy is chopping,
 // raid the enemy's young trees), mine iron for training, plant a seed (carried or picked from
@@ -976,7 +1041,8 @@ const RANKED_PLANS: number[][][] = [
 // previous order (PLANS + BIG_PLANS ranked on 600 maps without the forest), kept for A/B tests
 const OLD_RANKED: number[][][] = [9, 12, 7, -1, 11, -2, 8, 0, 6, 1].map(i => (i === -1 ? CHEAP_START : i === -2 ? GARDEN_PLAN : [...PLANS, ...BIG_PLANS][i]))
 
-let P_CHEAP: number[][] = [[2, 3, 0, 2]]
+// cheap trolls re-plans always try: rarely best on rich maps, the way out on fruit-poor or raided ones
+let P_CHEAP: number[][] = [[2, 2, 0, 2], [2, 2, 1, 2], [2, 3, 0, 2], [1, 2, 1, 1]]
 const setCheap = (c: number[][]) => (P_CHEAP = c)
 
 /** Game state from our turn input (we are player 0). */
@@ -1018,6 +1084,7 @@ class Sim {
   a: Bot
   horizon = 150
   b: Bot | Boss5 | null = null
+  useModel = false
   constructor(g: Game, init: string[], mine: Params, dist: Int16Array[], theirs?: Params | "boss5") {
     this.g = g
     g.dist = dist
@@ -1039,8 +1106,16 @@ class Sim {
       if (this.b) tasks.push(...parseOutput(g, 1, this.b.turnGame(g, 1), () => 0).tasks)
       step(g, tasks)
     }
-    // score + what our trolls carry (wood 4, fruits 1)
+    // before the end: the value model's forecast of the final score from here (valuemodel.ts),
+    // else score + what our trolls carry (wood 4, fruits 1)
+    const w = !g.over && this.useModel ? VALUE_W[g.turn] : undefined
     const val = (p: number) => {
+      if (w) {
+        const x = valueFeatures(g, p)
+        let v = 0
+        for (let i = 0; i < x.length; i++) v += w[i] * x[i]
+        return v
+      }
       let v = score(g, p)
       for (const u of g.trolls) if (u.owner === p) v += 4 * u.inv[WOOD] + u.inv[0] + u.inv[1] + u.inv[2] + u.inv[3]
       return v
@@ -1100,6 +1175,8 @@ interface Params {
   guardDefend: number
   farmFar: number // farm cells up to this far from the shack when well on our side (2: off)
   farmMargin: number
+  valueModel: boolean
+  replanModel: boolean // the value model in re-plans too // simulations end on the value model's forecast (horizons rounded to its turns)
   turnLimit: number // total ms per turn aimed at: simulations get what the rest of decide() leaves (0: off)
   replanHorizon: number // turns simulated ahead by a re-plan (0: simHorizon)
   replan: boolean
@@ -1158,6 +1235,8 @@ const DEFAULT_PARAMS: Params = {
   simHorizon: 200,
   replanHorizon: 0,
   turnLimit: 36,
+  valueModel: false,
+  replanModel: false,
   forest: 130,
   forestValue: 40,
   raidDefense: false,
@@ -1384,7 +1463,8 @@ class Bot {
       if (!this.planSim) {
         if (performance.now() > t0 + budgetMs - 8) break // starting a simulation costs a few ms
         this.planSim = new Sim(gameFromInput(this.init, this.planLines!, 0), this.init, { ...this.P, plan: PL[this.planIdx] }, this.dist, this.P.simOpp === "boss5" ? "boss5" : this.P.simOpp ? { ...DEFAULT_PARAMS, choosePlan: false, ...this.P.simOpp } : undefined)
-        this.planSim.horizon = this.P.simHorizon
+        this.planSim.horizon = this.P.valueModel ? Math.min(300, Math.ceil(this.P.simHorizon / 20) * 20) : this.P.simHorizon
+        this.planSim.useModel = this.P.valueModel
       }
       const v = this.planSim.run(t0 + budgetMs)
       if (v === null) break
@@ -1410,7 +1490,8 @@ class Bot {
     const t0 = performance.now()
     const k = mine.length
     if (!this.rp) {
-      if (this.designs.length <= k - 1 || this.turnNo > this.P.trainDeadline - 30) return
+      // (also when the plan ran out: a cheap troll may still pay, e.g. after a raider razed our lemons)
+      if (this.turnNo > this.P.trainDeadline - 30) return
       const prefix = mine
         .filter(u => u.id > 1)
         .sort((a, b) => a.id - b.id)
@@ -1437,7 +1518,9 @@ class Bot {
       if (!rp.sim) {
         if (performance.now() > t0 + budgetMs - 8) return
         rp.sim = new Sim(gameFromInput(this.init, rp.lines, rp.turn), this.init, { ...this.P, plan: rp.cands[rp.idx] }, this.dist, this.P.simOpp === "boss5" ? "boss5" : undefined)
-        rp.sim.horizon = Math.min(300, rp.turn + (this.P.replanHorizon || this.P.simHorizon))
+        const h = rp.turn + (this.P.replanHorizon || this.P.simHorizon)
+        rp.sim.horizon = Math.min(300, this.P.valueModel && this.P.replanModel ? Math.ceil(h / 20) * 20 : h)
+        rp.sim.useModel = this.P.valueModel && this.P.replanModel
       }
       const v = rp.sim.run(t0 + budgetMs)
       if (v === null) return
@@ -1778,6 +1861,8 @@ class Bot {
     const isGardener = (u: BTroll) => u.harvest >= 1 && !isChopperRole(u)
     const forestOn = P.forest > 0 && this.turnNo >= P.forest && left > 30 && !(exposed && P.noFarmExposed) && !defend && mine.some(isChopperRole)
     const forestCells = forestOn ? farmCells.filter(c => !oppNear(c, 2) && plantOk(BANANA, c, 3)) : []
+    // free forest cells left once the bananas our gardeners already carry are planted
+    const forestSlots = forestCells.length - mine.reduce((a, u) => a + (isGardener(u) ? u.inv[BANANA] : 0), 0)
     const gardenerJobs = (u: BTroll): Job[] => {
       const jobs: Job[] = []
       const FV = P.forestValue
@@ -1789,7 +1874,7 @@ class Bot {
           if (d >= 0) jobs.push({ u, rate: FV / (this.steps(u, d) + 1), dest: c, act: `PLANT ${u.id} BANANA`, kind: "plant" })
         }
       const free = u.carry - u.load
-      if (free > 0) {
+      if (free > 0 && forestSlots > 0) {
         for (const tr of trees) {
           if (tr.type !== BANANA || !ownTree(tr)) continue
           const d = dNow[tr.cell]
@@ -2177,4 +2262,4 @@ for (;;) {
   console.log(o)
 }
 
-void [PLUM, LEMON, APPLE, BANANA, IRON, WOOD, ITEMS, COOLDOWN, WATER_BOOST, FINAL_HEALTH, DELTA_HEALTH, MAX_SIZE, MAX_FRUITS, GAME_TURNS, GRASS, WATER, ROCK, IRONCELL, SHACK, distFrom, Rng, sum, neighbors, nearType, growthCooldown, newTree, tickTree, bfs, nextCells, trainCost, score, createGame, initInput, turnInput, A_MOVE, A_HARVEST, A_PLANT, A_CHOP, A_PICK, A_TRAIN, A_DROP, A_MINE, parseOutput, canTrain, step, Boss5, AUTO, CUTTER_PLANS, PLANS, BIG_PLANS, GARDEN_PLAN, CHEAP_START, RANKED_PLANS, OLD_RANKED, setCheap, gameFromInput, Sim, DEFAULT_PARAMS, Bot]
+void [PLUM, LEMON, APPLE, BANANA, IRON, WOOD, ITEMS, COOLDOWN, WATER_BOOST, FINAL_HEALTH, DELTA_HEALTH, MAX_SIZE, MAX_FRUITS, GAME_TURNS, GRASS, WATER, ROCK, IRONCELL, SHACK, distFrom, Rng, sum, neighbors, nearType, growthCooldown, newTree, tickTree, bfs, nextCells, trainCost, score, createGame, initInput, turnInput, A_MOVE, A_HARVEST, A_PLANT, A_CHOP, A_PICK, A_TRAIN, A_DROP, A_MINE, parseOutput, canTrain, step, Boss5, valueFeatures, VALUE_W, AUTO, CUTTER_PLANS, PLANS, BIG_PLANS, GARDEN_PLAN, CHEAP_START, RANKED_PLANS, OLD_RANKED, setCheap, gameFromInput, Sim, DEFAULT_PARAMS, Bot]
