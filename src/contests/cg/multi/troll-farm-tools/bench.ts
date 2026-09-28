@@ -2,7 +2,7 @@
 // paired per seed between parameter sets. Deterministic, so small economy changes show up.
 // Run: node --import <repo>/node_modules/tsx/dist/esm/index.mjs bench.ts <seeds> '<params A>' ['<params B>'...]
 import { initInput, parseOutput, score, step, turnInput } from "./engine.js"
-import { Bot, DEFAULT_PARAMS, Params } from "./bot.js"
+import { Bot, DEFAULT_PARAMS, Params, setCheap } from "./bot.js"
 import { javaGame } from "./seedmap.js"
 
 export function solo(seed: number, p: Partial<Params>): { s: number; trolls: string; trains: number[] } {
@@ -15,6 +15,7 @@ export function solo(seed: number, p: Partial<Params>): { s: number; trolls: str
 
 if (process.argv[1]?.endsWith("bench.ts")) {
   const n = +process.argv[2]
+  if (process.env.CHEAP) setCheap(JSON.parse(process.env.CHEAP))
   const sets = process.argv.slice(3).map(a => JSON.parse(a) as Partial<Params>)
   const tot = sets.map(() => 0)
   const V = !!process.env.V

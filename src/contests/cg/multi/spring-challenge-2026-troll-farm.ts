@@ -976,6 +976,9 @@ const RANKED_PLANS: number[][][] = [
 // previous order (PLANS + BIG_PLANS ranked on 600 maps without the forest), kept for A/B tests
 const OLD_RANKED: number[][][] = [9, 12, 7, -1, 11, -2, 8, 0, 6, 1].map(i => (i === -1 ? CHEAP_START : i === -2 ? GARDEN_PLAN : [...PLANS, ...BIG_PLANS][i]))
 
+let P_CHEAP: number[][] = [[2, 3, 0, 2]]
+const setCheap = (c: number[][]) => (P_CHEAP = c)
+
 /** Game state from our turn input (we are player 0). */
 function gameFromInput(init: string[], lines: string[], turnsPlayed: number): Game {
   const [W, H] = init[0].split(" ").map(Number)
@@ -1086,6 +1089,13 @@ interface Params {
   simHorizon: number
   forest: number // from this turn (0: off), gardeners (weak harvesters) replant bananas, choppers only chop
   forestValue: number
+  replanSkip: number[] // plan indices never tried by re-plans (rarely win, cost CPU)
+  firstNow: number[] | null // trained on turn 1 when affordable, ahead of the plan search
+  warMode: boolean
+  warBy: number // war mode only triggers before this turn
+  simTrees: number // simulations only consider this many nearest trees per troll (0: all)
+  raidDefense: boolean
+  guardDefend: number
   farmFar: number // farm cells up to this far from the shack when well on our side (2: off)
   farmMargin: number
   turnLimit: number // total ms per turn aimed at: simulations get what the rest of decide() leaves (0: off)
@@ -1148,6 +1158,13 @@ const DEFAULT_PARAMS: Params = {
   turnLimit: 36,
   forest: 130,
   forestValue: 40,
+  raidDefense: false,
+  warMode: false,
+  firstNow: null,
+  replanSkip: [2, 4, 7],
+  warBy: 60,
+  simTrees: 0,
+  guardDefend: 4,
   farmFar: 2,
   farmMargin: 4,
   replan: true,
@@ -1356,7 +1373,9 @@ class Bot {
 
   evalPlans(budgetMs: number) {
     const t0 = performance.now()
-    const PL = this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? (this.P.oldRank ? OLD_RANKED : RANKED_PLANS) : PLANS
+    const PL0 = this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? (this.P.oldRank ? OLD_RANKED : RANKED_PLANS) : PLANS
+    // a troll trained on turn 1 (firstNow) heads every candidate plan, so the simulations match
+    const PL = this.firstTrained ? PL0.map(p => [this.firstTrained!, ...p]) : PL0
     while (this.planIdx < PL.length) {
       if (!this.planSim) {
         if (performance.now() > t0 + budgetMs - 8) break // starting a simulation costs a few ms
@@ -1401,9 +1420,10 @@ class Bot {
         cands.push([...prefix, ...suffix])
       }
       add(this.designs.slice(k - 1))
-      for (const p of this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? (this.P.oldRank ? OLD_RANKED : RANKED_PLANS) : PLANS) if (p.length > k - 1) add(p.slice(k - 1))
-      // cheap choppers for lemon-poor games
-      for (const d of [[2, 2, 0, 2], [2, 2, 1, 2], [3, 2, 0, 2], [2, 3, 0, 2]]) add([d])
+      for (const [pi, p] of (this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? (this.P.oldRank ? OLD_RANKED : RANKED_PLANS) : PLANS).entries())
+        if (p.length > k - 1 && !this.P.replanSkip.includes(pi)) add(p.slice(k - 1))
+      // a cheap chopper for lemon-poor games (2/2/0/2, 2/2/1/2, 3/2/0/2 almost never won a re-plan)
+      for (const d of P_CHEAP) add([d])
       add([])
       this.rp = { lines: this.lastLines, turn: this.turnNo - 1, cands, idx: 0, sim: null, vals: [], cur: 0 }
       this.rpNext = this.turnNo + this.P.replanEvery
@@ -1429,6 +1449,8 @@ class Bot {
   }
   mineCount = 0
   rpNext = 0
+  war = false
+  firstTrained: number[] | null = null
 
   turn(lines: string[]): string {
     this.lastLines = lines
@@ -1525,7 +1547,12 @@ class Bot {
       this.targetSince = this.turnNo
     }
     const designs = this.designs
-    if (k - 1 < designs.length && this.turnNo < P.trainDeadline && !this.planPending) {
+    if (this.turnNo === 1 && k === 1 && P.firstNow && P.firstNow.every((v, i) => stock[[0, 1, 2, 4][i]] >= 1 + v * v)) {
+      // an early troll now rather than after the plan search (raiders train on turn 1)
+      trainNow = P.firstNow
+      this.firstTrained = P.firstNow
+      for (let i = 0; i < 4; i++) stock[[0, 1, 2, 4][i]] -= 1 + P.firstNow[i] * P.firstNow[i]
+    } else if (k - 1 < designs.length && this.turnNo < P.trainDeadline && !this.planPending) {
       // AUTO design: the best chopper the stock pays for right now, else the cheapest one
       if (designs[k - 1][0] < 0) {
         const fit = AUTO_DESIGNS.find(d => d[0] * d[0] + k <= stock[0] && d[1] * d[1] + k <= stock[1] && d[2] * d[2] + k <= stock[2] && d[3] * d[3] + k <= stock[4])
@@ -1631,14 +1658,31 @@ class Bot {
     // raid detection: an enemy troll standing on one of our trees (it chops them)
     if (opp.some(o => o.chop > 0 && treeAt.has(o.cell) && ownTree(treeAt.get(o.cell)!))) this.raidSeen = this.turnNo
     const raided = this.turnNo - this.raidSeen <= 40
-    const guard = raided ? P.guardRaided : P.guard
+    // raid defence: while enemy trolls work on our trees, grow nothing new by the shack (it feeds
+    // them), value no seeds, and fell our own trees first when an enemy chopper closes in
+    const defend = P.raidDefense && raided
+    const guard = defend ? P.guardDefend : raided ? P.guardRaided : P.guard
     // opponent profile (full information: their trolls' stats and whereabouts). A pure cutter
     // (no harvest) or a troll seen on our trees means a raider: defend. Otherwise, once it has
     // trained without raiding, it builds an economy: send our best chopper to raid it.
     if (opp.some(o => o.harvest === 0 && o.chop >= 2) || this.raidSeen > 0) this.profile = "raider"
     else if (this.profile === "unknown" && opp.length >= 2 && this.turnNo > 30) this.profile = "eco"
+    // war mode (HumblePasha vs raiders): against an early cutter, three cheap 2/2/1/2 choppers that
+    // gather, then raid the enemy's trees all game; no re-planning (simulations assume a passive foe)
+    if (P.warMode && !this.war && this.turnNo <= P.warBy && (opp.some(o => o.chop >= 2 && o.harvest === 0) || (raided && opp.some(o => o.chop >= 2)))) {
+      this.war = true
+      const prefix = mine
+        .filter(u => u.id > 1)
+        .sort((a, b) => a.id - b.id)
+        .map(u => [u.speed, u.carry, u.harvest, u.chop])
+      const plan = [...prefix]
+      while (plan.length < 3) plan.push([2, 2, 1, 2])
+      this.P = { ...this.P, plan, replan: false }
+      this.rp = null
+    }
     let raiderId = -1
-    if (P.counterRaid && this.profile === "eco" && this.turnNo < P.raidUntil && mine.length >= 2) {
+    if (this.war) raiderId = -2 // every chopper raids
+    else if (P.counterRaid && this.profile === "eco" && this.turnNo < P.raidUntil && mine.length >= 2) {
       let best = 0
       for (const u of mine)
         if (u.chop >= 2 && u.chop * u.speed > best) {
@@ -1673,7 +1717,7 @@ class Bot {
     const farmTrees = trees.filter(t => this.dropDist[t.cell] >= 0 && this.dropDist[t.cell] <= 2 && this.dropDist[t.cell] < this.oppDropDist[t.cell])
     // a farm we cannot fell feeds the enemy cutter
     const exposed = opp.some(o => o.chop >= 2) && !mine.some(u => u.chop >= 2 && u.carry >= 2)
-    const farmTarget = exposed && P.noFarmExposed ? 0 : 2 + P.farmPerChopper * choppers
+    const farmTarget = (exposed && P.noFarmExposed) || defend ? 0 : 2 + P.farmPerChopper * choppers
     let farmMissing = farmTarget - farmTrees.length
     // plant wishes: training-fruit sources first (while trolls remain to train), then farm trees
     const wanted: { type: number; value: number; source: boolean }[] = []
@@ -1698,7 +1742,7 @@ class Bot {
     // banana seeds: while free farm cells outnumber them, keep a few mature banana trees
     // producing (one fruit per cooldown, each worth a new tree) instead of felling them
     const bananaSeeds = pickable[BANANA] + mine.reduce((a, u) => a + u.inv[BANANA], 0)
-    const seedGap = plantOk(BANANA, this.shack, 20) ? Math.max(0, farmCells.length - bananaSeeds) : 0
+    const seedGap = !defend && plantOk(BANANA, this.shack, 20) ? Math.max(0, farmCells.length - bananaSeeds) : 0
     const producers = new Set<BTree>()
     if (seedGap > 0) {
       fruitVal[BANANA] += P.seedValue
@@ -1727,7 +1771,7 @@ class Bot {
     // (or the stock) and plant it straight away on a free farm cell; the choppers only fell and drop
     const isChopperRole = (u: BTroll) => u.chop >= 2 && u.carry >= 3
     const isGardener = (u: BTroll) => u.harvest >= 1 && !isChopperRole(u)
-    const forestOn = P.forest > 0 && this.turnNo >= P.forest && left > 30 && !(exposed && P.noFarmExposed) && mine.some(isChopperRole)
+    const forestOn = P.forest > 0 && this.turnNo >= P.forest && left > 30 && !(exposed && P.noFarmExposed) && !defend && mine.some(isChopperRole)
     const forestCells = forestOn ? farmCells.filter(c => !oppNear(c, 2) && plantOk(BANANA, c, 3)) : []
     const gardenerJobs = (u: BTroll): Job[] => {
       const jobs: Job[] = []
@@ -1788,9 +1832,12 @@ class Bot {
             if (r <= left) jobs.push({ u, rate: cv / r, dest: c, act: aDrop, kind: "drop" })
           }
       }
-      const isRaider = u.id === raiderId
-      if (free > 0 || isRaider) {
-        for (const tr of trees) {
+      const isRaider = u.id === raiderId || (raiderId === -2 && u.chop >= 2)
+      if (free > 0 || (isRaider && !this.war)) {
+        // in simulations, only the nearest trees (a faster, slightly coarser copy of the policy)
+        let near = trees
+        if (this.sim && P.simTrees > 0 && trees.length > P.simTrees) near = trees.slice().sort((x, y) => (dNow[x.cell] < 0 ? 999 : dNow[x.cell]) - (dNow[y.cell] < 0 ? 999 : dNow[y.cell])).slice(0, P.simTrees)
+        for (const tr of near) {
           const d = dNow[tr.cell]
           if (d < 0) continue
           const a = this.steps(u, d)
@@ -1852,7 +1899,7 @@ class Bot {
             if (enemies.length > 0) value += 4 * P.denyAlpha * share
             else if (!own && sizeNow < MAX_SIZE) value += 4 * P.raidBeta * (MAX_SIZE - sizeNow)
             if (P.aggro > 0 && this.oppDropDist[tr.cell] >= 0 && this.oppDropDist[tr.cell] < 6) value += P.aggro * (6 - this.oppDropDist[tr.cell])
-            if (isRaider && !own && this.oppDropDist[tr.cell] >= 0 && this.oppDropDist[tr.cell] <= 4) value += P.raidAggro + (tr.type === 1 ? P.raidLemon : 0) + 4 * P.raidBeta * Math.max(0, Math.min(MAX_SIZE, size) - wood)
+            if (isRaider && !own && this.oppDropDist[tr.cell] >= 0 && this.oppDropDist[tr.cell] <= 4 && (!this.war || wood > 0)) value += P.raidAggro + (tr.type === 1 ? P.raidLemon : 0) + 4 * P.raidBeta * Math.max(0, Math.min(MAX_SIZE, size) - wood)
             // wood we cannot carry is lost (fine on the enemy's side: that is denial)
             if (enemies.length === 0 && (own || this.dropDist[tr.cell] <= this.oppDropDist[tr.cell])) value -= P.wasteLambda * Math.max(0, Math.min(1, (left - 25) / 40)) * 4 * Math.max(0, size - wood)
             if (value <= 0) continue
@@ -2000,7 +2047,7 @@ class Bot {
         continue
       }
       if (j.dest < 0 || j.dest === u.cell) {
-        if (u.cell === this.shack && trainNow && j.kind !== "drop" && j.kind !== "pick") movers.push([u, this.dropCells[0]])
+        if (u.cell === this.shack && trainNow && ((j.kind !== "drop" && j.kind !== "pick") || trainNow === this.firstTrained)) movers.push([u, this.dropCells[0]])
         else {
           acts.push([u, j.act])
           reserved.add(u.cell)
@@ -2099,4 +2146,4 @@ for (;;) {
   console.log(o)
 }
 
-void [PLUM, LEMON, APPLE, BANANA, IRON, WOOD, ITEMS, COOLDOWN, WATER_BOOST, FINAL_HEALTH, DELTA_HEALTH, MAX_SIZE, MAX_FRUITS, GAME_TURNS, GRASS, WATER, ROCK, IRONCELL, SHACK, distFrom, Rng, sum, neighbors, nearType, growthCooldown, newTree, tickTree, bfs, nextCells, trainCost, score, createGame, initInput, turnInput, A_MOVE, A_HARVEST, A_PLANT, A_CHOP, A_PICK, A_TRAIN, A_DROP, A_MINE, parseOutput, canTrain, step, Boss5, AUTO, CUTTER_PLANS, PLANS, BIG_PLANS, GARDEN_PLAN, CHEAP_START, RANKED_PLANS, OLD_RANKED, gameFromInput, Sim, DEFAULT_PARAMS, Bot]
+void [PLUM, LEMON, APPLE, BANANA, IRON, WOOD, ITEMS, COOLDOWN, WATER_BOOST, FINAL_HEALTH, DELTA_HEALTH, MAX_SIZE, MAX_FRUITS, GAME_TURNS, GRASS, WATER, ROCK, IRONCELL, SHACK, distFrom, Rng, sum, neighbors, nearType, growthCooldown, newTree, tickTree, bfs, nextCells, trainCost, score, createGame, initInput, turnInput, A_MOVE, A_HARVEST, A_PLANT, A_CHOP, A_PICK, A_TRAIN, A_DROP, A_MINE, parseOutput, canTrain, step, Boss5, AUTO, CUTTER_PLANS, PLANS, BIG_PLANS, GARDEN_PLAN, CHEAP_START, RANKED_PLANS, OLD_RANKED, setCheap, gameFromInput, Sim, DEFAULT_PARAMS, Bot]
