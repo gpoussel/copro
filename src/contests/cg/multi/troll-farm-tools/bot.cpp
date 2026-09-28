@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -426,6 +427,12 @@ struct Params {
   double patience = 40, patienceRaided = 40, seedValue = 6;
   int producers = 2;
   double wasteLambda = 0.7;
+  bool rollouts = false;  // choose this turn's jobs by rollouts (chooseByRollouts)
+  int rollAlts = 2, rollHorizon = 200;
+  bool rollOpp = true;  // rollouts play against a copy of our bot (a passive foe misleads them)
+  double rollMinRate = 0.3, rollMargin = 2;
+  bool simOpp = false;
+  bool simOppDiff = true;  // with an opponent model: judge on the score difference (else our score)  // simulations play against a copy of our bot (from its current trolls)
   int planVersion = 0;  // bumped whenever `plan` changes (planRef in bot.ts)
 };
 
@@ -478,9 +485,9 @@ struct Job {
 struct Bot;
 struct Sim {
   Game g;
-  unique_ptr<Bot> a;
+  unique_ptr<Bot> a, b;  // b: opponent model (player 1), null = passive
   int horizon = 150;
-  Sim(const Game& g0, shared_ptr<Side> side, const Params& p);
+  Sim(const Game& g0, shared_ptr<Side> side, const Params& p, shared_ptr<Side> oppSide = nullptr, const Params* oppP = nullptr);
   bool run(double deadline, double& value);
 };
 
@@ -521,6 +528,61 @@ struct Bot {
   int mineCount = 0, rpNext = 0;
   double otherMs = 5;
   vector<int> trainTurns;
+  vector<Act> lastActs;
+  // rollout decisions: force troll forceId onto the forceRank-th job of its list this turn
+  int forceId = -1, forceRank = 0;
+  double extraUsed = 0;  // ms already spent this turn (rollouts) before decide()
+  bool recordTops = false;
+  map<int, vector<array<double, 3>>> tops;  // troll id -> (kind, dest, rate) of its best jobs
+  string rollLog;
+
+  unique_ptr<Bot> cloneForSim() const {
+    auto c = make_unique<Bot>(S, P, true);
+    c->turnNo = turnNo, c->designs = designs, c->planRef = planRef, c->targetSince = targetSince;
+    c->lastK = lastK, c->raidSeen = raidSeen, c->profile = profile;
+    memcpy(c->sourcesPlanted, sourcesPlanted, sizeof sourcesPlanted);
+    c->prev = prev, c->seedIntent = seedIntent, c->intentSince = intentSince, c->still = still;
+    c->oppSide = oppSide;
+    return c;
+  }
+  // tries the base decision and alternatives (one troll on its 2nd / 3rd job) by playing each on to
+  // the horizon with the usual policy; sets forceId / forceRank to the best one
+  void chooseByRollouts(const Game& g, double deadline) {
+    forceId = -1;
+    auto probe = cloneForSim();
+    probe->recordTops = true;
+    probe->turnGame(g, 0);
+    vector<pair<int, int>> cands = {{-1, 0}};
+    for (auto& [id, v] : probe->tops)
+      for (int r = 1; r < (int)v.size() && r <= P.rollAlts; r++)
+        if (v[r][2] >= P.rollMinRate * v[0][2] && (v[r][0] != v[0][0] || v[r][1] != v[0][1])) cands.push_back({id, r});
+    double best = -1e18;
+    int bi = 0, done = 0;
+    for (int i = 0; i < (int)cands.size(); i++) {
+      if (nowMs() > deadline - 2) break;
+      if (P.rollOpp && !oppSide) oppSide = make_shared<Side>(m, 1);
+      Params o = oppParams(g);
+      Sim sim(g, S, P, P.rollOpp ? oppSide : nullptr, &o);
+      sim.a = cloneForSim();
+      sim.a->forceId = cands[i].first, sim.a->forceRank = cands[i].second;
+      sim.horizon = min(300, g.turn + P.rollHorizon);
+      // the forced choice only applies on the first simulated turn
+      vector<Task> tasks;
+      {
+        vector<Act> acts = sim.a->turnGame(sim.g, 0);
+        sim.a->forceId = -1;
+        toTasks(sim.g, 0, acts, tasks);
+        if (sim.b) toTasks(sim.g, 1, sim.b->turnGame(sim.g, 1), tasks);
+        step(sim.g, tasks);
+      }
+      double v;
+      if (!sim.run(deadline, v)) break;
+      done++;
+      if (v > best + (i == 0 ? 0 : P.rollMargin)) best = v, bi = i;
+    }
+    forceId = cands[bi].first, forceRank = cands[bi].second;
+    rollLog = to_string(done) + "/" + to_string(cands.size()) + (bi ? " alt" : " base");
+  }
 
   Bot(shared_ptr<Side> side, const Params& p, bool isSim) : S(side), m(side->m), N(side->m->N), W(side->m->W), P(p), sim(isSim) {}
 
@@ -567,6 +629,27 @@ struct Bot {
     return {99, size};
   }
 
+  shared_ptr<Side> oppSide;
+  Params oppParams(const Game& g) {
+    // the opponent's trolls so far (beyond its first), then a common Legend continuation
+    Params q;
+    q.choosePlan = false, q.replan = false;
+    vector<pair<int, Design>> pre;
+    for (auto& u : g.trolls)
+      if (u.owner == 1 && u.id > 1) pre.push_back({u.id, {u.speed, u.carry, u.harvest, u.chop}});
+    sort(pre.begin(), pre.end());
+    q.plan.clear();
+    for (auto& e : pre) q.plan.push_back(e.second);
+    for (const Design& d : RANKED_PLANS[0]) q.plan.push_back(d);
+    return q;
+  }
+  unique_ptr<Sim> makeSim(const Game& g, const Params& q) {
+    if (!P.simOpp) return make_unique<Sim>(g, S, q);
+    if (!oppSide) oppSide = make_shared<Side>(m, 1);
+    Params o = oppParams(g);
+    return make_unique<Sim>(g, S, q, oppSide, &o);
+  }
+
   void evalPlans(double budgetMs) {
     double t0 = nowMs();
     const auto& PL = RANKED_PLANS;
@@ -575,7 +658,7 @@ struct Bot {
         if (nowMs() > t0 + budgetMs - 8) break;
         Params q = P;
         q.plan = PL[planIdx];
-        planSim = make_unique<Sim>(*planGame, S, q);
+        planSim = makeSim(*planGame, q);
         planSim->horizon = P.simHorizon;
       }
       double v;
@@ -628,7 +711,7 @@ struct Bot {
         if (nowMs() > t0 + budgetMs - 8) return;
         Params q = P;
         q.plan = rp->cands[rp->idx];
-        rp->sim = make_unique<Sim>(rp->g, S, q);
+        rp->sim = makeSim(rp->g, q);
         rp->sim->horizon = min(300, rp->g.turn + P.simHorizon);
       }
       double v;
@@ -687,7 +770,14 @@ struct Bot {
       planGame = make_unique<Game>(g);
       planPending = true;
     }
+    if (P.rollouts && !planPending && turnNo > 0) {
+      double t0 = nowMs();
+      chooseByRollouts(g, t0 + max(3.0, P.turnLimit - 6 - otherMs));
+      extraUsed = nowMs() - t0;
+    }
     vector<Act> acts = turnGame(g, 0);
+    forceId = -1, extraUsed = 0;
+    lastActs = acts;
     string out;
     for (auto& a : acts) {
       if (!out.empty()) out += ";";
@@ -717,9 +807,13 @@ struct Bot {
   vector<Act> decide(int* inv, const vector<Tree>& trees, const vector<BTroll>& trolls);
 };
 
-Sim::Sim(const Game& g0, shared_ptr<Side> side, const Params& p) : g(g0) {
+Sim::Sim(const Game& g0, shared_ptr<Side> side, const Params& p, shared_ptr<Side> oppSide, const Params* oppP) : g(g0) {
   a = make_unique<Bot>(side, p, true);
   a->turnNo = g.turn;
+  if (oppSide) {
+    b = make_unique<Bot>(oppSide, *oppP, true);
+    b->turnNo = g.turn;
+  }
 }
 bool Sim::run(double deadline, double& value) {
   vector<Task> tasks;
@@ -728,19 +822,23 @@ bool Sim::run(double deadline, double& value) {
     vector<Act> acts = a->turnGame(g, 0);
     tasks.clear();
     toTasks(g, 0, acts, tasks);
+    if (b) toTasks(g, 1, b->turnGame(g, 1), tasks);
     step(g, tasks);
   }
-  double v = score(g, 0);
-  for (auto& u : g.trolls)
-    if (u.owner == 0) v += 4 * u.inv[WOOD] + u.inv[0] + u.inv[1] + u.inv[2] + u.inv[3];
-  value = v;
+  auto val = [&](int p) {
+    double v = score(g, p);
+    for (auto& u : g.trolls)
+      if (u.owner == p) v += 4 * u.inv[WOOD] + u.inv[0] + u.inv[1] + u.inv[2] + u.inv[3];
+    return v;
+  };
+  value = b && a->P.simOppDiff ? val(0) - val(1) : val(0);
   return true;
 }
 
 vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll>& trolls) {
   turnNo++;
   double tStart = nowMs(), simMs = 0;
-  double turnBudget = P.turnLimit > 0 ? max(5.0, min(P.planTurnBudget, P.turnLimit - otherMs)) : P.planTurnBudget;
+  double turnBudget = P.turnLimit > 0 ? max(3.0, min(P.planTurnBudget, P.turnLimit - otherMs - extraUsed)) : P.planTurnBudget;
   bool planned = planPending;
   if (planPending) {
     double t = nowMs();
@@ -1236,6 +1334,12 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
       }
       top[i] = j;
     }
+    if (recordTops) {
+      auto& v = tops[mine[ui].id];
+      v.clear();
+      for (auto& j : top) v.push_back({j.kind, j.dest, j.rate});
+    }
+    if (mine[ui].id == forceId && forceRank < (int)top.size()) top[forceRank].rate = 1e18;  // rollout candidate
     all.insert(all.end(), top.begin(), top.end());
   }
   stable_sort(all.begin(), all.end(), [](const Job& a, const Job& b) { return a.rate > b.rate; });
@@ -1383,36 +1487,189 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
 }
 
 // ------------------------------------------------------------------------------------ main
-int main(int argc, char** argv) {
-  ios::sync_with_stdio(false);
-  for (int sp = 1; sp <= 3; sp++)
-    for (int c = 2; c <= 4; c++)
-      for (int h = 0; h <= 1; h++)
-        for (int cp = 2; cp <= 3; cp++) AUTO_DESIGNS.push_back({sp, c, h, cp});
-  stable_sort(AUTO_DESIGNS.begin(), AUTO_DESIGNS.end(), [](const Design& a, const Design& b) { return 3 * a[1] + 2.5 * a[0] + 2 * a[3] + a[2] > 3 * b[1] + 2.5 * b[0] + 2 * b[3] + b[2]; });
-  Params P;
-  for (int i = 1; i < argc; i++)
-    if (string(argv[i]) == "planall") P.planAll = true;
+static shared_ptr<MapInfo> mapFromInit(const vector<string>& init) {
   auto M = make_shared<MapInfo>();
-  string line;
-  getline(cin, line);
-  {
-    istringstream s(line);
-    s >> M->W >> M->H;
-  }
-  vector<string> rows(M->H);
+  istringstream s(init[0]);
+  s >> M->W >> M->H;
   M->grid.assign(M->W * M->H, GRASS);
-  for (int y = 0; y < M->H; y++) {
-    getline(cin, rows[y]);
+  for (int y = 0; y < M->H; y++)
     for (int x = 0; x < M->W; x++) {
-      char ch = rows[y][x];
+      char ch = init[1 + y][x];
       int c = y * M->W + x;
       M->grid[c] = ch == '.' ? GRASS : ch == '~' ? WATER : ch == '#' ? ROCK : ch == '+' ? IRONCELL : SHACK;
       if (ch == '0') M->shack[0] = c;
       if (ch == '1') M->shack[1] = c;
     }
-  }
   M->build();
+  return M;
+}
+static void initDesigns() {
+  for (int sp = 1; sp <= 3; sp++)
+    for (int c = 2; c <= 4; c++)
+      for (int h = 0; h <= 1; h++)
+        for (int cp = 2; cp <= 3; cp++) AUTO_DESIGNS.push_back({sp, c, h, cp});
+  stable_sort(AUTO_DESIGNS.begin(), AUTO_DESIGNS.end(), [](const Design& a, const Design& b) { return 3 * a[1] + 2.5 * a[0] + 2 * a[3] + a[2] > 3 * b[1] + 2.5 * b[0] + 2 * b[3] + b[2]; });
+}
+
+// ---------------------------------------------------------------- local test modes (not used on CodinGame)
+static bool setParam(Params& P, const string& kv) {
+  auto e = kv.find('=');
+  if (e == string::npos) return false;
+  string k = kv.substr(0, e);
+  double v = stod(kv.substr(e + 1));
+  if (k == "planAll") P.planAll = v;
+  else if (k == "planBudget") P.planBudget = v;
+  else if (k == "planTurnBudget") P.planTurnBudget = v;
+  else if (k == "turnLimit") P.turnLimit = v;
+  else if (k == "simHorizon") P.simHorizon = v;
+  else if (k == "replanEvery") P.replanEvery = v;
+  else if (k == "replanMargin") P.replanMargin = v;
+  else if (k == "trollRate") P.trollRate = v;
+  else if (k == "forest") P.forest = v;
+  else if (k == "forestValue") P.forestValue = v;
+  else if (k == "trainDeadline") P.trainDeadline = v;
+  else if (k == "earlySources") P.earlySources = v;
+  else if (k == "simOpp") P.simOpp = v;
+  else if (k == "simOppDiff") P.simOppDiff = v;
+  else if (k == "replan") P.replan = v;
+  else if (k == "rollouts") P.rollouts = v;
+  else if (k == "rollAlts") P.rollAlts = v;
+  else if (k == "rollHorizon") P.rollHorizon = v;
+  else if (k == "rollMinRate") P.rollMinRate = v;
+  else if (k == "rollMargin") P.rollMargin = v;
+  else if (k == "rollOpp") P.rollOpp = v;
+  else return false;
+  return true;
+}
+static Params paramsOf(const string& spec) {
+  Params P;
+  stringstream ss(spec);
+  string kv;
+  while (getline(ss, kv, ','))
+    if (!kv.empty() && !setParam(P, kv)) cerr << "unknown param " << kv << endl;
+  return P;
+}
+static vector<string> readLines(const string& file) {
+  ifstream f(file);
+  vector<string> r;
+  string l;
+  while (getline(f, l)) r.push_back(l);
+  return r;
+}
+// the referee's game from a seat-0 input dump (init + turn 0)
+static Game gameFromDump(const vector<string>& lines, shared_ptr<MapInfo>& M) {
+  int H;
+  {
+    istringstream s(lines[0]);
+    int W;
+    s >> W >> H;
+  }
+  vector<string> init(lines.begin(), lines.begin() + 1 + H), rest(lines.begin() + 1 + H, lines.end());
+  M = mapFromInit(init);
+  auto side = make_shared<Side>(M.get(), 0);
+  Bot tmp(side, Params(), true);
+  return tmp.parse(rest, 0);
+}
+static vector<string> initFor(const MapInfo& m, int p) {
+  vector<string> r = {to_string(m.W) + " " + to_string(m.H)};
+  for (int y = 0; y < m.H; y++) {
+    string row;
+    for (int x = 0; x < m.W; x++) {
+      int c = y * m.W + x, t = m.grid[c];
+      row += t == GRASS ? '.' : t == WATER ? '~' : t == IRONCELL ? '+' : t == ROCK ? '#' : c == m.shack[p] ? '0' : '1';
+    }
+    r.push_back(row);
+  }
+  return r;
+}
+static vector<string> inputFor(const Game& g, int p) {
+  const MapInfo& m = *g.m;
+  vector<string> r;
+  for (int q : {p, 1 - p}) {
+    string l;
+    for (int i = 0; i < 6; i++) l += (i ? " " : "") + to_string(g.inv[q][i]);
+    r.push_back(l);
+  }
+  r.push_back(to_string(g.trees.size()));
+  for (auto& t : g.trees)
+    r.push_back(string(ITEMS[t.type]) + " " + to_string(t.cell % m.W) + " " + to_string(t.cell / m.W) + " " + to_string(t.size) + " " + to_string(t.health) + " " + to_string(t.fruits) + " " + to_string(t.cooldown));
+  r.push_back(to_string(g.trolls.size()));
+  for (auto& u : g.trolls) {
+    string l = to_string(u.id) + " " + (u.owner == p ? "0" : "1") + " " + to_string(u.cell % m.W) + " " + to_string(u.cell / m.W) + " " + to_string(u.speed) + " " + to_string(u.carry) + " " + to_string(u.harvest) + " " + to_string(u.chop);
+    for (int i = 0; i < 6; i++) l += " " + to_string(u.inv[i]);
+    r.push_back(l);
+  }
+  return r;
+}
+// one game between two bots fed like on CodinGame; returns the scores (seat 0, seat 1)
+static pair<int, int> playGame(const string& file, const Params& A, const Params& B, bool solo) {
+  shared_ptr<MapInfo> M;
+  Game g = gameFromDump(readLines(file), M);
+  vector<unique_ptr<Bot>> bots;
+  vector<shared_ptr<MapInfo>> maps;
+  for (int p = 0; p < 2; p++) {
+    auto mp = mapFromInit(initFor(*M, p));
+    maps.push_back(mp);
+    bots.push_back(make_unique<Bot>(make_shared<Side>(mp.get(), 0), p == 0 ? A : B, false));
+  }
+  vector<Task> tasks;
+  while (!g.over) {
+    tasks.clear();
+    for (int p = 0; p < (solo ? 1 : 2); p++) {
+      bots[p]->turn(inputFor(g, p));
+      toTasks(g, p, bots[p]->lastActs, tasks);
+    }
+    step(g, tasks);
+  }
+  return {score(g, 0), score(g, 1)};
+}
+
+int main(int argc, char** argv) {
+  ios::sync_with_stdio(false);
+  initDesigns();
+  string mode = argc > 1 ? argv[1] : "";
+  if (mode == "bench" || mode == "arena") {
+    // bench "<params>" files...   |   arena "<params A>" "<params B>" files...  (params: k=v,k=v)
+    bool arena = mode == "arena";
+    Params A = paramsOf(argv[2]), B = arena ? paramsOf(argv[3]) : Params();
+    double sa = 0, sb = 0;
+    int w = 0, l = 0, d = 0, n = 0;
+    for (int i = arena ? 4 : 3; i < argc; i++) {
+      if (!arena) {
+        auto r = playGame(argv[i], A, B, true);
+        sa += r.first, n++;
+        if (getenv("V")) cerr << argv[i] << " " << r.first << endl;
+        continue;
+      }
+      for (int swap = 0; swap < 2; swap++) {
+        auto r = swap ? playGame(argv[i], B, A, false) : playGame(argv[i], A, B, false);
+        int x = swap ? r.second : r.first, y = swap ? r.first : r.second;
+        sa += x, sb += y, n++;
+        (x > y ? w : x < y ? l : d)++;
+        if (getenv("V")) cerr << argv[i] << (swap ? "s" : "") << " " << x << "-" << y << endl;
+      }
+    }
+    if (arena)
+      printf("A %dW %dD %dL  avg %.1f vs %.1f\n", w, d, l, sa / n, sb / n);
+    else
+      printf("avg %.1f over %d\n", sa / n, n);
+    return 0;
+  }
+  Params P;
+  for (int i = 1; i < argc; i++)
+    if (string(argv[i]) == "planall") P.planAll = true;
+  string line;
+  vector<string> init;
+  getline(cin, line);
+  init.push_back(line);
+  int H;
+  {
+    istringstream s(line);
+    int W;
+    s >> W >> H;
+  }
+  for (int y = 0; y < H; y++) getline(cin, line), init.push_back(line);
+  auto M = mapFromInit(init);
   auto side = make_shared<Side>(M.get(), 0);
   Bot bot(side, P, false);
   int turnNo = 0;
@@ -1438,7 +1695,7 @@ int main(int argc, char** argv) {
     if (++turnNo > 1) maxMs = max(maxMs, dt);
     if (bot.planScores != lastPlans) cerr << "plans t" << turnNo << bot.planScores << endl, lastPlans = bot.planScores;
     if (dt > 45) cerr << "t" << turnNo << " slow " << dt << " ms" << endl;
-    if (turnNo % 50 == 0) cerr << "t" << turnNo << " max " << maxMs << " ms " << bot.rpLog << endl;
+    if (turnNo % 50 == 0) cerr << "t" << turnNo << " max " << maxMs << " ms " << bot.rpLog << " roll " << bot.rollLog << endl;
     cout << o << endl;
   }
 }
