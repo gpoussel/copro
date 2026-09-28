@@ -1,0 +1,1444 @@
+// Troll Farm bot, C++ port of troll-farm-tools/bot.ts + engine.ts (same decisions, ~10x the
+// simulations per millisecond). Only the options enabled in bot.ts's DEFAULT_PARAMS are ported.
+// Local: g++ -std=c++20 -O2 bot.cpp -o bot ; `./bot planall` evaluates every plan whatever the
+// time (deterministic, for cppcheck.ts). CodinGame compiles without -O: "O3,inline" gets -O2 speed
+// (plain "O3" or "O2" leaves the STL unoptimized, 3.5x slower).
+#pragma GCC optimize("O3,inline")
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
+using namespace std;
+
+// ------------------------------------------------------------------------------------ engine
+enum { PLUM, LEMON, APPLE, BANANA, IRON, WOOD };
+static const char* ITEMS[] = {"PLUM", "LEMON", "APPLE", "BANANA", "IRON", "WOOD"};
+static const int COOLDOWN[] = {8, 8, 9, 6};
+static const int WATER_BOOST[] = {5, 5, 7, 2};
+static const int FINAL_HEALTH[] = {12, 12, 20, 6};
+static const int DELTA_HEALTH[] = {2, 2, 3, 1};
+static const int MAX_SIZE = 4, MAX_FRUITS = 3, GAME_TURNS = 300;
+enum { GRASS, WATER, ROCK, IRONCELL, SHACK };
+
+static double nowMs() { return chrono::duration<double, milli>(chrono::steady_clock::now().time_since_epoch()).count(); }
+
+struct Tree {
+  int type, cell, size, health, fruits, cooldown, growth;
+};
+struct Troll {
+  int id, owner, cell, speed, carry, harvest, chop;
+  int inv[6];
+  int load() const { return inv[0] + inv[1] + inv[2] + inv[3] + inv[4] + inv[5]; }
+};
+
+// map data shared by every game / bot of a match
+struct MapInfo {
+  int W = 0, H = 0, N = 0;
+  vector<uint8_t> grid;
+  vector<int16_t> dist;  // all pairs, N * N
+  int shack[2] = {0, 0};
+  const int16_t* d(int c) const { return &dist[(size_t)c * N]; }
+  vector<int> nbrs(int c) const {
+    int x = c % W;
+    vector<int> r;
+    if (c + W < N) r.push_back(c + W);
+    if (x + 1 < W) r.push_back(c + 1);
+    if (c - W >= 0) r.push_back(c - W);
+    if (x > 0) r.push_back(c - 1);
+    return r;
+  }
+  bool nearType(int c, int t) const {
+    for (int n : nbrs(c))
+      if (grid[n] == t) return true;
+    return false;
+  }
+  // BFS over grass from the sources (sources get 0 whatever their type)
+  vector<int16_t> bfs(const vector<int>& src) const {
+    vector<int16_t> d(N, -1);
+    vector<int> q(N);
+    int qt = 0;
+    for (int s : src)
+      if (d[s] < 0) d[s] = 0, q[qt++] = s;
+    for (int qh = 0; qh < qt; qh++) {
+      int c = q[qh], x = c % W, nd = d[c] + 1;
+      if (c + W < N && d[c + W] < 0 && grid[c + W] == GRASS) d[c + W] = nd, q[qt++] = c + W;
+      if (x + 1 < W && d[c + 1] < 0 && grid[c + 1] == GRASS) d[c + 1] = nd, q[qt++] = c + 1;
+      if (c - W >= 0 && d[c - W] < 0 && grid[c - W] == GRASS) d[c - W] = nd, q[qt++] = c - W;
+      if (x > 0 && d[c - 1] < 0 && grid[c - 1] == GRASS) d[c - 1] = nd, q[qt++] = c - 1;
+    }
+    return d;
+  }
+  void build() {
+    N = W * H;
+    dist.assign((size_t)N * N, -1);
+    for (int c = 0; c < N; c++) {
+      auto d = bfs({c});
+      memcpy(&dist[(size_t)c * N], d.data(), N * sizeof(int16_t));
+    }
+  }
+};
+
+struct Game {
+  const MapInfo* m;
+  int inv[2][6];
+  vector<Tree> trees;
+  vector<Troll> trolls;
+  int nextId = 0, turn = 0, turnsUntilEnd = 0;
+  bool over = false, dead[2] = {false, false};
+};
+
+static int score(const Game& g, int p) {
+  if (g.dead[p]) return -2;
+  const int* v = g.inv[p];
+  return v[0] + v[1] + v[2] + v[3] + 4 * v[5];
+}
+static void tickTree(Tree& t) {
+  if (t.cooldown > 0) t.cooldown--;
+  if (t.cooldown == 0 && t.health > 0) {
+    if (t.size < MAX_SIZE) {
+      t.size++;
+      t.health += DELTA_HEALTH[t.type];
+      t.cooldown = t.growth;
+    } else if (t.fruits < MAX_FRUITS) {
+      t.fruits++;
+      t.cooldown = t.growth;
+    }
+  }
+}
+static int growthOf(const MapInfo& m, int type, int cell) { return COOLDOWN[type] - (m.nearType(cell, WATER) ? WATER_BOOST[type] : 0); }
+static Tree newTree(const MapInfo& m, int type, int cell) { return {type, cell, 0, FINAL_HEALTH[type] - DELTA_HEALTH[type] * MAX_SIZE, 0, 0, growthOf(m, type, cell)}; }
+
+static int manhattan(int W, int a, int b) { return abs(a % W - b % W) + abs(a / W - b / W); }
+// Board.getNextCell: the first of the equally good cells (the referee picks one at random)
+static int nextCell(const Game& g, int cur, int target, int speed) {
+  const MapInfo& m = *g.m;
+  const int16_t* src = m.d(cur);
+  if (src[target] >= 0 && src[target] <= speed) return target;
+  vector<int16_t> tdv;
+  const int16_t* td;
+  if (src[target] < 0) {
+    int best = 1e9;
+    vector<int> closest;
+    for (int c = 0; c < m.N; c++) {
+      if (src[c] < 0) continue;
+      int d = manhattan(m.W, c, target);
+      if (d < best) best = d, closest.clear();
+      if (d == best) closest.push_back(c);
+    }
+    tdv = m.bfs(closest);
+    td = tdv.data();
+  } else
+    td = m.d(target);
+  int best = 1e9, res = cur;
+  for (int c = 0; c < m.N; c++) {
+    if (src[c] > speed || src[c] < 0) continue;
+    int d = td[c];
+    if (d >= 0 && d < best) best = d, res = c;
+  }
+  return res;
+}
+static bool canTrain(const Game& g, int p, const int* t) {
+  int n = 0;
+  for (auto& u : g.trolls) n += u.owner == p;
+  int c[5] = {n + t[0] * t[0], n + t[1] * t[1], n + t[2] * t[2], 0, n + t[3] * t[3]};
+  for (int i = 0; i < 5; i++)
+    if (c[i] > g.inv[p][i]) return false;
+  return true;
+}
+
+enum { A_MOVE = 1, A_HARVEST, A_PLANT, A_CHOP, A_PICK, A_TRAIN, A_DROP, A_MINE };
+struct Act {  // one command of our output
+  int kind, id, arg;  // MOVE: cell; PLANT / PICK: item
+  int talents[4];
+};
+struct Task {
+  int kind, p, unit, target;  // unit: index in g.trolls
+  int talents[4];
+};
+
+static int treeAtCell(const Game& g, int c) {
+  for (int i = 0; i < (int)g.trees.size(); i++)
+    if (g.trees[i].cell == c && g.trees[i].health > 0) return i;
+  return -1;
+}
+static bool nearShack(const Game& g, const Troll& u) {
+  int s = g.m->shack[u.owner];
+  return u.cell == s || manhattan(g.m->W, u.cell, s) == 1;
+}
+// parseOutput: validation on the pre-move state (errors are dropped)
+static void toTasks(const Game& g, int p, const vector<Act>& acts, vector<Task>& tasks) {
+  for (const Act& a : acts) {
+    Task t{a.kind, p, -1, -1, {0, 0, 0, 0}};
+    if (a.kind == A_TRAIN) {
+      memcpy(t.talents, a.talents, sizeof t.talents);
+      if (!canTrain(g, p, a.talents)) continue;
+      tasks.push_back(t);
+      continue;
+    }
+    int ui = -1;
+    for (int i = 0; i < (int)g.trolls.size(); i++)
+      if (g.trolls[i].id == a.id) ui = i;
+    if (ui < 0 || g.trolls[ui].owner != p) continue;
+    const Troll& u = g.trolls[ui];
+    t.unit = ui;
+    int tr = treeAtCell(g, u.cell), fr = u.carry - u.load();
+    bool ok = true;
+    switch (a.kind) {
+      case A_MOVE: t.target = nextCell(g, u.cell, a.arg, u.speed); break;
+      case A_HARVEST: ok = tr >= 0 && g.trees[tr].fruits > 0 && fr > 0 && u.harvest > 0; break;
+      case A_PLANT: t.target = a.arg; ok = g.m->grid[u.cell] == GRASS && tr < 0 && u.inv[a.arg] > 0; break;
+      case A_CHOP: ok = tr >= 0 && u.chop > 0; break;
+      case A_PICK: t.target = a.arg; ok = fr > 0 && g.inv[p][a.arg] > 0 && nearShack(g, u); break;
+      case A_DROP: ok = u.load() > 0 && nearShack(g, u); break;
+      case A_MINE: ok = g.m->nearType(u.cell, IRONCELL) && fr > 0 && u.chop > 0; break;
+    }
+    if (ok) tasks.push_back(t);
+  }
+}
+
+static void applyMoves(Game& g, const vector<Task>& moves) {
+  static vector<uint8_t> occ;
+  for (int p = 0; p < 2; p++) {
+    bool any = false;
+    for (auto& t : moves) any |= t.p == p;
+    if (!any) continue;
+    vector<int> units, targets;
+    for (int i = 0; i < (int)g.trolls.size(); i++)
+      if (g.trolls[i].owner == p) units.push_back(i), targets.push_back(g.trolls[i].cell);
+    for (auto& t : moves)
+      if (t.p == p)
+        for (int k = 0; k < (int)units.size(); k++)
+          if (units[k] == t.unit) targets[k] = t.target;
+    occ.assign(g.m->N, 0);
+    for (int i = (int)units.size() - 1; i >= 0; i--) {
+      occ[g.trolls[units[i]].cell] = 1;
+      if (g.trolls[units[i]].cell == targets[i]) units.erase(units.begin() + i), targets.erase(targets.begin() + i);
+    }
+    bool madeMove = true, resolveBlocking = false;
+    while (madeMove) {
+      madeMove = false;
+      map<int, int> freq;
+      for (int c : targets) freq[c]++;
+      for (int i = (int)units.size() - 1; i >= 0; i--) {
+        int c = targets[i];
+        if ((resolveBlocking || freq[c] == 1) && !occ[c]) {
+          occ[c] = 1;
+          occ[g.trolls[units[i]].cell] = 0;
+          g.trolls[units[i]].cell = c;
+          units.erase(units.begin() + i), targets.erase(targets.begin() + i);
+          madeMove = true;
+          resolveBlocking = false;
+        }
+      }
+      if (madeMove) continue;
+      for (int start = 0; start < (int)units.size(); start++) {
+        vector<int> path = {start};
+        bool looped = false;
+        for (int i = 0; i < (int)units.size() + 1; i++) {
+          int target = targets[path.back()], idx = -1;
+          for (int k = 0; k < (int)units.size(); k++)
+            if (g.trolls[units[k]].cell == target) {
+              idx = k;
+              break;
+            }
+          if (idx < 0) break;
+          if (idx == path[0]) {
+            looped = true;
+            break;
+          }
+          path.push_back(idx);
+        }
+        if (looped) {
+          sort(path.begin(), path.end());
+          for (int i = (int)path.size() - 1; i >= 0; i--) {
+            int idx = path[i];
+            g.trolls[units[idx]].cell = targets[idx];
+            units.erase(units.begin() + idx), targets.erase(targets.begin() + idx);
+            madeMove = true;
+          }
+        }
+      }
+      if (!madeMove && !resolveBlocking) resolveBlocking = madeMove = true;
+    }
+  }
+}
+
+static vector<vector<const Task*>> groupByCell(const Game& g, const vector<Task>& tasks, int kind) {
+  map<int, vector<const Task*>> m;
+  for (auto& t : tasks)
+    if (t.kind == kind) m[g.trolls[t.unit].cell].push_back(&t);
+  vector<vector<const Task*>> r;
+  for (auto& e : m) r.push_back(e.second);
+  return r;
+}
+
+static bool stalled(Game& g) {
+  const MapInfo& m = *g.m;
+  if (!g.trees.empty()) {
+    g.turnsUntilEnd = 0;
+    for (auto& u : g.trolls) {
+      bool on = false;
+      for (auto& t : g.trees) on |= t.cell == u.cell;
+      if (!on) continue;
+      g.turnsUntilEnd = max(g.turnsUntilEnd, (int)(m.d(m.shack[u.owner])[u.cell] / u.speed) + 6);
+    }
+    return false;
+  }
+  if (--g.turnsUntilEnd <= 0) return true;
+  bool stuck[2] = {true, true};
+  for (auto& u : g.trolls)
+    if (u.load() > u.inv[IRON]) stuck[u.owner] = false;
+  for (int p = 0; p < 2; p++)
+    for (int i = 0; i <= BANANA; i++)
+      if (g.inv[p][i] > 0) stuck[p] = false;
+  int s0 = score(g, 0), s1 = score(g, 1);
+  if (stuck[0] && stuck[1]) return true;
+  if (stuck[0] && s0 < s1) return true;
+  if (stuck[1] && s1 < s0) return true;
+  return false;
+}
+
+static void step(Game& g, const vector<Task>& tasks) {
+  vector<Task> moves;
+  for (auto& t : tasks)
+    if (t.kind == A_MOVE) moves.push_back(t);
+  applyMoves(g, moves);
+  for (auto& grp : groupByCell(g, tasks, A_HARVEST)) {
+    int ti = treeAtCell(g, g.trolls[grp[0]->unit].cell);
+    Tree& tr = g.trees[ti];
+    for (int i = 1; i <= MAX_FRUITS; i++) {
+      if (tr.fruits == 0) break;
+      for (auto* t : grp) {
+        Troll& u = g.trolls[t->unit];
+        if (i > u.harvest || u.load() >= u.carry) continue;
+        u.inv[tr.type]++;
+        if (tr.fruits > 0) tr.fruits--;
+      }
+    }
+  }
+  for (auto& grp : groupByCell(g, tasks, A_PLANT)) {
+    bool same = true;
+    for (auto* t : grp) same &= t->target == grp[0]->target;
+    if (!same) continue;
+    for (auto* t : grp) {
+      Troll& u = g.trolls[t->unit];
+      u.inv[t->target]--;
+      if (treeAtCell(g, u.cell) < 0) g.trees.push_back(newTree(*g.m, t->target, u.cell));
+    }
+  }
+  for (auto& grp : groupByCell(g, tasks, A_CHOP)) {
+    int ti = treeAtCell(g, g.trolls[grp[0]->unit].cell);
+    if (ti < 0) continue;
+    Tree& tr = g.trees[ti];
+    for (auto* t : grp) tr.health = max(tr.health - g.trolls[t->unit].chop, 0);
+    if (tr.health <= 0) {
+      int remaining = tr.size;
+      for (int i = 0; i < tr.size && remaining > 0; i++)
+        for (auto* t : grp) {
+          Troll& u = g.trolls[t->unit];
+          if (u.carry - u.load() > 0) u.inv[WOOD]++, remaining--;
+        }
+    }
+  }
+  for (auto& t : tasks)
+    if (t.kind == A_PICK && g.inv[t.p][t.target] > 0) g.inv[t.p][t.target]--, g.trolls[t.unit].inv[t.target]++;
+  for (auto& t : tasks)
+    if (t.kind == A_TRAIN) {
+      if (!canTrain(g, t.p, t.talents)) continue;
+      bool occupied = false;
+      for (auto& u : g.trolls) occupied |= u.cell == g.m->shack[t.p];
+      if (occupied) continue;
+      int n = 0;
+      for (auto& u : g.trolls) n += u.owner == t.p;
+      const int* d = t.talents;
+      int c[5] = {n + d[0] * d[0], n + d[1] * d[1], n + d[2] * d[2], 0, n + d[3] * d[3]};
+      for (int i = 0; i < 5; i++) g.inv[t.p][i] -= c[i];
+      Troll u{g.nextId++, t.p, g.m->shack[t.p], d[0], d[1], d[2], d[3], {0, 0, 0, 0, 0, 0}};
+      g.trolls.push_back(u);
+    }
+  for (auto& t : tasks)
+    if (t.kind == A_DROP) {
+      Troll& u = g.trolls[t.unit];
+      for (int i = 0; i < 6; i++) g.inv[t.p][i] += u.inv[i], u.inv[i] = 0;
+    }
+  for (auto& t : tasks)
+    if (t.kind == A_MINE) {
+      Troll& u = g.trolls[t.unit];
+      for (int i = 0; i < u.chop && u.load() < u.carry; i++) u.inv[IRON]++;
+    }
+  for (auto& t : g.trees)
+    if (t.health > 0) tickTree(t);
+  g.trees.erase(remove_if(g.trees.begin(), g.trees.end(), [](const Tree& t) { return t.health <= 0; }), g.trees.end());
+  g.turn++;
+  if (g.turn >= GAME_TURNS || stalled(g)) g.over = true;
+}
+
+// ------------------------------------------------------------------------------------ plans
+typedef vector<int> Design;  // speed carry harvest chop
+typedef vector<Design> Plan;
+static const vector<Plan> RANKED_PLANS = {
+    {{2, 2, 2, 2}, {3, 4, 1, 3}, {3, 4, 1, 3}, {2, 4, 0, 3}}, {{2, 4, 1, 1}, {2, 4, 1, 3}, {2, 4, 1, 3}},
+    {{2, 1, 1, 1}, {2, 2, 1, 1}, {3, 4, 0, 2}, {2, 4, 0, 3}}, {{2, 3, 1, 2}, {3, 4, 1, 2}, {2, 4, 1, 3}, {2, 4, 1, 3}},
+    {{2, 2, 2, 1}, {3, 4, 2, 3}, {3, 4, 0, 3}, {3, 4, 0, 3}}, {{2, 4, 2, 2}, {3, 4, 2, 3}, {3, 4, 2, 3}, {3, 4, 1, 3}},
+    {{3, 4, 1, 2}, {3, 4, 2, 3}, {3, 4, 0, 3}},              {{2, 2, 2, 1}, {3, 4, 2, 3}, {3, 4, 0, 3}},
+    {{2, 2, 2, 1}, {2, 4, 1, 2}, {3, 4, 0, 3}},              {{1, 1, 1, 1}, {2, 4, 1, 2}, {3, 4, 1, 3}},
+};
+static const vector<Design> P_CHEAP = {{2, 2, 0, 2}, {2, 2, 1, 2}, {2, 3, 0, 2}, {1, 2, 1, 1}};
+static vector<Design> AUTO_DESIGNS;
+
+struct Params {
+  Plan plan = {{1, 2, 1, 1}, {2, 4, 1, 2}};
+  bool choosePlan = true;
+  double planBudget = 880, planTurnBudget = 34;
+  int planTurns = 12;
+  bool planAll = false;
+  double trollRate = 1;
+  int earlySources = 60;
+  int simHorizon = 200;
+  double turnLimit = 36;
+  int forest = 130;
+  double forestValue = 40;
+  bool jamRelease = true, jamWide = true;
+  vector<int> replanSkip = {2, 4, 7};
+  bool replan = true;
+  double replanMargin = 10;
+  int replanEvery = 15;
+  bool noFarmExposed = true;
+  int maxSources = 2;
+  bool raidNoWait = true, chopperNow = true;
+  int chopperCarry = 2;
+  double patienceFirst = 25;
+  double stick = 1.3;
+  int trainDeadline = 220;
+  double plantGamma = 0.5, sourceValue = 12;
+  int farmPerChopper = 3;
+  double raidBeta = 0.5, trainBonus = 3, trollValue = 50, unitMax = 12, seedBonus = 1, denyAlpha = 0.5;
+  int maxWait = 12;
+  double patience = 40, patienceRaided = 40, seedValue = 6;
+  int producers = 2;
+  double wasteLambda = 0.7;
+  int planVersion = 0;  // bumped whenever `plan` changes (planRef in bot.ts)
+};
+
+// per-map constant data of our side
+struct Side {
+  const MapInfo* m;
+  int shack, oppShack;
+  vector<int> dropCells, mineCells, farmAll;
+  vector<int16_t> dropDist, oppDropDist;
+  vector<uint8_t> nearWater;
+  Side(const MapInfo* mi, int me) : m(mi) {
+    shack = m->shack[me], oppShack = m->shack[1 - me];
+    for (int n : m->nbrs(shack))
+      if (m->grid[n] == GRASS) dropCells.push_back(n);
+    dropDist = m->bfs(dropCells);
+    vector<int> od;
+    for (int n : m->nbrs(oppShack))
+      if (m->grid[n] == GRASS) od.push_back(n);
+    oppDropDist = m->bfs(od);
+    for (int c = 0; c < m->N; c++)
+      if (m->grid[c] == GRASS && m->nearType(c, IRONCELL)) mineCells.push_back(c);
+    nearWater.assign(m->N, 0);
+    for (int c = 0; c < m->N; c++)
+      if (m->nearType(c, WATER)) nearWater[c] = 1;
+    for (int c = 0; c < m->N; c++) {
+      int d = dropDist[c];
+      if (m->grid[c] != GRASS || d < 0) continue;
+      int o = oppDropDist[c] < 0 ? 99 : oppDropDist[c];
+      if (d <= 2 && o > d + 2) farmAll.push_back(c);
+    }
+    stable_sort(farmAll.begin(), farmAll.end(), [&](int a, int b) { return dropDist[a] * 2 - nearWater[a] * 2 < dropDist[b] * 2 - nearWater[b] * 2; });
+  }
+};
+
+// ------------------------------------------------------------------------------------ bot
+struct BTroll {
+  int id;
+  bool mine;
+  int cell, speed, carry, harvest, chop;
+  const int* inv;
+  int load;
+};
+enum { K_DROP, K_HARVEST, K_CHOP, K_MINE, K_PLANT, K_PICK };
+struct Job {
+  int u;  // index in mine
+  double rate;
+  int dest, act, item, tree, kind;  // act: A_* or 0 (wait here)
+};
+
+struct Bot;
+struct Sim {
+  Game g;
+  unique_ptr<Bot> a;
+  int horizon = 150;
+  Sim(const Game& g0, shared_ptr<Side> side, const Params& p);
+  bool run(double deadline, double& value);
+};
+
+struct Bot {
+  shared_ptr<Side> S;
+  const MapInfo* m;
+  int N, W;
+  Params P;
+  bool sim;
+  int turnNo = 0;
+  vector<Design> designs;
+  int planRef = -1;
+  double targetSince = 0;
+  int lastK = 0, raidSeen = -1000;
+  int sourcesPlanted[4] = {0, 0, 0, 0};
+  int profile = 0;  // 0 unknown, 1 raider, 2 eco
+  map<int, pair<int, int>> prev;  // troll id -> (kind, dest)
+  map<int, int> seedIntent, intentSince;
+  map<int, array<int, 3>> still;  // cell, load, since
+  // plan search
+  unique_ptr<Game> planGame;
+  int planIdx = 0;
+  unique_ptr<Sim> planSim;
+  double planBest = -1e9;
+  bool planPending = false;
+  string planScores;
+  // re-plans
+  unique_ptr<Game> lastGame;
+  struct RP {
+    Game g;
+    vector<Plan> cands;
+    int idx = 0;
+    unique_ptr<Sim> sim;
+    vector<double> vals;
+  };
+  unique_ptr<RP> rp;
+  string rpLog;
+  int mineCount = 0, rpNext = 0;
+  double otherMs = 5;
+  vector<int> trainTurns;
+
+  Bot(shared_ptr<Side> side, const Params& p, bool isSim) : S(side), m(side->m), N(side->m->N), W(side->m->W), P(p), sim(isSim) {}
+
+  static int steps(const BTroll& u, int d) { return d < 0 ? 999 : (d + u.speed - 1) / u.speed; }
+  struct Pred {
+    int size, health, fruits, cooldown;
+  };
+  static Pred predict(const Tree& tr, int t) {
+    Pred r{tr.size, tr.health, tr.fruits, tr.cooldown};
+    for (int i = 0; i < t; i++) {
+      if (r.cooldown > 0) r.cooldown--;
+      if (r.cooldown == 0 && r.health > 0) {
+        if (r.size < MAX_SIZE) {
+          r.size++;
+          r.health += DELTA_HEALTH[tr.type];
+          r.cooldown = tr.growth;
+        } else if (r.fruits < MAX_FRUITS) {
+          r.fruits++;
+          r.cooldown = tr.growth;
+        } else
+          break;
+      }
+    }
+    return r;
+  }
+  static int turnsToSize(const Tree& tr, int size) {
+    if (tr.size >= size) return 0;
+    return (tr.cooldown == 0 ? 1 : tr.cooldown) + (size - 1 - tr.size) * tr.growth;
+  }
+  static pair<int, int> chopTime(const Tree& tr, int arrive, int power) {
+    Pred p = predict(tr, arrive);
+    int size = p.size, health = p.health, cooldown = p.cooldown;
+    for (int k = 1; k <= 30; k++) {
+      health -= power;
+      if (health <= 0) return {k, size};
+      if (cooldown > 0) cooldown--;
+      if (cooldown == 0 && size < MAX_SIZE) {
+        size++;
+        health += DELTA_HEALTH[tr.type];
+        cooldown = tr.growth;
+      } else if (cooldown == 0)
+        cooldown = tr.growth;
+    }
+    return {99, size};
+  }
+
+  void evalPlans(double budgetMs) {
+    double t0 = nowMs();
+    const auto& PL = RANKED_PLANS;
+    while (planIdx < (int)PL.size()) {
+      if (!planSim) {
+        if (nowMs() > t0 + budgetMs - 8) break;
+        Params q = P;
+        q.plan = PL[planIdx];
+        planSim = make_unique<Sim>(*planGame, S, q);
+        planSim->horizon = P.simHorizon;
+      }
+      double v;
+      if (!planSim->run(t0 + budgetMs, v)) break;
+      planScores += " " + to_string(planIdx) + ":" + to_string((int)v);
+      if (v > planBest) {
+        planBest = v;
+        P.plan = PL[planIdx];
+        P.planVersion++;
+      }
+      planSim.reset();
+      planIdx++;
+    }
+    planPending = planIdx < (int)PL.size() && turnNo < P.planTurns;
+    planScores += " (" + to_string((int)(nowMs() - t0)) + " ms)";
+  }
+
+  void replanStep(double budgetMs, const vector<BTroll>& mine) {
+    double t0 = nowMs();
+    int k = mine.size();
+    if (!rp) {
+      if (turnNo > P.trainDeadline - 30) return;
+      vector<pair<int, Design>> pre;
+      for (auto& u : mine)
+        if (u.id > 1) pre.push_back({u.id, {u.speed, u.carry, u.harvest, u.chop}});
+      sort(pre.begin(), pre.end());
+      Plan prefix;
+      for (auto& e : pre) prefix.push_back(e.second);
+      set<Plan> seen;
+      rp = make_unique<RP>();
+      rp->g = *lastGame;
+      auto add = [&](const Plan& suffix) {
+        if (seen.count(suffix)) return;
+        seen.insert(suffix);
+        Plan c = prefix;
+        c.insert(c.end(), suffix.begin(), suffix.end());
+        rp->cands.push_back(c);
+      };
+      add(Plan(designs.begin() + min((int)designs.size(), k - 1), designs.end()));
+      for (int pi = 0; pi < (int)RANKED_PLANS.size(); pi++) {
+        const Plan& p = RANKED_PLANS[pi];
+        if ((int)p.size() > k - 1 && find(P.replanSkip.begin(), P.replanSkip.end(), pi) == P.replanSkip.end()) add(Plan(p.begin() + (k - 1), p.end()));
+      }
+      for (auto& d : P_CHEAP) add({d});
+      add({});
+      rpNext = turnNo + P.replanEvery;
+    }
+    while (rp->idx < (int)rp->cands.size()) {
+      if (!rp->sim) {
+        if (nowMs() > t0 + budgetMs - 8) return;
+        Params q = P;
+        q.plan = rp->cands[rp->idx];
+        rp->sim = make_unique<Sim>(rp->g, S, q);
+        rp->sim->horizon = min(300, rp->g.turn + P.simHorizon);
+      }
+      double v;
+      if (!rp->sim->run(t0 + budgetMs, v)) return;
+      rp->vals.push_back(v);
+      rp->sim.reset();
+      rp->idx++;
+    }
+    int best = 0;
+    for (int i = 1; i < (int)rp->vals.size(); i++)
+      if (rp->vals[i] > rp->vals[best]) best = i;
+    bool sw = best != 0 && rp->vals[best] > rp->vals[0] + P.replanMargin;
+    rpLog = "replan t" + to_string(rp->g.turn + 1) + (sw ? " switch" : " keep");
+    if (sw && mineCount == k) P.plan = rp->cands[best], P.planVersion++;
+    rp.reset();
+  }
+
+  // game state of our turn input (we are player 0)
+  Game parse(const vector<string>& lines, int turnsPlayed) {
+    Game g;
+    g.m = m;
+    g.turn = turnsPlayed;
+    size_t li = 0;
+    for (int p = 0; p < 2; p++) {
+      istringstream s(lines[li++]);
+      for (int i = 0; i < 6; i++) s >> g.inv[p][i];
+    }
+    int nt = stoi(lines[li++]);
+    for (int k = 0; k < nt; k++) {
+      istringstream s(lines[li++]);
+      string type;
+      int x, y;
+      Tree t;
+      s >> type >> x >> y >> t.size >> t.health >> t.fruits >> t.cooldown;
+      t.type = find(ITEMS, ITEMS + 6, type) - ITEMS;
+      t.cell = y * W + x;
+      t.growth = growthOf(*m, t.type, t.cell);
+      g.trees.push_back(t);
+    }
+    int nu = stoi(lines[li++]);
+    for (int k = 0; k < nu; k++) {
+      istringstream s(lines[li++]);
+      int v[14];
+      for (int i = 0; i < 14; i++) s >> v[i];
+      Troll u{v[0], v[1], v[3] * W + v[2], v[4], v[5], v[6], v[7], {v[8], v[9], v[10], v[11], v[12], v[13]}};
+      g.trolls.push_back(u);
+      g.nextId = max(g.nextId, v[0] + 1);
+    }
+    return g;
+  }
+
+  string turn(const vector<string>& lines) {
+    Game g = parse(lines, turnNo);
+    lastGame = make_unique<Game>(g);
+    if (turnNo == 0 && !sim && P.choosePlan) {
+      planGame = make_unique<Game>(g);
+      planPending = true;
+    }
+    vector<Act> acts = turnGame(g, 0);
+    string out;
+    for (auto& a : acts) {
+      if (!out.empty()) out += ";";
+      switch (a.kind) {
+        case A_MOVE: out += "MOVE " + to_string(a.id) + " " + to_string(a.arg % W) + " " + to_string(a.arg / W); break;
+        case A_TRAIN: out += "TRAIN " + to_string(a.talents[0]) + " " + to_string(a.talents[1]) + " " + to_string(a.talents[2]) + " " + to_string(a.talents[3]); break;
+        case A_DROP: out += "DROP " + to_string(a.id); break;
+        case A_HARVEST: out += "HARVEST " + to_string(a.id); break;
+        case A_CHOP: out += "CHOP " + to_string(a.id); break;
+        case A_MINE: out += "MINE " + to_string(a.id); break;
+        case A_PLANT: out += "PLANT " + to_string(a.id) + " " + ITEMS[a.arg]; break;
+        case A_PICK: out += "PICK " + to_string(a.id) + " " + ITEMS[a.arg]; break;
+      }
+    }
+    return out.empty() ? "WAIT" : out;
+  }
+
+  vector<Act> turnGame(const Game& g, int p) {
+    vector<BTroll> trolls;
+    trolls.reserve(g.trolls.size());
+    for (auto& u : g.trolls) trolls.push_back({u.id, u.owner == p, u.cell, u.speed, u.carry, u.harvest, u.chop, u.inv, u.load()});
+    int inv[6];
+    memcpy(inv, g.inv[p], sizeof inv);
+    return decide(inv, g.trees, trolls);
+  }
+
+  vector<Act> decide(int* inv, const vector<Tree>& trees, const vector<BTroll>& trolls);
+};
+
+Sim::Sim(const Game& g0, shared_ptr<Side> side, const Params& p) : g(g0) {
+  a = make_unique<Bot>(side, p, true);
+  a->turnNo = g.turn;
+}
+bool Sim::run(double deadline, double& value) {
+  vector<Task> tasks;
+  while (!g.over && g.turn < horizon) {
+    if (nowMs() > deadline) return false;
+    vector<Act> acts = a->turnGame(g, 0);
+    tasks.clear();
+    toTasks(g, 0, acts, tasks);
+    step(g, tasks);
+  }
+  double v = score(g, 0);
+  for (auto& u : g.trolls)
+    if (u.owner == 0) v += 4 * u.inv[WOOD] + u.inv[0] + u.inv[1] + u.inv[2] + u.inv[3];
+  value = v;
+  return true;
+}
+
+vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll>& trolls) {
+  turnNo++;
+  double tStart = nowMs(), simMs = 0;
+  double turnBudget = P.turnLimit > 0 ? max(5.0, min(P.planTurnBudget, P.turnLimit - otherMs)) : P.planTurnBudget;
+  bool planned = planPending;
+  if (planPending) {
+    double t = nowMs();
+    evalPlans(P.planAll ? 1e9 : turnNo == 1 ? P.planBudget : turnBudget);
+    simMs += nowMs() - t;
+  }
+  const Params PP = P;  // this turn's parameters (re-plans below apply next turn)
+  const Params& Pr = PP;
+  vector<int> treeAt(N, -1);
+  for (int i = 0; i < (int)trees.size(); i++) treeAt[trees[i].cell] = i;
+  vector<BTroll> mine, opp;
+  for (auto& u : trolls) (u.mine ? mine : opp).push_back(u);
+  if (rp && mineCount != (int)mine.size()) rp.reset();
+  mineCount = mine.size();
+  if (!sim && Pr.replan && !planned && turnNo > 1 && (rp || turnNo >= rpNext)) {
+    double t = nowMs();
+    replanStep(Pr.planAll ? 1e9 : turnBudget, mine);
+    simMs += nowMs() - t;
+  }
+  for (auto it = seedIntent.begin(); it != seedIntent.end();) {
+    const BTroll* u = nullptr;
+    for (auto& x : mine)
+      if (x.id == it->first) u = &x;
+    if (!u || u->inv[it->second] == 0 || turnNo - (intentSince.count(it->first) ? intentSince[it->first] : 0) > 8)
+      it = seedIntent.erase(it);
+    else
+      ++it;
+  }
+  const int left = 301 - turnNo;
+  vector<Act> out;
+  auto& dropDist = S->dropDist;
+  auto& oppDropDist = S->oppDropDist;
+  auto& nearWater = S->nearWater;
+  auto& dropCells = S->dropCells;
+  auto dist = [&](int c) { return m->d(c); };
+
+  // ------------------------------------------------------------ training
+  const int k = mine.size();
+  int stock[6];
+  memcpy(stock, inv, sizeof stock);
+  int held[5] = {0, 0, 0, 0, 0};
+  if (turnNo < Pr.earlySources && profile != 1)
+    for (int f : {1, 0, 2}) {
+      if (sourcesPlanted[f] > 0 || stock[f] == 0) continue;
+      bool have = false;
+      for (auto& t : trees) have |= t.type == f && dropDist[t.cell] >= 0 && dropDist[t.cell] <= 2 && dropDist[t.cell] < oppDropDist[t.cell];
+      if (have) continue;
+      held[f] = 1;
+      stock[f]--;
+    }
+  const Design* target = nullptr;
+  Design targetD, trainNow;
+  bool hasTrain = false;
+  vector<int> costV;  // this.cost
+  bool hasCost = false;
+  if (planRef != Pr.planVersion) {
+    designs = Pr.plan;
+    planRef = Pr.planVersion;
+    targetSince = turnNo;
+  }
+  if (lastK != k) lastK = k, targetSince = turnNo;
+  auto costOf = [&](const Design& d, int kk) { return vector<int>{kk + d[0] * d[0], kk + d[1] * d[1], kk + d[2] * d[2], 0, kk + d[3] * d[3]}; };
+  auto affordable = [&](const vector<int>& c) {
+    for (int i = 0; i < 5; i++)
+      if (stock[i] < c[i]) return false;
+    return true;
+  };
+  if (k - 1 < (int)designs.size() && turnNo < Pr.trainDeadline && !planPending) {
+    Design d = designs[k - 1];
+    vector<int> cost = costOf(d, k);
+    double patience = k == 1 ? Pr.patienceFirst : turnNo - raidSeen <= 40 ? Pr.patienceRaided : Pr.patience;
+    if (turnNo - targetSince > patience && !affordable(cost)) {
+      targetSince += patience / 2;
+      static const int attr[4] = {0, 1, 2, 4};
+      int minV[4] = {1, 1, 0, min(2, d[3])};
+      int bi = -1, bd = 0;
+      for (int a = 0; a < 4; a++) {
+        int def = cost[attr[a]] - stock[attr[a]];
+        if (d[a] > minV[a] && def > bd) bd = def, bi = a;
+      }
+      Design fit;
+      double fv = -1;
+      for (int sp = 1; sp <= d[0]; sp++)
+        for (int c = 1; c <= d[1]; c++)
+          for (int h = 0; h <= d[2]; h++)
+            for (int cp = min(2, d[3]); cp <= d[3]; cp++) {
+              if (k + sp * sp > stock[0] || k + c * c > stock[1] || k + h * h > stock[2] || k + cp * cp > stock[4]) continue;
+              double v = 3 * c + 2.5 * sp + 2 * cp + h;
+              if (v > fv) fv = v, fit = {sp, c, h, cp};
+            }
+      if (fit.empty() && k == 1)
+        for (int sp = 1; sp <= max(1, d[0]); sp++)
+          for (int c = 2; c <= max(2, d[1]); c++)
+            for (int h = 0; h <= d[2]; h++)
+              for (int cp = 1; cp <= max(1, d[3]); cp++) {
+                if (k + sp * sp > stock[0] || k + c * c > stock[1] || k + h * h > stock[2] || k + cp * cp > stock[4]) continue;
+                double v = 3 * c + 2.5 * sp + 2 * cp + h;
+                if (v > fv) fv = v, fit = {sp, c, h, cp};
+              }
+      if (!fit.empty() && fit[1] >= 2) {
+        d = fit;
+        designs[k - 1] = d;
+        cost = costOf(d, k);
+      } else if (bi < 0) {
+        if (k > 1) designs.resize(k - 1);
+      } else {
+        d[bi]--;
+        designs[k - 1] = d;
+        cost = costOf(d, k);
+      }
+    }
+    bool isChopper = d[3] >= 2 && d[1] >= 2;
+    bool haveChopper = false;
+    for (auto& u : mine) haveChopper |= u.chop >= 2 && u.carry >= 2;
+    if (Pr.chopperNow && k - 1 < (int)designs.size() && !haveChopper && (!isChopper || !affordable(cost))) {
+      for (auto& x : AUTO_DESIGNS)
+        if (x[0] * x[0] + k <= stock[0] && x[1] * x[1] + k <= stock[1] && x[2] * x[2] + k <= stock[2] && x[3] * x[3] + k <= stock[4]) {
+          d = x;
+          designs[k - 1] = d;
+          cost = costOf(d, k);
+          break;
+        }
+    }
+    if (k - 1 >= (int)designs.size())
+      hasCost = false;
+    else if (affordable(cost)) {
+      trainNow = d, hasTrain = true;
+      for (int i = 0; i < 5; i++) stock[i] -= cost[i];
+      if (k < (int)designs.size()) {
+        targetD = designs[k];
+        target = &targetD;
+        costV = costOf(designs[k], k + 1);
+        hasCost = true;
+      } else
+        hasCost = false;
+    } else {
+      targetD = d;
+      target = &targetD;
+      costV = cost;
+      hasCost = true;
+    }
+  }
+  for (int i = 0; i < 5; i++) stock[i] += held[i];
+  int need[5] = {0, 0, 0, 0, 0}, reserve[5] = {0, 0, 0, 0, 0};
+  if (target && hasCost)
+    for (int i = 0; i < 5; i++) need[i] = max(0, costV[i] - stock[i]), reserve[i] = costV[i];
+  int pickable[4];
+  for (int i = 0; i < 4; i++) pickable[i] = max(0, stock[i] - reserve[i]);
+
+  // ------------------------------------------------------------ values
+  auto ownTree = [&](const Tree& t) { return dropDist[t.cell] >= 0 && (oppDropDist[t.cell] < 0 || dropDist[t.cell] < oppDropDist[t.cell]); };
+  for (auto& o : opp)
+    if (o.chop > 0 && treeAt[o.cell] >= 0 && ownTree(trees[treeAt[o.cell]])) raidSeen = turnNo;
+  const bool raided = turnNo - raidSeen <= 40;
+  bool pureCutter = false;
+  for (auto& o : opp) pureCutter |= o.harvest == 0 && o.chop >= 2;
+  if (pureCutter || raidSeen > 0)
+    profile = 1;
+  else if (profile == 0 && opp.size() >= 2 && turnNo > 30)
+    profile = 2;
+  double scoreVal[4] = {1, 1, 1, 1};
+  int deficit = need[0] + need[1] + need[2] + need[3] + need[4];
+  double trollValue = max(Pr.trollValue, Pr.trollRate * (left - 20));
+  double unitVal = deficit > 0 ? min(deficit <= 4 ? 2 * Pr.unitMax : Pr.unitMax, max(Pr.trainBonus, trollValue / deficit)) : 0;
+  for (int i = 0; i < 4; i++)
+    if (need[i] > 0) scoreVal[i] += unitVal;
+  double fruitVal[4];
+  memcpy(fruitVal, scoreVal, sizeof fruitVal);
+  auto plantOk = [&](int type, int cell, int extra) {
+    int g = COOLDOWN[type] - (nearWater[cell] ? WATER_BOOST[type] : 0);
+    int grow = 1 + 3 * g;
+    return turnNo + extra + grow + (FINAL_HEALTH[type] + 1) / 2 + 4 < 300;
+  };
+  int choppers = 0;
+  for (auto& u : mine) choppers += u.chop >= 2 && u.carry >= Pr.chopperCarry;
+  vector<uint8_t> oppD(N, 255);
+  for (auto& o : opp) {
+    const int16_t* d = dist(o.cell);
+    for (int c = 0; c < N; c++)
+      if (d[c] >= 0 && d[c] <= 4 && d[c] < oppD[c]) oppD[c] = d[c];
+  }
+  auto oppNear = [&](int c, int r) { return oppD[c] <= r; };
+  vector<int> farmCells;
+  for (int c : S->farmAll)
+    if (treeAt[c] < 0) farmCells.push_back(c);
+  int farmTrees = 0;
+  for (auto& t : trees) farmTrees += dropDist[t.cell] >= 0 && dropDist[t.cell] <= 2 && dropDist[t.cell] < oppDropDist[t.cell];
+  bool oppChopper = false, myChopper = false;
+  for (auto& o : opp) oppChopper |= o.chop >= 2;
+  for (auto& u : mine) myChopper |= u.chop >= 2 && u.carry >= 2;
+  const bool exposed = oppChopper && !myChopper;
+  int farmTarget = exposed && Pr.noFarmExposed ? 0 : 2 + Pr.farmPerChopper * choppers;
+  int farmMissing = farmTarget - farmTrees;
+  struct Want {
+    int type;
+    double value;
+    bool source;
+  };
+  vector<Want> wanted;
+  auto wantedHas = [&](int t) {
+    for (auto& w : wanted)
+      if (w.type == t) return true;
+    return false;
+  };
+  if (target)
+    for (int f : {1, 0, 2}) {
+      int have = 0;
+      for (auto& t : trees) have += t.type == f && ownTree(t) && dropDist[t.cell] <= 3;
+      int nf = need[f];
+      int want = nf >= 10 ? 2 : nf >= 4 ? 1 : 0;
+      if (have < want && stock[f] > 0 && sourcesPlanted[f] < Pr.maxSources && !exposed && profile != 1) wanted.push_back({f, Pr.sourceValue, true});
+    }
+  if (turnNo < Pr.earlySources && !exposed && profile != 1)
+    for (int f : {1, 0, 2}) {
+      if (wantedHas(f) || sourcesPlanted[f] > 0 || stock[f] == 0) continue;
+      bool have = false;
+      for (auto& t : trees) have |= t.type == f && ownTree(t) && dropDist[t.cell] <= 2;
+      if (have) continue;
+      wanted.push_back({f, Pr.sourceValue, true});
+    }
+  if (farmMissing > 0)
+    for (int f : {(int)BANANA, 0, 1, 2})
+      if (need[f] == 0) wanted.push_back({f, 16 * Pr.plantGamma, false});
+  int seedsAvail = pickable[0] + pickable[1] + pickable[2] + pickable[3];
+  for (int i = 0; i < 4; i++)
+    if (farmMissing > seedsAvail) fruitVal[i] += Pr.seedBonus;
+  int bananaSeeds = pickable[BANANA];
+  for (auto& u : mine) bananaSeeds += u.inv[BANANA];
+  int seedGap = plantOk(BANANA, S->shack, 20) ? max(0, (int)farmCells.size() - bananaSeeds) : 0;
+  vector<char> producer(trees.size(), 0);
+  if (seedGap > 0) {
+    fruitVal[BANANA] += Pr.seedValue;
+    vector<int> mature;
+    for (int i = 0; i < (int)trees.size(); i++) {
+      auto& t = trees[i];
+      if (t.type == BANANA && t.size == MAX_SIZE && ownTree(t) && dropDist[t.cell] <= 3) mature.push_back(i);
+    }
+    stable_sort(mature.begin(), mature.end(), [&](int a, int b) { return dropDist[trees[a].cell] < dropDist[trees[b].cell]; });
+    int cnt = min(Pr.producers, (seedGap + 1) / 2);
+    for (int i = 0; i < (int)mature.size() && i < cnt; i++) producer[mature[i]] = 1;
+  }
+  auto carriedValue = [&](const BTroll& u) {
+    double v = 4 * u.inv[WOOD];
+    int intent = seedIntent.count(u.id) ? seedIntent[u.id] : -1;
+    for (int i = 0; i < 4; i++) v += (u.inv[i] - (i == intent ? 1 : 0)) * scoreVal[i];
+    int ironExtra = max(0, u.inv[IRON] - need[4]);
+    v += min(u.inv[IRON], need[4]) * unitVal + max(0, ironExtra) * 0.5;
+    return v;
+  };
+
+  // ------------------------------------------------------------ jobs
+  vector<vector<int>> enemiesAt(N);  // indices in opp
+  for (int i = 0; i < (int)opp.size(); i++) enemiesAt[opp[i].cell].push_back(i);
+  auto isChopperRole = [](const BTroll& u) { return u.chop >= 2 && u.carry >= 3; };
+  auto isGardener = [&](const BTroll& u) { return u.harvest >= 1 && !isChopperRole(u); };
+  bool anyChopperRole = false;
+  for (auto& u : mine) anyChopperRole |= isChopperRole(u);
+  const bool forestOn = Pr.forest > 0 && turnNo >= Pr.forest && left > 30 && !(exposed && Pr.noFarmExposed) && anyChopperRole;
+  vector<int> forestCells;
+  if (forestOn)
+    for (int c : farmCells)
+      if (!oppNear(c, 2) && plantOk(BANANA, c, 3)) forestCells.push_back(c);
+  int forestSlots = forestCells.size();
+  for (auto& u : mine)
+    if (isGardener(u)) forestSlots -= u.inv[BANANA];
+  auto bestDrop = [&](int cell) {
+    int best = dropCells[0];
+    for (int c : dropCells)
+      if (dist(cell)[c] >= 0 && dist(cell)[c] < dist(cell)[best]) best = c;
+    return best;
+  };
+
+  auto gardenerJobs = [&](int ui, vector<Job>& jobs) {
+    const BTroll& u = mine[ui];
+    double FV = Pr.forestValue;
+    const int16_t* dNow = dist(u.cell);
+    bool atShack = dropDist[u.cell] == 0 || u.cell == S->shack;
+    if (u.inv[BANANA] > 0)
+      for (int c : forestCells)
+        if (dNow[c] >= 0) jobs.push_back({ui, FV / (steps(u, dNow[c]) + 1), c, A_PLANT, BANANA, -1, K_PLANT});
+    int free = u.carry - u.load;
+    if (free > 0 && forestSlots > 0) {
+      for (int ti = 0; ti < (int)trees.size(); ti++) {
+        auto& tr = trees[ti];
+        if (tr.type != BANANA || !ownTree(tr)) continue;
+        int d = dNow[tr.cell];
+        if (d < 0) continue;
+        int a = steps(u, d);
+        if (predict(tr, a).fruits <= 0) continue;
+        jobs.push_back({ui, FV / (a + 3), tr.cell, A_HARVEST, 0, ti, K_HARVEST});
+      }
+      if (pickable[BANANA] > 0) {
+        int T = (atShack ? 0 : steps(u, dropDist[u.cell])) + 3;
+        jobs.push_back({ui, (0.7 * FV) / T, atShack ? -1 : bestDrop(u.cell), A_PICK, BANANA, -1, K_PICK});
+      }
+    }
+    int other = u.load - u.inv[BANANA];
+    if (other > 0) {
+      double v = carriedValue(u) - u.inv[BANANA] * scoreVal[BANANA];
+      if (atShack)
+        jobs.push_back({ui, v, -1, A_DROP, 0, -1, K_DROP});
+      else
+        for (int c : dropCells)
+          if (dNow[c] >= 0) jobs.push_back({ui, v / (steps(u, dNow[c]) + 1), c, A_DROP, 0, -1, K_DROP});
+    }
+  };
+
+  auto jobsFor = [&](int ui, vector<Job>& jobs) {
+    const BTroll& u = mine[ui];
+    if (forestOn && isGardener(u) && !forestCells.empty()) {
+      gardenerJobs(ui, jobs);
+      if (!jobs.empty()) return;
+    }
+    int free = u.carry - u.load;
+    double cv = carriedValue(u);
+    auto home = [&](int c) { return steps(u, dropDist[c]) + 1; };
+    const int16_t* dNow = dist(u.cell);
+    bool atShack = dropDist[u.cell] == 0 || u.cell == S->shack;
+    if (u.load > 0 && cv > 0) {
+      if (atShack)
+        jobs.push_back({ui, cv, -1, A_DROP, 0, -1, K_DROP});
+      else
+        for (int c : dropCells) {
+          int r = steps(u, dNow[c]) + 1;
+          if (r <= left) jobs.push_back({ui, cv / r, c, A_DROP, 0, -1, K_DROP});
+        }
+    }
+    if (free > 0) {
+      for (int ti = 0; ti < (int)trees.size(); ti++) {
+        const Tree& tr = trees[ti];
+        int d = dNow[tr.cell];
+        if (d < 0) continue;
+        int a = steps(u, d), r = home(tr.cell);
+        const vector<int>& enemies = enemiesAt[tr.cell];
+        if (u.harvest > 0 && free > 0) {
+          int f = predict(tr, a).fruits, g = min(f, free);
+          if (g > 0) {
+            int ht = (g + u.harvest - 1) / u.harvest, T = a + ht + r;
+            if (T <= left) jobs.push_back({ui, (cv + g * fruitVal[tr.type]) / T, tr.cell, A_HARVEST, 0, ti, K_HARVEST});
+          }
+        }
+        if (u.chop > 0) {
+          int eChop = 0;
+          for (int e : enemies) eChop += opp[e].chop;
+          bool own = ownTree(tr), endgame = left < 40;
+          int wait = 0;
+          bool threatened = Pr.raidNoWait && raided && own && enemies.empty() && tr.size >= 2;
+          if (own && enemies.empty() && !endgame && tr.size < MAX_SIZE && !threatened) {
+            int tm = turnsToSize(tr, MAX_SIZE);
+            if (tm > Pr.maxWait) continue;
+            wait = max(0, tm - a);
+          }
+          Tree tgt = tr;
+          if (!enemies.empty() && a > 0) {
+            if (a >= chopTime(tr, 0, eChop).first) continue;
+            tgt.health = tr.health - eChop * a;
+          }
+          auto [kk, size] = chopTime(tgt, a + wait, u.chop + eChop);
+          int T = a + wait + kk + r;
+          if (T > left) continue;
+          int share = size;
+          vector<int> ef;
+          for (int e : enemies)
+            if (opp[e].chop > 0) ef.push_back(opp[e].carry - opp[e].load);
+          if (!ef.empty()) {
+            int lft = size, got = 0, mf = free;
+            auto anyEf = [&]() {
+              for (int x : ef)
+                if (x > 0) return true;
+              return false;
+            };
+            while (lft > 0 && (mf > 0 || anyEf())) {
+              if (mf > 0) got++, mf--, lft--;
+              for (int i = 0; i < (int)ef.size() && lft > 0; i++)
+                if (ef[i] > 0) ef[i]--, lft--;
+            }
+            share = got;
+          }
+          int wood = min(share, free);
+          double value = 4 * wood;
+          int sizeNow = predict(tr, a).size;
+          if (!enemies.empty())
+            value += 4 * Pr.denyAlpha * share;
+          else if (!own && sizeNow < MAX_SIZE)
+            value += 4 * Pr.raidBeta * (MAX_SIZE - sizeNow);
+          if (enemies.empty() && (own || dropDist[tr.cell] <= oppDropDist[tr.cell])) value -= Pr.wasteLambda * max(0.0, min(1.0, (left - 25) / 40.0)) * 4 * max(0, size - wood);
+          if (value <= 0) continue;
+          if (!endgame && own && need[tr.type] > 0 && enemies.empty() && !threatened) continue;
+          if (producer[ti] && enemies.empty() && !threatened && left > 30) continue;
+          int act = wait > 0 && d == 0 ? 0 : A_CHOP;
+          jobs.push_back({ui, (cv + value) / T, tr.cell, act, 0, ti, K_CHOP});
+        }
+      }
+      if (u.chop > 0 && need[4] > 0) {
+        int mm = min(free, need[4]);
+        for (int c : S->mineCells) {
+          if (dNow[c] < 0) continue;
+          int T = steps(u, dNow[c]) + (mm + u.chop - 1) / u.chop + home(c);
+          if (T <= left) jobs.push_back({ui, (cv + unitVal * mm) / T, c == u.cell ? -1 : c, A_MINE, 0, -1, K_MINE});
+        }
+      }
+    }
+    bool intentHas = seedIntent.count(u.id) > 0;
+    if ((!wanted.empty() || intentHas) && !farmCells.empty()) {
+      int seed = -1;
+      bool pick = false;
+      if (intentHas)
+        seed = seedIntent[u.id];
+      else
+        for (auto& w : wanted)
+          if (u.inv[w.type] > 0) {
+            seed = w.type;
+            break;
+          }
+      if (seed < 0 && free > 0)
+        for (auto& w : wanted)
+          if ((w.source ? stock[w.type] : pickable[w.type]) > 0) {
+            seed = w.type;
+            pick = true;
+            break;
+          }
+      if (seed >= 0) {
+        Want w{seed, 16 * Pr.plantGamma, false};
+        for (auto& x : wanted)
+          if (x.type == seed) {
+            w = x;
+            break;
+          }
+        int toShack = pick ? (atShack ? 1 : steps(u, dropDist[u.cell]) + 1) : 0;
+        double bestRate = -1;
+        int bestCell = -1;
+        for (int c : farmCells) {
+          if (oppNear(c, 3)) continue;
+          int dd = pick ? dist(c)[bestDrop(c)] : dNow[c];
+          int T = toShack + steps(u, dd) + 1;
+          if (!plantOk(seed, c, T)) continue;
+          int g = COOLDOWN[seed] - (nearWater[c] ? WATER_BOOST[seed] : 0);
+          double value = w.value * (w.source ? 8.0 / g : 1) - scoreVal[seed];
+          if (value <= 0) continue;
+          double rate = value / T;
+          if (rate > bestRate) bestRate = rate, bestCell = c;
+        }
+        if (bestCell >= 0) {
+          if (!pick)
+            jobs.push_back({ui, bestRate, bestCell, A_PLANT, seed, -1, K_PLANT});
+          else if (atShack)
+            jobs.push_back({ui, bestRate, -1, A_PICK, seed, -1, K_PICK});
+          else
+            for (int dc : dropCells)
+              if (dNow[dc] >= 0) jobs.push_back({ui, bestRate * (1 - 0.05 * dNow[dc]), dc, A_PICK, seed, -1, K_PICK});
+        }
+      }
+    }
+    auto hasKind = [&](int kd) {
+      for (auto& j : jobs)
+        if (j.kind == kd) return true;
+      return false;
+    };
+    if (intentHas && hasKind(K_PLANT)) {
+      jobs.erase(remove_if(jobs.begin(), jobs.end(), [](const Job& j) { return j.kind != K_PLANT; }), jobs.end());
+      return;
+    }
+    if (forestOn && isChopperRole(u) && !intentHas) {
+      jobs.erase(remove_if(jobs.begin(), jobs.end(), [](const Job& j) { return j.kind == K_PLANT || j.kind == K_PICK; }), jobs.end());
+      return;
+    }
+    if (intentHas && u.load > 0 && !hasKind(K_DROP)) {
+      seedIntent.erase(u.id);
+      double full = carriedValue(u) + 0.5;
+      if (atShack)
+        jobs.push_back({ui, full, -1, A_DROP, 0, -1, K_DROP});
+      else
+        for (int c : dropCells)
+          if (dNow[c] >= 0) jobs.push_back({ui, full / (steps(u, dNow[c]) + 1), c, A_DROP, 0, -1, K_DROP});
+    }
+  };
+
+  // greedy assignment
+  vector<Job> all, js;
+  for (int ui = 0; ui < (int)mine.size(); ui++) {
+    js.clear();
+    jobsFor(ui, js);
+    auto pvIt = prev.find(mine[ui].id);
+    vector<Job> top;  // best 16, by insertion (stable)
+    for (auto& j : js) {
+      if (pvIt != prev.end() && pvIt->second.second == j.dest && pvIt->second.first == j.kind) j.rate *= Pr.stick;
+      if ((int)top.size() == 16 && j.rate <= top[15].rate) continue;
+      int i = top.size() < 16 ? top.size() : 15;
+      if ((int)top.size() < 16) top.push_back(j);
+      while (i > 0 && top[i - 1].rate < j.rate) {
+        if (i < 16) top[i] = top[i - 1];
+        i--;
+      }
+      top[i] = j;
+    }
+    all.insert(all.end(), top.begin(), top.end());
+  }
+  stable_sort(all.begin(), all.end(), [](const Job& a, const Job& b) { return a.rate > b.rate; });
+  vector<int> assigned(mine.size(), -1);  // index in all
+  vector<int> claimedHarvest(trees.size(), 0);
+  vector<char> claimedChop(trees.size(), 0);
+  int pickedSeeds = 0;
+  map<int, int> endCell;
+  for (int ji = 0; ji < (int)all.size(); ji++) {
+    const Job& j = all[ji];
+    const BTroll& u = mine[j.u];
+    if (assigned[j.u] >= 0) continue;
+    int fin = j.dest < 0 ? u.cell : j.dest;
+    auto ec = endCell.find(fin);
+    if (ec != endCell.end() && ec->second != u.id) continue;
+    if (j.dest >= 0 && j.dest != u.cell) {
+      int holder = -1;
+      for (int o = 0; o < (int)mine.size(); o++)
+        if (o != j.u && mine[o].cell == j.dest) {
+          holder = o;
+          break;
+        }
+      if (holder >= 0) {
+        int hj = assigned[holder];
+        if (hj < 0 || all[hj].dest < 0 || all[hj].dest == mine[holder].cell) continue;
+      }
+    }
+    if (j.kind == K_HARVEST && j.tree >= 0) {
+      int taken = claimedHarvest[j.tree];
+      if (taken >= trees[j.tree].fruits + 1) continue;
+      claimedHarvest[j.tree] = taken + min(u.carry - u.load, 3);
+    }
+    if (j.kind == K_CHOP && j.tree >= 0) {
+      bool enemyOn = false;
+      for (auto& o : opp) enemyOn |= o.cell == trees[j.tree].cell;
+      if (claimedChop[j.tree] && !enemyOn) continue;
+      claimedChop[j.tree] = 1;
+    }
+    if (j.kind == K_PICK) {
+      if (pickedSeeds >= (int)wanted.size() + max(0, farmMissing - 1)) continue;
+      pickedSeeds++;
+    }
+    assigned[j.u] = ji;
+    endCell[fin] = u.id;
+    prev[u.id] = {j.kind, j.dest};
+  }
+
+  // ------------------------------------------------------------ moves
+  bool jammed = false;
+  for (int ui = 0; ui < (int)mine.size(); ui++) {
+    const BTroll& u = mine[ui];
+    auto st = still.find(u.id);
+    if (st != still.end() && st->second[0] == u.cell && st->second[1] == u.load) {
+      int ja = assigned[ui];
+      if (u.load > 0 && turnNo - st->second[2] >= 4 && (ja < 0 || (all[ja].dest >= 0 && all[ja].dest != u.cell))) jammed = true;
+    } else
+      still[u.id] = {u.cell, u.load, turnNo};
+  }
+  vector<char> isDrop(N, 0), reserved(N, 0);
+  for (int c : dropCells) isDrop[c] = 1;
+  vector<pair<int, const Job*>> acts;
+  vector<pair<int, int>> movers;
+  auto occupiedByMine = [&](int c) {
+    for (auto& o : mine)
+      if (o.cell == c) return true;
+    return false;
+  };
+  for (int ui = 0; ui < (int)mine.size(); ui++) {
+    const BTroll& u = mine[ui];
+    const Job* j0 = assigned[ui] >= 0 ? &all[assigned[ui]] : nullptr;
+    bool idleHere = !j0 || (j0->kind != K_DROP && j0->kind != K_PICK && (j0->dest < 0 || j0->dest == u.cell) && j0->act == 0);
+    bool inTheWay = isDrop[u.cell] ? !j0 || (j0->kind != K_DROP && j0->kind != K_PICK && (j0->dest < 0 || j0->dest == u.cell))
+                                   : Pr.jamWide && u.load == 0 && dropDist[u.cell] <= 2 &&
+                                         (idleHere || (j0 && j0->dest >= 0 && dropDist[j0->dest] <= 2 && j0->kind != K_HARVEST && j0->kind != K_CHOP));
+    if (jammed && Pr.jamRelease && inTheWay) {
+      int best = -1;
+      const int16_t* d = dist(u.cell);
+      int away = isDrop[u.cell] ? 1 : 3;
+      for (int c = 0; c < N; c++)
+        if (m->grid[c] == GRASS && d[c] > 0 && dropDist[c] >= away && !occupiedByMine(c) && (best < 0 || d[c] < d[best])) best = c;
+      if (best >= 0) {
+        movers.push_back({ui, best});
+        continue;
+      }
+    }
+    if (!j0) {
+      if (u.cell == S->shack)
+        movers.push_back({ui, dropCells.empty() ? u.cell : dropCells[0]});
+      else
+        reserved[u.cell] = 1;
+      continue;
+    }
+    if (j0->dest < 0 || j0->dest == u.cell) {
+      if (u.cell == S->shack && hasTrain && j0->kind != K_DROP && j0->kind != K_PICK)
+        movers.push_back({ui, dropCells[0]});
+      else {
+        acts.push_back({ui, j0});
+        reserved[u.cell] = 1;
+      }
+    } else
+      movers.push_back({ui, j0->dest});
+  }
+  for (auto& [ui, dest] : movers) {
+    const BTroll& u = mine[ui];
+    const int16_t* d = dist(u.cell);
+    const int16_t* td = dist(dest);
+    int best = u.cell;
+    double bestD = reserved[u.cell] ? 1e9 : td[u.cell] < 0 ? 1e8 : td[u.cell];
+    for (int c = 0; c < N; c++) {
+      if (m->grid[c] != GRASS || d[c] < 0 || d[c] > u.speed || reserved[c]) continue;
+      double v = td[c] < 0 ? 1e8 : td[c];
+      if (v < bestD || (v == bestD && d[c] < d[best])) bestD = v, best = c;
+    }
+    reserved[best] = 1;
+    if (best != u.cell) out.push_back({A_MOVE, u.id, best, {0, 0, 0, 0}});
+  }
+  for (auto& [ui, j] : acts) {
+    if (j->act == 0) continue;
+    const BTroll& u = mine[ui];
+    out.push_back({j->act, u.id, j->item, {0, 0, 0, 0}});
+    if (j->act == A_PLANT) {
+      for (auto& w : wanted)
+        if (w.source && w.type == j->item) {
+          sourcesPlanted[j->item]++;
+          break;
+        }
+    }
+    if (j->act == A_PICK) seedIntent[u.id] = j->item, intentSince[u.id] = turnNo;
+  }
+  if (hasTrain) {
+    bool shackFree = true;
+    for (int ui = 0; ui < (int)mine.size(); ui++)
+      if (mine[ui].cell == S->shack) {
+        bool moving = false;
+        for (auto& mv : movers) moving |= mv.first == ui;
+        if (!moving) shackFree = false;
+      }
+    if (shackFree) {
+      out.push_back({A_TRAIN, -1, 0, {trainNow[0], trainNow[1], trainNow[2], trainNow[3]}});
+      trainTurns.push_back(turnNo);
+    }
+  }
+  if (!sim) otherMs = max(otherMs * 0.8, nowMs() - tStart - simMs + 2);
+  return out;
+}
+
+// ------------------------------------------------------------------------------------ main
+int main(int argc, char** argv) {
+  ios::sync_with_stdio(false);
+  for (int sp = 1; sp <= 3; sp++)
+    for (int c = 2; c <= 4; c++)
+      for (int h = 0; h <= 1; h++)
+        for (int cp = 2; cp <= 3; cp++) AUTO_DESIGNS.push_back({sp, c, h, cp});
+  stable_sort(AUTO_DESIGNS.begin(), AUTO_DESIGNS.end(), [](const Design& a, const Design& b) { return 3 * a[1] + 2.5 * a[0] + 2 * a[3] + a[2] > 3 * b[1] + 2.5 * b[0] + 2 * b[3] + b[2]; });
+  Params P;
+  for (int i = 1; i < argc; i++)
+    if (string(argv[i]) == "planall") P.planAll = true;
+  auto M = make_shared<MapInfo>();
+  string line;
+  getline(cin, line);
+  {
+    istringstream s(line);
+    s >> M->W >> M->H;
+  }
+  vector<string> rows(M->H);
+  M->grid.assign(M->W * M->H, GRASS);
+  for (int y = 0; y < M->H; y++) {
+    getline(cin, rows[y]);
+    for (int x = 0; x < M->W; x++) {
+      char ch = rows[y][x];
+      int c = y * M->W + x;
+      M->grid[c] = ch == '.' ? GRASS : ch == '~' ? WATER : ch == '#' ? ROCK : ch == '+' ? IRONCELL : SHACK;
+      if (ch == '0') M->shack[0] = c;
+      if (ch == '1') M->shack[1] = c;
+    }
+  }
+  M->build();
+  auto side = make_shared<Side>(M.get(), 0);
+  Bot bot(side, P, false);
+  int turnNo = 0;
+  double maxMs = 0;
+  string lastPlans;
+  while (true) {
+    vector<string> lines;
+    for (int i = 0; i < 2; i++) {
+      if (!getline(cin, line)) return 0;
+      lines.push_back(line);
+    }
+    getline(cin, line);
+    lines.push_back(line);
+    int nt = stoi(line);
+    for (int i = 0; i < nt; i++) getline(cin, line), lines.push_back(line);
+    getline(cin, line);
+    lines.push_back(line);
+    int nu = stoi(line);
+    for (int i = 0; i < nu; i++) getline(cin, line), lines.push_back(line);
+    double t0 = nowMs();
+    string o = bot.turn(lines);
+    double dt = nowMs() - t0;
+    if (++turnNo > 1) maxMs = max(maxMs, dt);
+    if (bot.planScores != lastPlans) cerr << "plans t" << turnNo << bot.planScores << endl, lastPlans = bot.planScores;
+    if (dt > 45) cerr << "t" << turnNo << " slow " << dt << " ms" << endl;
+    if (turnNo % 50 == 0) cerr << "t" << turnNo << " max " << maxMs << " ms " << bot.rpLog << endl;
+    cout << o << endl;
+  }
+}
