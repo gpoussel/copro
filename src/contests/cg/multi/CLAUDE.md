@@ -1712,3 +1712,22 @@ per-map optima come from details only simulation sees. Close maps vs
 foresters/raiders (pbou, rank 173, beats us): winners raid their forest
 (Linvg felled 43–79 of pbou's tree sizes); counter-raids stay an open
 question (same-seed IDE pairs were inconclusive).
+v4 (forest) reached 17.8–18.4 (best rank 91). v5 (plan order re-ranked
+with the forest, leaner re-plans, 880 ms turn 1) fell to 15.0: tuned on
+the solo bench, it had dropped the cheap choppers from re-plans, and
+re-plans never resumed once downgrades emptied the plan — 11 of 26 losses
+trained a single troll all game (fruit-poor or raided maps). **The solo
+bench cannot see scarcity: re-check any pruning on raided/poor maps.** v6
+(0e9dd20) restores both. Other fixes found in arena replays with
+`redecide.ts` (feeds a replay's inputs to the bot, DBG=<turn>) and an
+idle-turn census: a troll idling for 120 turns on the only reachable drop
+cell while two loaded choppers waited behind it (jam release), gardeners
+harvesting bananas for a full forest. Tried, no gain: a ridge value model
+of the final score (R² 0.85 at t140; great for ranking fixed plans
+offline, nothing inside the bot with re-plans), successive halving of the
+initial plans, coarser simulations (nearest trees only), fewer initial
+plans, 5–6 troll plans, war mode (three 2/2/1/2 raiders, 3-5 vs 5-3 base
+on 16 same-seed games vs raiders), raid defence.
+Timing: statement allows 1000 ms on turn 1, 50 ms after; a game is lost
+after 3 overruns ≤ 50 ms or one larger (GC spikes reach 55–60 ms; none
+reported so far).
