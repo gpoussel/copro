@@ -427,7 +427,7 @@ struct Params {
   double patience = 40, patienceRaided = 40, seedValue = 6;
   int producers = 2;
   double wasteLambda = 0.7;
-  bool rollouts = false;  // choose this turn's jobs by rollouts (chooseByRollouts)
+  bool rollouts = true;  // choose this turn's jobs by rollouts (chooseByRollouts)
   int rollAlts = 2, rollHorizon = 200;
   bool rollOpp = true;  // rollouts play against a copy of our bot (a passive foe misleads them)
   double rollMinRate = 0.3, rollMargin = 2;
