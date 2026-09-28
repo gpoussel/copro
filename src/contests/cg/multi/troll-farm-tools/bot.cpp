@@ -394,6 +394,10 @@ static const vector<Plan> RANKED_PLANS = {
     {{2, 2, 2, 1}, {2, 4, 1, 2}, {3, 4, 0, 3}},              {{1, 1, 1, 1}, {2, 4, 1, 2}, {3, 4, 1, 3}},
 };
 static const vector<Design> P_CHEAP = {{2, 2, 0, 2}, {2, 2, 1, 2}, {2, 3, 0, 2}, {1, 2, 1, 1}};
+static const vector<Plan> RP_EXTRA = {
+    {{2, 2, 2, 0}}, {{2, 2, 2, 0}, {3, 4, 1, 2}, {2, 4, 0, 3}}, {{2, 4, 1, 2}}, {{2, 4, 0, 3}}, {{3, 4, 1, 3}},
+    {{2, 4, 1, 2}, {2, 4, 0, 3}}, {{2, 3, 1, 2}, {2, 4, 0, 3}}, {{2, 2, 1, 2}, {2, 4, 0, 3}}, {{2, 2, 2, 0}, {2, 4, 0, 3}},
+};
 static vector<Design> AUTO_DESIGNS;
 
 struct Params {
@@ -423,6 +427,8 @@ struct Params {
   double plantGamma = 0.5, sourceValue = 12;
   int farmPerChopper = 3;
   double raidBeta = 0.5, trainBonus = 3, trollValue = 50, unitMax = 12, seedBonus = 1, denyAlpha = 0.5;
+  double denyTheirs = 0.5;
+  bool rpExtra = false;  // more re-plan candidates (continuations once the ranked plans are used up)  // chop value of the opponent's trees: what felling them denies it
   int maxWait = 12;
   double patience = 40, patienceRaided = 40, seedValue = 6;
   int producers = 2;
@@ -703,6 +709,8 @@ struct Bot {
         if ((int)p.size() > k - 1 && find(P.replanSkip.begin(), P.replanSkip.end(), pi) == P.replanSkip.end()) add(Plan(p.begin() + (k - 1), p.end()));
       }
       for (auto& d : P_CHEAP) add({d});
+      if (P.rpExtra)
+        for (auto& p : RP_EXTRA) add(p);
       add({});
       rpNext = turnNo + P.replanEvery;
     }
@@ -1222,8 +1230,10 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
           int sizeNow = predict(tr, a).size;
           if (!enemies.empty())
             value += 4 * Pr.denyAlpha * share;
-          else if (!own && sizeNow < MAX_SIZE)
-            value += 4 * Pr.raidBeta * (MAX_SIZE - sizeNow);
+          else if (!own) {
+            if (sizeNow < MAX_SIZE) value += 4 * Pr.raidBeta * (MAX_SIZE - sizeNow);
+            value += 4 * Pr.denyTheirs * size;
+          }
           if (enemies.empty() && (own || dropDist[tr.cell] <= oppDropDist[tr.cell])) value -= Pr.wasteLambda * max(0.0, min(1.0, (left - 25) / 40.0)) * 4 * max(0, size - wood);
           if (value <= 0) continue;
           if (!endgame && own && need[tr.type] > 0 && enemies.empty() && !threatened) continue;
@@ -1538,6 +1548,10 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "rollMinRate") P.rollMinRate = v;
   else if (k == "rollMargin") P.rollMargin = v;
   else if (k == "rollOpp") P.rollOpp = v;
+  else if (k == "denyTheirs") P.denyTheirs = v;
+  else if (k == "rpExtra") P.rpExtra = v;
+  else if (k == "raidBeta") P.raidBeta = v;
+  else if (k == "denyAlpha") P.denyAlpha = v;
   else return false;
   return true;
 }
