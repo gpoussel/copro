@@ -503,6 +503,7 @@ function groupByCell(tasks: Task[]): Task[][] {
   return [...m.entries()].sort((a, b) => a[0] - b[0]).map(e => e[1])
 }
 
+let occBuf: Uint8Array | null = null
 function applyMoves(g: Game, moves: Task[]) {
   for (let p = 0; p < 2; p++) {
     const mine = moves.filter(t => t.p === p)
@@ -510,7 +511,9 @@ function applyMoves(g: Game, moves: Task[]) {
     let units = g.trolls.filter(u => u.owner === p)
     let targets = units.map(u => u.cell)
     for (const m of mine) targets[units.indexOf(m.unit!)] = m.target
-    const occupied = new Uint8Array(g.W * g.H)
+    if (!occBuf || occBuf.length < g.W * g.H) occBuf = new Uint8Array(g.W * g.H)
+    const occupied = occBuf
+    occupied.fill(0)
     for (let i = units.length - 1; i >= 0; i--) {
       occupied[units[i].cell] = 1
       if (units[i].cell === targets[i]) {

@@ -43,6 +43,10 @@ export const BIG_PLANS: number[][][] = [
   [[2, 2, 2, 1], [3, 4, 2, 3], [3, 4, 0, 3], [3, 4, 0, 3]],
 ]
 
+// PLANS + BIG_PLANS by solo average on bench maps (fixed plan, no re-plan: 463 … 318), the four
+// weakest dropped: CodinGame evaluates only ~8 plans before training has to start.
+export const RANKED_PLANS = [7, 9, 8, 11, 12, 0, 2, 6, 3].map(i => [...PLANS, ...BIG_PLANS][i])
+
 /** Game state from our turn input (we are player 0). */
 export function gameFromInput(init: string[], lines: string[], turnsPlayed: number): Game {
   const [W, H] = init[0].split(" ").map(Number)
@@ -113,6 +117,8 @@ export class Sim {
   }
 }
 
+const NO_TROLLS: BTroll[] = []
+
 export interface BTree {
   type: number
   cell: number
@@ -148,6 +154,8 @@ export interface Params {
   planAll: boolean // evaluate every plan on turn 1 whatever the time (deterministic local tests)
   simOpp: Partial<Params> | "boss5" | null // opponent model in plan simulations (null = passive)
   simHorizon: number
+  turnLimit: number // total ms per turn aimed at: simulations get what the rest of decide() leaves (0: off)
+  replanHorizon: number // turns simulated ahead by a re-plan (0: simHorizon)
   replan: boolean
   replanMargin: number
   replanEvery: number
@@ -190,17 +198,19 @@ export const DEFAULT_PARAMS: Params = {
     [2, 4, 1, 2],
   ],
   choosePlan: true,
-  planBudget: 700,
-  planTurnBudget: 30,
+  planBudget: 800,
+  planTurnBudget: 34,
   planTurns: 12,
   planAll: false,
-  bigPlans: false,
+  bigPlans: true,
   futureNeed: false,
   futureVal: 2,
   trollRate: 0,
-  earlySources: 0,
+  earlySources: 60,
   simOpp: null,
   simHorizon: 200,
+  replanHorizon: 0,
+  turnLimit: 36,
   replan: true,
   replanMargin: 10,
   replanEvery: 15,
@@ -210,14 +220,14 @@ export const DEFAULT_PARAMS: Params = {
   raidNoWait: true,
   chopperNow: true,
   chopperCarry: 2,
-  counterRaid: true,
+  counterRaid: false,
   raidUntil: 160,
   raidAggro: 8,
   raidLemon: 6,
   patienceFirst: 25,
   cutterPlans: false,
   stick: 1.3,
-  trainDeadline: 180,
+  trainDeadline: 220,
   plantGamma: 0.5,
   sourceValue: 12,
   farmPerChopper: 3,
@@ -399,9 +409,10 @@ export class Bot {
 
   evalPlans(budgetMs: number) {
     const t0 = performance.now()
-    const PL = this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? [...PLANS, ...BIG_PLANS] : PLANS
+    const PL = this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? RANKED_PLANS : PLANS
     while (this.planIdx < PL.length) {
       if (!this.planSim) {
+        if (performance.now() > t0 + budgetMs - 8) break // starting a simulation costs a few ms
         this.planSim = new Sim(gameFromInput(this.init, this.planLines!, 0), this.init, { ...this.P, plan: PL[this.planIdx] }, this.dist, this.P.simOpp === "boss5" ? "boss5" : this.P.simOpp ? { ...DEFAULT_PARAMS, choosePlan: false, ...this.P.simOpp } : undefined)
         this.planSim.horizon = this.P.simHorizon
       }
@@ -443,7 +454,7 @@ export class Bot {
         cands.push([...prefix, ...suffix])
       }
       add(this.designs.slice(k - 1))
-      for (const p of this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? [...PLANS, ...BIG_PLANS] : PLANS) if (p.length > k - 1) add(p.slice(k - 1))
+      for (const p of this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? RANKED_PLANS : PLANS) if (p.length > k - 1) add(p.slice(k - 1))
       // cheap choppers for lemon-poor games
       for (const d of [[2, 2, 0, 2], [2, 2, 1, 2], [3, 2, 0, 2], [2, 3, 0, 2]]) add([d])
       add([])
@@ -453,8 +464,9 @@ export class Bot {
     const rp = this.rp
     while (rp.idx < rp.cands.length) {
       if (!rp.sim) {
+        if (performance.now() > t0 + budgetMs - 8) return
         rp.sim = new Sim(gameFromInput(this.init, rp.lines, rp.turn), this.init, { ...this.P, plan: rp.cands[rp.idx] }, this.dist, this.P.simOpp === "boss5" ? "boss5" : undefined)
-        rp.sim.horizon = Math.min(300, rp.turn + this.P.simHorizon)
+        rp.sim.horizon = Math.min(300, rp.turn + (this.P.replanHorizon || this.P.simHorizon))
       }
       const v = rp.sim.run(t0 + budgetMs)
       if (v === null) return
@@ -501,14 +513,24 @@ export class Bot {
 
   /** Same as turn() for player 0 of an engine state (simulations skip the text round trip). */
   turnGame(g: Game, p = 0): string {
-    const trees: BTree[] = g.trees.map(t => ({ type: t.type, cell: t.cell, size: t.size, health: t.health, fruits: t.fruits, cooldown: t.cooldown, growth: t.growth }))
-    const trolls: BTroll[] = g.trolls.map(u => ({ id: u.id, mine: u.owner === p, cell: u.cell, speed: u.speed, carry: u.carry, harvest: u.harvest, chop: u.chop, inv: u.inv.slice(), load: u.inv[0] + u.inv[1] + u.inv[2] + u.inv[3] + u.inv[4] + u.inv[5] }))
+    // the engine's trees and inventories are read, never written, by decide()
+    const trees: BTree[] = g.trees
+    const trolls: BTroll[] = g.trolls.map(u => ({ id: u.id, mine: u.owner === p, cell: u.cell, speed: u.speed, carry: u.carry, harvest: u.harvest, chop: u.chop, inv: u.inv, load: u.inv[0] + u.inv[1] + u.inv[2] + u.inv[3] + u.inv[4] + u.inv[5] }))
     return this.decide(g.inv[p].slice(), trees, trolls)
   }
 
   decide(inv: number[], trees: BTree[], trolls: BTroll[]): string {
     this.turnNo++
-    if (this.planPending) this.evalPlans(this.P.planAll ? 1e9 : this.turnNo === 1 ? this.P.planBudget : this.P.planTurnBudget)
+    const tStart = performance.now()
+    let simMs = 0
+    // simulation budget this turn: capped by planTurnBudget, and by what the rest of the turn leaves
+    const turnBudget = this.P.turnLimit > 0 ? Math.max(5, Math.min(this.P.planTurnBudget, this.P.turnLimit - this.otherMs)) : this.P.planTurnBudget
+    const planned = this.planPending
+    if (this.planPending) {
+      const t = performance.now()
+      this.evalPlans(this.P.planAll ? 1e9 : this.turnNo === 1 ? this.P.planBudget : turnBudget)
+      simMs += performance.now() - t
+    }
     const P = this.P
     const treeAt = new Map<number, BTree>()
     for (const t of trees) treeAt.set(t.cell, t)
@@ -518,7 +540,11 @@ export class Bot {
     // a snapshot taken before a training no longer matches our troll count: restart the cycle
     if (this.rp && this.mineCount !== mine.length) this.rp = null
     this.mineCount = mine.length
-    if (!this.sim && P.replan && !this.planPending && this.turnNo > 1 && (this.rp || this.turnNo >= this.rpNext)) this.replanStep(P.planAll ? 1e9 : P.planTurnBudget, mine)
+    if (!this.sim && P.replan && !planned && this.turnNo > 1 && (this.rp || this.turnNo >= this.rpNext)) {
+      const t = performance.now()
+      this.replanStep(P.planAll ? 1e9 : turnBudget, mine)
+      simMs += performance.now() - t
+    }
     for (const c of [...this.planted]) if (!treeAt.has(c)) this.planted.delete(c)
     for (const [id, t] of [...this.seedIntent]) {
       const u = mine.find(x => x.id === id)
@@ -738,8 +764,18 @@ export class Bot {
     }
 
     // ------------------------------------------------------------ jobs
+    const enemiesAt = new Map<number, BTroll[]>()
+    for (const o of opp) {
+      const l = enemiesAt.get(o.cell)
+      if (l) l.push(o)
+      else enemiesAt.set(o.cell, [o])
+    }
     const jobsFor = (u: BTroll): Job[] => {
       const jobs: Job[] = []
+      const aDrop = "DROP " + u.id
+      const aHarvest = "HARVEST " + u.id
+      const aChop = "CHOP " + u.id
+      const aMine = "MINE " + u.id
       const free = u.carry - u.load
       const cv = carriedValue(u)
       const home = (c: number) => this.steps(u, this.dropDist[c]) + 1
@@ -747,11 +783,11 @@ export class Bot {
       // go home and drop
       const atShack = this.dropDist[u.cell] === 0 || u.cell === this.shack
       if (u.load > 0 && cv > 0) {
-        if (atShack) jobs.push({ u, rate: cv, dest: -1, act: `DROP ${u.id}`, kind: "drop" })
+        if (atShack) jobs.push({ u, rate: cv, dest: -1, act: aDrop, kind: "drop" })
         else
           for (const c of this.dropCells) {
             const r = this.steps(u, dNow[c]) + 1
-            if (r <= left) jobs.push({ u, rate: cv / r, dest: c, act: `DROP ${u.id}`, kind: "drop" })
+            if (r <= left) jobs.push({ u, rate: cv / r, dest: c, act: aDrop, kind: "drop" })
           }
       }
       const isRaider = u.id === raiderId
@@ -761,7 +797,7 @@ export class Bot {
           if (d < 0) continue
           const a = this.steps(u, d)
           const r = home(tr.cell)
-          const enemies = opp.filter(o => o.cell === tr.cell)
+          const enemies = enemiesAt.get(tr.cell) ?? NO_TROLLS
           // harvest
           if (u.harvest > 0 && free > 0) {
             const f = this.predict(tr, a).fruits
@@ -769,7 +805,7 @@ export class Bot {
             if (g > 0) {
               const ht = Math.ceil(g / u.harvest)
               const T = a + ht + r
-              if (T <= left) jobs.push({ u, rate: (cv + g * fruitVal[tr.type]) / T, dest: tr.cell, act: `HARVEST ${u.id}`, tree: tr, kind: "harvest" })
+              if (T <= left) jobs.push({ u, rate: (cv + g * fruitVal[tr.type]) / T, dest: tr.cell, act: aHarvest, tree: tr, kind: "harvest" })
             }
           }
           // chop
@@ -824,7 +860,7 @@ export class Bot {
             if (value <= 0) continue
             if (!endgame && own && need[tr.type] > 0 && enemies.length === 0 && !threatened) continue
             if (producers.has(tr) && enemies.length === 0 && !threatened && left > 30) continue
-            const act = wait > 0 && d === 0 ? "" : `CHOP ${u.id}`
+            const act = wait > 0 && d === 0 ? "" : aChop
             jobs.push({ u, rate: (cv + value) / T, dest: tr.cell, act, tree: tr, kind: "chop" })
           }
         }
@@ -835,7 +871,7 @@ export class Bot {
           for (const c of this.mineCells) {
             if (dNow[c] < 0) continue
             const T = this.steps(u, dNow[c]) + Math.ceil(m / u.chop) + home(c)
-            if (T <= left) jobs.push({ u, rate: (cv + mv * m) / T, dest: c === u.cell ? -1 : c, act: `MINE ${u.id}`, kind: "mine" })
+            if (T <= left) jobs.push({ u, rate: (cv + mv * m) / T, dest: c === u.cell ? -1 : c, act: aMine, kind: "mine" })
           }
         }
       }
@@ -890,8 +926,8 @@ export class Bot {
       if (this.seedIntent.has(u.id) && u.load > 0 && !jobs.some(j => j.kind === "drop")) {
         this.seedIntent.delete(u.id)
         const full = carriedValue(u) + 0.5
-        if (atShack) jobs.push({ u, rate: full, dest: -1, act: `DROP ${u.id}`, kind: "drop" })
-        else for (const c of this.dropCells) if (dNow[c] >= 0) jobs.push({ u, rate: full / (this.steps(u, dNow[c]) + 1), dest: c, act: `DROP ${u.id}`, kind: "drop" })
+        if (atShack) jobs.push({ u, rate: full, dest: -1, act: aDrop, kind: "drop" })
+        else for (const c of this.dropCells) if (dNow[c] >= 0) jobs.push({ u, rate: full / (this.steps(u, dNow[c]) + 1), dest: c, act: aDrop, kind: "drop" })
       }
       return jobs
     }
@@ -901,10 +937,21 @@ export class Bot {
     const claimedHarvest = new Map<BTree, number>()
     const claimedChop = new Set<BTree>()
     const all: Job[] = []
-    for (const u of mine) all.push(...jobsFor(u))
-    for (const j of all) {
-      const pv = this.prev.get(j.u.id)
-      if (pv && pv.dest === j.dest && pv.kind === j.kind) j.rate *= P.stick
+    for (const u of mine) {
+      // each troll's best jobs only: deeper ones are never reached by the assignment below
+      const pv = this.prev.get(u.id)
+      const top: Job[] = [] // best 16, by insertion
+      for (const j of jobsFor(u)) {
+        if (pv && pv.dest === j.dest && pv.kind === j.kind) j.rate *= P.stick
+        if (top.length === 16 && j.rate <= top[15].rate) continue
+        let i = top.length < 16 ? top.length : 15
+        while (i > 0 && top[i - 1].rate < j.rate) {
+          if (i < 16) top[i] = top[i - 1]
+          i--
+        }
+        top[i] = j
+      }
+      for (const j of top) all.push(j)
     }
     all.sort((a, b) => b.rate - a.rate)
     if (dbg && this.turnNo >= dbg && this.turnNo < dbg + 3)
@@ -986,8 +1033,10 @@ export class Bot {
         this.trainTurns.push(this.turnNo)
       }
     }
+    if (!this.sim) this.otherMs = Math.max(this.otherMs * 0.8, performance.now() - tStart - simMs + 2)
     return out.length ? out.join(";") : "WAIT"
   }
+  otherMs = 5 // decide() time outside simulations (slowly decaying max, + margin)
 
   bestDrop(u: BTroll): number {
     let best = this.dropCells[0]
