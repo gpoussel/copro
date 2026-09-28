@@ -427,14 +427,14 @@ struct Params {
   double plantGamma = 0.5, sourceValue = 12;
   int farmPerChopper = 3;
   double raidBeta = 0.5, trainBonus = 3, trollValue = 50, unitMax = 12, seedBonus = 1, denyAlpha = 0.5;
-  double denyTheirs = 0.5;
-  bool rpExtra = false;
+  double denyTheirs = 0.5;  // chop value of the opponent's trees: what felling them denies it
+  bool rpExtra = false;  // more re-plan candidates (continuations once the ranked plans are used up)
   double threatBonus = 0;  // chop value of our trees an enemy chopper can reach within threatR turns
   int threatR = 6;
-  int simRaidAge = 0;
-  int oppModel = 0;
-  double smallCap = 24;
-  int minCarry = 2;  // a downgraded design keeps at least this carry  // value cap of a missing training unit when only 1-2 are missing  // simOpp's foe: 0 our bot with the first ranked plan, 1 a parasite (see oppParams)  // plan simulations: ripe trees standing longer than this are felled by the (passive) foe  // more re-plan candidates (continuations once the ranked plans are used up)  // chop value of the opponent's trees: what felling them denies it
+  int simRaidAge = 0;  // plan simulations: ripe trees standing longer than this are felled by the (passive) foe
+  int oppModel = 0;  // simOpp's foe: 0 our bot with the first ranked plan, 1 a parasite (see oppParams)
+  double smallCap = 24;  // value cap of a missing training unit when only 1-2 are missing
+  int minCarry = 2;  // a downgraded design keeps at least this carry
   int maxWait = 12;
   double patience = 40, patienceRaided = 40, seedValue = 6;
   int producers = 2;
