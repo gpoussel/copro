@@ -427,7 +427,7 @@ struct Params {
   double patience = 40, patienceRaided = 40, seedValue = 6;
   int producers = 2;
   double wasteLambda = 0.7;
-  bool rollouts = true;  // choose this turn's jobs by rollouts (chooseByRollouts)
+  bool rollouts = false;  // choose this turn's jobs by rollouts (chooseByRollouts)
   int rollAlts = 2, rollHorizon = 200;
   bool rollOpp = true;  // rollouts play against a copy of our bot (a passive foe misleads them)
   double rollMinRate = 0.3, rollMargin = 2;
@@ -1337,7 +1337,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
     if (recordTops) {
       auto& v = tops[mine[ui].id];
       v.clear();
-      for (auto& j : top) v.push_back({j.kind, j.dest, j.rate});
+      for (auto& j : top) v.push_back({(double)j.kind, (double)j.dest, j.rate});
     }
     if (mine[ui].id == forceId && forceRank < (int)top.size()) top[forceRank].rate = 1e18;  // rollout candidate
     all.insert(all.end(), top.begin(), top.end());
