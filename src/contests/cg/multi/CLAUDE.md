@@ -1601,12 +1601,77 @@ mid-map until turn 70, then prowls ~4300 from the enemy base: WIND (mana
 already heading there. 4/4 vs the Silver boss. Replaces the user's Rust
 agent (`legacy/spring-challenge-2022.rs`).
 
-## spring-challenge-2026-troll-farm (WIP, not submitted)
+## spring-challenge-2026-troll-farm
 
-Silver with the user's C++ agent (`legacy/…troll-farm.cpp`, 169/683; 1/2
-vs the Silver boss in a quick test). A greedy TS bot (harvest best
-fruits / distance, drop when full, chop size ≥ 2 trees after turn 200,
-train one troll early) scored ~100 vs 110–360: 0/4, **weaker than the
-user's agent, so not submitted**. Wood (4 points per unit, a size-4 tree
-= 16) and more trolls look like the levers; read the referee
-(github.com/eulerscheZahl/Troll-Farm) before retrying.
+Code in `troll-farm-tools/` (`node build.mjs [dump]` bundles engine.ts +
+bot.ts + main.ts into `spring-challenge-2026-troll-farm.ts`; `dump` echoes
+the full input on stderr each turn). Tools: `arena.ts` (local games vs
+`bot-ref.ts`, a frozen copy: refresh it after each kept change),
+`harness.ts` (engine check on a dumped replay: 299/299 turns exact),
+`replay-bot.ts` (feeds a replay's inputs to the bot, `DBG=<turn>` prints
+the job table), `plans.ts`, `usage.ts` (per-troll action breakdown).
+
+Rules that matter (referee `Board`, `Plant`, `task/*`): wood = tree size
+(4 pts each) but only up to the chopper's free carry, the rest vanishes;
+co-choppers take one wood each in turn. A planted tree ticks the same turn
+(size 1), then grows every cooldown (banana 6, 4 near water; apple 9 / 2):
+a banana near the shack is 16 points for one fruit. Train cost per
+attribute = trolls owned + value²; the shack must be free (moves resolve
+first). PICK/DROP/MINE are validated on the pre-move position. MOVE
+targets out of reach are replaced by a random equally-close cell: always
+output a cell within `speed` (deterministic).
+
+Bot: per troll, jobs rated (value incl. what it carries) / turns until
+the DROP — harvest, chop (wait at our own growing trees until size 4,
+co-chop a tree an enemy is felling, raid young enemy trees, cost for wood
+we cannot carry), mine iron, pick + plant (training-fruit sources near
+water first, then banana farm), drop; greedy assignment with cell claims
+and a stickiness bonus. Training follows a plan (list of designs); the
+plan is **chosen by simulation**: every candidate plan is played out for
+150 turns from the turn-1 state against a passive opponent (as good as a
+full opponent for this choice, half the cost), resumable over the first
+12 turns (CodinGame runs ~5× slower than local). A design out of reach
+for 40 turns is downgraded one attribute at a time; missing training
+resources are worth trollValue / total deficit each (else iron far away
+was never mined).
+
+Results: C++ agent 0/2 vs the Silver boss (Boss 4: trains 1/2/2/1 on turn
+2, plants lemons/plums near its shack, then a 2/4/2/2 chopper that also
+cuts our trees). TS bot 3/4–5/6 vs the boss; first arena run rank 1 at
+40 % (18.8, boss 21.8). Locally a simple raider (quick 2/3/0/2 chopper
+cutting trees near our shack) beats us ~23–17: aggression works here
+(post-mortems agree), defence/aggression is the next step.
+**Promoted to Gold 2026-09-28** (Silver arena 22.96 vs boss 21.17).
+Gold: first run rank 46/488 (17.92); Boss 5 = 23.3, above every Gold
+player (top 22.87). Boss 5 (Konstant-style, seen in replays with
+`bosstrace.ts`): trains the best (x,2,0,x) cutter the stock pays for, often
+on turn 1 (its first troll waits on a lemon tree otherwise); the cutter
+camps near OUR shack felling our trees (lemons first, young ones too, even
+when full: pure denial) until ~turn 190, then fells its own gardener's
+bananas at size 2; the gardener PICKs bananas/apples and plants them 1–3
+cells from its shack, harvests and drops. Against it our losses are games
+where we never get a real chopper (lemons cut, sources replanted in a
+loop) and where we wait for our trees to reach size 4 while it fells them
+(`losses.ts`: our-side wood felled by us 0 in losses, 60–80 in wins).
+Fixes: co-chop share counts the enemy's free carry (a full cutter takes
+nothing), fell our trees from size 2 when raided, no farm when exposed,
+≤ 2 source plantings, a chopper as soon as one is affordable, never stop
+training with one troll. IDE vs Boss 5 went 1/6 → ~5/10. Local clones
+(`boss5.ts`, `fidelity.ts` compares its actions with the real boss on
+dumped replays) stay weaker than the real boss: judge on IDE games.
+**Promoted to Legend 2026-09-28**: the build of commit b5419ae (endgame
+fells everything, carry-2 choppers run the farm, cheap re-plans) ranked
+1/487 in Gold, 24.14 vs boss 23.45 (an earlier build: 23.15, just under).
+Arena samples of one build vary by ~±1–2 points; early percentages are
+misleading (19 at 30 % → 24.14 at 100 %). Committed but not submitted yet:
+opponent profiling (c9be382): a pure cutter or a troll on our trees marks
+a raider (defend, no sources), otherwise an economy opponent gets our best
+chopper raiding its base (lemons first, denial chops when full) until
+turn 160 — the user's suggestion (no universal strategy here); 23–17 vs
+the reference locally, neutral elsewhere: try it in the Legend arena.
+Legend reference (wala #5, replays in post-mortem): trolls 2/2/2/1 on turn
+1, 2/4/1/2 by ~t100, 3/4/0/3 by ~t150, then ~9 bananas planted and ~35 wood
+per 25 turns; 700–800 points per game.
+Forum: forum.codingame.com/t/208241 (Legend post-mortems: banana
+plant-chop-drop engines, 2–4 trolls, cutters raiding lemon sources,
+co-chop defence, no planting near enemy trolls).
