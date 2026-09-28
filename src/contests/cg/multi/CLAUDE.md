@@ -1659,6 +1659,16 @@ nothing), fell our trees from size 2 when raided, no farm when exposed,
 training with one troll. IDE vs Boss 5 went 1/6 → ~5/10. Local clones
 (`boss5.ts`, `fidelity.ts` compares its actions with the real boss on
 dumped replays) stay weaker than the real boss: judge on IDE games.
+**Promoted to Legend 2026-09-28**: the build of commit b5419ae (endgame
+fells everything, carry-2 choppers run the farm, cheap re-plans) ranked
+1/487 in Gold, 24.14 vs boss 23.45 (an earlier build: 23.15, just under).
+Arena samples of one build vary by ~±1–2 points; early percentages are
+misleading (19 at 30 % → 24.14 at 100 %). Committed but not submitted yet:
+opponent profiling (c9be382): a pure cutter or a troll on our trees marks
+a raider (defend, no sources), otherwise an economy opponent gets our best
+chopper raiding its base (lemons first, denial chops when full) until
+turn 160 — the user's suggestion (no universal strategy here); 23–17 vs
+the reference locally, neutral elsewhere: try it in the Legend arena.
 Legend reference (wala #5, replays in post-mortem): trolls 2/2/2/1 on turn
 1, 2/4/1/2 by ~t100, 3/4/0/3 by ~t150, then ~9 bananas planted and ~35 wood
 per 25 turns; 700–800 points per game.
