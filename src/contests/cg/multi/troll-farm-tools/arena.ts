@@ -42,10 +42,10 @@ const isMain = process.argv[1]?.endsWith("arena.ts")
 if (isMain) {
   const games = parseInt(process.argv[2] ?? "10")
   const first = parseInt(process.argv[3] ?? "1")
-  const pa: Params = { ...DEFAULT_PARAMS, ...JSON.parse(process.argv[4] ?? "{}") }
+  const pa: Params = { ...DEFAULT_PARAMS, planAll: true, ...JSON.parse(process.argv[4] ?? "{}") }
   const pb: Params = { ...DEFAULT_PARAMS, ...JSON.parse(process.argv[5] ?? "{}") }
   const A: Factory = init => new Bot(init, pa)
-  const B: Factory = process.env.SELF ? init => new Bot(init, pb) : init => new RefBot(init, { ...REF_PARAMS, ...JSON.parse(process.argv[5] ?? "{}") })
+  const B: Factory = process.env.SELF ? init => new Bot(init, pb) : init => new RefBot(init, { ...REF_PARAMS, planBudget: 2000, ...JSON.parse(process.argv[5] ?? "{}") })
   let w = 0,
     l = 0,
     d = 0,
