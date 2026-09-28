@@ -428,7 +428,12 @@ struct Params {
   int farmPerChopper = 3;
   double raidBeta = 0.5, trainBonus = 3, trollValue = 50, unitMax = 12, seedBonus = 1, denyAlpha = 0.5;
   double denyTheirs = 0.5;
-  bool rpExtra = false;  // more re-plan candidates (continuations once the ranked plans are used up)  // chop value of the opponent's trees: what felling them denies it
+  bool rpExtra = false;
+  double threatBonus = 0;  // chop value of our trees an enemy chopper can reach within threatR turns
+  int threatR = 6;
+  int simRaidAge = 40;
+  int oppModel = 0;
+  double smallCap = 24;  // value cap of a missing training unit when only 1-2 are missing  // simOpp's foe: 0 our bot with the first ranked plan, 1 a parasite (see oppParams)  // plan simulations: ripe trees standing longer than this are felled by the (passive) foe  // more re-plan candidates (continuations once the ranked plans are used up)  // chop value of the opponent's trees: what felling them denies it
   int maxWait = 12;
   double patience = 40, patienceRaided = 40, seedValue = 6;
   int producers = 2;
@@ -493,6 +498,7 @@ struct Sim {
   Game g;
   unique_ptr<Bot> a, b;  // b: opponent model (player 1), null = passive
   int horizon = 150;
+  vector<int> ripeSince;
   Sim(const Game& g0, shared_ptr<Side> side, const Params& p, shared_ptr<Side> oppSide = nullptr, const Params* oppP = nullptr);
   bool run(double deadline, double& value);
 };
@@ -646,7 +652,12 @@ struct Bot {
     sort(pre.begin(), pre.end());
     q.plan.clear();
     for (auto& e : pre) q.plan.push_back(e.second);
-    for (const Design& d : RANKED_PLANS[0]) q.plan.push_back(d);
+    if (P.oppModel == 1) {
+      // a parasite: few cheap choppers, no forest, fells everything it reaches (our trees first)
+      q.forest = 1000, q.denyTheirs = 1.5;
+      for (Design d : {Design{2, 3, 1, 2}, Design{2, 3, 0, 3}}) q.plan.push_back(d);
+    } else
+      for (const Design& d : RANKED_PLANS[0]) q.plan.push_back(d);
     return q;
   }
   unique_ptr<Sim> makeSim(const Game& g, const Params& q) {
@@ -832,6 +843,21 @@ bool Sim::run(double deadline, double& value) {
     toTasks(g, 0, acts, tasks);
     if (b) toTasks(g, 1, b->turnGame(g, 1), tasks);
     step(g, tasks);
+    int age = a->P.simRaidAge;
+    if (age > 0 && !b) {
+      // a passive foe leaves ripe trees standing forever: a real one fells them
+      if (ripeSince.empty()) ripeSince.assign(g.m->N, -1);
+      bool cut = false;
+      for (auto& t : g.trees) {
+        if (t.size < MAX_SIZE) {
+          ripeSince[t.cell] = -1;
+          continue;
+        }
+        if (ripeSince[t.cell] < 0) ripeSince[t.cell] = g.turn;
+        else if (g.turn - ripeSince[t.cell] > age) t.health = 0, cut = true, ripeSince[t.cell] = -1;
+      }
+      if (cut) g.trees.erase(remove_if(g.trees.begin(), g.trees.end(), [](const Tree& t) { return t.health <= 0; }), g.trees.end());
+    }
   }
   auto val = [&](int p) {
     double v = score(g, p);
@@ -1010,7 +1036,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
   double scoreVal[4] = {1, 1, 1, 1};
   int deficit = need[0] + need[1] + need[2] + need[3] + need[4];
   double trollValue = max(Pr.trollValue, Pr.trollRate * (left - 20));
-  double unitVal = deficit > 0 ? min(deficit <= 4 ? 2 * Pr.unitMax : Pr.unitMax, max(Pr.trainBonus, trollValue / deficit)) : 0;
+  double unitVal = deficit > 0 ? min(deficit <= 2 ? Pr.smallCap : deficit <= 4 ? 2 * Pr.unitMax : Pr.unitMax, max(Pr.trainBonus, trollValue / deficit)) : 0;
   for (int i = 0; i < 4; i++)
     if (need[i] > 0) scoreVal[i] += unitVal;
   double fruitVal[4];
@@ -1029,6 +1055,18 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
       if (d[c] >= 0 && d[c] <= 4 && d[c] < oppD[c]) oppD[c] = d[c];
   }
   auto oppNear = [&](int c, int r) { return oppD[c] <= r; };
+  // turns for the nearest enemy chopper with room to reach each cell (threatened own trees)
+  vector<uint8_t> oppChopT(N, 255);
+  if (Pr.threatBonus > 0)
+    for (auto& o : opp) {
+      if (o.chop == 0 || o.load >= o.carry) continue;
+      const int16_t* d = dist(o.cell);
+      for (int c = 0; c < N; c++)
+        if (d[c] >= 0) {
+          int t = (d[c] + o.speed - 1) / o.speed;
+          if (t < oppChopT[c]) oppChopT[c] = t;
+        }
+    }
   vector<int> farmCells;
   for (int c : S->farmAll)
     if (treeAt[c] < 0) farmCells.push_back(c);
@@ -1230,6 +1268,8 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
           int sizeNow = predict(tr, a).size;
           if (!enemies.empty())
             value += 4 * Pr.denyAlpha * share;
+          else if (own && sizeNow == MAX_SIZE && oppChopT[tr.cell] <= Pr.threatR)
+            value += 4 * Pr.threatBonus * size;
           else if (!own) {
             if (sizeNow < MAX_SIZE) value += 4 * Pr.raidBeta * (MAX_SIZE - sizeNow);
             value += 4 * Pr.denyTheirs * size;
@@ -1550,6 +1590,20 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "rollOpp") P.rollOpp = v;
   else if (k == "denyTheirs") P.denyTheirs = v;
   else if (k == "rpExtra") P.rpExtra = v;
+  else if (k == "threatBonus") P.threatBonus = v;
+  else if (k == "threatR") P.threatR = v;
+  else if (k == "simRaidAge") P.simRaidAge = v;
+  else if (k == "oppModel") P.oppModel = v;
+  else if (k == "smallCap") P.smallCap = v;
+  else if (k == "noFarmExposed") P.noFarmExposed = v;
+  else if (k == "maxSources") P.maxSources = v;
+  else if (k == "chopperNow") P.chopperNow = v;
+  else if (k == "raidNoWait") P.raidNoWait = v;
+  else if (k == "patience") P.patience = v;
+  else if (k == "patienceRaided") P.patienceRaided = v;
+  else if (k == "wasteLambda") P.wasteLambda = v;
+  else if (k == "maxWait") P.maxWait = v;
+  else if (k == "unitMax") P.unitMax = v;
   else if (k == "raidBeta") P.raidBeta = v;
   else if (k == "denyAlpha") P.denyAlpha = v;
   else return false;

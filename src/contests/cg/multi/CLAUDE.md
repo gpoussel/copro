@@ -1746,3 +1746,34 @@ heuristic's job vs a troll on its 2nd / 3rd job, each played 200 turns):
 (they drop co-chops and defence); with our bot as the modelled foe, even
 (60-59). v8 = rollouts on, in the arena. Plan sims against a modelled foe
 (simOpp): 35-44 in the mirror arena.
+**Where the points go (2026-09-28 night).** Score ≈ 4 × wood delivered
+(fruits are spent on training). norxondor_gorgonax (#2, 30.3) is a raider:
+2–4 trained trolls, 95–129 wood per game, half of it felled on the
+opponent's side (90–130 tree sizes; even bl4sterino, #3, loses 11/14 to it).
+Our 23 losses of the v7-equivalent run: the opponent felled ~53 sizes on our
+side per game (~200 points), we felled ~20 on theirs; `raidcensus.ts` shows
+they are mostly our own planted bananas, at size 4, within 2 cells of our
+shack. Our bot alone on the same maps (`replaymaps.ts` + C++ bench) scores
+613 on average, ~250 in the real games: interactions, not the economy, are
+the gap. Two other loss patterns: an early cheap cutter felling our lemon
+sources (no lemons ever again: one training all game), and re-plan sims
+concluding that no further training pays (xMizar's map: we kept 2 trolls
+harvesting 46 useless lemons, it trained 3 and scored 608).
+`denyTheirs` (a chop of an opponent-side tree also counts 4·0.5·size of
+denial): 52-27 head-to-head vs the previous bot, 25-15 vs a local raider
+(`denyTheirs=1.5,forest=1000`; the base went 16-23 against it) — v9 in the
+arena.
+v9 (f0c5fd9): **25.14, rank 21** (v7: 23.26). IDE gauntlet (fixed seeds,
+both seats, vs norxondor, Bubaptik, wala, HumblePasha, tass): the losses
+are tempo losses — we save for big designs (3413, 2413) while cheap 2202 /
+1102 choppers fell the map; tass trains one 1102 on turn 1 and wins 4/4.
+Plan sims have a passive foe, so standing trees look safe forever:
+`simRaidAge` (ripe trees older than N turns vanish in the sims) was bad
+locally (solo 613 → 488, 11-29 in the mirror) but on the IDE gauntlet's
+seed 1 it turned the diffs from −265/−214 to −112/−43 (HumblePasha),
+−81/−83 to +119/−43 (tass), −270 to −91 (norxondor): the local mirror
+cannot see tempo. v10 = simRaidAge 40. Also tried on the gauntlet, no
+gain: simOpp (our bot, or a parasite model, as the sims' foe), a
+parasite build (no forest, denyTheirs 1.5), noFarmExposed off (vs tass).
+Locally rejected: threatBonus (chop our trees an enemy chopper can reach).
+
