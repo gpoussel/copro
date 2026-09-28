@@ -1089,6 +1089,7 @@ interface Params {
   simHorizon: number
   forest: number // from this turn (0: off), gardeners (weak harvesters) replant bananas, choppers only chop
   forestValue: number
+  jamRelease: boolean
   planCount: number // plans evaluated on the first turns (0: all)
   replanSkip: number[] // plan indices never tried by re-plans (rarely win, cost CPU)
   firstNow: number[] | null // trained on turn 1 when affordable, ahead of the plan search
@@ -1164,6 +1165,7 @@ const DEFAULT_PARAMS: Params = {
   firstNow: null,
   replanSkip: [2, 4, 7],
   planCount: 0,
+  jamRelease: true,
   warBy: 60,
   simTrees: 0,
   guardDefend: 4,
@@ -1453,6 +1455,7 @@ class Bot {
   rpNext = 0
   war = false
   firstTrained: number[] | null = null
+  still = new Map<number, { cell: number; load: number; since: number }>()
 
   turn(lines: string[]): string {
     this.lastLines = lines
@@ -2038,10 +2041,36 @@ class Bot {
     void farmMissing
 
     // ------------------------------------------------------------ moves
+    // jams: a loaded troll that has not moved for a while (its way to the shack blocked by our own
+    // trolls idling on drop cells) makes those trolls step aside
+    let jammed = false
+    for (const u of mine) {
+      const st = this.still.get(u.id)
+      if (st && st.cell === u.cell && st.load === u.load) {
+        const ja = assigned.get(u.id)
+        // stuck = loaded, wants to go somewhere (or has nothing to do), and has not moved for 4 turns
+        if (u.load > 0 && this.turnNo - st.since >= 4 && (!ja || (ja.dest >= 0 && ja.dest !== u.cell))) jammed = true
+      } else this.still.set(u.id, { cell: u.cell, load: u.load, since: this.turnNo })
+    }
+    const dropSet = new Set(this.dropCells)
     const reserved = new Set<number>()
     const acts: [BTroll, string][] = []
     const movers: [BTroll, number][] = []
     for (const u of mine) {
+      if (jammed && P.jamRelease && dropSet.has(u.cell)) {
+        const j0 = assigned.get(u.id)
+        if (!j0 || (j0.kind !== "drop" && j0.kind !== "pick" && (j0.dest < 0 || j0.dest === u.cell))) {
+          // the nearest free grass cell off the drop cells
+          let best = -1
+          const d = this.dist[u.cell]
+          for (let c = 0; c < this.N; c++)
+            if (this.grid[c] === GRASS && d[c] > 0 && !dropSet.has(c) && !mine.some(o => o.cell === c) && (best < 0 || d[c] < d[best])) best = c
+          if (best >= 0) {
+            movers.push([u, best])
+            continue
+          }
+        }
+      }
       const j = assigned.get(u.id)
       if (!j) {
         if (u.cell === this.shack) movers.push([u, this.dropCells[0] ?? u.cell])
