@@ -143,6 +143,10 @@ export interface Params {
   raidNoWait: boolean
   chopperNow: boolean
   chopperCarry: number
+  counterRaid: boolean
+  raidUntil: number
+  raidAggro: number
+  raidLemon: number
   patienceFirst: number
   cutterPlans: boolean
   stick: number
@@ -187,6 +191,10 @@ export const DEFAULT_PARAMS: Params = {
   raidNoWait: true,
   chopperNow: true,
   chopperCarry: 2,
+  counterRaid: true,
+  raidUntil: 160,
+  raidAggro: 8,
+  raidLemon: 6,
   patienceFirst: 25,
   cutterPlans: false,
   stick: 1.3,
@@ -247,6 +255,7 @@ export class Bot {
   raidSeen = -1000
   trainTurns: number[] = []
   sourcesPlanted = [0, 0, 0, 0]
+  profile: "unknown" | "raider" | "eco" = "unknown"
   prev = new Map<number, { kind: string; dest: number }>() // troll id -> last job
   seedIntent = new Map<number, number>() // troll id -> fruit type it picked to plant
   intentSince = new Map<number, number>()
@@ -609,11 +618,25 @@ export class Bot {
     if (opp.some(o => o.chop > 0 && treeAt.has(o.cell) && ownTree(treeAt.get(o.cell)!))) this.raidSeen = this.turnNo
     const raided = this.turnNo - this.raidSeen <= 40
     const guard = raided ? P.guardRaided : P.guard
+    // opponent profile (full information: their trolls' stats and whereabouts). A pure cutter
+    // (no harvest) or a troll seen on our trees means a raider: defend. Otherwise, once it has
+    // trained without raiding, it builds an economy: send our best chopper to raid it.
+    if (opp.some(o => o.harvest === 0 && o.chop >= 2) || this.raidSeen > 0) this.profile = "raider"
+    else if (this.profile === "unknown" && opp.length >= 2 && this.turnNo > 30) this.profile = "eco"
+    let raiderId = -1
+    if (P.counterRaid && this.profile === "eco" && this.turnNo < P.raidUntil && mine.length >= 2) {
+      let best = 0
+      for (const u of mine)
+        if (u.chop >= 2 && u.chop * u.speed > best) {
+          best = u.chop * u.speed
+          raiderId = u.id
+        }
+    }
     const scoreVal = [1, 1, 1, 1]
     // a missing training resource is worth a share of the troll it completes (the scarcest one
     // ends up the most valuable, whatever it is)
     const deficit = need.reduce((a, b) => a + b, 0)
-    const unitVal = deficit > 0 ? Math.min(P.unitMax, Math.max(P.trainBonus, P.trollValue / deficit)) : 0
+    const unitVal = deficit > 0 ? Math.min(deficit <= 4 ? 2 * P.unitMax : P.unitMax, Math.max(P.trainBonus, P.trollValue / deficit)) : 0
     for (let i = 0; i < 4; i++) if (need[i] > 0) scoreVal[i] += unitVal
     const fruitVal = scoreVal.slice()
     const plantOk = (type: number, cell: number, extra: number) => {
@@ -636,7 +659,7 @@ export class Bot {
       for (const f of [1, 0, 2]) {
         const have = trees.filter(t => t.type === f && ownTree(t) && this.dropDist[t.cell] <= 3).length
         const want = need[f] >= 10 ? 2 : need[f] >= 4 ? 1 : 0
-        if (have < want && stock[f] > 0 && this.sourcesPlanted[f] < P.maxSources && !exposed) wanted.push({ type: f, value: P.sourceValue, source: true })
+        if (have < want && stock[f] > 0 && this.sourcesPlanted[f] < P.maxSources && !exposed && this.profile !== "raider") wanted.push({ type: f, value: P.sourceValue, source: true })
       }
     if (farmMissing > 0)
       for (const f of [BANANA, 0, 1, 2]) if (need[f] === 0) wanted.push({ type: f, value: 16 * P.plantGamma, source: false })
@@ -680,7 +703,8 @@ export class Bot {
             if (r <= left) jobs.push({ u, rate: cv / r, dest: c, act: `DROP ${u.id}`, kind: "drop" })
           }
       }
-      if (free > 0) {
+      const isRaider = u.id === raiderId
+      if (free > 0 || isRaider) {
         for (const tr of trees) {
           const d = dNow[tr.cell]
           if (d < 0) continue
@@ -688,7 +712,7 @@ export class Bot {
           const r = home(tr.cell)
           const enemies = opp.filter(o => o.cell === tr.cell)
           // harvest
-          if (u.harvest > 0) {
+          if (u.harvest > 0 && free > 0) {
             const f = this.predict(tr, a).fruits
             const g = Math.min(f, free)
             if (g > 0) {
@@ -743,6 +767,7 @@ export class Bot {
             if (enemies.length > 0) value += 4 * P.denyAlpha * share
             else if (!own && sizeNow < MAX_SIZE) value += 4 * P.raidBeta * (MAX_SIZE - sizeNow)
             if (P.aggro > 0 && this.oppDropDist[tr.cell] >= 0 && this.oppDropDist[tr.cell] < 6) value += P.aggro * (6 - this.oppDropDist[tr.cell])
+            if (isRaider && !own && this.oppDropDist[tr.cell] >= 0 && this.oppDropDist[tr.cell] <= 4) value += P.raidAggro + (tr.type === 1 ? P.raidLemon : 0) + 4 * P.raidBeta * Math.max(0, Math.min(MAX_SIZE, size) - wood)
             // wood we cannot carry is lost (fine on the enemy's side: that is denial)
             if (enemies.length === 0 && (own || this.dropDist[tr.cell] <= this.oppDropDist[tr.cell])) value -= P.wasteLambda * Math.max(0, Math.min(1, (left - 25) / 40)) * 4 * Math.max(0, size - wood)
             if (value <= 0) continue
