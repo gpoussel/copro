@@ -18,6 +18,7 @@ for (let s = 1; s <= n; s++) {
       if (w[0] !== "TRAIN" && w[0] !== "WAIT" && w.length > 1) used.set(+w[1], w[0])
     }
     g.trolls.filter(u => u.owner === 0).forEach((u, i) => {
+      if (g.turn < 150) return
       const key = `troll#${i} ${u.speed}${u.carry}${u.harvest}${u.chop}`
       agg[key] = agg[key] ?? {}
       const act = used.get(u.id) ?? "IDLE"

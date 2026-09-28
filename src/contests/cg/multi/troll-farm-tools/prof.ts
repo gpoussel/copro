@@ -9,7 +9,8 @@ for (let s = 1; s <= 8; s++) {
   const lines = turnInput(g0, 0)
   const dist = new Bot(init, DEFAULT_PARAMS, true).dist
   for (const plan of PLANS) {
-    new Sim(gameFromInput(init, lines, 0), init, { ...DEFAULT_PARAMS, plan }, dist).run(1e15)
+    const opp = process.argv[2] ? { ...DEFAULT_PARAMS, choosePlan: false, ...JSON.parse(process.argv[2]) } : undefined
+    new Sim(gameFromInput(init, lines, 0), init, { ...DEFAULT_PARAMS, plan }, dist, opp).run(1e15)
     n++
   }
 }

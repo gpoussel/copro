@@ -1,11 +1,12 @@
 // CodinGame entry point (bundled after engine.ts and bot.ts by build.mjs).
-import { Bot } from "./bot.js"
+import { Bot, DEFAULT_PARAMS } from "./bot.js"
 
 const DUMP = false
 const init = [readline()]
 const mapH = parseInt(init[0].split(" ")[1])
 for (let y = 0; y < mapH; y++) init.push(readline())
-const bot = new Bot(init)
+const OVERRIDES = {}
+const bot = new Bot(init, { ...DEFAULT_PARAMS, ...OVERRIDES })
 let first = true
 let lastPlans = ""
 for (;;) {

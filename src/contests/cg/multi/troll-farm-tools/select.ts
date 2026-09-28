@@ -5,9 +5,10 @@ import { play } from "./arena.js"
 const n = +(process.argv[2] ?? 20)
 const P0: Params = { ...DEFAULT_PARAMS, choosePlan: false }
 const RAIDER: Params = { ...P0, aggro: 4, plan: [[2, 3, 0, 2]] }
-const OPP: Record<string, Params> = { ref: { ...DEFAULT_PARAMS, planAll: true }, raider: RAIDER }
+const CUTTER: Params = { ...P0, aggro: 6, raidBeta: 1, plan: [[2, 2, 0, 2]] }
+const OPP: Record<string, Params> = { ref: { ...DEFAULT_PARAMS, planAll: true }, raider: RAIDER, cutter: CUTTER }
 const CRIT: Record<string, Params | null> = { passive: null, vsDefault: P0, vsRaider: RAIDER }
-const real: Record<string, number[][]> = { ref: [], raider: [] }
+const real: Record<string, number[][]> = { ref: [], raider: [], cutter: [] }
 const crit: Record<string, number[][]> = { passive: [], vsDefault: [], vsRaider: [] }
 for (let s = 1; s <= n; s++) {
   const g0 = createGame(s)
