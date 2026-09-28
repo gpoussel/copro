@@ -77,7 +77,19 @@ leaderboard id is `coders-strike-back`: the tools resolve that themselves).
 - **Read every input line every turn**, even the ones you ignore, or the next
   turn is shifted.
 - A bot that crashes or prints an invalid action loses immediately; an
-  exception in TypeScript is a crash. Guard the parsing.
+  exception in TypeScript is a crash. Guard the parsing. A crash surfaces as
+  a bare "timeout" with no stderr: pipe the first input into the bot locally.
+- **Statements lie about details** (row order, colour letters, coordinate
+  origin). When the referee lists legal moves, regenerate them in the engine
+  and compare the *sets*, not the counts (a mirrored board has the same
+  count), and derive orientation/colour from them on the first turn.
+- The CodinGame TypeScript judge compiles as a script: top-level names like
+  `name`, `open`, `status`, `close` clash with globals. Prefix them.
+- Tight first moves: when the first real turn has little time (the 1 s
+  budget sometimes goes to a setup turn), warm the JIT up with a throwaway
+  search during the setup turn, and check the clock every ~128 nodes.
+- Long games (100+ turns) take a while per IDE game: series of 4–8 games are
+  enough to beat a boss; save longer series for comparing close versions.
 - `play_arena_games` saves the code as the puzzle's IDE draft (like a test
   run). Nothing else changes until `submit_arena_bot`.
 - `submit_arena_bot` **replaces the ranked agent**, even with a worse bot: a
