@@ -12,4 +12,8 @@ const upto = +(process.env.DBG ?? 300) + 3
 for (let t = 0; t < Math.min(upto, r.outs.length); t++) {
   const o = bot.turn(turnInput(r.states[t], seat))
   if (t + 1 >= upto - 3) console.log(`t${t + 1} bot: ${o}\n     real: ${r.outs[t][seat]}`)
+  if (process.env.PLANLOG && t % 10 === 0) {
+    const g = r.states[t]
+    console.log(`t${t + 1} stock ${g.inv[seat].slice(0, 5).join("/")} trolls ${g.trolls.filter(u => u.owner === seat).length} designs ${JSON.stringify(bot.designs)} ${bot.rpLog}`)
+  }
 }

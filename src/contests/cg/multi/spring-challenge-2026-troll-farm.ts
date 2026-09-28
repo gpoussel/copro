@@ -943,6 +943,8 @@ interface Params {
   forest: number // from this turn (0: off), gardeners (weak harvesters) replant bananas, choppers only chop
   forestValue: number
   jamRelease: boolean
+  jamWide: boolean // jams also move empty trolls loitering near the shack
+  dropRules: boolean // no planting / waiting on the drop cells of a shack with at most two
   planCount: number // plans evaluated on the first turns (0: all)
   replanSkip: number[] // plan indices never tried by re-plans (rarely win, cost CPU)
   firstNow: number[] | null // trained on turn 1 when affordable, ahead of the plan search
@@ -1007,7 +1009,7 @@ const DEFAULT_PARAMS: Params = {
   oldRank: false,
   futureNeed: false,
   futureVal: 2,
-  trollRate: 0,
+  trollRate: 1,
   earlySources: 60,
   simOpp: null,
   simHorizon: 200,
@@ -1023,6 +1025,8 @@ const DEFAULT_PARAMS: Params = {
   replanSkip: [2, 4, 7],
   planCount: 0,
   jamRelease: true,
+  jamWide: true,
+  dropRules: false,
   warBy: 60,
   simTrees: 0,
   guardDefend: 4,
@@ -1147,7 +1151,8 @@ class Bot {
       if (this.grid[c] !== GRASS || d < 0) continue
       const od = this.oppDropDist[c] < 0 ? 99 : this.oppDropDist[c]
       // near the shack, or farther out on our side of the map (close shacks leave little room)
-      if (d <= 2 && od > d + 2) this.farmAll.push(c)
+      // (drop cells stay free when the shack has at most two: a tree there blocks the way in)
+      if (d <= 2 && od > d + 2 && !(this.P.dropRules && d === 0 && this.dropCells.length <= 2)) this.farmAll.push(c)
     }
     if (this.farmAll.length < 8)
       for (let c = 0; c < this.N; c++) {
@@ -1732,7 +1737,8 @@ class Bot {
               (P.raidNoWait && raided && own && enemies.length === 0 && tr.size >= 2) ||
               (guard > 0 && own && enemies.length === 0 && opp.some(o => o.chop > 0 && o.carry > o.load && this.dist[o.cell][tr.cell] >= 0 && this.steps(o, this.dist[o.cell][tr.cell]) <= guard))
             const ripe = P.ripeByCarry ? Math.min(MAX_SIZE, u.carry) : MAX_SIZE // no use waiting for more wood than we can carry
-            if (own && enemies.length === 0 && !endgame && tr.size < ripe && !threatened) {
+            // (never wait on a tree standing on one of the few drop cells: it blocks the others)
+            if (own && enemies.length === 0 && !endgame && tr.size < ripe && !threatened && !(P.dropRules && this.dropDist[tr.cell] === 0 && this.dropCells.length <= 2)) {
               // our growing tree: be there when it reaches the size we can carry
               const tm = this.turnsToSize(tr, ripe)
               if (tm > P.maxWait) continue
@@ -1920,14 +1926,18 @@ class Bot {
     const acts: [BTroll, string][] = []
     const movers: [BTroll, number][] = []
     for (const u of mine) {
-      if (jammed && P.jamRelease && dropSet.has(u.cell)) {
-        const j0 = assigned.get(u.id)
-        if (!j0 || (j0.kind !== "drop" && j0.kind !== "pick" && (j0.dest < 0 || j0.dest === u.cell))) {
-          // the nearest free grass cell off the drop cells
+      const j0 = assigned.get(u.id)
+      const idleHere = !j0 || (j0.kind !== "drop" && j0.kind !== "pick" && (j0.dest < 0 || j0.dest === u.cell) && j0.act === "")
+      // on a drop cell not dropping / picking, or empty and loitering by the shack (single-entrance shacks)
+      const inTheWay = dropSet.has(u.cell) ? !j0 || (j0.kind !== "drop" && j0.kind !== "pick" && (j0.dest < 0 || j0.dest === u.cell)) : P.jamWide && u.load === 0 && this.dropDist[u.cell] <= 2 && (idleHere || (j0 !== undefined && j0.dest >= 0 && this.dropDist[j0.dest] <= 2 && j0.kind !== "harvest" && j0.kind !== "chop"))
+      if (jammed && P.jamRelease && inTheWay) {
+        {
+          // the nearest free grass cell away from the drop cells
           let best = -1
           const d = this.dist[u.cell]
+          const away = dropSet.has(u.cell) ? 1 : 3
           for (let c = 0; c < this.N; c++)
-            if (this.grid[c] === GRASS && d[c] > 0 && !dropSet.has(c) && !mine.some(o => o.cell === c) && (best < 0 || d[c] < d[best])) best = c
+            if (this.grid[c] === GRASS && d[c] > 0 && this.dropDist[c] >= away && !mine.some(o => o.cell === c) && (best < 0 || d[c] < d[best])) best = c
           if (best >= 0) {
             movers.push([u, best])
             continue
