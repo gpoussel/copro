@@ -43,9 +43,11 @@ export const BIG_PLANS: number[][][] = [
   [[2, 2, 2, 1], [3, 4, 2, 3], [3, 4, 0, 3], [3, 4, 0, 3]],
 ]
 
-// PLANS + BIG_PLANS by solo average on bench maps (fixed plan, no re-plan: 463 … 318), the four
-// weakest dropped: CodinGame evaluates only ~8 plans before training has to start.
-export const RANKED_PLANS = [7, 9, 8, 11, 12, 0, 2, 6, 3].map(i => [...PLANS, ...BIG_PLANS][i])
+// PLANS + BIG_PLANS by solo average on 600 bench maps (fixed plan, no re-plan: 410 … 298), the
+// weakest dropped, and a cheap start for fruit-poor maps: CodinGame evaluates only ~8 plans before
+// training has to start, in this order.
+export const CHEAP_START: number[][] = [[1, 1, 1, 1], [2, 4, 1, 2], [3, 4, 1, 3]]
+export const RANKED_PLANS = [9, 12, 7, -1, 11, 8, 0, 6, 1].map(i => (i < 0 ? CHEAP_START : [...PLANS, ...BIG_PLANS][i]))
 
 /** Game state from our turn input (we are player 0). */
 export function gameFromInput(init: string[], lines: string[], turnsPlayed: number): Game {

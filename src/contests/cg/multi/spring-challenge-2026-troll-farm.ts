@@ -954,9 +954,11 @@ const BIG_PLANS: number[][][] = [
   [[2, 2, 2, 1], [3, 4, 2, 3], [3, 4, 0, 3], [3, 4, 0, 3]],
 ]
 
-// PLANS + BIG_PLANS by solo average on bench maps (fixed plan, no re-plan: 463 … 318), the four
-// weakest dropped: CodinGame evaluates only ~8 plans before training has to start.
-const RANKED_PLANS = [7, 9, 8, 11, 12, 0, 2, 6, 3].map(i => [...PLANS, ...BIG_PLANS][i])
+// PLANS + BIG_PLANS by solo average on 600 bench maps (fixed plan, no re-plan: 410 … 298), the
+// weakest dropped, and a cheap start for fruit-poor maps: CodinGame evaluates only ~8 plans before
+// training has to start, in this order.
+const CHEAP_START: number[][] = [[1, 1, 1, 1], [2, 4, 1, 2], [3, 4, 1, 3]]
+const RANKED_PLANS = [9, 12, 7, -1, 11, 8, 0, 6, 1].map(i => (i < 0 ? CHEAP_START : [...PLANS, ...BIG_PLANS][i]))
 
 /** Game state from our turn input (we are player 0). */
 function gameFromInput(init: string[], lines: string[], turnsPlayed: number): Game {
@@ -2011,4 +2013,4 @@ for (;;) {
   console.log(o)
 }
 
-void [PLUM, LEMON, APPLE, BANANA, IRON, WOOD, ITEMS, COOLDOWN, WATER_BOOST, FINAL_HEALTH, DELTA_HEALTH, MAX_SIZE, MAX_FRUITS, GAME_TURNS, GRASS, WATER, ROCK, IRONCELL, SHACK, distFrom, Rng, sum, neighbors, nearType, growthCooldown, newTree, tickTree, bfs, nextCells, trainCost, score, createGame, initInput, turnInput, A_MOVE, A_HARVEST, A_PLANT, A_CHOP, A_PICK, A_TRAIN, A_DROP, A_MINE, parseOutput, canTrain, step, Boss5, AUTO, CUTTER_PLANS, PLANS, BIG_PLANS, RANKED_PLANS, gameFromInput, Sim, DEFAULT_PARAMS, Bot]
+void [PLUM, LEMON, APPLE, BANANA, IRON, WOOD, ITEMS, COOLDOWN, WATER_BOOST, FINAL_HEALTH, DELTA_HEALTH, MAX_SIZE, MAX_FRUITS, GAME_TURNS, GRASS, WATER, ROCK, IRONCELL, SHACK, distFrom, Rng, sum, neighbors, nearType, growthCooldown, newTree, tickTree, bfs, nextCells, trainCost, score, createGame, initInput, turnInput, A_MOVE, A_HARVEST, A_PLANT, A_CHOP, A_PICK, A_TRAIN, A_DROP, A_MINE, parseOutput, canTrain, step, Boss5, AUTO, CUTTER_PLANS, PLANS, BIG_PLANS, CHEAP_START, RANKED_PLANS, gameFromInput, Sim, DEFAULT_PARAMS, Bot]

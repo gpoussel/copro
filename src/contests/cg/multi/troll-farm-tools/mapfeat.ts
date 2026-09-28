@@ -9,6 +9,8 @@ export interface MapFeat {
   near: number[] // trees per type within 4 of our drop cells (our side)
   mid: number // trees equally close (±1) to both shacks
   stock: number // starting fruits + iron
+  inv: number[] // starting plum, lemon, apple, banana, iron
+  nearest: number[] // walking distance from our drop cells to the nearest tree of each type, then to iron
 }
 export function mapFeatures(g: Game, p: number): MapFeat {
   const drop = [0, 1].map(q => neighbors(g, g.shack[q]).filter(c => g.grid[c] === GRASS))
@@ -31,7 +33,12 @@ export function mapFeatures(g: Game, p: number): MapFeat {
     if (a >= 0 && a <= 4 && a < b) near[t.type]++
     if (Math.abs(a - b) <= 1) mid++
   }
-  return { size: g.W * g.H, shackDist, dropWater: drop[p].filter(nearW).length, farmWater, farm, near, mid, stock: g.inv[p].slice(0, 5).reduce((a, b) => a + b, 0) }
+  const nearest = [99, 99, 99, 99, 99]
+  for (const t of g.trees) if (dd[p][t.cell] >= 0) nearest[t.type] = Math.min(nearest[t.type], dd[p][t.cell])
+  for (let c = 0; c < g.W * g.H; c++)
+    if (g.grid[c] === GRASS && dd[p][c] >= 0 && neighbors(g, c).some(n => g.grid[n] === 3)) nearest[4] = Math.min(nearest[4], dd[p][c])
+  const inv = g.inv[p].slice(0, 5)
+  return { size: g.W * g.H, shackDist, dropWater: drop[p].filter(nearW).length, farmWater, farm, near, mid, stock: inv.reduce((a, b) => a + b, 0), inv, nearest }
 }
 
 if (process.argv[1]?.endsWith("mapfeat.ts")) {

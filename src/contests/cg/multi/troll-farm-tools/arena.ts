@@ -1,13 +1,16 @@
 // Local games between two bot variants on referee-like maps, seats swapped per seed.
 // Run: node --import <repo>/node_modules/tsx/dist/esm/index.mjs arena.ts <games> [first seed] [A params json] [B params json]
 import { Game, createGame, initInput, parseOutput, score, step, turnInput, Rng } from "./engine.js"
+import { javaGame } from "./seedmap.js"
 import { Bot, DEFAULT_PARAMS, Params } from "./bot.js"
 import { Bot as RefBot, DEFAULT_PARAMS as REF_PARAMS } from "./bot-ref.js"
+import { Boss5 } from "./boss5.js"
 
 type Factory = (init: string[]) => { turn(lines: string[]): string }
 
+// REAL=1: referee maps (seedmap.ts, the bench.ts maps) instead of the local generator
 export function play(seed: number, a: Factory, b: Factory, verbose = false): { s: number[]; g: Game; ms: number[]; errs: string[][] } {
-  const g = createGame(seed)
+  const g = process.env.REAL ? javaGame(BigInt(seed) * 7919n + 17n) : createGame(seed)
   const bots = [a(initInput(g, 0)), b(initInput(g, 1))]
   const rng = new Rng(seed * 7 + 1)
   const ms = [0, 0]
@@ -42,10 +45,12 @@ const isMain = process.argv[1]?.endsWith("arena.ts")
 if (isMain) {
   const games = parseInt(process.argv[2] ?? "10")
   const first = parseInt(process.argv[3] ?? "1")
-  const pa: Params = { ...DEFAULT_PARAMS, planAll: true, ...JSON.parse(process.argv[4] ?? "{}") }
+  // CG=1: both sides get CodinGame-like simulation budgets (CodinGame runs ~3.5x slower than here)
+  const cg = process.env.CG ? { planAll: false, planBudget: 230, planTurnBudget: 9.5 } : { planAll: true }
+  const pa: Params = { ...DEFAULT_PARAMS, ...cg, ...JSON.parse(process.argv[4] ?? "{}") }
   const pb: Params = { ...DEFAULT_PARAMS, ...JSON.parse(process.argv[5] ?? "{}") }
-  const A: Factory = init => new Bot(init, pa)
-  const B: Factory = process.env.SELF ? init => new Bot(init, pb) : init => new RefBot(init, { ...REF_PARAMS, planBudget: 2000, ...JSON.parse(process.argv[5] ?? "{}") })
+  const A: Factory = process.env.A_REF ? init => new RefBot(init, { ...REF_PARAMS, ...cg }) : init => new Bot(init, pa)
+  const B: Factory = process.env.OPP === "boss5" ? init => new Boss5(init) : process.env.SELF ? init => new Bot(init, { ...pb, ...(process.env.CG ? cg : {}) }) : init => new RefBot(init, { ...REF_PARAMS, planBudget: 2000, ...(process.env.CG ? cg : {}), ...JSON.parse(process.argv[5] ?? "{}") })
   let w = 0,
     l = 0,
     d = 0,
