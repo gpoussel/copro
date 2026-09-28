@@ -177,6 +177,7 @@ export interface Params {
   simHorizon: number
   forest: number // from this turn (0: off), gardeners (weak harvesters) replant bananas, choppers only chop
   forestValue: number
+  planCount: number // plans evaluated on the first turns (0: all)
   replanSkip: number[] // plan indices never tried by re-plans (rarely win, cost CPU)
   firstNow: number[] | null // trained on turn 1 when affordable, ahead of the plan search
   warMode: boolean
@@ -230,7 +231,7 @@ export const DEFAULT_PARAMS: Params = {
     [2, 4, 1, 2],
   ],
   choosePlan: true,
-  planBudget: 800,
+  planBudget: 880,
   planTurnBudget: 34,
   planTurns: 12,
   planAll: false,
@@ -250,6 +251,7 @@ export const DEFAULT_PARAMS: Params = {
   warMode: false,
   firstNow: null,
   replanSkip: [2, 4, 7],
+  planCount: 0,
   warBy: 60,
   simTrees: 0,
   guardDefend: 4,
@@ -463,7 +465,7 @@ export class Bot {
     const t0 = performance.now()
     const PL0 = this.P.cutterPlans ? CUTTER_PLANS : this.P.bigPlans ? (this.P.oldRank ? OLD_RANKED : RANKED_PLANS) : PLANS
     // a troll trained on turn 1 (firstNow) heads every candidate plan, so the simulations match
-    const PL = this.firstTrained ? PL0.map(p => [this.firstTrained!, ...p]) : PL0
+    const PL = (this.firstTrained ? PL0.map(p => [this.firstTrained!, ...p]) : PL0).slice(0, this.P.planCount || undefined)
     while (this.planIdx < PL.length) {
       if (!this.planSim) {
         if (performance.now() > t0 + budgetMs - 8) break // starting a simulation costs a few ms
