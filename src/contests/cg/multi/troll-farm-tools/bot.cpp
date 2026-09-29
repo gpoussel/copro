@@ -399,6 +399,7 @@ static const vector<Plan> RP_EXTRA = {
     {{2, 4, 1, 2}, {2, 4, 0, 3}}, {{2, 3, 1, 2}, {2, 4, 0, 3}}, {{2, 2, 1, 2}, {2, 4, 0, 3}}, {{2, 2, 2, 0}, {2, 4, 0, 3}},
 };
 static vector<Design> AUTO_DESIGNS;
+static vector<Plan> GEN_PLANS;  // extra initial plans (planPool): a first design then 1-3 bigger ones
 
 struct Params {
   Plan plan = {{1, 2, 1, 1}, {2, 4, 1, 2}};
@@ -442,6 +443,7 @@ struct Params {
   bool holderWait = true;  // skip a job whose cell holds an own troll not assigned yet (order-dependent deadlocks)
   bool escFirst = false;  // jam-release movers pick their steps before the others
   bool keepPatience = false;  // a plan switch does not restart the patience clock (only a training does)
+  int planPool = 200;  // generated plans added to the turn-1 plan search (GEN_PLANS)
   bool waitToCarry = false;  // our growing trees are worth waiting for only up to the size we can carry
   int forestCarry = 3;  // forest mode: a troll with chop 2 and this carry is a chopper (the others garden)
   int maxWait = 12;
@@ -536,6 +538,7 @@ struct Bot {
   // plan search
   unique_ptr<Game> planGame;
   int planIdx = 0;
+  vector<Plan> initPlans;
   unique_ptr<Sim> planSim;
   double planBest = -1e9;
   bool planPending = false;
@@ -683,7 +686,11 @@ struct Bot {
 
   void evalPlans(double budgetMs) {
     double t0 = nowMs();
-    const auto& PL = RANKED_PLANS;
+    if (initPlans.empty()) {
+      initPlans = RANKED_PLANS;
+      for (int i = 0; i < P.planPool && i < (int)GEN_PLANS.size(); i++) initPlans.push_back(GEN_PLANS[i]);
+    }
+    const auto& PL = initPlans;
     while (planIdx < (int)PL.size()) {
       if (!planSim) {
         if (nowMs() > t0 + budgetMs - 8) break;
@@ -1692,6 +1699,21 @@ static shared_ptr<MapInfo> mapFromInit(const vector<string>& init) {
   return M;
 }
 static void initDesigns() {
+  {
+    const vector<Design> first = {{2, 2, 2, 2}, {2, 2, 1, 2}, {2, 2, 2, 1}, {2, 3, 1, 2}, {2, 2, 1, 1}, {1, 2, 2, 2}, {2, 1, 1, 2}, {2, 1, 1, 3},
+                                  {3, 2, 1, 2}, {2, 2, 0, 2}, {1, 2, 1, 2}, {2, 3, 2, 1}, {2, 2, 2, 3}, {3, 3, 1, 2}};
+    const vector<Design> later = {{3, 4, 1, 2}, {2, 4, 1, 2}, {3, 4, 1, 3}, {2, 4, 1, 3}, {3, 4, 0, 3}, {2, 4, 0, 3}, {3, 4, 2, 3},
+                                  {3, 3, 0, 3}, {2, 3, 0, 3}, {3, 3, 1, 3}, {2, 4, 0, 2}, {3, 4, 0, 2}, {2, 3, 1, 2}};
+    set<Plan> seen(RANKED_PLANS.begin(), RANKED_PLANS.end());
+    uint32_t r = 12345;
+    auto rnd = [&](int n) { return (int)((r = r * 1664525u + 1013904223u) >> 8) % n; };
+    for (int tries = 0; GEN_PLANS.size() < 600 && tries < 100000; tries++) {
+      Plan p = {first[rnd(first.size())]};
+      int extra = 1 + rnd(3);
+      for (int i = 0; i < extra; i++) p.push_back(later[rnd(later.size())]);
+      if (seen.insert(p).second) GEN_PLANS.push_back(p);
+    }
+  }
   for (int sp = 1; sp <= 3; sp++)
     for (int c = 2; c <= 4; c++)
       for (int h = 0; h <= 1; h++)
@@ -1752,6 +1774,18 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "holderWait") P.holderWait = v;
   else if (k == "escFirst") P.escFirst = v;
   else if (k == "keepPatience") P.keepPatience = v;
+  else if (k == "planPool") P.planPool = v;
+  else if (k == "stick") P.stick = v;
+  else if (k == "patienceFirst") P.patienceFirst = v;
+  else if (k == "trollValue") P.trollValue = v;
+  else if (k == "producers") P.producers = v;
+  else if (k == "farmPerChopper") P.farmPerChopper = v;
+  else if (k == "plantGamma") P.plantGamma = v;
+  else if (k == "sourceValue") P.sourceValue = v;
+  else if (k == "seedValue") P.seedValue = v;
+  else if (k == "trainBonus") P.trainBonus = v;
+  else if (k == "chopperCarry") P.chopperCarry = v;
+  else if (k == "seedBonus") P.seedBonus = v;
   else if (k == "noFarmExposed") P.noFarmExposed = v;
   else if (k == "maxSources") P.maxSources = v;
   else if (k == "chopperNow") P.chopperNow = v;
