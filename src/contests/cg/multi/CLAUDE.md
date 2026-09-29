@@ -1897,4 +1897,9 @@ again with tuned settings, one more pass) solo -0.9. Both off.
 v23 (paramSearch2): 27.10, rank 6 vs v22 28.29: within the ±1 arena noise;
 the 16-game IDE panel is too noisy for such small differences too.
 Resubmitting v22 for a second sample.
+v22 second sample: 27.45 (first 28.29): true level ~27.9. Also tried after
+v23: rpOpp (re-plan sims play the opponent's real trolls with a copy of our
+bot; 21-19 even though the model is exact there), rollout decisions with a
+short horizon (40 turns: 11-29, 80 turns: 11-29). Plateau ~27.5-28 (rank
+4-6); delineate 31.23 is ~3 noise widths away.
 
