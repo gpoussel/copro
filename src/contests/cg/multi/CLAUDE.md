@@ -1879,4 +1879,8 @@ sum of score diffs; v19 = -915): earlySources 0 -940 (helps vs delineate,
 hurts vs bl4sterino), denyAlphaRaided 1.5 -962, CHEAP_FIRST (1112, 1111,
 2111, 1211, 1122 added as first designs of the generated plans) -757.
 v21 = v19 + CHEAP_FIRST.
+v21 (CHEAP_FIRST): 26.78, rank 6. Panel on the v21 base (-757): paramSearch
+(the turn-1 search then tries forest 100/160/off, farmPerChopper 5,
+maxSources 4, denyTheirs 1, earlySources 100 one at a time) -515 (Bubaptik
++532, norxondor -452). v22 = v21 + paramSearch.
 
