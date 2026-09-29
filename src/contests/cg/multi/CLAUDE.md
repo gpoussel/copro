@@ -1842,4 +1842,9 @@ enemy is felling): 44-35 head-to-head, vs delineate on 4 seeds x 2 seats
 mean diff -225 -> -167 and a first win (200-195); 3 collapses (20-59);
 adding denyTheirs 1 on top made it worse vs delineate (-247). v17 = v16 +
 denyAlpha 1.5.
+v17 (denyAlpha 1.5): 26.27, rank 11 — below v16 (27.62) despite 44-35
+locally and better IDE diffs vs delineate: reverted to 0.5. v18 = v16 +
+forestPicks (the seed-pick limit counts free forest slots; solo +8 on 100
+maps). Also rejected: firstAffordable (turn-1 plans must start with a design
+affordable at once: solo -42, 17-23), gardenFallback (37-43).
 

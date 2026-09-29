@@ -427,7 +427,7 @@ struct Params {
   int trainDeadline = 220;
   double plantGamma = 0.5, sourceValue = 12;
   int farmPerChopper = 3;
-  double raidBeta = 0.5, trainBonus = 3, trollValue = 50, unitMax = 12, seedBonus = 1, denyAlpha = 1.5;
+  double raidBeta = 0.5, trainBonus = 3, trollValue = 50, unitMax = 12, seedBonus = 1, denyAlpha = 0.5;
   double denyTheirs = 0.5;  // chop value of the opponent's trees: what felling them denies it
   bool rpExtra = false;  // more re-plan candidates (continuations once the ranked plans are used up)
   double threatBonus = 0;  // chop value of our trees an enemy chopper can reach within threatR turns
