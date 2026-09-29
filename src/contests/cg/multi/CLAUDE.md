@@ -1871,4 +1871,5 @@ worse vs Bubaptik (-161 vs -89); threatBonus 0.5/R3 -210; denyTheirs 0.25
 -204; planRerank 5 -134 (one win, one worse game). Against delineate our
 wood deficit (~50 wood) is about what it fells on our side (~70 sizes), yet
 no defence tried so far closes it. v20 = v19 + planRerank 5.
+v20 (planRerank 5): 26.63, rank 8 — reverted; v19 resubmitted.
 

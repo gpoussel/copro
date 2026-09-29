@@ -449,7 +449,7 @@ struct Params {
   bool srcRaider = true;  // plant the training-fruit sources a design needs even against a raider
   double srcDeny = 0;  // chop value bonus for their fruit trees (not bananas) within 3 of their shack
   int srcDenyUntil = 150;
-  int planRerank = 5;  // the best N turn-1 plans are also simulated against a copy of our bot
+  int planRerank = 0;  // the best N turn-1 plans are also simulated against a copy of our bot
   bool genV2 = false;  // planPool draws from GEN_PLANS2
   bool gardenFallback = false;  // a gardener whose jobs were all taken gets the usual ones
   double simEarlyW = 0.5;  // sims add this x the score banked simEarlyAt turns in (tempo)
