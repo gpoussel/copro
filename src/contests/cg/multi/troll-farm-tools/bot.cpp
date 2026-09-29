@@ -417,7 +417,7 @@ struct Params {
   vector<int> replanSkip = {2, 4, 7};
   bool replan = true;
   double replanMargin = 10;
-  int replanEvery = 15;
+  int replanEvery = 10;
   bool noFarmExposed = true;
   int maxSources = 2;
   bool raidNoWait = true, chopperNow = true;
