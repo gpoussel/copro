@@ -435,16 +435,17 @@ struct Params {
   int oppModel = 0;  // simOpp's foe: 0 our bot with the first ranked plan, 1 a parasite (see oppParams)
   double smallCap = 24;  // value cap of a missing training unit when only 1-2 are missing
   int minCarry = 2;  // a downgraded design keeps at least this carry
-  bool dropsFirst = true;
+  bool dropsFirst = true;  // job assignment: DROP jobs claim their cells before the others
   bool jamQueue = true;  // a loaded troll whose drop cells are taken moves towards one anyway
-  int jamHard = 3;
-  bool jamOrders = true;
-  bool holderWait = true;
-  bool escFirst = false;  // jam-release movers pick their steps before the others  // skip a job whose cell holds an own troll not assigned yet (order-dependent deadlocks)  // in a jam, search the order in which trolls pick their steps  // after this many jammed turns every empty troll near the drop cells makes way  // job assignment: DROP jobs claim their cells before the others
+  int jamHard = 3;  // after this many jammed turns every empty troll near the drop cells makes way
+  bool jamOrders = true;  // in a jam, search the order in which trolls pick their steps
+  bool holderWait = true;  // skip a job whose cell holds an own troll not assigned yet (order-dependent deadlocks)
+  bool escFirst = false;  // jam-release movers pick their steps before the others
+  bool keepPatience = false;  // a plan switch does not restart the patience clock (only a training does)
   bool waitToCarry = false;  // our growing trees are worth waiting for only up to the size we can carry
   int forestCarry = 3;  // forest mode: a troll with chop 2 and this carry is a chopper (the others garden)
   int maxWait = 12;
-  double patience = 40, patienceRaided = 40, seedValue = 6;
+  double patience = 120, patienceRaided = 120, seedValue = 6;
   int producers = 2;
   double wasteLambda = 0.7;
   bool rollouts = false;  // choose this turn's jobs by rollouts (chooseByRollouts)
@@ -977,7 +978,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
   if (planRef != Pr.planVersion) {
     designs = Pr.plan;
     planRef = Pr.planVersion;
-    targetSince = turnNo;
+    if (!Pr.keepPatience) targetSince = turnNo;  // else re-plans every 15 turns would stop downgrades for good
   }
   if (lastK != k) lastK = k, targetSince = turnNo;
   auto costOf = [&](const Design& d, int kk) { return vector<int>{kk + d[0] * d[0], kk + d[1] * d[1], kk + d[2] * d[2], 0, kk + d[3] * d[3]}; };
@@ -1750,6 +1751,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "jamOrders") P.jamOrders = v;
   else if (k == "holderWait") P.holderWait = v;
   else if (k == "escFirst") P.escFirst = v;
+  else if (k == "keepPatience") P.keepPatience = v;
   else if (k == "noFarmExposed") P.noFarmExposed = v;
   else if (k == "maxSources") P.maxSources = v;
   else if (k == "chopperNow") P.chopperNow = v;
