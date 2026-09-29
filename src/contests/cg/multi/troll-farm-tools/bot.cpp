@@ -452,7 +452,7 @@ struct Params {
   int planRerank = 0;  // the best N turn-1 plans are also simulated against a copy of our bot
   bool genV2 = false;  // planPool draws from GEN_PLANS2
   bool gardenFallback = false;  // a gardener whose jobs were all taken gets the usual ones
-  double simEarlyW = 0;  // sims add this x the score banked simEarlyAt turns in (tempo)
+  double simEarlyW = 0.5;  // sims add this x the score banked simEarlyAt turns in (tempo)
   int simEarlyAt = 100;
   double simTreeValue = 0;  // sims value the tree sizes standing on our side at the horizon (x4 x this)
   bool firstAffordable = false;  // turn-1 plan search keeps the plans whose first design is affordable at once

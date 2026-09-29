@@ -1847,4 +1847,13 @@ locally and better IDE diffs vs delineate: reverted to 0.5. v18 = v16 +
 forestPicks (the seed-pick limit counts free forest slots; solo +8 on 100
 maps). Also rejected: firstAffordable (turn-1 plans must start with a design
 affordable at once: solo -42, 17-23), gardenFallback (37-43).
+v18 (v16 + forestPicks): 27.43, rank 5 at 98 %. Against delineate our trolls
+average speed 1.51 / carry 1.98 / chop 1.59 vs its 1.78 / 2.21 / 1.77, with
+fewer troll-turns: it builds a better team earlier, and our plan sims (passive
+foe) never pay for waiting. simEarlyW 0.5 (a plan's value also counts the
+score banked 100 turns into the sim): solo -20, head-to-head 84-76, but on
+the IDE panel better in all 6 differing games vs delineate (-250 -> -164),
+vs norxondor (-264 -> -187) and bl4sterino (-67 -> +36). v19 = v18 +
+simEarlyW 0.5. Rejected: simTreeValue (standing wood at the horizon, solo
+-6), simHorizon 250 (78-81).
 
