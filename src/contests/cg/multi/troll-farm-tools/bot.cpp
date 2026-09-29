@@ -444,6 +444,9 @@ struct Params {
   bool escFirst = false;  // jam-release movers pick their steps before the others
   bool keepPatience = false;  // a plan switch does not restart the patience clock (only a training does)
   int planPool = 200;  // generated plans added to the turn-1 plan search (GEN_PLANS)
+  int rpPool = 0;
+  bool paramSearch = false;
+  bool srcRaider = true;  // plant the training-fruit sources a design needs even against a raider  // after the plan search, try a few strategy settings per map (evalPlans)  // re-plans also try the continuations of this many generated plans
   bool waitToCarry = false;  // our growing trees are worth waiting for only up to the size we can carry
   int forestCarry = 3;  // forest mode: a troll with chop 2 and this carry is a chopper (the others garden)
   int maxWait = 12;
@@ -505,6 +508,8 @@ struct Job {
   int dest, act, item, tree, kind;  // act: A_* or 0 (wait here)
 };
 
+struct Params;
+static bool setParam(Params& P, const string& kv);
 struct Bot;
 struct Sim {
   Game g;
@@ -539,6 +544,7 @@ struct Bot {
   unique_ptr<Game> planGame;
   int planIdx = 0;
   vector<Plan> initPlans;
+  int varIdx = 0;
   unique_ptr<Sim> planSim;
   double planBest = -1e9;
   bool planPending = false;
@@ -710,7 +716,25 @@ struct Bot {
       planSim.reset();
       planIdx++;
     }
-    planPending = planIdx < (int)PL.size() && turnNo < P.planTurns;
+    // then per-map strategy settings, one at a time on top of the best so far
+    static const vector<string> VARIANTS = {"forest=100", "forest=160", "forest=1000", "farmPerChopper=5", "maxSources=4", "denyTheirs=1", "earlySources=100"};
+    int nv = P.paramSearch ? VARIANTS.size() : 0;
+    while (planIdx >= (int)PL.size() && varIdx < nv) {
+      if (!planSim) {
+        if (nowMs() > t0 + budgetMs - 8) break;
+        Params q = P;
+        setParam(q, VARIANTS[varIdx]);
+        planSim = makeSim(*planGame, q);
+        planSim->horizon = P.simHorizon;
+      }
+      double v;
+      if (!planSim->run(t0 + budgetMs, v)) break;
+      planScores += " " + VARIANTS[varIdx] + ":" + to_string((int)v);
+      if (v > planBest) planBest = v, setParam(P, VARIANTS[varIdx]), P.planVersion++;
+      planSim.reset();
+      varIdx++;
+    }
+    planPending = (planIdx < (int)PL.size() || varIdx < nv) && turnNo < P.planTurns;
     planScores += " (" + to_string((int)(nowMs() - t0)) + " ms)";
   }
 
@@ -743,6 +767,7 @@ struct Bot {
       for (auto& d : P_CHEAP) add({d});
       if (P.rpExtra)
         for (auto& p : RP_EXTRA) add(p);
+      for (int i = 0; i < P.rpPool && i < (int)GEN_PLANS.size(); i++) add(Plan(GEN_PLANS[i].begin() + 1, GEN_PLANS[i].end()));
       add({});
       rpNext = turnNo + P.replanEvery;
     }
@@ -1149,7 +1174,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
       for (auto& t : trees) have += t.type == f && ownTree(t) && dropDist[t.cell] <= 3;
       int nf = need[f];
       int want = nf >= 10 ? 2 : nf >= 4 ? 1 : 0;
-      if (have < want && stock[f] > 0 && sourcesPlanted[f] < Pr.maxSources && !exposed && profile != 1) wanted.push_back({f, Pr.sourceValue, true});
+      if (have < want && stock[f] > 0 && sourcesPlanted[f] < Pr.maxSources && !exposed && (profile != 1 || Pr.srcRaider)) wanted.push_back({f, Pr.sourceValue, true});
     }
   if (turnNo < Pr.earlySources && !exposed && profile != 1)
     for (int f : {1, 0, 2}) {
@@ -1775,6 +1800,9 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "escFirst") P.escFirst = v;
   else if (k == "keepPatience") P.keepPatience = v;
   else if (k == "planPool") P.planPool = v;
+  else if (k == "rpPool") P.rpPool = v;
+  else if (k == "paramSearch") P.paramSearch = v;
+  else if (k == "srcRaider") P.srcRaider = v;
   else if (k == "stick") P.stick = v;
   else if (k == "patienceFirst") P.patienceFirst = v;
   else if (k == "trollValue") P.trollValue = v;
