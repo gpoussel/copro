@@ -444,9 +444,9 @@ struct Params {
   bool escFirst = false;  // jam-release movers pick their steps before the others
   bool keepPatience = false;  // a plan switch does not restart the patience clock (only a training does)
   int planPool = 200;  // generated plans added to the turn-1 plan search (GEN_PLANS)
-  int rpPool = 0;
-  bool paramSearch = false;
-  bool srcRaider = true;  // plant the training-fruit sources a design needs even against a raider  // after the plan search, try a few strategy settings per map (evalPlans)  // re-plans also try the continuations of this many generated plans
+  int rpPool = 0;  // re-plans also try the continuations of this many generated plans
+  bool paramSearch = false;  // after the plan search, try a few strategy settings per map (evalPlans)
+  bool srcRaider = true;  // plant the training-fruit sources a design needs even against a raider
   bool waitToCarry = false;  // our growing trees are worth waiting for only up to the size we can carry
   int forestCarry = 3;  // forest mode: a troll with chop 2 and this carry is a chopper (the others garden)
   int maxWait = 12;
