@@ -1865,4 +1865,10 @@ one -383 game). A poor-map game vs delineate: its cheap chopper felled the
 two sources we planted by our shack at turns 17-33 (no plum, no training
 until t100) while it planted lemons next to its own shack around t50 and
 harvested them all game.
+v19 final: 27.85, rank 5 (v16 27.62, v18 27.43: a plateau). Panel vs
+delineate (v19 base -164 mean over 6 differing games): raidBeta 1 -153 but
+worse vs Bubaptik (-161 vs -89); threatBonus 0.5/R3 -210; denyTheirs 0.25
+-204; planRerank 5 -134 (one win, one worse game). Against delineate our
+wood deficit (~50 wood) is about what it fells on our side (~70 sizes), yet
+no defence tried so far closes it. v20 = v19 + planRerank 5.
 
