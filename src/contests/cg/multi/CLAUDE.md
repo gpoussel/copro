@@ -1833,4 +1833,13 @@ cheap cutter felling our trees and fruit sources; we stay at 2 trolls
 because one fruit type is missing, while our solo score on the same maps is
 2-5x higher. delineate answers such raiders by sending its first chopper
 (trained around turn 12) straight at the raider's own trees.
+v15 final: 27.05 (rank 6). **v16 (+ srcRaider, srcNone, re-plans every 10
+turns): 27.62, rank 5.** IDE vs the top on 2 seeds x 2 seats: wala 4-0,
+Bubaptik 2-2, norxondor 2-2, bl4sterino 2-2, delineate 0-4 by ~220 points
+(its first chopper, trained around turn 11, fells our trees from turn 40;
+it felled 77-103 sizes on our side). denyAlpha 1.5 (co-chop the trees an
+enemy is felling): 44-35 head-to-head, vs delineate on 4 seeds x 2 seats
+mean diff -225 -> -167 and a first win (200-195); 3 collapses (20-59);
+adding denyTheirs 1 on top made it worse vs delineate (-247). v17 = v16 +
+denyAlpha 1.5.
 
