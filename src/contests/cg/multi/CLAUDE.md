@@ -1894,4 +1894,7 @@ paramSearch2.
 Panel on v23: paramSearchX (35 settings) -688 vs -42 despite solo +6.5 —
 more per-map knobs overfit the passive-foe sims; paramSearch3 (best plans
 again with tuned settings, one more pass) solo -0.9. Both off.
+v23 (paramSearch2): 27.10, rank 6 vs v22 28.29: within the ±1 arena noise;
+the 16-game IDE panel is too noisy for such small differences too.
+Resubmitting v22 for a second sample.
 
