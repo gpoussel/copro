@@ -399,7 +399,7 @@ static const vector<Plan> RP_EXTRA = {
     {{2, 4, 1, 2}, {2, 4, 0, 3}}, {{2, 3, 1, 2}, {2, 4, 0, 3}}, {{2, 2, 1, 2}, {2, 4, 0, 3}}, {{2, 2, 2, 0}, {2, 4, 0, 3}},
 };
 static vector<Design> AUTO_DESIGNS;
-static vector<Plan> GEN_PLANS;  // extra initial plans (planPool): a first design then 1-3 bigger ones
+static vector<Plan> GEN_PLANS, GEN_PLANS2;  // GEN_PLANS2: refined design lists (the designs the plan search picks most)  // extra initial plans (planPool): a first design then 1-3 bigger ones
 
 struct Params {
   Plan plan = {{1, 2, 1, 1}, {2, 4, 1, 2}};
@@ -449,6 +449,7 @@ struct Params {
   bool srcRaider = true;  // plant the training-fruit sources a design needs even against a raider
   double srcDeny = 0;  // chop value bonus for their fruit trees (not bananas) within 3 of their shack
   int srcDenyUntil = 150;
+  bool genV2 = false;  // planPool draws from GEN_PLANS2
   bool planRobust = false;  // turn-1 plans are also simulated against a copy of our bot (mean of both values)
   bool srcNone = true;  // want a source for any missing fruit that has no reachable tree at all
   double srcNoneValue = 60;
@@ -701,7 +702,8 @@ struct Bot {
     double t0 = nowMs();
     if (initPlans.empty()) {
       initPlans = RANKED_PLANS;
-      for (int i = 0; i < P.planPool && i < (int)GEN_PLANS.size(); i++) initPlans.push_back(GEN_PLANS[i]);
+      const auto& GP = P.genV2 ? GEN_PLANS2 : GEN_PLANS;
+      for (int i = 0; i < P.planPool && i < (int)GP.size(); i++) initPlans.push_back(GP[i]);
     }
     const auto& PL = initPlans;
     while (planIdx < (int)PL.size()) {
@@ -750,6 +752,14 @@ struct Bot {
       varIdx++;
     }
     planPending = (planIdx < (int)PL.size() || varIdx < nv) && turnNo < P.planTurns;
+    if (!planPending && !sim && getenv("PLANCHOICE")) {
+      int bi = -1;
+      for (int i = 0; i < (int)PL.size(); i++)
+        if (PL[i] == P.plan) bi = i;
+      cerr << "CHOICE " << bi << " ";
+      for (auto& d : P.plan) cerr << d[0] << d[1] << d[2] << d[3] << " ";
+      cerr << planBest << endl;
+    }
     planScores += " (" + to_string((int)(nowMs() - t0)) + " ms)";
   }
 
@@ -1755,22 +1765,30 @@ static shared_ptr<MapInfo> mapFromInit(const vector<string>& init) {
   M->build();
   return M;
 }
-static void initDesigns() {
+static void genPlans(bool V2, vector<Plan>& out) {
   {
-    const vector<Design> first = {{2, 2, 2, 2}, {2, 2, 1, 2}, {2, 2, 2, 1}, {2, 3, 1, 2}, {2, 2, 1, 1}, {1, 2, 2, 2}, {2, 1, 1, 2}, {2, 1, 1, 3},
-                                  {3, 2, 1, 2}, {2, 2, 0, 2}, {1, 2, 1, 2}, {2, 3, 2, 1}, {2, 2, 2, 3}, {3, 3, 1, 2}};
-    const vector<Design> later = {{3, 4, 1, 2}, {2, 4, 1, 2}, {3, 4, 1, 3}, {2, 4, 1, 3}, {3, 4, 0, 3}, {2, 4, 0, 3}, {3, 4, 2, 3},
-                                  {3, 3, 0, 3}, {2, 3, 0, 3}, {3, 3, 1, 3}, {2, 4, 0, 2}, {3, 4, 0, 2}, {2, 3, 1, 2}};
+    const vector<Design> first = V2 ? vector<Design>{{2, 2, 2, 2}, {2, 3, 1, 2}, {2, 2, 2, 1}, {1, 2, 2, 2}, {2, 1, 1, 2}, {2, 2, 1, 1}, {2, 2, 1, 2},
+                                                       {3, 2, 1, 2}, {3, 3, 1, 2}, {2, 2, 1, 3}, {1, 2, 1, 2}, {2, 3, 2, 2}}
+                                       : vector<Design>{{2, 2, 2, 2}, {2, 2, 1, 2}, {2, 2, 2, 1}, {2, 3, 1, 2}, {2, 2, 1, 1}, {1, 2, 2, 2}, {2, 1, 1, 2}, {2, 1, 1, 3},
+                                                       {3, 2, 1, 2}, {2, 2, 0, 2}, {1, 2, 1, 2}, {2, 3, 2, 1}, {2, 2, 2, 3}, {3, 3, 1, 2}};
+    const vector<Design> later = V2 ? vector<Design>{{2, 4, 0, 3}, {2, 4, 1, 3}, {2, 4, 1, 2}, {2, 4, 0, 2}, {3, 4, 0, 3}, {3, 4, 2, 3}, {3, 4, 1, 3},
+                                                       {3, 4, 0, 2}, {2, 3, 0, 3}, {2, 4, 2, 3}, {1, 4, 1, 3}, {1, 4, 0, 3}, {3, 3, 0, 3}, {2, 3, 1, 3}}
+                                       : vector<Design>{{3, 4, 1, 2}, {2, 4, 1, 2}, {3, 4, 1, 3}, {2, 4, 1, 3}, {3, 4, 0, 3}, {2, 4, 0, 3}, {3, 4, 2, 3},
+                                                       {3, 3, 0, 3}, {2, 3, 0, 3}, {3, 3, 1, 3}, {2, 4, 0, 2}, {3, 4, 0, 2}, {2, 3, 1, 2}};
     set<Plan> seen(RANKED_PLANS.begin(), RANKED_PLANS.end());
     uint32_t r = 12345;
     auto rnd = [&](int n) { return (int)((r = r * 1664525u + 1013904223u) >> 8) % n; };
-    for (int tries = 0; GEN_PLANS.size() < 600 && tries < 100000; tries++) {
+    for (int tries = 0; out.size() < 600 && tries < 100000; tries++) {
       Plan p = {first[rnd(first.size())]};
       int extra = 1 + rnd(3);
       for (int i = 0; i < extra; i++) p.push_back(later[rnd(later.size())]);
-      if (seen.insert(p).second) GEN_PLANS.push_back(p);
+      if (seen.insert(p).second) out.push_back(p);
     }
   }
+}
+static void initDesigns() {
+  genPlans(false, GEN_PLANS);
+  genPlans(true, GEN_PLANS2);
   for (int sp = 1; sp <= 3; sp++)
     for (int c = 2; c <= 4; c++)
       for (int h = 0; h <= 1; h++)
@@ -1839,6 +1857,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "srcDenyUntil") P.srcDenyUntil = v;
   else if (k == "srcNone") P.srcNone = v;
   else if (k == "planRobust") P.planRobust = v;
+  else if (k == "genV2") P.genV2 = v;
   else if (k == "srcNoneValue") P.srcNoneValue = v;
   else if (k == "stick") P.stick = v;
   else if (k == "patienceFirst") P.patienceFirst = v;
