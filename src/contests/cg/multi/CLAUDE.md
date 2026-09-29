@@ -1902,4 +1902,11 @@ v23: rpOpp (re-plan sims play the opponent's real trolls with a copy of our
 bot; 21-19 even though the model is exact there), rollout decisions with a
 short horizon (40 turns: 11-29, 80 turns: 11-29). Plateau ~27.5-28 (rank
 4-6); delineate 31.23 is ~3 noise widths away.
+Imitation of delineate (imitate.ts + `tfbot imitate` / `trainimit`): from
+16 of its games, the job each of its trolls is on (its next non-MOVE action)
+matches our assigned job 42.6 % of the time and is in our top-16 candidates
+72.5 %; a linear softmax ranker over 90 features (15 per job kind) picks it
+79.6 % on held-out games vs 51.5 % for our ranking. But playing with it:
+solo -58 (imitW 1), head-to-head 5-35 (imitW 1) and 7-33 (0.8). Its job
+choices only make sense with the rest of its policy. Off (imitW 0).
 

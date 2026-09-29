@@ -18,6 +18,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <random>
 using namespace std;
 
 // ------------------------------------------------------------------------------------ engine
@@ -448,6 +449,7 @@ struct Params {
   bool paramSearch = true;  // after the plan search, try a few strategy settings per map (evalPlans)
   bool paramSearch2 = true;  // a longer list of settings, two passes
   bool paramSearchX = false;  // the longer list plus stick, forestCarry, waitToCarry, unitMax, trollValue, seedValue, sourceValue
+  double imitW = 0;  // job re-scoring by the imitation weights (0 off, 1 = only them)
   bool rpOpp = false;  // re-plan sims play the opponent's actual trolls with a copy of our bot (score difference)
   bool paramSearch3 = false;  // then the 10 best plans again with the tuned settings, and one more pass
   bool srcRaider = true;  // plant the training-fruit sources a design needs even against a raider
@@ -528,6 +530,8 @@ struct Job {
 
 struct Params;
 static bool setParam(Params& P, const string& kv);
+static const int NFEAT = 90;
+static vector<double> IMIT_W;  // imitation weights (NFEAT), empty = off
 struct Bot;
 struct Sim {
   Game g;
@@ -596,6 +600,7 @@ struct Bot {
   double extraUsed = 0;  // ms already spent this turn (rollouts) before decide()
   bool recordTops = false;
   map<int, vector<array<double, 3>>> tops;  // troll id -> (kind, dest, rate) of its best jobs
+  map<int, vector<vector<float>>> topFeats;  // troll id -> imitation features of those jobs
   string rollLog;
 
   unique_ptr<Bot> cloneForSim() const {
@@ -1621,6 +1626,31 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
     }
   };
 
+  // imitation features of a candidate job (15 per job kind, 6 kinds)
+  auto jobFeat = [&](const Job& j, int rank, vector<float>& f) {
+    const BTroll& u = mine[j.u];
+    f.assign(NFEAT, 0);
+    int dest = j.dest < 0 ? u.cell : j.dest;
+    int d = dist(u.cell)[dest];
+    int ti = treeAt[dest];
+    float b[15];
+    b[0] = 1;
+    b[1] = log(max(j.rate, 1e-3) + 0.01) / 3;
+    b[2] = rank / 16.0f;
+    b[3] = d < 0 ? 3 : steps(u, d) / 10.0f;
+    b[4] = dropDist[dest] < 0 ? 3 : dropDist[dest] / 10.0f;
+    b[5] = oppDropDist[dest] < 0 ? 3 : oppDropDist[dest] / 10.0f;
+    b[6] = ownTree(Tree{0, dest, 0, 0, 0, 0, 0}) ? 1 : 0;
+    b[7] = ti >= 0 ? trees[ti].size / 4.0f : 0;
+    b[8] = ti >= 0 ? trees[ti].fruits / 3.0f : 0;
+    b[9] = ti >= 0 && trees[ti].type == BANANA;
+    b[10] = ti >= 0 && trees[ti].type != BANANA;
+    b[11] = enemiesAt[dest].size();
+    b[12] = u.carry ? (float)u.load / u.carry : 0;
+    b[13] = turnNo / 300.0f;
+    b[14] = j.item == BANANA;
+    for (int k = 0; k < 15; k++) f[j.kind * 15 + k] = b[k];
+  };
   // greedy assignment
   vector<Job> all, js;
   for (int ui = 0; ui < (int)mine.size(); ui++) {
@@ -1648,6 +1678,20 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
       auto& v = tops[mine[ui].id];
       v.clear();
       for (auto& j : top) v.push_back({(double)j.kind, (double)j.dest, j.rate});
+      auto& fv = topFeats[mine[ui].id];
+      fv.assign(top.size(), {});
+      for (int r = 0; r < (int)top.size(); r++) jobFeat(top[r], r, fv[r]);
+    }
+    if (Pr.imitW > 0 && !IMIT_W.empty()) {
+      // learned re-scoring (imitation of a top player's job choices)
+      vector<float> f;
+      for (int r = 0; r < (int)top.size(); r++) {
+        jobFeat(top[r], r, f);
+        double sc = 0;
+        for (int k = 0; k < NFEAT; k++) sc += IMIT_W[k] * f[k];
+        top[r].rate = exp(Pr.imitW * sc) * pow(max(top[r].rate, 1e-6), 1 - min(1.0, Pr.imitW));
+      }
+      stable_sort(top.begin(), top.end(), [](const Job& a, const Job& b) { return a.rate > b.rate; });
     }
     if (mine[ui].id == forceId && forceRank < (int)top.size()) top[forceRank].rate = 1e18;  // rollout candidate
     all.insert(all.end(), top.begin(), top.end());
@@ -1998,6 +2042,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "paramSearch2") P.paramSearch2 = v;
   else if (k == "paramSearch3") P.paramSearch3 = v;
   else if (k == "rpOpp") P.rpOpp = v;
+  else if (k == "imitW") P.imitW = v;
   else if (k == "paramSearchX") P.paramSearchX = v;
   else if (k == "sourceValue") P.sourceValue = v;
   else if (k == "producers") P.producers = v;
@@ -2138,8 +2183,170 @@ static pair<int, int> playGame(const string& file, const Params& A, const Params
 int main(int argc, char** argv) {
   ios::sync_with_stdio(false);
   if (getenv("CHEAPFIRST")) CHEAP_FIRST = true;
+  if (getenv("IMITWEIGHTS")) {
+    ifstream wf(getenv("IMITWEIGHTS"));
+    string tag;
+    wf >> tag;
+    IMIT_W.assign(NFEAT, 0);
+    for (int k = 0; k < NFEAT; k++) wf >> IMIT_W[k];
+  }
   initDesigns();
   string mode = argc > 1 ? argv[1] : "";
+  if (mode == "trainimit") {
+    // trainimit <dump> [holdoutFrac] : softmax ranking over candidates, SGD; prints accuracies and weights
+    FILE* fin = fopen(argv[2], "r");
+    double hold = argc > 3 ? atof(argv[3]) : 0.2;
+    struct Dec { int game, label; vector<vector<float>> f; };
+    vector<Dec> ds;
+    char tag[8];
+    int g, lab, n;
+    int maxGame = 0;
+    while (fscanf(fin, "%7s %d %d %d", tag, &g, &lab, &n) == 4) {
+      Dec d{g, lab, {}};
+      for (int r = 0; r < n; r++) {
+        int k;
+        if (fscanf(fin, "%d", &k) != 1) break;
+        vector<float> f(NFEAT, 0);
+        for (int q = 0; q < 15; q++) {
+          float x;
+          if (fscanf(fin, "%f", &x) != 1) break;
+          f[k * 15 + q] = x;
+        }
+        d.f.push_back(f);
+      }
+      maxGame = max(maxGame, g);
+      ds.push_back(move(d));
+    }
+    fclose(fin);
+    int split = maxGame - (int)(hold * maxGame);
+    vector<double> w(NFEAT, 0);
+    auto score = [&](const vector<float>& f) {
+      double s2 = 0;
+      for (int k = 0; k < NFEAT; k++) s2 += w[k] * f[k];
+      return s2;
+    };
+    auto acc = [&](bool test) {
+      long ok = 0, tot = 0, base = 0;
+      for (auto& d : ds) {
+        if ((d.game > split) != test) continue;
+        int bi = 0;
+        for (int r = 1; r < (int)d.f.size(); r++)
+          if (score(d.f[r]) > score(d.f[bi])) bi = r;
+        ok += bi == d.label, base += d.label == 0, tot++;
+      }
+      return make_tuple(ok, base, tot);
+    };
+    double lr = atof(getenv("LR") ? getenv("LR") : "0.05"), l2 = atof(getenv("L2") ? getenv("L2") : "1e-4");
+    int epochs = atoi(getenv("EPOCHS") ? getenv("EPOCHS") : "30");
+    mt19937 rng(1);
+    vector<int> idx;
+    for (int i = 0; i < (int)ds.size(); i++)
+      if (ds[i].game <= split || hold == 0) idx.push_back(i);
+    for (int ep = 0; ep < epochs; ep++) {
+      shuffle(idx.begin(), idx.end(), rng);
+      for (int i : idx) {
+        auto& d = ds[i];
+        int n2 = d.f.size();
+        vector<double> sc(n2);
+        double mx = -1e18;
+        for (int r = 0; r < n2; r++) sc[r] = score(d.f[r]), mx = max(mx, sc[r]);
+        double z = 0;
+        for (int r = 0; r < n2; r++) sc[r] = exp(sc[r] - mx), z += sc[r];
+        for (int r = 0; r < n2; r++) {
+          double gr = sc[r] / z - (r == d.label ? 1 : 0);
+          for (int k = 0; k < NFEAT; k++)
+            if (d.f[r][k] != 0) w[k] -= lr * gr * d.f[r][k];
+        }
+        for (int k = 0; k < NFEAT; k++) w[k] -= lr * l2 * w[k];
+      }
+      if (ep % 5 == 4 || ep == epochs - 1) {
+        auto [a1, b1, t1] = acc(false);
+        auto [a2, b2, t2] = acc(true);
+        printf("epoch %d  train %.1f%% (base %.1f%%)  test %.1f%% (base %.1f%%)\n", ep + 1, 100.0 * a1 / max(1L, t1), 100.0 * b1 / max(1L, t1), 100.0 * a2 / max(1L, t2), 100.0 * b2 / max(1L, t2));
+      }
+    }
+    printf("W");
+    for (int k = 0; k < NFEAT; k++) printf(" %.5g", w[k]);
+    printf("\n");
+    return 0;
+  }
+  if (mode == "imitate") {
+    // imitate <files>: feed a player's recorded turns (imitate.ts) and compare its jobs with ours
+    long nLab = 0, inTop = 0, top1 = 0, same = 0;
+    FILE* dump = getenv("IMITDUMP") ? fopen(getenv("IMITDUMP"), "w") : nullptr;
+    long rankHist[17] = {0};
+    const char* KN[] = {"DROP", "HARVEST", "CHOP", "MINE", "PLANT", "PICK"};
+    for (int fi = 2; fi < argc; fi++) {
+      auto L = readLines(argv[fi]);
+      int H;
+      {
+        istringstream s(L[0]);
+        int W;
+        s >> W >> H;
+      }
+      vector<string> init(L.begin(), L.begin() + 1 + H);
+      auto M = mapFromInit(init);
+      Params P;
+      P.planAll = true;
+      Bot bot(make_shared<Side>(M.get(), 0), P, false);
+      bot.recordTops = true;
+      size_t i = 1 + H;
+      while (i < L.size()) {
+        if (L[i].rfind("TURN", 0) != 0) {
+          i++;
+          continue;
+        }
+        i++;
+        vector<string> lines;
+        while (i < L.size() && L[i].rfind("TURN", 0) != 0 && L[i].rfind("LABEL", 0) != 0) lines.push_back(L[i++]);
+        bot.turn(lines);
+        while (i < L.size() && L[i].rfind("LABEL", 0) == 0) {
+          istringstream s(L[i++]);
+          string w, kind;
+          int id, x, y, dt;
+          s >> w >> id >> kind >> x >> y >> dt;
+          int cell = y * M->W + x;
+          auto it = bot.tops.find(id);
+          if (it == bot.tops.end()) continue;
+          int cur = -1;
+          for (auto& u : bot.lastGame->trolls)
+            if (u.id == id) cur = u.cell;
+          nLab++;
+          int rank = -1;
+          for (int r = 0; r < (int)it->second.size(); r++) {
+            auto& t = it->second[r];
+            int dest = t[1] < 0 ? cur : (int)t[1];
+            if (KN[(int)t[0]] == kind && dest == cell) {
+              rank = r;
+              break;
+            }
+          }
+          if (rank >= 0) inTop++, rankHist[rank]++;
+          if (dump && rank >= 0) {
+            auto& fv = bot.topFeats[id];
+            fprintf(dump, "D %d %d %d\n", fi, rank, (int)fv.size());
+            for (int r = 0; r < (int)fv.size(); r++) {
+              int k = (int)it->second[r][0];
+              fprintf(dump, "%d", k);
+              for (int q = 0; q < 15; q++) fprintf(dump, " %.4g", fv[r][k * 15 + q]);
+              fprintf(dump, "\n");
+            }
+          }
+          if (rank == 0) top1++;
+          auto pv = bot.prev.find(id);
+          if (pv != bot.prev.end()) {
+            int dest = pv->second.second < 0 ? cur : pv->second.second;
+            if (KN[pv->second.first] == kind && dest == cell) same++;
+          }
+        }
+      }
+    }
+    if (dump) fclose(dump);
+    printf("labels %ld  in our top-16 %.1f%%  our top-1 %.1f%%  our assigned job %.1f%%\n", nLab, 100.0 * inTop / nLab, 100.0 * top1 / nLab, 100.0 * same / nLab);
+    for (int r = 0; r < 16; r++) printf("%ld ", rankHist[r]);
+    printf("\n");
+    return 0;
+  }
   if (mode == "bench" || mode == "arena") {
     // bench "<params>" files...   |   arena "<params A>" "<params B>" files...  (params: k=v,k=v)
     bool arena = mode == "arena";
