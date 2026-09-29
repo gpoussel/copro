@@ -449,6 +449,7 @@ struct Params {
   bool srcRaider = true;  // plant the training-fruit sources a design needs even against a raider
   double srcDeny = 0;  // chop value bonus for their fruit trees (not bananas) within 3 of their shack
   int srcDenyUntil = 150;
+  bool planRobust = false;  // turn-1 plans are also simulated against a copy of our bot (mean of both values)
   bool srcNone = true;  // want a source for any missing fruit that has no reachable tree at all
   double srcNoneValue = 60;
   bool waitToCarry = false;  // our growing trees are worth waiting for only up to the size we can carry
@@ -549,6 +550,8 @@ struct Bot {
   int planIdx = 0;
   vector<Plan> initPlans;
   int varIdx = 0;
+  int planPhase = 0;  // planRobust: 0 passive-foe sim, 1 bot-foe sim of the same plan
+  double planV0 = 0;
   unique_ptr<Sim> planSim;
   double planBest = -1e9;
   bool planPending = false;
@@ -687,8 +690,8 @@ struct Bot {
       for (const Design& d : RANKED_PLANS[0]) q.plan.push_back(d);
     return q;
   }
-  unique_ptr<Sim> makeSim(const Game& g, const Params& q) {
-    if (!P.simOpp) return make_unique<Sim>(g, S, q);
+  unique_ptr<Sim> makeSim(const Game& g, const Params& q, bool withOpp = false) {
+    if (!P.simOpp && !withOpp) return make_unique<Sim>(g, S, q);
     if (!oppSide) oppSide = make_shared<Side>(m, 1);
     Params o = oppParams(g);
     return make_unique<Sim>(g, S, q, oppSide, &o);
@@ -706,11 +709,19 @@ struct Bot {
         if (nowMs() > t0 + budgetMs - 8) break;
         Params q = P;
         q.plan = PL[planIdx];
-        planSim = makeSim(*planGame, q);
+        if (planPhase == 1) q.simOppDiff = false;
+        planSim = makeSim(*planGame, q, planPhase == 1);
         planSim->horizon = P.simHorizon;
       }
       double v;
       if (!planSim->run(t0 + budgetMs, v)) break;
+      if (P.planRobust && planPhase == 0) {
+        // then the same plan against a copy of our bot; the plan's value is the mean of both
+        planV0 = v, planPhase = 1;
+        planSim.reset();
+        continue;
+      }
+      if (planPhase == 1) v = (planV0 + v) / 2, planPhase = 0;
       planScores += " " + to_string(planIdx) + ":" + to_string((int)v);
       if (v > planBest) {
         planBest = v;
@@ -1827,6 +1838,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "srcDeny") P.srcDeny = v;
   else if (k == "srcDenyUntil") P.srcDenyUntil = v;
   else if (k == "srcNone") P.srcNone = v;
+  else if (k == "planRobust") P.planRobust = v;
   else if (k == "srcNoneValue") P.srcNoneValue = v;
   else if (k == "stick") P.stick = v;
   else if (k == "patienceFirst") P.patienceFirst = v;

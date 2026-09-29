@@ -1812,4 +1812,25 @@ stalls on many maps. On the IDE gauntlet the same seeds reproduce
 identical games unless our decisions change, so per-seed diffs are real
 effects, but the sign flips from seed to seed (threatBonus: −316/−400 on
 one uta_ccc seed, +8/−9 on another).
+v14 (patience 120 before downgrading an unaffordable design; solo +27/+43,
+49-31 head-to-head): 23.46 at 65 % when replaced. **v15 (planPool: the
+turn-1 plan search also tries 200 generated plans, a first design then 1-3
+bigger ones; ~360 ms of the 1 s turn-1 budget on CodinGame): 26.87, rank
+10 at 71 %**, beating MSz, R1FA, laconic_pixel, Bubaptik, putibuzu, gaha,
+viewlagoon, tsukammo in its ranking games. The choice of the training plan
+is the big lever. Rejected afterwards (head-to-head): planPool 400 (37-43),
+rpPool (generated re-plan continuations, 41-39), paramSearch (per-map
+strategy settings in the turn-1 search, 41-39), planRobust (plans also
+simulated against a copy of our bot, 28-51: half as many plans fit in the
+budget), simHorizon 300 (36-44), denyTheirs 1 on v15 (39-41), srcDeny
+(felling their fruit sources early: 14-26 at 40). Kept: srcRaider (sources
+even against a raider, 45-35) and srcNone (a missing fruit with no tree left
+anywhere gets a high-value source). Solo parameter sweeps (forest,
+forestValue, maxWait, wasteLambda, stick, replan cadence / margin, sources,
+unitMax, trollValue, farmPerChopper, trainDeadline): all within ±3.
+Remaining loss pattern (therealbeef, tass, HumblePasha, Tictac75): one early
+cheap cutter felling our trees and fruit sources; we stay at 2 trolls
+because one fruit type is missing, while our solo score on the same maps is
+2-5x higher. delineate answers such raiders by sending its first chopper
+(trained around turn 12) straight at the raider's own trees.
 
