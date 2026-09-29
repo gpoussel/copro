@@ -427,7 +427,7 @@ struct Params {
   int trainDeadline = 220;
   double plantGamma = 0.5, sourceValue = 12;
   int farmPerChopper = 3;
-  double raidBeta = 0.5, trainBonus = 3, trollValue = 50, unitMax = 12, seedBonus = 1, denyAlpha = 0.5;
+  double raidBeta = 0.5, trainBonus = 3, trollValue = 50, unitMax = 12, seedBonus = 1, denyAlpha = 1.5;
   double denyTheirs = 0.5;  // chop value of the opponent's trees: what felling them denies it
   bool rpExtra = false;  // more re-plan candidates (continuations once the ranked plans are used up)
   double threatBonus = 0;  // chop value of our trees an enemy chopper can reach within threatR turns
@@ -449,6 +449,7 @@ struct Params {
   bool srcRaider = true;  // plant the training-fruit sources a design needs even against a raider
   double srcDeny = 0;  // chop value bonus for their fruit trees (not bananas) within 3 of their shack
   int srcDenyUntil = 150;
+  int planRerank = 0;  // the best N turn-1 plans are also simulated against a copy of our bot
   bool genV2 = false;  // planPool draws from GEN_PLANS2
   bool planRobust = false;  // turn-1 plans are also simulated against a copy of our bot (mean of both values)
   bool srcNone = true;  // want a source for any missing fruit that has no reachable tree at all
@@ -553,6 +554,9 @@ struct Bot {
   int varIdx = 0;
   int planPhase = 0;  // planRobust: 0 passive-foe sim, 1 bot-foe sim of the same plan
   double planV0 = 0;
+  vector<pair<double, int>> planVals, rrList;  // (value, index in initPlans)
+  int rrIdx = 0;
+  double rrBest = -1e18;
   unique_ptr<Sim> planSim;
   double planBest = -1e9;
   bool planPending = false;
@@ -724,6 +728,7 @@ struct Bot {
         continue;
       }
       if (planPhase == 1) v = (planV0 + v) / 2, planPhase = 0;
+      planVals.push_back({v, planIdx});
       planScores += " " + to_string(planIdx) + ":" + to_string((int)v);
       if (v > planBest) {
         planBest = v;
@@ -732,6 +737,33 @@ struct Bot {
       }
       planSim.reset();
       planIdx++;
+    }
+    // re-rank the best plans by their mean value against a passive foe and against a copy of our bot
+    if (planIdx >= (int)PL.size() && P.planRerank > 0 && rrIdx == 0 && rrList.empty()) {
+      vector<pair<double, int>> v = planVals;
+      sort(v.rbegin(), v.rend());
+      for (int i = 0; i < (int)v.size() && i < P.planRerank; i++) rrList.push_back(v[i]);
+      rrBest = -1e18;
+    }
+    while (planIdx >= (int)PL.size() && rrIdx < (int)rrList.size()) {
+      if (!planSim) {
+        if (nowMs() > t0 + budgetMs - 8) break;
+        Params q = P;
+        q.plan = PL[rrList[rrIdx].second];
+        q.simOppDiff = false;
+        planSim = makeSim(*planGame, q, true);
+        planSim->horizon = P.simHorizon;
+      }
+      double v;
+      if (!planSim->run(t0 + budgetMs, v)) break;
+      double m = (rrList[rrIdx].first + v) / 2;
+      planScores += " rr" + to_string(rrList[rrIdx].second) + ":" + to_string((int)v);
+      if (m > rrBest) {
+        rrBest = m;
+        if (P.plan != PL[rrList[rrIdx].second]) P.plan = PL[rrList[rrIdx].second], P.planVersion++;
+      }
+      planSim.reset();
+      rrIdx++;
     }
     // then per-map strategy settings, one at a time on top of the best so far
     static const vector<string> VARIANTS = {"forest=100", "forest=160", "forest=1000", "farmPerChopper=5", "maxSources=4", "denyTheirs=1", "earlySources=100"};
@@ -751,7 +783,7 @@ struct Bot {
       planSim.reset();
       varIdx++;
     }
-    planPending = (planIdx < (int)PL.size() || varIdx < nv) && turnNo < P.planTurns;
+    planPending = (planIdx < (int)PL.size() || varIdx < nv || (P.planRerank > 0 && rrIdx < (int)rrList.size())) && turnNo < P.planTurns;
     if (!planPending && !sim && getenv("PLANCHOICE")) {
       int bi = -1;
       for (int i = 0; i < (int)PL.size(); i++)
@@ -1858,6 +1890,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "srcNone") P.srcNone = v;
   else if (k == "planRobust") P.planRobust = v;
   else if (k == "genV2") P.genV2 = v;
+  else if (k == "planRerank") P.planRerank = v;
   else if (k == "srcNoneValue") P.srcNoneValue = v;
   else if (k == "stick") P.stick = v;
   else if (k == "patienceFirst") P.patienceFirst = v;
