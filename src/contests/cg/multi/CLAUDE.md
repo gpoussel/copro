@@ -1856,4 +1856,13 @@ the IDE panel better in all 6 differing games vs delineate (-250 -> -164),
 vs norxondor (-264 -> -187) and bl4sterino (-67 -> +36). v19 = v18 +
 simEarlyW 0.5. Rejected: simTreeValue (standing wood at the horizon, solo
 -6), simHorizon 250 (78-81).
+**v19 (simEarlyW 0.5): 28.00, rank 4 at 96 %** (delineate 31.23,
+norxondor 30.81, Bubaptik 28.72 above). The IDE panel (fixed seeds, both
+seats, vs named top agents) predicted it where self-play did not. Panel
+checks after v19 (vs delineate): simEarlyW 1 same (-162), simEarlyAt 60
+worse (-216), patience 80 worse (-185), earlySources 0 unclear (-149 with
+one -383 game). A poor-map game vs delineate: its cheap chopper felled the
+two sources we planted by our shack at turns 17-33 (no plum, no training
+until t100) while it planted lemons next to its own shack around t50 and
+harvested them all game.
 
