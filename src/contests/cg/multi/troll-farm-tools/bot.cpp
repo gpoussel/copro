@@ -451,6 +451,7 @@ struct Params {
   int srcDenyUntil = 150;
   int planRerank = 0;  // the best N turn-1 plans are also simulated against a copy of our bot
   bool genV2 = false;  // planPool draws from GEN_PLANS2
+  bool gardenFallback = false;  // a gardener whose jobs were all taken gets the usual ones
   bool forestPicks = true;  // the seed-pick limit counts the free forest slots
   bool planRobust = false;  // turn-1 plans are also simulated against a copy of our bot (mean of both values)
   bool srcNone = true;  // want a source for any missing fruit that has no reachable tree at all
@@ -1352,9 +1353,10 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
     }
   };
 
+  bool noGarden = false;  // fallback pass: gardeners get the usual jobs
   auto jobsFor = [&](int ui, vector<Job>& jobs) {
     const BTroll& u = mine[ui];
-    if (forestOn && isGardener(u) && !forestCells.empty()) {
+    if (forestOn && isGardener(u) && !forestCells.empty() && !noGarden) {
       gardenerJobs(ui, jobs);
       // a gardener holding another seed also gets the usual jobs (planting it), else it drops the
       // seed and picks it again forever
@@ -1574,8 +1576,23 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
   // not lock the loaded ones out), then everything by rate
   vector<double> bestRate(mine.size(), -1e18);
   for (auto& j : all) bestRate[j.u] = max(bestRate[j.u], j.rate);
-  for (int pass = Pr.dropsFirst ? 0 : 1; pass < 2; pass++)
-  for (int ji = 0; ji < (int)all.size(); ji++) {
+  int fallbackFrom = 1 << 30;
+  for (int pass = Pr.dropsFirst ? 0 : 1; pass < 3; pass++) {
+    if (pass == 2) {
+      // gardeners left without a job (theirs all taken) try the usual jobs
+      if (!Pr.gardenFallback || !forestOn) break;
+      fallbackFrom = all.size();
+      noGarden = true;
+      for (int ui = 0; ui < (int)mine.size(); ui++)
+        if (assigned[ui] < 0 && isGardener(mine[ui])) {
+          js.clear();
+          jobsFor(ui, js);
+          all.insert(all.end(), js.begin(), js.end());
+        }
+      noGarden = false;
+      stable_sort(all.begin() + fallbackFrom, all.end(), [](const Job& a, const Job& b) { return a.rate > b.rate; });
+    }
+  for (int ji = pass == 2 ? fallbackFrom : 0; ji < (int)all.size(); ji++) {
     const Job& j = all[ji];
     const BTroll& u = mine[j.u];
     if (assigned[j.u] >= 0) continue;
@@ -1615,6 +1632,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
     assigned[j.u] = ji;
     endCell[fin] = u.id;
     prev[u.id] = {j.kind, j.dest};
+  }
   }
 
   // ------------------------------------------------------------ moves
@@ -1893,6 +1911,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "srcNone") P.srcNone = v;
   else if (k == "planRobust") P.planRobust = v;
   else if (k == "forestPicks") P.forestPicks = v;
+  else if (k == "gardenFallback") P.gardenFallback = v;
   else if (k == "genV2") P.genV2 = v;
   else if (k == "planRerank") P.planRerank = v;
   else if (k == "srcNoneValue") P.srcNoneValue = v;
