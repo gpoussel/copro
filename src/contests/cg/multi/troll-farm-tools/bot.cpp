@@ -446,6 +446,7 @@ struct Params {
   int planPool = 200;  // generated plans added to the turn-1 plan search (GEN_PLANS)
   int rpPool = 0;  // re-plans also try the continuations of this many generated plans
   bool paramSearch = true;  // after the plan search, try a few strategy settings per map (evalPlans)
+  bool paramSearch2 = true;  // a longer list of settings, two passes
   bool srcRaider = true;  // plant the training-fruit sources a design needs even against a raider
   double srcDeny = 0;  // chop value bonus for their fruit trees (not bananas) within 3 of their shack
   int srcDenyUntil = 150;
@@ -784,20 +785,25 @@ struct Bot {
       rrIdx++;
     }
     // then per-map strategy settings, one at a time on top of the best so far
-    static const vector<string> VARIANTS = {"forest=100", "forest=160", "forest=1000", "farmPerChopper=5", "maxSources=4", "denyTheirs=1", "earlySources=100"};
-    int nv = P.paramSearch ? VARIANTS.size() : 0;
+    static const vector<string> VARIANTS1 = {"forest=100", "forest=160", "forest=1000", "farmPerChopper=5", "maxSources=4", "denyTheirs=1", "earlySources=100"};
+    static const vector<string> VARIANTS2 = {"forest=100", "forest=160", "forest=1000", "forest=70", "farmPerChopper=5", "farmPerChopper=2", "maxSources=4",
+                                             "maxSources=1", "denyTheirs=1", "earlySources=100", "earlySources=0", "maxWait=6", "maxWait=20", "patience=60",
+                                             "patience=200", "forestValue=25", "forestValue=60", "producers=0", "producers=4", "trainDeadline=180",
+                                             "trainDeadline=250", "wasteLambda=0.3", "wasteLambda=1.2"};
+    const vector<string>& VARIANTS = P.paramSearch2 ? VARIANTS2 : VARIANTS1;
+    int nv = P.paramSearch ? VARIANTS.size() * (P.paramSearch2 ? 2 : 1) : 0;
     while (planIdx >= (int)PL.size() && varIdx < nv) {
       if (!planSim) {
         if (nowMs() > t0 + budgetMs - 8) break;
         Params q = P;
-        setParam(q, VARIANTS[varIdx]);
+        setParam(q, VARIANTS[varIdx % VARIANTS.size()]);
         planSim = makeSim(*planGame, q);
         planSim->horizon = P.simHorizon;
       }
       double v;
       if (!planSim->run(t0 + budgetMs, v)) break;
-      planScores += " " + VARIANTS[varIdx] + ":" + to_string((int)v);
-      if (v > planBest) planBest = v, setParam(P, VARIANTS[varIdx]), P.planVersion++;
+      planScores += " " + VARIANTS[varIdx % VARIANTS.size()] + ":" + to_string((int)v);
+      if (v > planBest) planBest = v, setParam(P, VARIANTS[varIdx % VARIANTS.size()]), P.planVersion++;
       planSim.reset();
       varIdx++;
     }
@@ -1940,6 +1946,8 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "planPool") P.planPool = v;
   else if (k == "rpPool") P.rpPool = v;
   else if (k == "paramSearch") P.paramSearch = v;
+  else if (k == "paramSearch2") P.paramSearch2 = v;
+  else if (k == "producers") P.producers = v;
   else if (k == "srcRaider") P.srcRaider = v;
   else if (k == "srcDeny") P.srcDeny = v;
   else if (k == "srcDenyUntil") P.srcDenyUntil = v;

@@ -1883,4 +1883,12 @@ v21 (CHEAP_FIRST): 26.78, rank 6. Panel on the v21 base (-757): paramSearch
 (the turn-1 search then tries forest 100/160/off, farmPerChopper 5,
 maxSources 4, denyTheirs 1, earlySources 100 one at a time) -515 (Bubaptik
 +532, norxondor -452). v22 = v21 + paramSearch.
+**v22 (paramSearch): 28.29, rank 5** (28.35 at 97 %). paramSearch2 (23
+settings — forest start, farmPerChopper, maxSources, earlySources,
+maxWait, patience, forestValue, producers, trainDeadline, wasteLambda,
+denyTheirs — tried one at a time on top of the best, two passes, in the
+turn-1 search): solo +16.5, IDE panel -42 vs -515 (delineate -573 vs -691,
+norxondor -186 vs -452, bl4sterino +363 with 4/4 wins). Per-map tuning by
+simulation is the second big lever after planPool. v23 = v22 +
+paramSearch2.
 
