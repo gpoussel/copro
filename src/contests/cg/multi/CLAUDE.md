@@ -1791,4 +1791,16 @@ train-rush too long" was his main loss cause), putibuzu (apple engine,
 maximin vs opponent candidates on small maps), 0x6E0FF ("reckless chop":
 fell enemy trees without collecting, to delay its training — tass does it
 with a carry-1 chopper), wala (#6: roles + priority order search).
+Deadlocks (found with `freeze.ts`, the longest loaded-troll stall per game,
+then `GTRACE=1 ./tfbot bench planAll=1 <map>` and `DBGT=<turn>` job tables):
+maps with one or two drop cells froze whole teams for 60–120 turns (a 50–257
+loss). Causes: a gardener picked a non-banana seed, then gardener mode only
+offered "drop it" (drop / pick loop on a drop cell); a troll mining or
+harvesting on the only drop cell (or in the only corridor to it) claimed it
+with a higher rate, the loaded trolls got no job and stood still, and the
+jam release never moved harvesters / choppers. v12: a gardener holding
+another seed also gets the usual jobs; DROP jobs that are a troll's best job
+are assigned first; a loaded troll whose drop cells are taken queues towards
+one; after 3 jammed turns every empty troll within 2 of the drop cells makes
+way. Solo: +9 on 140 maps, +5 on 99, stuck maps 184 → 229 and 166 → 444.
 

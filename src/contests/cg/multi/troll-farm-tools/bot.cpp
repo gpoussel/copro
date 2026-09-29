@@ -435,6 +435,11 @@ struct Params {
   int oppModel = 0;  // simOpp's foe: 0 our bot with the first ranked plan, 1 a parasite (see oppParams)
   double smallCap = 24;  // value cap of a missing training unit when only 1-2 are missing
   int minCarry = 2;  // a downgraded design keeps at least this carry
+  bool dropsFirst = true;
+  bool jamQueue = true;  // a loaded troll whose drop cells are taken moves towards one anyway
+  int jamHard = 3;  // after this many jammed turns every empty troll near the drop cells makes way  // job assignment: DROP jobs claim their cells before the others
+  bool waitToCarry = false;  // our growing trees are worth waiting for only up to the size we can carry
+  int forestCarry = 3;  // forest mode: a troll with chop 2 and this carry is a chopper (the others garden)
   int maxWait = 12;
   double patience = 40, patienceRaided = 40, seedValue = 6;
   int producers = 2;
@@ -516,6 +521,7 @@ struct Bot {
   int planRef = -1;
   double targetSince = 0;
   int lastK = 0, raidSeen = -1000;
+  int jamCount = 0;  // consecutive jammed turns
   int sourcesPlanted[4] = {0, 0, 0, 0};
   int profile = 0;  // 0 unknown, 1 raider, 2 eco
   map<int, pair<int, int>> prev;  // troll id -> (kind, dest)
@@ -553,7 +559,7 @@ struct Bot {
   unique_ptr<Bot> cloneForSim() const {
     auto c = make_unique<Bot>(S, P, true);
     c->turnNo = turnNo, c->designs = designs, c->planRef = planRef, c->targetSince = targetSince;
-    c->lastK = lastK, c->raidSeen = raidSeen, c->profile = profile;
+    c->lastK = lastK, c->raidSeen = raidSeen, c->profile = profile, c->jamCount = jamCount;
     memcpy(c->sourcesPlanted, sourcesPlanted, sizeof sourcesPlanted);
     c->prev = prev, c->seedIntent = seedIntent, c->intentSince = intentSince, c->still = still;
     c->oppSide = oppSide;
@@ -1172,7 +1178,15 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
   // ------------------------------------------------------------ jobs
   vector<vector<int>> enemiesAt(N);  // indices in opp
   for (int i = 0; i < (int)opp.size(); i++) enemiesAt[opp[i].cell].push_back(i);
-  auto isChopperRole = [](const BTroll& u) { return u.chop >= 2 && u.carry >= 3; };
+  // forest roles: choppers are the chop-2 carry-3+ trolls, or the chop-2 carry-forestCarry ones when
+  // there is no such troll
+  int chopperCarry = 3;
+  {
+    bool big = false;
+    for (auto& u : mine) big |= u.chop >= 2 && u.carry >= 3;
+    if (!big) chopperCarry = Pr.forestCarry;
+  }
+  auto isChopperRole = [&](const BTroll& u) { return u.chop >= 2 && u.carry >= chopperCarry; };
   auto isGardener = [&](const BTroll& u) { return u.harvest >= 1 && !isChopperRole(u); };
   bool anyChopperRole = false;
   for (auto& u : mine) anyChopperRole |= isChopperRole(u);
@@ -1230,7 +1244,11 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
     const BTroll& u = mine[ui];
     if (forestOn && isGardener(u) && !forestCells.empty()) {
       gardenerJobs(ui, jobs);
-      if (!jobs.empty()) return;
+      // a gardener holding another seed also gets the usual jobs (planting it), else it drops the
+      // seed and picks it again forever
+      auto si = seedIntent.find(u.id);
+      bool otherSeed = si != seedIntent.end() && si->second != BANANA && u.inv[si->second] > 0;
+      if (!jobs.empty() && !otherSeed) return;
     }
     int free = u.carry - u.load;
     double cv = carriedValue(u);
@@ -1266,8 +1284,9 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
           bool own = ownTree(tr), endgame = left < 40;
           int wait = 0;
           bool threatened = Pr.raidNoWait && raided && own && enemies.empty() && tr.size >= 2;
-          if (own && enemies.empty() && !endgame && tr.size < MAX_SIZE && !threatened) {
-            int tm = turnsToSize(tr, MAX_SIZE);
+          int ripe = Pr.waitToCarry ? min(MAX_SIZE, max(1, u.carry)) : MAX_SIZE;
+          if (own && enemies.empty() && !endgame && tr.size < ripe && !threatened) {
+            int tm = turnsToSize(tr, ripe);
             if (tm > Pr.maxWait) continue;
             wait = max(0, tm - a);
           }
@@ -1418,6 +1437,11 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
       }
       top[i] = j;
     }
+    if (!sim && getenv("DBGT") && turnNo == atoi(getenv("DBGT"))) {
+      cerr << "T" << turnNo << " troll " << mine[ui].id << " @" << mine[ui].cell % W << "," << mine[ui].cell / W << " load " << mine[ui].load << " jobs " << js.size() << ":";
+      for (int i = 0; i < (int)top.size() && i < 6; i++) cerr << " k" << top[i].kind << "a" << top[i].act << ">" << (top[i].dest < 0 ? -1 : top[i].dest % W) << "," << (top[i].dest < 0 ? -1 : top[i].dest / W) << "=" << top[i].rate;
+      cerr << endl;
+    }
     if (recordTops) {
       auto& v = tops[mine[ui].id];
       v.clear();
@@ -1432,10 +1456,16 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
   vector<char> claimedChop(trees.size(), 0);
   int pickedSeeds = 0;
   map<int, int> endCell;
+  // two passes: drops that are a troll's best job claim their cells first (a troll mining / planting on a scarce drop cell must
+  // not lock the loaded ones out), then everything by rate
+  vector<double> bestRate(mine.size(), -1e18);
+  for (auto& j : all) bestRate[j.u] = max(bestRate[j.u], j.rate);
+  for (int pass = Pr.dropsFirst ? 0 : 1; pass < 2; pass++)
   for (int ji = 0; ji < (int)all.size(); ji++) {
     const Job& j = all[ji];
     const BTroll& u = mine[j.u];
     if (assigned[j.u] >= 0) continue;
+    if (pass == 0 && (j.kind != K_DROP || j.rate < bestRate[j.u])) continue;
     int fin = j.dest < 0 ? u.cell : j.dest;
     auto ec = endCell.find(fin);
     if (ec != endCell.end() && ec->second != u.id) continue;
@@ -1482,6 +1512,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
     } else
       still[u.id] = {u.cell, u.load, turnNo};
   }
+  jamCount = jammed ? jamCount + 1 : 0;
   vector<char> isDrop(N, 0), reserved(N, 0);
   for (int c : dropCells) isDrop[c] = 1;
   vector<pair<int, const Job*>> acts;
@@ -1498,6 +1529,8 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
     bool inTheWay = isDrop[u.cell] ? !j0 || (j0->kind != K_DROP && j0->kind != K_PICK && (j0->dest < 0 || j0->dest == u.cell))
                                    : Pr.jamWide && u.load == 0 && dropDist[u.cell] <= 2 &&
                                          (idleHere || (j0 && j0->dest >= 0 && dropDist[j0->dest] <= 2 && j0->kind != K_HARVEST && j0->kind != K_CHOP));
+    if (jamCount >= Pr.jamHard && u.load == 0 && dropDist[u.cell] <= 2 && (!j0 || (j0->kind != K_DROP && j0->kind != K_PICK)))
+      inTheWay = true;  // a long jam: anyone empty near the drop cells makes way, whatever its job
     if (jammed && Pr.jamRelease && inTheWay) {
       int best = -1;
       const int16_t* d = dist(u.cell);
@@ -1506,6 +1539,16 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
         if (m->grid[c] == GRASS && d[c] > 0 && dropDist[c] >= away && !occupiedByMine(c) && (best < 0 || d[c] < d[best])) best = c;
       if (best >= 0) {
         movers.push_back({ui, best});
+        continue;
+      }
+    }
+    if (!j0 && Pr.jamQueue && u.load > 0) {
+      // loaded but its drop cells are taken this turn: queue towards the best one rather than block
+      const Job* dj = nullptr;
+      for (auto& j : all)
+        if (j.u == ui && j.kind == K_DROP && j.dest >= 0 && (!dj || j.rate > dj->rate)) dj = &j;
+      if (dj && dj->dest != u.cell) {
+        movers.push_back({ui, dj->dest});
         continue;
       }
     }
@@ -1639,6 +1682,11 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "oppModel") P.oppModel = v;
   else if (k == "smallCap") P.smallCap = v;
   else if (k == "minCarry") P.minCarry = v;
+  else if (k == "forestCarry") P.forestCarry = v;
+  else if (k == "waitToCarry") P.waitToCarry = v;
+  else if (k == "dropsFirst") P.dropsFirst = v;
+  else if (k == "jamQueue") P.jamQueue = v;
+  else if (k == "jamHard") P.jamHard = v;
   else if (k == "noFarmExposed") P.noFarmExposed = v;
   else if (k == "maxSources") P.maxSources = v;
   else if (k == "chopperNow") P.chopperNow = v;
@@ -1728,7 +1776,18 @@ static pair<int, int> playGame(const string& file, const Params& A, const Params
   while (!g.over) {
     tasks.clear();
     for (int p = 0; p < (solo ? 1 : 2); p++) {
-      bots[p]->turn(inputFor(g, p));
+      string o = bots[p]->turn(inputFor(g, p));
+      if (p == 0 && getenv("GTRACE")) {
+        cerr << "t" << g.turn + 1 << " score " << score(g, 0) << " st";
+        for (int i = 0; i < 6; i++) cerr << " " << g.inv[0][i];
+        for (auto& u : g.trolls)
+          if (u.owner == 0) {
+            cerr << " | " << u.id << "@" << u.cell % g.m->W << "," << u.cell / g.m->W << "[";
+            for (int i = 0; i < 6; i++) cerr << u.inv[i];
+            cerr << "]";
+          }
+        cerr << " || " << o << endl;
+      }
       toTasks(g, p, bots[p]->lastActs, tasks);
     }
     step(g, tasks);
