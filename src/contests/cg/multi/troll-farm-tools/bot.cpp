@@ -437,7 +437,10 @@ struct Params {
   int minCarry = 2;  // a downgraded design keeps at least this carry
   bool dropsFirst = true;
   bool jamQueue = true;  // a loaded troll whose drop cells are taken moves towards one anyway
-  int jamHard = 3;  // after this many jammed turns every empty troll near the drop cells makes way  // job assignment: DROP jobs claim their cells before the others
+  int jamHard = 3;
+  bool jamOrders = true;
+  bool holderWait = true;
+  bool escFirst = false;  // jam-release movers pick their steps before the others  // skip a job whose cell holds an own troll not assigned yet (order-dependent deadlocks)  // in a jam, search the order in which trolls pick their steps  // after this many jammed turns every empty troll near the drop cells makes way  // job assignment: DROP jobs claim their cells before the others
   bool waitToCarry = false;  // our growing trees are worth waiting for only up to the size we can carry
   int forestCarry = 3;  // forest mode: a troll with chop 2 and this carry is a chopper (the others garden)
   int maxWait = 12;
@@ -522,6 +525,8 @@ struct Bot {
   double targetSince = 0;
   int lastK = 0, raidSeen = -1000;
   int jamCount = 0;  // consecutive jammed turns
+  const Game* curGame = nullptr;  // the state decide() is called on (turnGame), for move-order checks
+  int curSeat = 0;
   int sourcesPlanted[4] = {0, 0, 0, 0};
   int profile = 0;  // 0 unknown, 1 raider, 2 eco
   map<int, pair<int, int>> prev;  // troll id -> (kind, dest)
@@ -840,6 +845,7 @@ struct Bot {
     for (auto& u : g.trolls) trolls.push_back({u.id, u.owner == p, u.cell, u.speed, u.carry, u.harvest, u.chop, u.inv, u.load()});
     int inv[6];
     memcpy(inv, g.inv[p], sizeof inv);
+    curGame = &g, curSeat = p;
     return decide(inv, g.trees, trolls);
   }
 
@@ -1478,7 +1484,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
         }
       if (holder >= 0) {
         int hj = assigned[holder];
-        if (hj < 0 || all[hj].dest < 0 || all[hj].dest == mine[holder].cell) continue;
+        if (Pr.holderWait ? hj < 0 || all[hj].dest < 0 || all[hj].dest == mine[holder].cell : hj >= 0 && (all[hj].dest < 0 || all[hj].dest == mine[holder].cell)) continue;
       }
     }
     if (j.kind == K_HARVEST && j.tree >= 0) {
@@ -1516,7 +1522,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
   vector<char> isDrop(N, 0), reserved(N, 0);
   for (int c : dropCells) isDrop[c] = 1;
   vector<pair<int, const Job*>> acts;
-  vector<pair<int, int>> movers;
+  vector<pair<int, int>> movers, escapers;  // escapers (jam release) pick their cells first
   auto occupiedByMine = [&](int c) {
     for (auto& o : mine)
       if (o.cell == c) return true;
@@ -1529,7 +1535,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
     bool inTheWay = isDrop[u.cell] ? !j0 || (j0->kind != K_DROP && j0->kind != K_PICK && (j0->dest < 0 || j0->dest == u.cell))
                                    : Pr.jamWide && u.load == 0 && dropDist[u.cell] <= 2 &&
                                          (idleHere || (j0 && j0->dest >= 0 && dropDist[j0->dest] <= 2 && j0->kind != K_HARVEST && j0->kind != K_CHOP));
-    if (jamCount >= Pr.jamHard && u.load == 0 && dropDist[u.cell] <= 2 && (!j0 || (j0->kind != K_DROP && j0->kind != K_PICK)))
+    if (jamCount >= Pr.jamHard && dropDist[u.cell] <= 2 && (!j0 || (u.load == 0 && j0->kind != K_DROP && j0->kind != K_PICK)))
       inTheWay = true;  // a long jam: anyone empty near the drop cells makes way, whatever its job
     if (jammed && Pr.jamRelease && inTheWay) {
       int best = -1;
@@ -1538,7 +1544,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
       for (int c = 0; c < N; c++)
         if (m->grid[c] == GRASS && d[c] > 0 && dropDist[c] >= away && !occupiedByMine(c) && (best < 0 || d[c] < d[best])) best = c;
       if (best >= 0) {
-        movers.push_back({ui, best});
+        escapers.push_back({ui, best});
         continue;
       }
     }
@@ -1569,20 +1575,74 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
     } else
       movers.push_back({ui, j0->dest});
   }
-  for (auto& [ui, dest] : movers) {
-    const BTroll& u = mine[ui];
-    const int16_t* d = dist(u.cell);
-    const int16_t* td = dist(dest);
-    int best = u.cell;
-    double bestD = reserved[u.cell] ? 1e9 : td[u.cell] < 0 ? 1e8 : td[u.cell];
-    for (int c = 0; c < N; c++) {
-      if (m->grid[c] != GRASS || d[c] < 0 || d[c] > u.speed || reserved[c]) continue;
-      double v = td[c] < 0 ? 1e8 : td[c];
-      if (v < bestD || (v == bestD && d[c] < d[best])) bestD = v, best = c;
+  movers.insert(Pr.escFirst ? movers.begin() : movers.end(), escapers.begin(), escapers.end());
+  // each mover in turn takes the reachable cell closest to its destination that no earlier one took
+  auto pickSteps = [&](const vector<pair<int, int>>& order, vector<char> res) {
+    vector<pair<int, int>> steps;
+    for (auto& [ui, dest] : order) {
+      const BTroll& u = mine[ui];
+      const int16_t* d = dist(u.cell);
+      const int16_t* td = dist(dest);
+      int best = u.cell;
+      double bestD = res[u.cell] ? 1e9 : td[u.cell] < 0 ? 1e8 : td[u.cell];
+      for (int c = 0; c < N; c++) {
+        if (m->grid[c] != GRASS || d[c] < 0 || d[c] > u.speed || res[c]) continue;
+        double v = td[c] < 0 ? 1e8 : td[c];
+        if (v < bestD || (v == bestD && d[c] < d[best])) bestD = v, best = c;
+      }
+      res[best] = 1;
+      steps.push_back({ui, best});
     }
-    reserved[best] = 1;
-    if (best != u.cell) out.push_back({A_MOVE, u.id, best, {0, 0, 0, 0}});
+    return steps;
+  };
+  vector<pair<int, int>> steps = pickSteps(movers, reserved);
+  if (Pr.jamOrders && jammed && curGame && movers.size() >= 2) {
+    // a jam: try other processing orders, resolve each with the referee's move rules, keep the one
+    // that gets loaded trolls onto drop cells, then moves everyone closest to their destinations
+    auto scoreOf = [&](const vector<pair<int, int>>& st) {
+      Game g = *curGame;
+      vector<Task> mv;
+      for (auto& [ui, c] : st) {
+        if (c == mine[ui].cell) continue;
+        for (int i = 0; i < (int)g.trolls.size(); i++)
+          if (g.trolls[i].id == mine[ui].id) {
+            Task t{};
+            t.kind = A_MOVE, t.p = curSeat, t.unit = i, t.target = c;
+            mv.push_back(t);
+          }
+      }
+      applyMoves(g, mv);
+      double v = 0;
+      for (int k = 0; k < (int)movers.size(); k++) {
+        int ui = movers[k].first, dest = movers[k].second;
+        int now = -1;
+        for (auto& t : g.trolls)
+          if (t.id == mine[ui].id) now = t.cell;
+        const int16_t* td = dist(dest);
+        double gain = (td[mine[ui].cell] < 0 ? 0 : td[mine[ui].cell]) - (td[now] < 0 ? 0 : td[now]);
+        v += mine[ui].load > 0 ? 3 * gain + (isDrop[now] ? 20 : 0) : gain;
+      }
+      return v;
+    };
+    vector<pair<int, int>> order = movers;
+    double bestV = scoreOf(steps);
+    int tries = 0;
+    sort(order.begin(), order.end());
+    do {
+      auto st = pickSteps(order, reserved);
+      double v = scoreOf(st);
+      if (v > bestV + 1e-9) bestV = v, steps = st;
+    } while (++tries < 120 && next_permutation(order.begin(), order.end()));
   }
+  if (!sim && getenv("DBGT") && turnNo == atoi(getenv("DBGT"))) {
+    cerr << "  jammed " << jammed << " jamCount " << jamCount << " movers";
+    for (auto& [ui, d] : movers) cerr << " " << mine[ui].id << ">" << d % W << "," << d / W;
+    cerr << " steps";
+    for (auto& [ui, c] : steps) cerr << " " << mine[ui].id << ">" << c % W << "," << c / W;
+    cerr << endl;
+  }
+  for (auto& [ui, best] : steps)
+    if (best != mine[ui].cell) out.push_back({A_MOVE, mine[ui].id, best, {0, 0, 0, 0}});
   for (auto& [ui, j] : acts) {
     if (j->act == 0) continue;
     const BTroll& u = mine[ui];
@@ -1687,6 +1747,9 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "dropsFirst") P.dropsFirst = v;
   else if (k == "jamQueue") P.jamQueue = v;
   else if (k == "jamHard") P.jamHard = v;
+  else if (k == "jamOrders") P.jamOrders = v;
+  else if (k == "holderWait") P.holderWait = v;
+  else if (k == "escFirst") P.escFirst = v;
   else if (k == "noFarmExposed") P.noFarmExposed = v;
   else if (k == "maxSources") P.maxSources = v;
   else if (k == "chopperNow") P.chopperNow = v;
