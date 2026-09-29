@@ -448,6 +448,7 @@ struct Params {
   bool paramSearch = true;  // after the plan search, try a few strategy settings per map (evalPlans)
   bool paramSearch2 = true;  // a longer list of settings, two passes
   bool paramSearchX = false;  // the longer list plus stick, forestCarry, waitToCarry, unitMax, trollValue, seedValue, sourceValue
+  bool rpOpp = false;  // re-plan sims play the opponent's actual trolls with a copy of our bot (score difference)
   bool paramSearch3 = false;  // then the 10 best plans again with the tuned settings, and one more pass
   bool srcRaider = true;  // plant the training-fruit sources a design needs even against a raider
   double srcDeny = 0;  // chop value bonus for their fruit trees (not bananas) within 3 of their shack
@@ -905,7 +906,7 @@ struct Bot {
         if (nowMs() > t0 + budgetMs - 8) return;
         Params q = P;
         q.plan = rp->cands[rp->idx];
-        rp->sim = makeSim(rp->g, q);
+        rp->sim = makeSim(rp->g, q, P.rpOpp);
         rp->sim->horizon = min(300, rp->g.turn + P.simHorizon);
         rp->sim->trace = getenv("SIMTRACE") && rp->idx == atoi(getenv("SIMIDX") ? getenv("SIMIDX") : "0") && rp->g.turn + 1 == atoi(getenv("SIMTRACE"));
       }
@@ -1996,6 +1997,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "paramSearch") P.paramSearch = v;
   else if (k == "paramSearch2") P.paramSearch2 = v;
   else if (k == "paramSearch3") P.paramSearch3 = v;
+  else if (k == "rpOpp") P.rpOpp = v;
   else if (k == "paramSearchX") P.paramSearchX = v;
   else if (k == "sourceValue") P.sourceValue = v;
   else if (k == "producers") P.producers = v;
