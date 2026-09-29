@@ -1891,4 +1891,7 @@ turn-1 search): solo +16.5, IDE panel -42 vs -515 (delineate -573 vs -691,
 norxondor -186 vs -452, bl4sterino +363 with 4/4 wins). Per-map tuning by
 simulation is the second big lever after planPool. v23 = v22 +
 paramSearch2.
+Panel on v23: paramSearchX (35 settings) -688 vs -42 despite solo +6.5 —
+more per-map knobs overfit the passive-foe sims; paramSearch3 (best plans
+again with tuned settings, one more pass) solo -0.9. Both off.
 
