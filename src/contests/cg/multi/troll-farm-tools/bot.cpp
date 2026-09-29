@@ -451,6 +451,7 @@ struct Params {
   int srcDenyUntil = 150;
   int planRerank = 0;  // the best N turn-1 plans are also simulated against a copy of our bot
   bool genV2 = false;  // planPool draws from GEN_PLANS2
+  bool forestPicks = true;  // the seed-pick limit counts the free forest slots
   bool planRobust = false;  // turn-1 plans are also simulated against a copy of our bot (mean of both values)
   bool srcNone = true;  // want a source for any missing fruit that has no reachable tree at all
   double srcNoneValue = 60;
@@ -1606,7 +1607,9 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
       claimedChop[j.tree] = 1;
     }
     if (j.kind == K_PICK) {
-      if (pickedSeeds >= (int)wanted.size() + max(0, farmMissing - 1)) continue;
+      // forest gardeners pick bananas for the forest slots too (else they idle at the shack)
+      int lim = (int)wanted.size() + max(0, farmMissing - 1) + (Pr.forestPicks && forestOn ? max(0, forestSlots) : 0);
+      if (pickedSeeds >= lim) continue;
       pickedSeeds++;
     }
     assigned[j.u] = ji;
@@ -1889,6 +1892,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "srcDenyUntil") P.srcDenyUntil = v;
   else if (k == "srcNone") P.srcNone = v;
   else if (k == "planRobust") P.planRobust = v;
+  else if (k == "forestPicks") P.forestPicks = v;
   else if (k == "genV2") P.genV2 = v;
   else if (k == "planRerank") P.planRerank = v;
   else if (k == "srcNoneValue") P.srcNoneValue = v;
