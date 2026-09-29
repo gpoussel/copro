@@ -452,6 +452,7 @@ struct Params {
   int planRerank = 0;  // the best N turn-1 plans are also simulated against a copy of our bot
   bool genV2 = false;  // planPool draws from GEN_PLANS2
   bool gardenFallback = false;  // a gardener whose jobs were all taken gets the usual ones
+  bool firstAffordable = false;  // turn-1 plan search keeps the plans whose first design is affordable at once
   bool forestPicks = true;  // the seed-pick limit counts the free forest slots
   bool planRobust = false;  // turn-1 plans are also simulated against a copy of our bot (mean of both values)
   bool srcNone = true;  // want a source for any missing fruit that has no reachable tree at all
@@ -710,6 +711,15 @@ struct Bot {
       initPlans = RANKED_PLANS;
       const auto& GP = P.genV2 ? GEN_PLANS2 : GEN_PLANS;
       for (int i = 0; i < P.planPool && i < (int)GP.size(); i++) initPlans.push_back(GP[i]);
+      if (P.firstAffordable) {
+        // train on turn 1 when the stock allows: keep the plans whose first design is affordable now
+        const int* st = planGame->inv[0];
+        auto ok = [&](const Plan& p) { return !p.empty() && 1 + p[0][0] * p[0][0] <= st[0] && 1 + p[0][1] * p[0][1] <= st[1] && 1 + p[0][2] * p[0][2] <= st[2] && 1 + p[0][3] * p[0][3] <= st[4]; };
+        vector<Plan> keep;
+        for (auto& p : initPlans)
+          if (ok(p)) keep.push_back(p);
+        if (!keep.empty()) initPlans = keep;
+      }
     }
     const auto& PL = initPlans;
     while (planIdx < (int)PL.size()) {
@@ -1911,6 +1921,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "srcNone") P.srcNone = v;
   else if (k == "planRobust") P.planRobust = v;
   else if (k == "forestPicks") P.forestPicks = v;
+  else if (k == "firstAffordable") P.firstAffordable = v;
   else if (k == "gardenFallback") P.gardenFallback = v;
   else if (k == "genV2") P.genV2 = v;
   else if (k == "planRerank") P.planRerank = v;
