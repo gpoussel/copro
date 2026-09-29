@@ -1803,4 +1803,13 @@ another seed also gets the usual jobs; DROP jobs that are a troll's best job
 are assigned first; a loaded troll whose drop cells are taken queues towards
 one; after 3 jammed turns every empty troll within 2 of the drop cells makes
 way. Solo: +9 on 140 maps, +5 on 99, stuck maps 184 → 229 and 166 → 444.
+v11 (minCarry): ~23.4 at 76 % (not finished). v12 (deadlock fixes):
+**25.34, rank 19**. v13 = v12 + jam move-order search (up to 120 orders
+in which trolls pick steps, each resolved with the engine's applyMoves) and
+job-less trolls clearing the drop area after 3 jammed turns: an IDE game
+frozen at 45–260 now wins 247–233. `stall.sh` (scratchpad) finds solo
+stalls on many maps. On the IDE gauntlet the same seeds reproduce
+identical games unless our decisions change, so per-seed diffs are real
+effects, but the sign flips from seed to seed (threatBonus: −316/−400 on
+one uta_ccc seed, +8/−9 on another).
 
