@@ -457,6 +457,7 @@ struct Params {
   double simTreeValue = 0;  // sims value the tree sizes standing on our side at the horizon (x4 x this)
   bool firstAffordable = false;  // turn-1 plan search keeps the plans whose first design is affordable at once
   bool forestPicks = true;  // the seed-pick limit counts the free forest slots
+  double denyAlphaRaided = -1;  // denyAlpha while we have been raided in the last 40 turns (-1: same)
   bool planRobust = false;  // turn-1 plans are also simulated against a copy of our bot (mean of both values)
   bool srcNone = true;  // want a source for any missing fruit that has no reachable tree at all
   double srcNoneValue = 60;
@@ -1464,7 +1465,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
           double value = 4 * wood;
           int sizeNow = predict(tr, a).size;
           if (!enemies.empty())
-            value += 4 * Pr.denyAlpha * share;
+            value += 4 * (raided && Pr.denyAlphaRaided >= 0 ? Pr.denyAlphaRaided : Pr.denyAlpha) * share;
           else if (own && sizeNow == MAX_SIZE && oppChopT[tr.cell] <= Pr.threatR)
             value += 4 * Pr.threatBonus * size;
           else if (!own) {
@@ -1848,10 +1849,14 @@ static shared_ptr<MapInfo> mapFromInit(const vector<string>& init) {
   M->build();
   return M;
 }
+static bool CHEAP_FIRST = false;
 static void genPlans(bool V2, vector<Plan>& out) {
   {
     const vector<Design> first = V2 ? vector<Design>{{2, 2, 2, 2}, {2, 3, 1, 2}, {2, 2, 2, 1}, {1, 2, 2, 2}, {2, 1, 1, 2}, {2, 2, 1, 1}, {2, 2, 1, 2},
                                                        {3, 2, 1, 2}, {3, 3, 1, 2}, {2, 2, 1, 3}, {1, 2, 1, 2}, {2, 3, 2, 2}}
+                                       : CHEAP_FIRST ? vector<Design>{{2, 2, 2, 2}, {2, 2, 1, 2}, {2, 2, 2, 1}, {2, 3, 1, 2}, {2, 2, 1, 1}, {1, 2, 2, 2}, {2, 1, 1, 2}, {2, 1, 1, 3},
+                                                       {3, 2, 1, 2}, {2, 2, 0, 2}, {1, 2, 1, 2}, {2, 3, 2, 1}, {2, 2, 2, 3}, {3, 3, 1, 2},
+                                                       {1, 1, 1, 2}, {1, 1, 1, 1}, {2, 1, 1, 1}, {1, 2, 1, 1}, {1, 1, 2, 2}}
                                        : vector<Design>{{2, 2, 2, 2}, {2, 2, 1, 2}, {2, 2, 2, 1}, {2, 3, 1, 2}, {2, 2, 1, 1}, {1, 2, 2, 2}, {2, 1, 1, 2}, {2, 1, 1, 3},
                                                        {3, 2, 1, 2}, {2, 2, 0, 2}, {1, 2, 1, 2}, {2, 3, 2, 1}, {2, 2, 2, 3}, {3, 3, 1, 2}};
     const vector<Design> later = V2 ? vector<Design>{{2, 4, 0, 3}, {2, 4, 1, 3}, {2, 4, 1, 2}, {2, 4, 0, 2}, {3, 4, 0, 3}, {3, 4, 2, 3}, {3, 4, 1, 3},
@@ -1940,6 +1945,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "srcDenyUntil") P.srcDenyUntil = v;
   else if (k == "srcNone") P.srcNone = v;
   else if (k == "planRobust") P.planRobust = v;
+  else if (k == "denyAlphaRaided") P.denyAlphaRaided = v;
   else if (k == "forestPicks") P.forestPicks = v;
   else if (k == "firstAffordable") P.firstAffordable = v;
   else if (k == "simTreeValue") P.simTreeValue = v;
@@ -2070,6 +2076,7 @@ static pair<int, int> playGame(const string& file, const Params& A, const Params
 
 int main(int argc, char** argv) {
   ios::sync_with_stdio(false);
+  if (getenv("CHEAPFIRST")) CHEAP_FIRST = true;
   initDesigns();
   string mode = argc > 1 ? argv[1] : "";
   if (mode == "bench" || mode == "arena") {
