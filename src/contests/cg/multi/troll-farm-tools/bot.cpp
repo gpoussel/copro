@@ -450,6 +450,7 @@ struct Params {
   double srcDeny = 0;  // chop value bonus for their fruit trees (not bananas) within 3 of their shack
   int srcDenyUntil = 150;
   bool srcNone = true;  // want a source for any missing fruit that has no reachable tree at all
+  double srcNoneValue = 60;
   bool waitToCarry = false;  // our growing trees are worth waiting for only up to the size we can carry
   int forestCarry = 3;  // forest mode: a troll with chop 2 and this carry is a chopper (the others garden)
   int maxWait = 12;
@@ -1164,6 +1165,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
     int type;
     double value;
     bool source;
+    bool none = false;  // no reachable tree of that fruit left
   };
   vector<Want> wanted;
   auto wantedHas = [&](int t) {
@@ -1177,13 +1179,15 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
       for (auto& t : trees) have += t.type == f && ownTree(t) && dropDist[t.cell] <= 3;
       int nf = need[f];
       int want = nf >= 10 ? 2 : nf >= 4 ? 1 : 0;
-      if (Pr.srcNone && nf > 0 && want == 0) {
-        // no tree of that fruit anywhere we can reach: even a small deficit needs a source
-        bool any = false;
-        for (auto& t : trees) any |= t.type == f && dropDist[t.cell] >= 0;
-        if (!any) want = 1;
+      bool none = false;
+      if (Pr.srcNone && nf > 0) {
+        // no tree of that fruit anywhere we can reach: the training waits for a source, whatever the deficit
+        none = true;
+        for (auto& t : trees) none &= !(t.type == f && dropDist[t.cell] >= 0);
+        if (none) want = max(want, 1);
       }
-      if (have < want && stock[f] > 0 && sourcesPlanted[f] < Pr.maxSources && !exposed && (profile != 1 || Pr.srcRaider)) wanted.push_back({f, Pr.sourceValue, true});
+      if (none && have < want && stock[f] > 0) wanted.push_back({f, Pr.srcNoneValue, true, true});
+      else if (have < want && stock[f] > 0 && sourcesPlanted[f] < Pr.maxSources && !exposed && (profile != 1 || Pr.srcRaider)) wanted.push_back({f, Pr.sourceValue, true});
     }
   if (turnNo < Pr.earlySources && !exposed && profile != 1)
     for (int f : {1, 0, 2}) {
@@ -1193,6 +1197,12 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
       if (have) continue;
       wanted.push_back({f, Pr.sourceValue, true});
     }
+  if (!sim && getenv("DBGT") && turnNo == atoi(getenv("DBGT"))) {
+    cerr << "  need " << need[0] << "/" << need[1] << "/" << need[2] << "/" << need[3] << "/" << need[4] << " stock " << stock[0] << "/" << stock[1] << "/" << stock[2] << "/" << stock[3] << "/" << stock[4]
+         << " target " << (target ? to_string((*target)[0]) + to_string((*target)[1]) + to_string((*target)[2]) + to_string((*target)[3]) : "-") << " exposed " << exposed << " profile " << profile << " planted " << sourcesPlanted[0] << sourcesPlanted[1] << sourcesPlanted[2] << " wanted";
+    for (auto& w : wanted) cerr << " " << w.type << (w.source ? "s" : "");
+    cerr << endl;
+  }
   if (farmMissing > 0)
     for (int f : {(int)BANANA, 0, 1, 2})
       if (need[f] == 0) wanted.push_back({f, 16 * Pr.plantGamma, false});
@@ -1424,7 +1434,7 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
         double bestRate = -1;
         int bestCell = -1;
         for (int c : farmCells) {
-          if (oppNear(c, 3)) continue;
+          if (oppNear(c, w.none ? 1 : 3)) continue;
           int dd = pick ? dist(c)[bestDrop(c)] : dNow[c];
           int T = toShack + steps(u, dd) + 1;
           if (!plantOk(seed, c, T)) continue;
@@ -1817,6 +1827,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "srcDeny") P.srcDeny = v;
   else if (k == "srcDenyUntil") P.srcDenyUntil = v;
   else if (k == "srcNone") P.srcNone = v;
+  else if (k == "srcNoneValue") P.srcNoneValue = v;
   else if (k == "stick") P.stick = v;
   else if (k == "patienceFirst") P.patienceFirst = v;
   else if (k == "trollValue") P.trollValue = v;
