@@ -452,6 +452,7 @@ struct Params {
   int planRerank = 0;  // the best N turn-1 plans are also simulated against a copy of our bot
   bool genV2 = false;  // planPool draws from GEN_PLANS2
   bool gardenFallback = false;  // a gardener whose jobs were all taken gets the usual ones
+  double simTreeValue = 0;  // sims value the tree sizes standing on our side at the horizon (x4 x this)
   bool firstAffordable = false;  // turn-1 plan search keeps the plans whose first design is affordable at once
   bool forestPicks = true;  // the seed-pick limit counts the free forest slots
   bool planRobust = false;  // turn-1 plans are also simulated against a copy of our bot (mean of both values)
@@ -1011,6 +1012,14 @@ bool Sim::run(double deadline, double& value) {
     double v = score(g, p);
     for (auto& u : g.trolls)
       if (u.owner == p) v += 4 * u.inv[WOOD] + u.inv[0] + u.inv[1] + u.inv[2] + u.inv[3];
+    double tw = a->P.simTreeValue;
+    if (tw > 0 && g.turn < 300) {
+      // wood still standing on that side (what the remaining turns can fell)
+      const int16_t* d0 = g.m->d(g.m->shack[p]);
+      const int16_t* d1 = g.m->d(g.m->shack[1 - p]);
+      for (auto& t : g.trees)
+        if (d0[t.cell] >= 0 && (d1[t.cell] < 0 || d0[t.cell] < d1[t.cell])) v += 4 * tw * t.size;
+    }
     return v;
   };
   value = b && a->P.simOppDiff ? val(0) - val(1) : val(0);
@@ -1922,6 +1931,7 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "planRobust") P.planRobust = v;
   else if (k == "forestPicks") P.forestPicks = v;
   else if (k == "firstAffordable") P.firstAffordable = v;
+  else if (k == "simTreeValue") P.simTreeValue = v;
   else if (k == "gardenFallback") P.gardenFallback = v;
   else if (k == "genV2") P.genV2 = v;
   else if (k == "planRerank") P.planRerank = v;
