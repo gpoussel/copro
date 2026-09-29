@@ -1872,4 +1872,11 @@ worse vs Bubaptik (-161 vs -89); threatBonus 0.5/R3 -210; denyTheirs 0.25
 wood deficit (~50 wood) is about what it fells on our side (~70 sizes), yet
 no defence tried so far closes it. v20 = v19 + planRerank 5.
 v20 (planRerank 5): 26.63, rank 8 — reverted; v19 resubmitted.
+**Arena noise: the same v19 code scored 27.85 then 25.67 on a resubmission**
+(±1 point): v16/v18/v19/v20 (26.6-28.0) are within noise of each other.
+IDE panel (delineate, norxondor, Bubaptik, bl4sterino x 2 seeds x 2 seats,
+sum of score diffs; v19 = -915): earlySources 0 -940 (helps vs delineate,
+hurts vs bl4sterino), denyAlphaRaided 1.5 -962, CHEAP_FIRST (1112, 1111,
+2111, 1211, 1122 added as first designs of the generated plans) -757.
+v21 = v19 + CHEAP_FIRST.
 

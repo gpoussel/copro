@@ -1849,7 +1849,7 @@ static shared_ptr<MapInfo> mapFromInit(const vector<string>& init) {
   M->build();
   return M;
 }
-static bool CHEAP_FIRST = false;
+static bool CHEAP_FIRST = true;
 static void genPlans(bool V2, vector<Plan>& out) {
   {
     const vector<Design> first = V2 ? vector<Design>{{2, 2, 2, 2}, {2, 3, 1, 2}, {2, 2, 2, 1}, {1, 2, 2, 2}, {2, 1, 1, 2}, {2, 2, 1, 1}, {2, 2, 1, 2},
