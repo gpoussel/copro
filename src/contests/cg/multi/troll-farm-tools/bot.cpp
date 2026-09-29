@@ -452,6 +452,8 @@ struct Params {
   int planRerank = 0;  // the best N turn-1 plans are also simulated against a copy of our bot
   bool genV2 = false;  // planPool draws from GEN_PLANS2
   bool gardenFallback = false;  // a gardener whose jobs were all taken gets the usual ones
+  double simEarlyW = 0;  // sims add this x the score banked simEarlyAt turns in (tempo)
+  int simEarlyAt = 100;
   double simTreeValue = 0;  // sims value the tree sizes standing on our side at the horizon (x4 x this)
   bool firstAffordable = false;  // turn-1 plan search keeps the plans whose first design is affordable at once
   bool forestPicks = true;  // the seed-pick limit counts the free forest slots
@@ -528,6 +530,8 @@ struct Sim {
   int horizon = 150;
   vector<int> ripeSince;
   bool trace = false;
+  int startTurn = -1;
+  double earlyV = -1;
   Sim(const Game& g0, shared_ptr<Side> side, const Params& p, shared_ptr<Side> oppSide = nullptr, const Params* oppP = nullptr);
   bool run(double deadline, double& value);
 };
@@ -965,7 +969,13 @@ Sim::Sim(const Game& g0, shared_ptr<Side> side, const Params& p, shared_ptr<Side
 }
 bool Sim::run(double deadline, double& value) {
   vector<Task> tasks;
+  if (startTurn < 0) startTurn = g.turn;
   while (!g.over && g.turn < horizon) {
+    if (a->P.simEarlyW > 0 && g.turn == startTurn + a->P.simEarlyAt && earlyV < 0) {
+      earlyV = score(g, 0);
+      for (auto& u : g.trolls)
+        if (u.owner == 0) earlyV += 4 * u.inv[WOOD];
+    }
     if (nowMs() > deadline) return false;
     vector<Act> acts = a->turnGame(g, 0);
     if (trace && getenv("SIMACTS") && g.turn >= atoi(getenv("SIMACTS")) && g.turn < atoi(getenv("SIMACTS")) + 40) {
@@ -1023,6 +1033,7 @@ bool Sim::run(double deadline, double& value) {
     return v;
   };
   value = b && a->P.simOppDiff ? val(0) - val(1) : val(0);
+  if (a->P.simEarlyW > 0) value += a->P.simEarlyW * max(0.0, earlyV);  // tempo: what the plan has banked early
   return true;
 }
 
@@ -1932,6 +1943,8 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "forestPicks") P.forestPicks = v;
   else if (k == "firstAffordable") P.firstAffordable = v;
   else if (k == "simTreeValue") P.simTreeValue = v;
+  else if (k == "simEarlyW") P.simEarlyW = v;
+  else if (k == "simEarlyAt") P.simEarlyAt = v;
   else if (k == "gardenFallback") P.gardenFallback = v;
   else if (k == "genV2") P.genV2 = v;
   else if (k == "planRerank") P.planRerank = v;
