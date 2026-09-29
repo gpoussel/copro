@@ -447,6 +447,9 @@ struct Params {
   int rpPool = 0;  // re-plans also try the continuations of this many generated plans
   bool paramSearch = false;  // after the plan search, try a few strategy settings per map (evalPlans)
   bool srcRaider = true;  // plant the training-fruit sources a design needs even against a raider
+  double srcDeny = 0;  // chop value bonus for their fruit trees (not bananas) within 3 of their shack
+  int srcDenyUntil = 150;
+  bool srcNone = true;  // want a source for any missing fruit that has no reachable tree at all
   bool waitToCarry = false;  // our growing trees are worth waiting for only up to the size we can carry
   int forestCarry = 3;  // forest mode: a troll with chop 2 and this carry is a chopper (the others garden)
   int maxWait = 12;
@@ -1174,6 +1177,12 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
       for (auto& t : trees) have += t.type == f && ownTree(t) && dropDist[t.cell] <= 3;
       int nf = need[f];
       int want = nf >= 10 ? 2 : nf >= 4 ? 1 : 0;
+      if (Pr.srcNone && nf > 0 && want == 0) {
+        // no tree of that fruit anywhere we can reach: even a small deficit needs a source
+        bool any = false;
+        for (auto& t : trees) any |= t.type == f && dropDist[t.cell] >= 0;
+        if (!any) want = 1;
+      }
       if (have < want && stock[f] > 0 && sourcesPlanted[f] < Pr.maxSources && !exposed && (profile != 1 || Pr.srcRaider)) wanted.push_back({f, Pr.sourceValue, true});
     }
   if (turnNo < Pr.earlySources && !exposed && profile != 1)
@@ -1365,6 +1374,8 @@ vector<Act> Bot::decide(int* inv, const vector<Tree>& trees, const vector<BTroll
           else if (!own) {
             if (sizeNow < MAX_SIZE) value += 4 * Pr.raidBeta * (MAX_SIZE - sizeNow);
             value += 4 * Pr.denyTheirs * size;
+            // their training fruit sources near their shack: felling one early slows all their trainings
+            if (tr.type != BANANA && turnNo < Pr.srcDenyUntil && oppDropDist[tr.cell] >= 0 && oppDropDist[tr.cell] <= 3) value += Pr.srcDeny;
           }
           if (enemies.empty() && (own || dropDist[tr.cell] <= oppDropDist[tr.cell])) value -= Pr.wasteLambda * max(0.0, min(1.0, (left - 25) / 40.0)) * 4 * max(0, size - wood);
           if (value <= 0) continue;
@@ -1803,6 +1814,9 @@ static bool setParam(Params& P, const string& kv) {
   else if (k == "rpPool") P.rpPool = v;
   else if (k == "paramSearch") P.paramSearch = v;
   else if (k == "srcRaider") P.srcRaider = v;
+  else if (k == "srcDeny") P.srcDeny = v;
+  else if (k == "srcDenyUntil") P.srcDenyUntil = v;
+  else if (k == "srcNone") P.srcNone = v;
   else if (k == "stick") P.stick = v;
   else if (k == "patienceFirst") P.patienceFirst = v;
   else if (k == "trollValue") P.trollValue = v;
